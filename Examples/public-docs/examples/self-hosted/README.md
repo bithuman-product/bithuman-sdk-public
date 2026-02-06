@@ -238,7 +238,7 @@ async def on_custom_event(data):
 For issues and questions:
 
 1. Check the [bitHuman Documentation](https://docs.bithuman.ai)
-2. Visit our [GitHub Issues](https://github.com/bithuman-prod/public-bithuman-examples/issues)
+2. Visit our [GitHub Issues](https://github.com/bithuman-product/examples/issues)
 3. Join our [Discord Community](https://discord.gg/bithuman)
 
 ## License

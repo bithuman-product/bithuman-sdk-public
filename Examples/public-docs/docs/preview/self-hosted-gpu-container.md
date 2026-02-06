@@ -579,7 +579,7 @@ When using prewarm (recommended), avatar loading is **primarily memory-intensive
 
 ## Next Steps
 
-- **Integration Guide**: See [Custom GPU Endpoint Integration](https://github.com/bithuman-prod/public-bithuman-examples/tree/main/public-docs/examples/cloud/expression#%EF%B8%8F-example-3-custom-gpu-endpoint)
+- **Integration Guide**: See [Custom GPU Endpoint Integration](https://github.com/bithuman-product/examples/tree/main/public-docs/examples/cloud/expression#%EF%B8%8F-example-3-custom-gpu-endpoint)
 - **LiveKit Plugins**: Install required `livekit-plugins-bithuman` package
 - **Monitoring**: Set up monitoring dashboards and alerts for your deployment
 - **Scaling**: Configure auto-scaling policies based on traffic patterns

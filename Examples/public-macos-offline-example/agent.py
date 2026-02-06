@@ -48,7 +48,7 @@ async def entrypoint(ctx: JobContext):
     # PREREQUISITES FOR LOCAL SETUP ON MACOS:
     # 
     # 1. Install bitHuman's Apple plugin for LiveKit:
-    #    pip install https://github.com/bithuman-prod/public-bithuman-examples/releases/download/v0.1/bithuman_voice-1.3.2-py3-none-any.whl
+    #    pip install https://github.com/bithuman-product/examples/releases/download/v0.1/bithuman_voice-1.3.2-py3-none-any.whl
     #
     # 2. Configure Apple voices in System Settings:
     #    - Go to System Settings > Accessibility > Spoken Content > System Voice

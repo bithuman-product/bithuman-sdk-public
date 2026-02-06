@@ -193,7 +193,7 @@ async def entrypoint(ctx: JobContext):
 
 > **⏱️ Performance Note:** When using dynamics with RPC-based gesture triggers, the avatar worker model connection and loading typically takes approximately **20 seconds** on first initialization.
 
-See [agent_with_dynamics.py](https://github.com/bithuman-prod/public-bithuman-examples/tree/main/public-docs/examples/cloud/essence/agent_with_dynamics.py) for a complete working example.
+See [agent_with_dynamics.py](https://github.com/bithuman-product/examples/tree/main/public-docs/examples/cloud/essence/agent_with_dynamics.py) for a complete working example.
 
 ### **Expression Model (GPU) - Agent ID**
 For custom avatars created through the platform (see [Find Your Agent ID](#3-find-your-agent-id) above for instructions):

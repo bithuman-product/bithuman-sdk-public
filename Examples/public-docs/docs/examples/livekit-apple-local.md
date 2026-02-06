@@ -16,7 +16,7 @@ Full privacy - speech never leaves your Mac.
 
 ### 2. Install voice service
 ```bash
-pip install https://github.com/bithuman-prod/public-bithuman-examples/releases/download/v0.1/bithuman_voice-1.3.2-py3-none-any.whl
+pip install https://github.com/bithuman-product/examples/releases/download/v0.1/bithuman_voice-1.3.2-py3-none-any.whl
 ```
 
 ### 3. Start voice service
@@ -49,7 +49,7 @@ npm install && npm run dev
 
 ### 7. Run agent
 
-📁 **[View source code on GitHub](https://github.com/bithuman-prod/public-bithuman-examples/blob/main/public-docs/examples/agent-livekit-apple-local.py)**
+📁 **[View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/agent-livekit-apple-local.py)**
 
 **Choose your mode:**
 
@@ -117,7 +117,7 @@ python examples/agent-livekit-apple-local.py console
 
 For **100% local operation with no internet required**, we have a complete Docker setup that runs everything locally on your Mac!
 
-🚀 **[Complete macOS Offline Example →](https://github.com/bithuman-prod/public-bithuman-examples/tree/main/public-macos-offline-example)**
+🚀 **[Complete macOS Offline Example →](https://github.com/bithuman-product/examples/tree/main/public-macos-offline-example)**
 
 **What you get:**
 - ✅ **Apple Speech Recognition** - Local STT via bitHuman's Apple plugin
@@ -136,11 +136,11 @@ For **100% local operation with no internet required**, we have a complete Docke
 **Quick Setup:**
 ```bash
 # Clone the complete offline example
-git clone https://github.com/bithuman-prod/public-bithuman-examples.git
+git clone https://github.com/bithuman-product/examples.git
 cd public-macos-offline-example
 
 # Install bitHuman's Apple voice plugin
-pip install https://github.com/bithuman-prod/public-bithuman-examples/releases/download/v0.1/bithuman_voice-1.3.2-py3-none-any.whl
+pip install https://github.com/bithuman-product/examples/releases/download/v0.1/bithuman_voice-1.3.2-py3-none-any.whl
 
 # Start Apple voice services
 bithuman-voice serve --port 8000

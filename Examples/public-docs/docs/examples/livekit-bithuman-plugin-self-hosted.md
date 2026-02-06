@@ -179,7 +179,7 @@ async def entrypoint(ctx: JobContext):
 
 > **⏱️ Performance Note:** When using dynamics with self-hosted deployment, the avatar runtime model connection and loading typically takes approximately **20 seconds** on first initialization.
 
-See [agent_with_dynamics.py](https://github.com/bithuman-prod/public-bithuman-examples/tree/main/public-docs/examples/self-hosted/agent_with_dynamics.py) for a complete working example.
+See [agent_with_dynamics.py](https://github.com/bithuman-product/examples/tree/main/public-docs/examples/self-hosted/agent_with_dynamics.py) for a complete working example.
 
 ---
 
@@ -347,8 +347,8 @@ print(f"Runtime initialized in {init_time:.2f} seconds")
 
 ## ➡️ Next Steps
 
-**Full Example:** [agent_with_dynamics.py](https://github.com/bithuman-prod/public-bithuman-examples/tree/main/public-docs/examples/self-hosted/agent_with_dynamics.py)  
-**Basic Example:** [agent.py](https://github.com/bithuman-prod/public-bithuman-examples/tree/main/public-docs/examples/self-hosted/agent.py)  
+**Full Example:** [agent_with_dynamics.py](https://github.com/bithuman-product/examples/tree/main/public-docs/examples/self-hosted/agent_with_dynamics.py)  
+**Basic Example:** [agent.py](https://github.com/bithuman-product/examples/tree/main/public-docs/examples/self-hosted/agent.py)  
 **API Documentation:** [Dynamics API](../preview/dynamics-api.md)  
 **Cloud Plugin:** [LiveKit Cloud Plugin](../preview/livekit-cloud-plugin.md)  
 **Community Support:** [Discord](https://discord.gg/ES953n7bPA)  

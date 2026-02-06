@@ -1611,7 +1611,7 @@ await session.start(agent=Agent(instructions=...), room=room)
 
 ### Community
 - [Discord Community](https://discord.gg/ES953n7bPA)
-- [GitHub Issues](https://github.com/bithuman-prod/public-bithuman-examples/issues)
+- [GitHub Issues](https://github.com/bithuman-product/examples/issues)
 - [LiveKit Community](https://github.com/livekit/livekit)
 
 ### Examples

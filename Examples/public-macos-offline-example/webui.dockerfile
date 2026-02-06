@@ -6,7 +6,7 @@ WORKDIR /app
 RUN apk add --no-cache git
 
 # Clone the LiveKit agents playground frontend
-RUN git clone --depth 1 https://github.com/bithuman-prod/public-bithuman-examples.git /tmp/repo && \
+RUN git clone --depth 1 https://github.com/bithuman-product/examples.git /tmp/repo && \
     cp -r /tmp/repo/public-livekit-ui-example/. . && \
     rm -rf /tmp/repo
 

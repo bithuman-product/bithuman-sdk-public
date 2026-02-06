@@ -36,7 +36,7 @@ A modern, responsive web interface for connecting to bitHuman's AI agents via Li
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/bithuman-prod/public-bithuman-examples.git
+   git clone https://github.com/bithuman-product/examples.git
    cd public-livekit-ui-example
    ```
 

@@ -64,7 +64,7 @@ npm install && npm run dev
 
 ### 7. Run agent
 
-📁 **[View source code on GitHub](https://github.com/bithuman-prod/public-bithuman-examples/blob/main/public-docs/examples/agent-livekit-rasp-pi.py)**
+📁 **[View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/agent-livekit-rasp-pi.py)**
 
 **Choose your mode:**
 

@@ -1,4 +1,4 @@
-# BitHuman Public Examples
+# BitHuman Examples
 
 Public examples, documentation, and integrations for the [BitHuman](https://bithuman.io) avatar platform.
 
@@ -16,8 +16,8 @@ Public examples, documentation, and integrations for the [BitHuman](https://bith
 
 ```bash
 # Clone this repo
-git clone https://github.com/bithuman-prod/public-bithuman-examples.git
-cd public-bithuman-examples
+git clone https://github.com/bithuman-product/examples.git
+cd examples
 
 # Pick an example
 cd public-sdk-examples  # Python SDK examples

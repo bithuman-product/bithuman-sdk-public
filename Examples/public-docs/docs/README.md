@@ -22,7 +22,7 @@
 <div style="display: flex; gap: 20px; margin: 30px 0; flex-wrap: wrap;">
 
 <div class="panel-openai" style="flex: 1; min-width: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 25px; color: white; text-align: center; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px) scale(1.02)'; this.style.boxShadow='0 15px 35px rgba(102, 126, 234, 0.6)'; this.style.animation='none'" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.3)'; this.className='panel-openai'">
-  <a href="https://github.com/bithuman-prod/public-bithuman-examples/tree/main/public-docker-example" style="text-decoration: none; color: white; display: block;">
+  <a href="https://github.com/bithuman-product/examples/tree/main/public-docker-example" style="text-decoration: none; color: white; display: block;">
     <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 15px;">
       <img src="assets/images/openai.svg" alt="OpenAI" style="width: 40px; height: 40px; background: white; border-radius: 8px; padding: 5px;">
       <h3 style="margin: 0; font-size: 24px;">bitHuman + OpenAI</h3>
@@ -36,7 +36,7 @@
 </div>
 
 <div class="panel-apple" style="flex: 1; min-width: 300px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 15px; padding: 25px; color: white; text-align: center; box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px) scale(1.02)'; this.style.boxShadow='0 15px 35px rgba(240, 147, 251, 0.6)'; this.style.animation='none'" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 8px 25px rgba(240, 147, 251, 0.3)'; this.className='panel-apple'">
-  <a href="https://github.com/bithuman-prod/public-bithuman-examples/tree/main/public-macos-offline-example" style="text-decoration: none; color: white; display: block;">
+  <a href="https://github.com/bithuman-product/examples/tree/main/public-macos-offline-example" style="text-decoration: none; color: white; display: block;">
     <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 15px;">
       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg" alt="Apple" style="width: 40px; height: 40px; filter: invert(1);">
       <h3 style="margin: 0; font-size: 24px;">bitHuman + Apple</h3>
@@ -74,7 +74,7 @@ Get a **full end-to-end bitHuman + LiveKit app with web UI** running in minutes!
 
 **What you get:** Complete visual agent with real-time conversation, web interface, and audio support.
 
-📦 **[Full Example Repository →](https://github.com/bithuman-prod/public-bithuman-examples/tree/main/public-docker-example)**
+📦 **[Full Example Repository →](https://github.com/bithuman-product/examples/tree/main/public-docker-example)**
 
 #### 1️⃣ Get Your Credentials
 - 🔑 **Free API Secret** → [imaginex.bithuman.ai](https://imaginex.bithuman.ai)
@@ -88,7 +88,7 @@ Get a **full end-to-end bitHuman + LiveKit app with web UI** running in minutes!
 #### 2️⃣ Clone & Setup
 ```bash
 # Clone the complete demo
-git clone https://github.com/bithuman-prod/public-bithuman-examples.git
+git clone https://github.com/bithuman-product/examples.git
 cd public-docker-example
 
 # Create environment file
@@ -197,7 +197,7 @@ Quick setup, prompts, media uploads, and animal mode
 
 1. **📖 Read** [Getting Started](getting-started/overview.md)
 2. **🛠️ Try** [Audio Clip Example](examples/avatar-with-audio-clip.md) 
-3. **📦 Browse** [Source Code](https://github.com/bithuman-prod/public-bithuman-examples/tree/main/public-docs) on GitHub
+3. **📦 Browse** [Source Code](https://github.com/bithuman-product/examples/tree/main/public-docs) on GitHub
 4. **💬 Join** [Discord Community](https://discord.gg/ES953n7bPA) for discussions and requests
 
 *Let's build the future of human-computer interaction together!* 🌟

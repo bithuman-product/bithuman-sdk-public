@@ -286,7 +286,7 @@ Compatible with:
 - 💬 [Discord Community](https://discord.gg/ES953n7bPA)
 - 📖 [bitHuman Docs](https://docs.bithuman.ai)
 - 🔧 [LiveKit Docs](https://docs.livekit.io/agents)
-- 🐛 [Report Issues](https://github.com/bithuman-prod/public-bithuman-examples/issues)
+- 🐛 [Report Issues](https://github.com/bithuman-product/examples/issues)
 
 ---
 
