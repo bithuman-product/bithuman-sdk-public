@@ -7,6 +7,7 @@
 
 - **☁️ Cloud Services**
   - [Agent Generation API](preview/agent-generation-api.md)
+  - [Agent Management API](preview/agent-management-api.md)
   - [Agent Context API](preview/agent-context-api.md)
   - [File Upload API](preview/file-upload-api.md)
   - [Dynamics API](preview/dynamics-api.md)

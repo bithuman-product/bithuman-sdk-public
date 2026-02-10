@@ -33,7 +33,11 @@ api-secret: YOUR_API_SECRET
   "prompt": "string (optional)",
   "image": "string (optional)",
   "video": "string (optional)",
-  "audio": "string (optional)"
+  "audio": "string (optional)",
+  "aspect_ratio": "string (optional, default: '16:9')",
+  "video_aspect_ratio": "string (optional, default: '16:9')",
+  "agent_id": "string (optional)",
+  "duration": "number (optional, default: 10)"
 }
 ```
 
@@ -41,10 +45,14 @@ api-secret: YOUR_API_SECRET
 
 | Parameter | Type | Description | Example |
 |-----------|------|-------------|----------|
-| `prompt` | string | Custom system prompt for the agent | `"You are a friendly AI assistant"` |
+| `prompt` | string | Custom system prompt for the agent. If not provided, a random default prompt is used. | `"You are a friendly AI assistant"` |
 | `image` | string | Image URL or base64 data | `"https://example.com/image.jpg"` |
 | `video` | string | Video URL or base64 data | `"https://example.com/video.mp4"` |
 | `audio` | string | Audio URL or base64 data | `"https://example.com/audio.mp3"` |
+| `aspect_ratio` | string | Aspect ratio for image generation | `"16:9"`, `"9:16"`, `"1:1"` |
+| `video_aspect_ratio` | string | Aspect ratio for video generation | `"16:9"`, `"9:16"`, `"1:1"` |
+| `agent_id` | string | Custom agent ID. If not provided, one is auto-generated. | `"A91XMB7113"` |
+| `duration` | number | Duration in seconds for video generation | `10` |
 
 **Response:**
 ```json
