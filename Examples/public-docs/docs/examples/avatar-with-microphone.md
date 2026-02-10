@@ -57,7 +57,7 @@ Customize the behavior with command line arguments:
 # Adjust volume and silence detection
 python examples/avatar-with-microphone.py \
   --volume 1.5 \
-  --slient-threshold-db -35
+  --silent-threshold-db -35
 
 # Use specific model and credentials
 python examples/avatar-with-microphone.py \
@@ -73,7 +73,7 @@ python examples/avatar-with-microphone.py --echo
 - `--api-secret`: Your bitHuman API secret  
 - `--token`: JWT token (alternative to API secret)
 - `--volume`: Audio volume multiplier (default: 1.0)
-- `--slient-threshold-db`: Silence threshold in dB (default: -40)
+- `--silent-threshold-db`: Silence threshold in dB (default: -40)
 - `--echo`: Enable audio echo for testing
 - `--insecure`: Disable SSL verification (dev only)
 
@@ -88,7 +88,7 @@ python examples/avatar-with-microphone.py --echo
 
 **Avatar not responding to voice?**
 - Speak louder or closer to microphone
-- Adjust `--slient-threshold-db` to lower value (e.g., -50)
+- Adjust `--silent-threshold-db` to lower value (e.g., -50)
 - Increase `--volume` parameter
 
 **Performance issues or lag?**
@@ -141,10 +141,10 @@ python examples/avatar-with-microphone.py --echo
 **Fine-tune voice detection:**
 ```bash
 # More sensitive (picks up quieter voices)
-python examples/avatar-with-microphone.py --slient-threshold-db -50
+python examples/avatar-with-microphone.py --silent-threshold-db -50
 
 # Less sensitive (only loud voices)
-python examples/avatar-with-microphone.py --slient-threshold-db -30
+python examples/avatar-with-microphone.py --silent-threshold-db -30
 
 # Boost quiet microphones
 python examples/avatar-with-microphone.py --volume 2.0

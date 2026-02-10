@@ -178,7 +178,7 @@ Quick setup, prompts, media uploads, and animal mode
 | 🐧 **Linux (x86_64)** | ✅ **Full Support** | Production ready |
 | 🦾 **Linux (ARM64)** | ✅ **Full Support** | Perfect for edge |
 | 🍎 **macOS (Apple Silicon)** | ✅ **Full Support** | M2+ recommended, M4 ideal |
-| 🪟 **Windows** | 🔄 **Coming Soon** | Beta available |
+| 🪟 **Windows** | ✅ **Full Support** | Via WSL |
 
 ---
 

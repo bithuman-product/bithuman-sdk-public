@@ -82,7 +82,7 @@ async for frame in runtime.run():
 ## System Requirements
 
 **Minimum:**
-- Python 3.11
+- Python 3.9+
 - 4+ CPU cores  
 - 8GB RAM
 

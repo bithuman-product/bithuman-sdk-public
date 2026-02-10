@@ -334,8 +334,8 @@ while True:
 dynamics_url = "https://public.api.bithuman.ai/v1/dynamics/generate"
 dynamics_payload = {
     "agent_id": agent_id,
-    "motion_prompts": ["wave", "nod", "smile"],
-    "duration": 3
+    "duration": 3,
+    "model": "seedance"
 }
 
 dynamics_response = requests.post(dynamics_url, headers=headers, json=dynamics_payload)

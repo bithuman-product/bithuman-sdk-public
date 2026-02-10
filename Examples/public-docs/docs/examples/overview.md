@@ -65,7 +65,7 @@ export BITHUMAN_MODEL_PATH="/path/to/model.imx"
 - 🤖 **Avatar models**: Download from Community page
 - 📁 **Source code**: [GitHub Examples Repository](https://github.com/bithuman-product/examples/tree/main/public-docs/examples)
 
-![Download Models](../assets/images/image-download-model.png)
+<!-- Image removed: download models screenshot -->
 *Download .imx models from the Community page*
 
 ---

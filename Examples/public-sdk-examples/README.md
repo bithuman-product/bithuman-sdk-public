@@ -5,7 +5,7 @@ bitHuman SDK enables you to build interactive agents that respond realistically 
 ## Prerequisites
 
 **Supported Python Versions:**
-- Python 3.10 to 3.13
+- Python 3.9 to 3.14
 
 **Supported Operating Systems:**
 - Linux (x86_64 and arm64)
@@ -15,7 +15,7 @@ bitHuman SDK enables you to build interactive agents that respond realistically 
 
 ### 1. Register and Get API Secret
 
-1. Go to [https://console.bithuman.io](https://console.bithuman.io) and register for free
+1. Go to [https://imaginex.bithuman.ai](https://imaginex.bithuman.ai) and register for free
 2. After registration, navigate to the **SDK** page to create a new API secret
 3. Copy your API secret for use in the examples
 
@@ -23,7 +23,7 @@ bitHuman SDK enables you to build interactive agents that respond realistically 
 
 You'll need a bitHuman avatar model (`.imx` file) to run these examples. These models define the appearance and behavior of your virtual avatar.
 
-1. Visit the [Community page](https://console.bithuman.io/#community)
+1. Visit the [Community page](https://imaginex.bithuman.ai/#community)
 2. Browse the available avatar models
 3. Click on any agent card to download the `.imx` model file directly
 
@@ -33,14 +33,14 @@ Set your API secret and model path as environment variables:
 
 ```bash
 export BITHUMAN_API_SECRET='your_api_secret'
-export BITHUMAN_AVATAR_MODEL='/path/to/model/avatar.imx'
+export BITHUMAN_MODEL_PATH='/path/to/model/avatar.imx'
 ```
 
 Or create a `.env` file in the project root:
 
 ```bash
 BITHUMAN_API_SECRET='your_api_secret'
-BITHUMAN_AVATAR_MODEL='/path/to/model/avatar.imx'
+BITHUMAN_MODEL_PATH='/path/to/model/avatar.imx'
 ```
 
 ## Installation
@@ -83,7 +83,6 @@ python echo.py
 - Real-time microphone audio capture
 - Live avatar animation
 - Local video window display
-- Audio echo processing
 
 ### 3. LiveKit Agent (`livekit_agent/`)
 
@@ -197,11 +196,11 @@ sdk-examples-python/
 All examples use the bitHuman Runtime (`AsyncBithuman`) to process audio and generate avatar animations:
 
 ```python
-from bithuman.runtime import AsyncBithuman
+from bithuman import AsyncBithuman
 
 # Initialize with API secret and model path
 runtime = await AsyncBithuman.create(
-    api_secret="your_api_secret", 
+    api_secret="your_api_secret",
     model_path="/path/to/model.imx"
 )
 ```
@@ -231,8 +230,8 @@ runtime = await AsyncBithuman.create(
 
 ## Getting Help
 
-- [bitHuman Documentation](https://docs.bithuman.io)
-- [bitHuman Console](https://console.bithuman.io)
+- [bitHuman Documentation](https://docs.bithuman.ai)
+- [bitHuman Console](https://imaginex.bithuman.ai)
 - [LiveKit Agents](https://github.com/livekit/agents)
 
-For questions or issues, visit the [Community page](https://console.bithuman.io/#community) or check the documentation.
+For questions or issues, visit the [Community page](https://imaginex.bithuman.ai/#community) or check the documentation.

@@ -84,7 +84,7 @@ python diagnose.py
 This will check:
 - ✅ All required packages are installed
 - ✅ API keys are properly configured
-- ✅ BitHuman API is accessible
+- ✅ bitHuman API is accessible
 - ✅ Avatar ID is valid
 
 ### 6. Run the Agent
@@ -173,7 +173,7 @@ This will automatically check for common issues and provide specific guidance.
 1. **"Avatar session failed" errors**: 
    - Try a different avatar ID from [community gallery](https://imaginex.bithuman.ai/#community)
    - Check if your account has access to the avatar
-   - Verify BitHuman service status
+   - Verify bitHuman service status
 
 2. **"Module not found" errors**: 
    ```bash
@@ -188,7 +188,7 @@ This will automatically check for common issues and provide specific guidance.
 4. **Avatar not loading**: 
    - Run `python diagnose.py` to test avatar ID validity
    - Try the default avatar ID or browse alternatives
-   - Check network connectivity to BitHuman API
+   - Check network connectivity to bitHuman API
 
 5. **No audio/video**: 
    - Grant browser microphone/camera permissions
@@ -208,7 +208,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 If the diagnostic tool shows all checks pass but you still have issues:
 
-1. **Check BitHuman service status**: Visit [status page](https://status.bithuman.ai) (if available)
+1. **Check bitHuman service status**: Visit [status page](https://status.bithuman.ai) (if available)
 2. **Try different avatar**: Use a different avatar ID from the community gallery
 3. **Network issues**: Test from a different network/location
 4. **Resource constraints**: Ensure sufficient CPU/memory for avatar processing

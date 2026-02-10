@@ -14,41 +14,8 @@ This example demonstrates a conversational AI avatar using:
 
 ## Architecture
 
-### Local Mode
-```
-┌─────────────────┐                    ┌──────────────────┐
-│   Microphone    │ ─────────────────► │  Gemini Live API │
-│   (sounddevice) │                    │  (STT/LLM/TTS)   │
-└─────────────────┘                    └────────┬─────────┘
-                                                │
-                                                │ Audio Response
-                                                ▼
-┌─────────────────┐                    ┌──────────────────┐
-│   Speaker       │ ◄───────────────── │  bitHuman        │
-│   (sounddevice) │                    │  AsyncBithuman   │
-└─────────────────┘                    └────────┬─────────┘
-                                                │
-                                                │ Video Frames
-                                                ▼
-                                       ┌──────────────────┐
-                                       │  OpenCV Display  │
-                                       └──────────────────┘
-```
-
-### Server Mode (WebSocket Streaming)
-```
-┌─────────────────┐     WebSocket      ┌──────────────────┐
-│   Web Client    │ ◄──────────────────│  WebSocket       │
-│   (Browser)     │     Video+Audio    │  Server          │
-└────────┬────────┘                    └────────┬─────────┘
-         │                                      │
-         │ Audio Input                          │
-         ▼                                      ▼
-┌─────────────────┐                    ┌──────────────────┐
-│  Gemini Live    │ ◄──────────────────│  bitHuman        │
-│  API            │     Audio          │  AsyncBithuman   │
-└─────────────────┘                    └──────────────────┘
-```
+- **Local Mode:** Microphone → Gemini Live API (STT/LLM/TTS) → bitHuman Runtime → OpenCV Display + Speaker
+- **Server Mode:** Web Client ↔ WebSocket Server ↔ Gemini Live API + bitHuman Runtime
 
 ## Features
 
@@ -62,7 +29,7 @@ This example demonstrates a conversational AI avatar using:
 ## Prerequisites
 
 1. **bitHuman API Credentials**
-   - API Secret from [bitHuman Platform](https://www.bithuman.ai/#api-keys)
+   - API Secret from [bitHuman Platform](https://imaginex.bithuman.ai/#developer)
    - Avatar model file (`.imx` format)
 
 2. **Google AI API Key** (for Gemini Live API)
@@ -327,92 +294,9 @@ Body:
 }
 ```
 
-## Web Client Example
+## Web Client
 
-```html
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Gemini Live Avatar Client</title>
-</head>
-<body>
-  <video id="video" autoplay></video>
-  <button id="talk">Talk</button>
-
-  <script>
-    const ws = new WebSocket('ws://localhost:8765');
-    const video = document.getElementById('video');
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-
-    // Audio context for playback
-    const audioCtx = new AudioContext({ sampleRate: 16000 });
-
-    ws.binaryType = 'arraybuffer';
-
-    ws.onmessage = (event) => {
-      if (typeof event.data === 'string') {
-        // JSON message
-        const msg = JSON.parse(event.data);
-        console.log('Received:', msg);
-      } else {
-        // Binary message
-        const view = new DataView(event.data);
-        const type = view.getUint8(0);
-
-        if (type === 0x01) {
-          // Video frame
-          const width = view.getUint16(1);
-          const height = view.getUint16(3);
-          const jpegData = new Uint8Array(event.data.slice(17 + 8));
-          
-          // Display JPEG frame
-          const blob = new Blob([jpegData], { type: 'image/jpeg' });
-          const url = URL.createObjectURL(blob);
-          const img = new Image();
-          img.onload = () => {
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawImage(img, 0, 0);
-            video.srcObject = canvas.captureStream();
-            URL.revokeObjectURL(url);
-          };
-          img.src = url;
-        } else if (type === 0x02) {
-          // Audio chunk - play it
-          const sampleRate = view.getUint32(1);
-          const pcmData = new Int16Array(event.data.slice(18 + 8));
-          
-          // Convert to float and play
-          const audioBuffer = audioCtx.createBuffer(1, pcmData.length, sampleRate);
-          const channelData = audioBuffer.getChannelData(0);
-          for (let i = 0; i < pcmData.length; i++) {
-            channelData[i] = pcmData[i] / 32768;
-          }
-          const source = audioCtx.createBufferSource();
-          source.buffer = audioBuffer;
-          source.connect(audioCtx.destination);
-          source.start();
-        }
-      }
-    };
-
-    // Send audio from microphone
-    document.getElementById('talk').onclick = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      
-      mediaRecorder.ondataavailable = (e) => {
-        // Convert to PCM and send
-        // (simplified - actual implementation needs AudioWorklet)
-      };
-      
-      mediaRecorder.start(100); // 100ms chunks
-    };
-  </script>
-</body>
-</html>
-```
+In server mode, any web client can connect via WebSocket at `ws://<host>:<port>` and exchange messages using the protocol described above. Refer to the WebSocket Protocol section for the full message format.
 
 ## Keyboard Controls (Local Mode)
 

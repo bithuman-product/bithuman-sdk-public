@@ -4,8 +4,7 @@
 
 Build a Flutter app that connects to bitHuman AI avatars through LiveKit for real-time video chat experiences.
 
-![Flutter Integration](../assets/images/flutter-integration-preview.jpg)
-*Flutter app with AI avatar integration*
+<!-- Image removed: flutter integration preview -->
 
 ---
 
