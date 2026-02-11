@@ -2,12 +2,12 @@
 LiveKit Agent with BitHuman Avatar using Custom GPU Endpoint
 
 This example demonstrates how to use a custom GPU avatar worker endpoint
-(e.g., self-hosted gpu-avatar-worker, Cerebrium deployment) instead of
+(e.g., self-hosted gpu-avatar-worker, BitHuman Cloud deployment) instead of
 the default BitHuman cloud API.
 
 Custom endpoints are useful for:
 - Self-hosted GPU avatar workers
-- Cerebrium/Replicate/Modal deployments
+- BitHuman Cloud/Replicate/Modal deployments
 - Private cloud deployments with custom authentication
 - Testing and development environments
 
@@ -56,7 +56,7 @@ def get_custom_gpu_endpoint() -> str:
     Get the custom GPU endpoint URL from environment or configuration.
 
     Supported endpoint formats:
-    - Cerebrium: https://api.aws.us-east-1.cerebrium.ai/v4/{project}/gpu-avatar-worker/launch
+    - BitHuman Cloud: https://api.bithuman.ai/v4/{project}/gpu-avatar-worker/launch
     - Self-hosted: https://your-domain.com/launch
     - Local development: http://localhost:8089/launch
 
@@ -70,13 +70,13 @@ def get_custom_gpu_endpoint() -> str:
 
     if not custom_url:
         # Fallback to common deployment patterns
-        cerebrium_project = os.getenv("CEREBRIUM_PROJECT_ID")
-        if cerebrium_project:
+        bithuman_project = os.getenv("BITHUMAN_PROJECT_ID")
+        if bithuman_project:
             custom_url = (
-                f"https://api.aws.us-east-1.cerebrium.ai/v4/"
-                f"{cerebrium_project}/gpu-avatar-worker/launch"
+                f"https://api.bithuman.ai/v4/"
+                f"{bithuman_project}/gpu-avatar-worker/launch"
             )
-            logger.info(f"Using Cerebrium endpoint: {custom_url}")
+            logger.info(f"Using BitHuman Cloud endpoint: {custom_url}")
         else:
             raise ValueError(
                 "CUSTOM_GPU_URL environment variable is required. "

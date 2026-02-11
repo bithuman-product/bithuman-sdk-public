@@ -36,7 +36,7 @@ import java.time.Duration;
 public class BitHumanExample {
 
     // ── Configuration ──────────────────────────────────────────────────
-    private static final String BASE_URL   = "https://public.api.bithuman.ai";
+    private static final String BASE_URL   = "https://api.bithuman.ai";
     private static final String API_SECRET = System.getenv("BITHUMAN_API_SECRET") != null
             ? System.getenv("BITHUMAN_API_SECRET")
             : "sk_bh_your_secret_here";                       // ← replace or use env var

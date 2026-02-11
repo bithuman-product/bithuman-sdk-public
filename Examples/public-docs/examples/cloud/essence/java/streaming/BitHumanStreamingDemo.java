@@ -78,7 +78,7 @@ public class BitHumanStreamingDemo {
     private static final String LIVEKIT_URL        = env("LIVEKIT_URL", "");
     private static final String BITHUMAN_API_SECRET = env("BITHUMAN_API_SECRET", "");
     private static final String BITHUMAN_AVATAR_ID  = env("BITHUMAN_AVATAR_ID", "A31KJC8622");
-    private static final String BITHUMAN_API_BASE   = "https://public.api.bithuman.ai";
+    private static final String BITHUMAN_API_BASE   = "https://api.bithuman.ai";
     private static final int    PORT = Integer.parseInt(env("PORT", "8080"));
 
     private static final HttpClient HTTP = HttpClient.newBuilder()

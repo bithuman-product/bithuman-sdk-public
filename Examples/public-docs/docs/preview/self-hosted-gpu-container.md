@@ -381,7 +381,7 @@ Once deployed, verify it's working:
 cerebrium get deployment gpu-avatar-worker
 
 # Test health endpoint
-curl https://api.aws.us-east-1.cerebrium.ai/v4/{project}/gpu-avatar-worker/health
+curl https://api.bithuman.ai/v4/{project}/gpu-avatar-worker/health
 
 # Should return: {"status": "ok", "active_workers": 0, "available_slots": 1}
 ```

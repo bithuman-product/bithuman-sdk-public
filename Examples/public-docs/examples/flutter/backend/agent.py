@@ -62,7 +62,7 @@ async def entrypoint(ctx: JobContext):
         if avatar_image and os.path.exists(avatar_image):
             # Use custom avatar image
             bithuman_avatar = bithuman.AvatarSession(
-                api_url=os.getenv("BITHUMAN_API_URL", "https://auth.api.bithuman.ai/v1/runtime-tokens/request"),
+                api_url=os.getenv("BITHUMAN_API_URL", "https://api.bithuman.ai/v1/runtime-tokens/request"),
                 api_secret=api_secret,
                 avatar_image=avatar_image,
             )
@@ -70,7 +70,7 @@ async def entrypoint(ctx: JobContext):
         else:
             # Use pre-configured avatar ID
             bithuman_avatar = bithuman.AvatarSession(
-                api_url=os.getenv("BITHUMAN_API_URL", "https://auth.api.bithuman.ai/v1/runtime-tokens/request"),
+                api_url=os.getenv("BITHUMAN_API_URL", "https://api.bithuman.ai/v1/runtime-tokens/request"),
                 api_secret=api_secret,
                 avatar_id=avatar_id,
             )

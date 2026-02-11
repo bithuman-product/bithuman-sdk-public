@@ -9,7 +9,7 @@ Get your API secret from [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#de
 
 ## 📡 Base URL
 ```
-https://public.api.bithuman.ai
+https://api.bithuman.ai
 ```
 
 ## 🚀 Endpoints
@@ -61,7 +61,7 @@ api-secret: YOUR_API_SECRET
 ```python
 import requests
 
-url = "https://public.api.bithuman.ai/v1/dynamics/generate"
+url = "https://api.bithuman.ai/v1/dynamics/generate"
 headers = {
     "Content-Type": "application/json",
     "api-secret": "YOUR_API_SECRET"
@@ -140,7 +140,7 @@ api-secret: YOUR_API_SECRET
 **Example Request:**
 ```python
 agent_id = "A91XMB7113"
-url = f"https://public.api.bithuman.ai/v1/dynamics/{agent_id}"
+url = f"https://api.bithuman.ai/v1/dynamics/{agent_id}"
 headers = {"api-secret": "YOUR_API_SECRET"}
 
 response = requests.get(url, headers=headers)
@@ -225,7 +225,7 @@ api-secret: YOUR_API_SECRET
 **Example Request:**
 ```python
 agent_id = "A91XMB7113"
-url = f"https://public.api.bithuman.ai/v1/dynamics/{agent_id}"
+url = f"https://api.bithuman.ai/v1/dynamics/{agent_id}"
 headers = {
     "Content-Type": "application/json",
     "api-secret": "YOUR_API_SECRET"
@@ -307,7 +307,7 @@ import requests
 import time
 
 # Step 1: Create an agent
-agent_url = "https://public.api.bithuman.ai/v1/agent/generate"
+agent_url = "https://api.bithuman.ai/v1/agent/generate"
 headers = {"Content-Type": "application/json", "api-secret": "YOUR_API_SECRET"}
 
 agent_payload = {
@@ -321,7 +321,7 @@ agent_id = agent_data["agent_id"]
 print(f"Agent created: {agent_id}")
 
 # Step 2: Wait for agent to be ready
-status_url = f"https://public.api.bithuman.ai/v1/agent/status/{agent_id}"
+status_url = f"https://api.bithuman.ai/v1/agent/status/{agent_id}"
 while True:
     status_response = requests.get(status_url, headers={"api-secret": "YOUR_API_SECRET"})
     status_data = status_response.json()
@@ -331,7 +331,7 @@ while True:
     time.sleep(5)
 
 # Step 3: Generate dynamics
-dynamics_url = "https://public.api.bithuman.ai/v1/dynamics/generate"
+dynamics_url = "https://api.bithuman.ai/v1/dynamics/generate"
 dynamics_payload = {
     "agent_id": agent_id,
     "duration": 3,

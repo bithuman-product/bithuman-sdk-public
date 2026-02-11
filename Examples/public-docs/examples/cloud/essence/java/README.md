@@ -35,7 +35,7 @@ java BitHumanExample
 ## API Base URL
 
 ```
-https://public.api.bithuman.ai
+https://api.bithuman.ai
 ```
 
 ## Authentication
@@ -44,7 +44,7 @@ All requests require the `api-secret` header:
 
 ```java
 HttpRequest req = HttpRequest.newBuilder()
-    .uri(URI.create("https://public.api.bithuman.ai/v1/validate"))
+    .uri(URI.create("https://api.bithuman.ai/v1/validate"))
     .header("api-secret", "sk_bh_your_secret_here")
     .POST(HttpRequest.BodyPublishers.ofString("{}"))
     .build();

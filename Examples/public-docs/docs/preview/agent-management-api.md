@@ -9,7 +9,7 @@ Get your API secret from [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#de
 
 ## 📡 Base URL
 ```
-https://public.api.bithuman.ai
+https://api.bithuman.ai
 ```
 
 ## 🚀 Endpoints
@@ -45,7 +45,7 @@ api-secret: YOUR_API_SECRET
 ```python
 import requests
 
-url = "https://public.api.bithuman.ai/v1/validate"
+url = "https://api.bithuman.ai/v1/validate"
 headers = {
     "api-secret": "YOUR_API_SECRET"
 }
@@ -61,7 +61,7 @@ else:
 
 ```javascript
 // JavaScript/Node.js
-const response = await fetch('https://public.api.bithuman.ai/v1/validate', {
+const response = await fetch('https://api.bithuman.ai/v1/validate', {
   method: 'POST',
   headers: {
     'api-secret': 'YOUR_API_SECRET'
@@ -125,7 +125,7 @@ api-secret: YOUR_API_SECRET
 import requests
 
 code = "A91XMB7113"
-url = f"https://public.api.bithuman.ai/v1/agent/{code}"
+url = f"https://api.bithuman.ai/v1/agent/{code}"
 headers = {
     "api-secret": "YOUR_API_SECRET"
 }
@@ -143,7 +143,7 @@ if data["success"]:
 ```javascript
 // JavaScript/Node.js
 const code = 'A91XMB7113';
-const response = await fetch(`https://public.api.bithuman.ai/v1/agent/${code}`, {
+const response = await fetch(`https://api.bithuman.ai/v1/agent/${code}`, {
   headers: {
     'api-secret': 'YOUR_API_SECRET'
   }
@@ -216,7 +216,7 @@ api-secret: YOUR_API_SECRET
 import requests
 
 code = "A91XMB7113"
-url = f"https://public.api.bithuman.ai/v1/agent/{code}"
+url = f"https://api.bithuman.ai/v1/agent/{code}"
 headers = {
     "Content-Type": "application/json",
     "api-secret": "YOUR_API_SECRET"
@@ -232,7 +232,7 @@ print(response.json())
 ```javascript
 // JavaScript/Node.js
 const code = 'A91XMB7113';
-const response = await fetch(`https://public.api.bithuman.ai/v1/agent/${code}`, {
+const response = await fetch(`https://api.bithuman.ai/v1/agent/${code}`, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -259,7 +259,7 @@ headers = {
 
 # Step 1: Create agent
 response = requests.post(
-    "https://public.api.bithuman.ai/v1/agent/generate",
+    "https://api.bithuman.ai/v1/agent/generate",
     headers=headers,
     json={"prompt": "You are a friendly greeter."}
 )
@@ -269,7 +269,7 @@ print(f"Created agent: {agent_id}")
 # Step 2: Wait for agent to be ready
 while True:
     status = requests.get(
-        f"https://public.api.bithuman.ai/v1/agent/status/{agent_id}",
+        f"https://api.bithuman.ai/v1/agent/status/{agent_id}",
         headers={"api-secret": "YOUR_API_SECRET"}
     ).json()
 
@@ -279,14 +279,14 @@ while True:
 
 # Step 3: Get agent info
 info = requests.get(
-    f"https://public.api.bithuman.ai/v1/agent/{agent_id}",
+    f"https://api.bithuman.ai/v1/agent/{agent_id}",
     headers={"api-secret": "YOUR_API_SECRET"}
 ).json()
 print(f"Current prompt: {info['data']['system_prompt']}")
 
 # Step 4: Update the prompt
 update = requests.post(
-    f"https://public.api.bithuman.ai/v1/agent/{agent_id}",
+    f"https://api.bithuman.ai/v1/agent/{agent_id}",
     headers=headers,
     json={"system_prompt": "You are now a technical support specialist."}
 ).json()

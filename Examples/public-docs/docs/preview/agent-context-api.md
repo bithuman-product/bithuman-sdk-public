@@ -31,7 +31,7 @@ The Agent Context API allows you to interact with your imaginex platform agents 
 
 ### **Base URL**
 ```
-https://public.api.bithuman.ai/v1/agent/{agent_code}
+https://api.bithuman.ai/v1/agent/{agent_code}
 ```
 
 > **Note**: `{agent_code}` is the unique identifier of your agent from the imaginex platform dashboard (e.g., `A12345678`)
@@ -82,7 +82,7 @@ import requests
 # Make imaginex platform agent announce a promotion
 # Note: A12345678 is your agent code from imaginex dashboard
 response = requests.post(
-    'https://public.api.bithuman.ai/v1/agent/A12345678/speak',
+    'https://api.bithuman.ai/v1/agent/A12345678/speak',
     headers={'api-secret': 'your_secret'},
     json={
         'message': 'Great news! We have a 20% discount available today!',
@@ -159,7 +159,7 @@ import requests
 # Add customer context to imaginex platform agent
 # Note: A12345678 is your agent code from imaginex dashboard
 response = requests.post(
-    'https://public.api.bithuman.ai/v1/agent/A12345678/add-context',
+    'https://api.bithuman.ai/v1/agent/A12345678/add-context',
     headers={'api-secret': 'your_secret'},
     json={
         'context': 'Customer has VIP status and prefers technical explanations',

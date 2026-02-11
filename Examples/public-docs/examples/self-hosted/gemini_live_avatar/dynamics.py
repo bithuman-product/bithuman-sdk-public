@@ -58,7 +58,7 @@ def get_available_gestures(agent_id: str, api_secret: str) -> dict[str, str]:
         Dictionary mapping gesture keys to video URLs, or empty dict if failed
     """
     try:
-        url = f"https://public.api.bithuman.ai/v1/dynamics/{agent_id}"
+        url = f"https://api.bithuman.ai/v1/dynamics/{agent_id}"
         headers = {"api-secret": api_secret}
 
         response = requests.get(url, headers=headers, timeout=10)

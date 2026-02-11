@@ -10,7 +10,7 @@ Get your API secret from [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#de
 
 ## 📡 Base URL
 ```
-https://public.api.bithuman.ai
+https://api.bithuman.ai
 ```
 
 ## 🚀 Endpoints
@@ -68,7 +68,7 @@ api-secret: YOUR_API_SECRET
 ```python
 import requests
 
-url = "https://public.api.bithuman.ai/v1/agent/generate"
+url = "https://api.bithuman.ai/v1/agent/generate"
 headers = {
     "Content-Type": "application/json",
     "api-secret": "YOUR_API_SECRET"
@@ -140,7 +140,7 @@ api-secret: YOUR_API_SECRET
 import requests
 
 agent_id = "A81FMS8296"
-url = f"https://public.api.bithuman.ai/v1/agent/status/{agent_id}"
+url = f"https://api.bithuman.ai/v1/agent/status/{agent_id}"
 headers = {
     "api-secret": "YOUR_API_SECRET"
 }
@@ -155,7 +155,7 @@ import requests
 import time
 
 # Step 1: Create agent
-generate_url = "https://public.api.bithuman.ai/v1/agent/generate"
+generate_url = "https://api.bithuman.ai/v1/agent/generate"
 headers = {
     "Content-Type": "application/json",
     "api-secret": "YOUR_API_SECRET"
@@ -173,7 +173,7 @@ agent_id = result["agent_id"]
 print(f"Agent created: {agent_id}")
 
 # Step 2: Poll for completion
-status_url = f"https://public.api.bithuman.ai/v1/agent/status/{agent_id}"
+status_url = f"https://api.bithuman.ai/v1/agent/status/{agent_id}"
 status_headers = {"api-secret": "YOUR_API_SECRET"}
 
 while True:

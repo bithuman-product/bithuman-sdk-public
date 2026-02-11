@@ -46,7 +46,7 @@ async def entrypoint(ctx: JobContext):
     # The avatar_id references a pre-configured avatar model in the cloud
     try:
         bithuman_avatar = bithuman.AvatarSession(
-            api_url=os.getenv("BITHUMAN_API_URL", "https://auth.api.bithuman.ai/v1/runtime-tokens/request"),  # Default API URL
+            api_url=os.getenv("BITHUMAN_API_URL", "https://api.bithuman.ai/v1/runtime-tokens/request"),  # Default API URL
             api_secret=api_secret,
             avatar_id=avatar_id,  # Make avatar_id configurable
         )

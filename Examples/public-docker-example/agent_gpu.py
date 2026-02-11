@@ -2,12 +2,12 @@
 LiveKit Agent with BitHuman Avatar using Custom GPU Endpoint
 
 This example demonstrates how to use a custom GPU avatar worker endpoint
-(e.g., self-hosted gpu-avatar-worker, Cerebrium deployment) instead of
+(e.g., self-hosted gpu-avatar-worker, BitHuman Cloud deployment) instead of
 the default BitHuman cloud API.
 
 Custom endpoints are useful for:
 - Self-hosted GPU avatar workers
-- Cerebrium/Replicate/Modal deployments
+- BitHuman Cloud/Replicate/Modal deployments
 - Private cloud deployments with custom authentication
 - Testing and development environments
 

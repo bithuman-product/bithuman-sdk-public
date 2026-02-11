@@ -9,7 +9,7 @@ Get your API secret from [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#de
 
 ## 📡 Base URL
 ```
-https://public.api.bithuman.ai
+https://api.bithuman.ai
 ```
 
 ## 🚀 Endpoints
@@ -55,7 +55,7 @@ api-secret: YOUR_API_SECRET
 ```python
 import requests
 
-url = "https://public.api.bithuman.ai/v1/files/upload"
+url = "https://api.bithuman.ai/v1/files/upload"
 headers = {
     "Content-Type": "application/json",
     "api-secret": "YOUR_API_SECRET"
@@ -97,7 +97,7 @@ import base64
 with open("document.pdf", "rb") as f:
     file_data = base64.b64encode(f.read()).decode('utf-8')
 
-url = "https://public.api.bithuman.ai/v1/files/upload"
+url = "https://api.bithuman.ai/v1/files/upload"
 headers = {
     "Content-Type": "application/json",
     "api-secret": "YOUR_API_SECRET"
@@ -207,7 +207,7 @@ Each file is stored with a timestamp and unique identifier:
 import requests
 
 def upload_from_url(file_url, file_type="auto"):
-    url = "https://public.api.bithuman.ai/v1/files/upload"
+    url = "https://api.bithuman.ai/v1/files/upload"
     headers = {
         "Content-Type": "application/json",
         "api-secret": "YOUR_API_SECRET"
@@ -236,7 +236,7 @@ def upload_local_file(file_path, file_type="auto"):
     with open(file_path, "rb") as f:
         file_data = base64.b64encode(f.read()).decode('utf-8')
     
-    url = "https://public.api.bithuman.ai/v1/files/upload"
+    url = "https://api.bithuman.ai/v1/files/upload"
     headers = {
         "Content-Type": "application/json",
         "api-secret": "YOUR_API_SECRET"
@@ -273,7 +273,7 @@ def batch_upload_files(directory_path):
                 with open(file_path, "rb") as f:
                     file_data = base64.b64encode(f.read()).decode('utf-8')
                 
-                url = "https://public.api.bithuman.ai/v1/files/upload"
+                url = "https://api.bithuman.ai/v1/files/upload"
                 headers = {
                     "Content-Type": "application/json",
                     "api-secret": "YOUR_API_SECRET"

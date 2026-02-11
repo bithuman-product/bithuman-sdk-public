@@ -78,7 +78,7 @@ import requests
 
 # Get available gestures for your agent
 agent_id = "A31KJC8622"
-url = f"https://public.api.bithuman.ai/v1/dynamics/{agent_id}"
+url = f"https://api.bithuman.ai/v1/dynamics/{agent_id}"
 headers = {"api-secret": "YOUR_API_SECRET"}
 
 response = requests.get(url, headers=headers)
