@@ -10,7 +10,7 @@ Learn the structure that won Singapore's GPT-4 prompt engineering competition.
 
 The **CO-STAR framework** is an award-winning method for creating effective prompts. It considers all key aspects that influence an AI's response quality.
 
-![Example Agent Variety](../assets/images/example-agent-images.jpg)
+![Example Agent Variety](assets/images/example-agent-images.jpg)
 *The variety of agents you can create with effective prompts*
 
 ### **C - Context**

@@ -10,7 +10,7 @@ Learn how to prepare and upload media for optimal avatar generation results.
 
 The ImagineX platform accepts multiple types of media to create avatars. Each type serves a specific purpose in building your character's appearance, voice, and personality.
 
-![Media Upload Guide](../assets/images/image-guide.jpg)
+![Media Upload Guide](assets/images/image-guide.jpg)
 *Follow our guidelines for optimal media uploads*
 
 ---

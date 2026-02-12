@@ -29,13 +29,13 @@ To use an existing avatar with the Expression Model, you'll need to locate your 
 #### Step 1: Select Your Agent
 Navigate to your [imaginex.bithuman.ai](https://imaginex.bithuman.ai) dashboard and click on the agent card you want to use.
 
-![Agent Dashboard](../assets/images/agent-dashboard.jpg)
+![Agent Dashboard](assets/images/agent-dashboard.jpg)
 *Click on the agent card you want to use for integration*
 
 #### Step 2: Access Agent Settings
 Once you click on the agent, the **Agent Settings** dialog will open, displaying your unique **Agent ID** at the top.
 
-![Agent Settings Dialog](../assets/images/agent-settings-dialog.jpg)
+![Agent Settings Dialog](assets/images/agent-settings-dialog.jpg)
 *Copy the Agent ID from the Agent Settings dialog*
 
 > **💡 Tip**: The Agent ID (e.g., `A78WKV4515`) is a unique identifier for your specific avatar. You'll use this as the `avatar_id` parameter in your code.

@@ -20,84 +20,84 @@ Checkout some example animal agents. You can either use prompts to generate or u
 
 <div style="text-align: center;">
 <div style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px; border: 2px solid #f1f3f4;">
-<img src="../assets/animals/capybara.jpg" alt="Capybara" style="width: 100%; height: 100%; object-fit: cover;">
+<img src="assets/animals/capybara.jpg" alt="Capybara" style="width: 100%; height: 100%; object-fit: cover;">
 </div>
 <p><strong>Capybara</strong></p>
 </div>
 
 <div style="text-align: center;">
 <div style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px; border: 2px solid #f1f3f4;">
-<img src="../assets/animals/cat-hat.jpg" alt="Cat in a Hat" style="width: 100%; height: 100%; object-fit: cover;">
+<img src="assets/animals/cat-hat.jpg" alt="Cat in a Hat" style="width: 100%; height: 100%; object-fit: cover;">
 </div>
 <p><strong>Cat in Hat</strong></p>
 </div>
 
 <div style="text-align: center;">
 <div style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px; border: 2px solid #f1f3f4;">
-<img src="../assets/animals/rainbow-creature.jpg" alt="Rainbow Creature" style="width: 100%; height: 100%; object-fit: cover;">
+<img src="assets/animals/rainbow-creature.jpg" alt="Rainbow Creature" style="width: 100%; height: 100%; object-fit: cover;">
 </div>
 <p><strong>Rainbow Creature</strong></p>
 </div>
 
 <div style="text-align: center;">
 <div style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px; border: 2px solid #f1f3f4;">
-<img src="../assets/animals/koala.jpg" alt="Koala" style="width: 100%; height: 100%; object-fit: cover;">
+<img src="assets/animals/koala.jpg" alt="Koala" style="width: 100%; height: 100%; object-fit: cover;">
 </div>
 <p><strong>Koala</strong></p>
 </div>
 
 <div style="text-align: center;">
 <div style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px; border: 2px solid #f1f3f4;">
-<img src="../assets/animals/turtle.jpg" alt="Pixar Turtle" style="width: 100%; height: 100%; object-fit: cover;">
+<img src="assets/animals/turtle.jpg" alt="Pixar Turtle" style="width: 100%; height: 100%; object-fit: cover;">
 </div>
 <p><strong>Pixar Turtle</strong></p>
 </div>
 
 <div style="text-align: center;">
 <div style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px; border: 2px solid #f1f3f4;">
-<img src="../assets/animals/bunny-glasses.jpg" alt="Bunny with Glasses" style="width: 100%; height: 100%; object-fit: cover;">
+<img src="assets/animals/bunny-glasses.jpg" alt="Bunny with Glasses" style="width: 100%; height: 100%; object-fit: cover;">
 </div>
 <p><strong>Bunny with Glasses</strong></p>
 </div>
 
 <div style="text-align: center;">
 <div style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px; border: 2px solid #f1f3f4;">
-<img src="../assets/animals/bunny-white.jpg" alt="White Bunny" style="width: 100%; height: 100%; object-fit: cover;">
+<img src="assets/animals/bunny-white.jpg" alt="White Bunny" style="width: 100%; height: 100%; object-fit: cover;">
 </div>
 <p><strong>White Bunny</strong></p>
 </div>
 
 <div style="text-align: center;">
 <div style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px; border: 2px solid #f1f3f4;">
-<img src="../assets/animals/sheepdog.jpg" alt="Sheepdog" style="width: 100%; height: 100%; object-fit: cover;">
+<img src="assets/animals/sheepdog.jpg" alt="Sheepdog" style="width: 100%; height: 100%; object-fit: cover;">
 </div>
 <p><strong>English Sheepdog</strong></p>
 </div>
 
 <div style="text-align: center;">
 <div style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px; border: 2px solid #f1f3f4;">
-<img src="../assets/animals/teddy-bear.jpg" alt="Teddy Bear" style="width: 100%; height: 100%; object-fit: cover;">
+<img src="assets/animals/teddy-bear.jpg" alt="Teddy Bear" style="width: 100%; height: 100%; object-fit: cover;">
 </div>
 <p><strong>Teddy Bear</strong></p>
 </div>
 
 <div style="text-align: center;">
 <div style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px; border: 2px solid #f1f3f4;">
-<img src="../assets/animals/d12.jpg" alt="Character D12" style="width: 100%; height: 100%; object-fit: cover;">
+<img src="assets/animals/d12.jpg" alt="Character D12" style="width: 100%; height: 100%; object-fit: cover;">
 </div>
 <p><strong>Character D12</strong></p>
 </div>
 
 <div style="text-align: center;">
 <div style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px; border: 2px solid #f1f3f4;">
-<img src="../assets/animals/d7.jpg" alt="Character D7" style="width: 100%; height: 100%; object-fit: cover;">
+<img src="assets/animals/d7.jpg" alt="Character D7" style="width: 100%; height: 100%; object-fit: cover;">
 </div>
 <p><strong>Character D7</strong></p>
 </div>
 
 <div style="text-align: center;">
 <div style="width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px; border: 2px solid #f1f3f4;">
-<img src="../assets/animals/fluffy-creature.jpg" alt="Fluffy Rainbow Creature" style="width: 100%; height: 100%; object-fit: cover;">
+<img src="assets/animals/fluffy-creature.jpg" alt="Fluffy Rainbow Creature" style="width: 100%; height: 100%; object-fit: cover;">
 </div>
 <p><strong>Fluffy Creature</strong></p>
 </div>
@@ -124,7 +124,7 @@ The AI system automatically attempts to locate the character's face and body in 
 
 When the AI cannot locate facial features automatically, you will be prompted to manually mark key points.
 
-![Help Needed](../assets/images/example-help-needed.jpg)
+![Help Needed](assets/images/example-help-needed.jpg)
 *When automatic detection needs assistance*
 
 ### Manual Marking Process
@@ -135,7 +135,7 @@ Follow these steps when prompted:
 2. **Draw a rectangle** around the entire facial area — eyes, nose, mouth, and chin
 3. **Submit** — the system will extract facial landmarks from your selection
 
-![Mark Face Points](../assets/images/example-mark-face-points.jpg)
+![Mark Face Points](assets/images/example-mark-face-points.jpg)
 *Draw a rectangle to encompass the entire facial area*
 
 The rectangle should cover all key features: both eyes, nose, mouth, and chin. No need to select individual points — just one bounding rectangle.

@@ -2,7 +2,7 @@
 
 Working examples from basic to advanced, each with full source code.
 
-![Example Agent Variety](../assets/images/example-agent-images.jpg)
+![Example Agent Variety](assets/images/example-agent-images.jpg)
 
 ---
 
