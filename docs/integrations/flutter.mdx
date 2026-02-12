@@ -1,0 +1,383 @@
+---
+title: "Flutter Integration"
+description: "Build real-time video chat applications with AI-powered avatars using Flutter + LiveKit."
+icon: "mobile"
+---
+
+## Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Flutter App   │    │   LiveKit Room  │    │  Python Agent   │
+│   Video View    │◄──►│  Real-time      │◄──►│  bitHuman       │
+│   Audio Capture │    │  Streaming      │    │  Avatar + LLM   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+- **Flutter App**: Cross-platform UI, camera/microphone capture, video rendering
+- **LiveKit Room**: Real-time media routing, participant management
+- **Python Agent**: AI conversation processing, avatar rendering
+
+## Prerequisites
+
+- Flutter SDK 3.0+
+- Python 3.11+
+- bitHuman API Secret
+- LiveKit Cloud account
+- OpenAI API Key
+
+---
+
+## Quick Start
+
+<Steps>
+  <Step title="Project structure">
+    ```bash
+    mkdir flutter-bithuman-avatar
+    cd flutter-bithuman-avatar
+    mkdir -p backend frontend/lib
+    ```
+  </Step>
+  <Step title="Backend setup">
+    ```bash
+    cd backend
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install "livekit-agents[openai,bithuman,silero]>=1.2.16" flask flask-cors python-dotenv
+    ```
+
+    Create `.env`:
+    ```bash
+    BITHUMAN_API_SECRET=sk_bh_your_secret_here
+    BITHUMAN_AVATAR_ID=A33NZN6384
+    OPENAI_API_KEY=sk-proj_your_key_here
+    LIVEKIT_API_KEY=APIyour_key
+    LIVEKIT_API_SECRET=your_secret
+    LIVEKIT_URL=wss://your-project.livekit.cloud
+    ```
+  </Step>
+  <Step title="Frontend setup">
+    ```bash
+    cd ../frontend
+    flutter create . --org com.bithuman.avatar
+    ```
+
+    Update `pubspec.yaml` dependencies:
+    ```yaml
+    dependencies:
+      flutter:
+        sdk: flutter
+      livekit_components: 1.2.2+hotfix.1
+      livekit_client: ^2.5.3
+      provider: ^6.1.1
+      http: ^1.1.0
+    ```
+
+    ```bash
+    flutter pub get
+    ```
+  </Step>
+  <Step title="Run the system">
+    ```bash
+    # Terminal 1: Start Backend
+    cd backend && source .venv/bin/activate
+    python token_server.py &
+    python agent.py dev
+
+    # Terminal 2: Start Frontend
+    cd frontend
+    flutter run -d chrome --web-port 8080
+    ```
+  </Step>
+</Steps>
+
+---
+
+## Token Server
+
+<Warning>
+LiveKit requires a JWT to join rooms. Never ship LiveKit API keys in client apps. Use a server endpoint to mint short-lived tokens.
+</Warning>
+
+```python token_server.py
+from flask import Flask, request, jsonify
+from livekit import api
+from datetime import timedelta
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+app = Flask(__name__)
+
+LIVEKIT_API_KEY = os.getenv("LIVEKIT_API_KEY")
+LIVEKIT_API_SECRET = os.getenv("LIVEKIT_API_SECRET")
+LIVEKIT_URL = os.getenv("LIVEKIT_URL")
+
+@app.route('/token', methods=['POST'])
+def create_token():
+    data = request.get_json() or {}
+    room = data.get('room', 'flutter-avatar-room')
+    identity = data.get('participant', 'Flutter User')
+
+    at = api.AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, identity=identity)
+    at.add_grant(api.VideoGrant(room_join=True, room=room))
+    at.ttl = timedelta(hours=1)
+
+    return jsonify({'token': at.to_jwt(), 'server_url': LIVEKIT_URL})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=3000)
+```
+
+---
+
+## Python Agent
+
+```python agent.py
+import asyncio
+import os
+from livekit.agents import JobContext, WorkerOptions, cli
+from livekit.agents.voice_assistant import VoiceAssistant
+from livekit.plugins import openai, silero
+import bithuman
+
+async def entrypoint(ctx: JobContext):
+    await ctx.connect()
+
+    bithuman_avatar = bithuman.AvatarSession(
+        api_secret=os.getenv("BITHUMAN_API_SECRET"),
+        avatar_id=os.getenv("BITHUMAN_AVATAR_ID", "A33NZN6384"),
+    )
+
+    agent = VoiceAssistant(
+        vad=openai.VAD(),
+        stt=openai.STT(),
+        llm=openai.LLM(),
+        tts=bithuman.TTS(),
+    )
+
+    await agent.start()
+    await bithuman_avatar.start(agent, room=ctx.room)
+    await agent.run()
+
+if __name__ == "__main__":
+    cli.run_app(WorkerOptions(
+        entrypoint_fnc=entrypoint,
+        job_memory_warn_mb=2000,
+        num_idle_processes=2,
+        initialize_process_timeout=180,
+    ))
+```
+
+---
+
+## Flutter App
+
+### LiveKit Configuration
+
+```dart config/livekit_config.dart
+import 'dart:convert';
+import 'dart:math';
+import 'package:http/http.dart' as http;
+
+class LiveKitConfig {
+  static const String serverUrl = 'wss://your-project.livekit.cloud';
+  static const String? tokenEndpoint = 'http://localhost:3000/token';
+
+  static String get roomName {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    final random = Random();
+    return 'room-${String.fromCharCodes(
+      Iterable.generate(12, (_) => chars.codeUnitAt(random.nextInt(chars.length)))
+    )}';
+  }
+
+  static String get participantName {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    final random = Random();
+    return 'user-${String.fromCharCodes(
+      Iterable.generate(8, (_) => chars.codeUnitAt(random.nextInt(chars.length)))
+    )}';
+  }
+
+  static Future<String> getToken() async {
+    final response = await http.post(
+      Uri.parse(tokenEndpoint!),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'room': roomName,
+        'participant': participantName,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body)['token'] as String;
+    }
+    throw Exception('Token server returned ${response.statusCode}');
+  }
+}
+```
+
+### Main App
+
+```dart main.dart
+import 'package:flutter/material.dart';
+import 'package:livekit_client/livekit_client.dart' as lk;
+import 'package:livekit_components/livekit_components.dart';
+import 'config/livekit_config.dart';
+
+void main() => runApp(const BitHumanFlutterApp());
+
+class BitHumanFlutterApp extends StatelessWidget {
+  const BitHumanFlutterApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'bitHuman Flutter Integration',
+      theme: LiveKitTheme().buildThemeData(context),
+      themeMode: ThemeMode.dark,
+      home: const ConnectionScreen(),
+    );
+  }
+}
+
+class ConnectionScreen extends StatefulWidget {
+  const ConnectionScreen({super.key});
+
+  @override
+  State<ConnectionScreen> createState() => _ConnectionScreenState();
+}
+
+class _ConnectionScreenState extends State<ConnectionScreen> {
+  bool _isConnecting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _connect());
+  }
+
+  Future<void> _connect() async {
+    setState(() => _isConnecting = true);
+    final token = await LiveKitConfig.getToken();
+    if (!mounted) return;
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => VideoRoomScreen(
+          url: LiveKitConfig.serverUrl,
+          token: token,
+          roomName: LiveKitConfig.roomName,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF1a1a1a),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 20),
+            Text(
+              _isConnecting ? 'Connecting...' : 'Failed',
+              style: const TextStyle(color: Colors.white70, fontSize: 18),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class VideoRoomScreen extends StatelessWidget {
+  final String url, token, roomName;
+  const VideoRoomScreen({
+    super.key, required this.url, required this.token, required this.roomName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LivekitRoom(
+      roomContext: RoomContext(
+        url: url,
+        token: token,
+        connect: true,
+        roomOptions: lk.RoomOptions(adaptiveStream: true, dynacast: true),
+      ),
+      builder: (context, roomCtx) {
+        return Scaffold(
+          appBar: AppBar(title: Text('Room: $roomName')),
+          backgroundColor: const Color(0xFF1a1a1a),
+          body: const Center(child: Text('AI Avatar Video Here')),
+        );
+      },
+    );
+  }
+}
+```
+
+---
+
+## Platform-Specific Setup
+
+### iOS (`ios/Runner/Info.plist`)
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>Camera access for video calls with AI avatar</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Microphone access for voice interaction with AI avatar</string>
+```
+
+### Android (`AndroidManifest.xml`)
+
+```xml
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
+---
+
+## Deployment
+
+<CodeGroup>
+
+```bash iOS
+flutter build ios --release
+```
+
+```bash Android
+flutter build apk --release
+```
+
+```bash Web
+flutter build web --release
+```
+
+</CodeGroup>
+
+---
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| Avatar session failed | Check bitHuman API secret and avatar ID |
+| Connection failed | Verify LiveKit server URL, ensure backend is running |
+| No camera found | Check device permissions |
+| Avatar not showing | Check backend logs, verify API key |
+| Shader compilation errors | Run `flutter clean && flutter pub get` |
+
+---
+
+## Resources
+
+- [Flutter Documentation](https://docs.flutter.dev)
+- [LiveKit Flutter SDK](https://pub.dev/packages/livekit_client)
+- [LiveKit Agents Documentation](https://docs.livekit.io/agents)

@@ -1,0 +1,245 @@
+---
+title: "Agent Management"
+description: "Validate API credentials, retrieve agent details, and update agent prompts."
+icon: "users-gear"
+---
+
+## Validate API Secret
+
+```
+POST /v1/validate
+```
+
+Verify that your API secret is valid before making other API calls.
+
+<CodeGroup>
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.bithuman.ai/v1/validate",
+    headers={"api-secret": "YOUR_API_SECRET"}
+)
+result = response.json()
+
+if result["valid"]:
+    print("API secret is valid.")
+else:
+    print("Invalid API secret.")
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.bithuman.ai/v1/validate', {
+  method: 'POST',
+  headers: { 'api-secret': 'YOUR_API_SECRET' }
+});
+
+const result = await response.json();
+console.log('Valid:', result.valid);
+```
+
+</CodeGroup>
+
+**Response**
+
+```json
+{ "valid": true }
+```
+
+---
+
+## Get Agent Info
+
+```
+GET /v1/agent/{code}
+```
+
+Retrieve detailed information about an agent by its code identifier.
+
+**Path Parameters**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `code` | string | The agent code identifier (e.g., `A12345678`) |
+
+**Response**
+
+```json
+{
+  "success": true,
+  "data": {
+    "agent_id": "A91XMB7113",
+    "event_type": "lip_created",
+    "status": "ready",
+    "error_message": null,
+    "created_at": "2025-08-01T13:58:51.907177+00:00",
+    "updated_at": "2025-08-01T09:59:15.159901+00:00",
+    "system_prompt": "You are a friendly AI assistant",
+    "image_url": "https://storage.supabase.co/image.jpg",
+    "video_url": "https://storage.supabase.co/video.mp4",
+    "name": "My Agent",
+    "model_url": "https://storage.supabase.co/model.imx"
+  }
+}
+```
+
+<CodeGroup>
+
+```python Python
+import requests
+
+code = "A91XMB7113"
+response = requests.get(
+    f"https://api.bithuman.ai/v1/agent/{code}",
+    headers={"api-secret": "YOUR_API_SECRET"}
+)
+data = response.json()
+
+if data["success"]:
+    agent = data["data"]
+    print(f"Agent: {agent['name']}")
+    print(f"Status: {agent['status']}")
+```
+
+```javascript JavaScript
+const code = 'A91XMB7113';
+const response = await fetch(`https://api.bithuman.ai/v1/agent/${code}`, {
+  headers: { 'api-secret': 'YOUR_API_SECRET' }
+});
+
+const data = await response.json();
+if (data.success) {
+  console.log('Agent:', data.data.name);
+}
+```
+
+</CodeGroup>
+
+<Note>
+This endpoint uses the agent **code** (e.g., `A91XMB7113`), which is the same as the agent ID used across the platform. For checking generation progress, you can also use [`GET /v1/agent/status/{agent_id}`](/api-reference/agent-generation).
+</Note>
+
+---
+
+## Update Agent Prompt
+
+```
+POST /v1/agent/{code}
+```
+
+Update the system prompt of an existing agent without regenerating it.
+
+**Request Body**
+
+```json
+{
+  "system_prompt": "You are a helpful customer service agent who speaks Spanish"
+}
+```
+
+**Response**
+
+```json
+{
+  "success": true,
+  "data": {
+    "agent_code": "A91XMB7113",
+    "updated": true
+  }
+}
+```
+
+<CodeGroup>
+
+```python Python
+import requests
+
+code = "A91XMB7113"
+response = requests.post(
+    f"https://api.bithuman.ai/v1/agent/{code}",
+    headers={
+        "Content-Type": "application/json",
+        "api-secret": "YOUR_API_SECRET"
+    },
+    json={
+        "system_prompt": "You are a professional sales assistant."
+    }
+)
+print(response.json())
+```
+
+```javascript JavaScript
+const code = 'A91XMB7113';
+const response = await fetch(`https://api.bithuman.ai/v1/agent/${code}`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'api-secret': 'YOUR_API_SECRET'
+  },
+  body: JSON.stringify({
+    system_prompt: 'You are a professional sales assistant.'
+  })
+});
+
+const result = await response.json();
+console.log('Update result:', result);
+```
+
+</CodeGroup>
+
+---
+
+## Complete Example
+
+```python
+import requests
+import time
+
+headers = {
+    "Content-Type": "application/json",
+    "api-secret": "YOUR_API_SECRET"
+}
+
+# Step 1: Create agent
+response = requests.post(
+    "https://api.bithuman.ai/v1/agent/generate",
+    headers=headers,
+    json={"prompt": "You are a friendly greeter."}
+)
+agent_id = response.json()["agent_id"]
+
+# Step 2: Wait for agent to be ready
+while True:
+    status = requests.get(
+        f"https://api.bithuman.ai/v1/agent/status/{agent_id}",
+        headers={"api-secret": "YOUR_API_SECRET"}
+    ).json()
+    if status["data"]["status"] == "ready":
+        break
+    time.sleep(5)
+
+# Step 3: Get agent info
+info = requests.get(
+    f"https://api.bithuman.ai/v1/agent/{agent_id}",
+    headers={"api-secret": "YOUR_API_SECRET"}
+).json()
+print(f"Current prompt: {info['data']['system_prompt']}")
+
+# Step 4: Update the prompt
+update = requests.post(
+    f"https://api.bithuman.ai/v1/agent/{agent_id}",
+    headers=headers,
+    json={"system_prompt": "You are now a technical support specialist."}
+).json()
+print(f"Prompt updated: {update}")
+```
+
+## Error Codes
+
+| Code | Description |
+|------|-------------|
+| `UNAUTHORIZED` | Invalid or missing API secret |
+| `MISSING_PARAM` | Required parameter not provided |
+| `AGENT_NOT_FOUND` | No agent found with the given code |
+| `VALIDATION_ERROR` | Invalid request body format |

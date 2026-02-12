@@ -1,0 +1,102 @@
+---
+title: "Quick Start"
+description: "Get a bitHuman avatar running in 5 minutes."
+icon: "rocket"
+---
+
+## 1. Get Credentials
+
+<Steps>
+  <Step title="Sign up">
+    Create an account at [imaginex.bithuman.ai](https://imaginex.bithuman.ai)
+  </Step>
+  <Step title="Copy your API Secret">
+    Go to the Developer page and copy your **API Secret**.
+
+    <img src="/images/example-api-secret.jpg" alt="API Secret" style={{ borderRadius: '8px' }} />
+  </Step>
+  <Step title="Download an avatar model">
+    Download an avatar model (`.imx` file) from [Community Models](https://imaginex.bithuman.ai/#community).
+
+    <img src="/images/example-download-button.jpg" alt="Download Model" style={{ borderRadius: '8px' }} />
+  </Step>
+</Steps>
+
+## 2. Install
+
+```bash
+pip install bithuman --upgrade
+```
+
+## 3. Run Your First Avatar
+
+```python
+import asyncio
+from bithuman import AsyncBithuman
+from bithuman.audio import load_audio, float32_to_int16
+
+async def main():
+    # Initialize
+    runtime = await AsyncBithuman.create(
+        model_path="avatar.imx",
+        api_secret="sk_bh_..."
+    )
+    await runtime.start()
+
+    # Load and push audio
+    audio, sr = load_audio("speech.wav")
+    await runtime.push_audio(
+        float32_to_int16(audio).tobytes(), sr
+    )
+    await runtime.flush()
+
+    # Display animated frames
+    async for frame in runtime.run():
+        if frame.has_image:
+            show(frame.bgr_image)  # numpy (H, W, 3)
+
+asyncio.run(main())
+```
+
+[Full working example on GitHub](https://github.com/bithuman-product/examples/tree/main/public-sdk-examples/01-quickstart)
+
+---
+
+## Key Concepts
+
+| Concept | Description |
+|---------|-------------|
+| **Runtime** | `AsyncBithuman` instance that processes audio into video |
+| **push_audio** | Feed audio bytes — avatar lip-syncs in real-time |
+| **flush** | Signals end of audio input |
+| **run()** | Async generator that yields frames at 25 FPS |
+| **Frame** | Contains `.bgr_image` (numpy), `.audio_chunk`, `.end_of_speech` |
+
+---
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Audio Clip" icon="play" href="/examples/audio-clip">
+    Play audio file through avatar (5 min)
+  </Card>
+  <Card title="Live Microphone" icon="microphone" href="/examples/microphone">
+    Real-time mic input (10 min)
+  </Card>
+  <Card title="AI Conversation" icon="comments" href="/examples/ai-conversation">
+    OpenAI voice chat (15 min)
+  </Card>
+</CardGroup>
+
+Or jump straight to the [Docker App](https://github.com/bithuman-product/examples/tree/main/public-docker-example) for a complete end-to-end setup.
+
+### Guides
+
+- **[Prompt Guide](/getting-started/prompts)** — Master the CO-STAR framework for avatar personality
+- **[Media Guide](/getting-started/media-guide)** — Upload voice, image, and video assets
+- **[Animal Mode](/getting-started/animal-mode)** — Create animal avatars
+
+### System Requirements
+
+- Python 3.9+, 4+ CPU cores, 8GB RAM
+- macOS (M2+), Linux (x64/ARM64), or Windows (WSL)

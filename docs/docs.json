@@ -1,0 +1,115 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "bitHuman",
+  "theme": "mint",
+  "logo": {
+    "light": "/images/bithuman-logo.png",
+    "dark": "/images/bithuman-logo.png"
+  },
+  "favicon": "/images/bitHuman-logo-circle.png",
+  "colors": {
+    "primary": "#ea5455",
+    "light": "#ff7b7c",
+    "dark": "#ea5455"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Console",
+        "href": "https://imaginex.bithuman.ai"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Get Started",
+      "href": "https://imaginex.bithuman.ai"
+    }
+  },
+  "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/bithuman-product/examples",
+          "icon": "github"
+        },
+        {
+          "anchor": "Discord",
+          "href": "https://discord.gg/ES953n7bPA",
+          "icon": "discord"
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "getting-started/quickstart",
+              "getting-started/prompts",
+              "getting-started/media-guide",
+              "getting-started/animal-mode"
+            ]
+          },
+          {
+            "group": "Deployment",
+            "pages": [
+              "deployment/livekit-cloud-plugin",
+              "deployment/self-hosted-gpu"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/webhooks",
+              "integrations/events",
+              "integrations/flutter"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "API Reference",
+            "pages": [
+              "api-reference/overview",
+              "api-reference/agent-generation",
+              "api-reference/agent-management",
+              "api-reference/agent-context",
+              "api-reference/file-upload",
+              "api-reference/dynamics"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Examples",
+        "groups": [
+          {
+            "group": "Examples",
+            "pages": [
+              "examples/overview",
+              "examples/audio-clip",
+              "examples/microphone",
+              "examples/ai-conversation",
+              "examples/apple-local",
+              "examples/raspberry-pi",
+              "examples/self-hosted-plugin"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/bithuman-product/examples",
+      "discord": "https://discord.gg/ES953n7bPA"
+    }
+  }
+}

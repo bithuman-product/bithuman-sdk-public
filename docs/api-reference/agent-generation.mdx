@@ -1,0 +1,160 @@
+---
+title: "Agent Generation"
+description: "Programmatically create interactive avatar agents."
+icon: "wand-magic-sparkles"
+---
+
+## Generate Agent
+
+```
+POST /v1/agent/generate
+```
+
+Creates a new avatar agent. Generation is asynchronous — poll the status endpoint for completion.
+
+**Headers**
+
+| Header | Value |
+|--------|-------|
+| `Content-Type` | `application/json` |
+| `api-secret` | Your API secret |
+
+**Request Body**
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `prompt` | string | No | Random | System prompt for the agent |
+| `image` | string | No | — | Image URL or base64 data for the agent's appearance |
+| `video` | string | No | — | Video URL or base64 data |
+| `audio` | string | No | — | Audio URL or base64 data for the agent's voice |
+| `aspect_ratio` | string | No | `16:9` | Aspect ratio for image generation (`16:9`, `9:16`, `1:1`) |
+| `video_aspect_ratio` | string | No | `16:9` | Aspect ratio for video generation (`16:9`, `9:16`, `1:1`) |
+| `agent_id` | string | No | Auto-generated | Custom agent identifier |
+| `duration` | number | No | `10` | Video duration in seconds |
+
+**Response**
+
+```json
+{
+  "success": true,
+  "message": "Agent generation started",
+  "agent_id": "A91XMB7113",
+  "status": "processing"
+}
+```
+
+**Example**
+
+```python
+import requests
+
+response = requests.post(
+    "https://api.bithuman.ai/v1/agent/generate",
+    headers={
+        "Content-Type": "application/json",
+        "api-secret": "YOUR_API_SECRET"
+    },
+    json={
+        "prompt": "You are a professional video content creator.",
+        "image": "https://example.com/avatar.jpg"
+    }
+)
+print(response.json())
+```
+
+---
+
+## Get Agent Status
+
+```
+GET /v1/agent/status/{agent_id}
+```
+
+Returns the current status of an agent generation request.
+
+**Status Values**
+
+| Status | Description |
+|--------|-------------|
+| `processing` | Agent is being generated |
+| `ready` | Generation completed successfully |
+| `failed` | Generation failed |
+
+**Response**
+
+```json
+{
+  "success": true,
+  "data": {
+    "agent_id": "A91XMB7113",
+    "event_type": "lip_created",
+    "status": "ready",
+    "error_message": null,
+    "created_at": "2025-08-01T13:58:51.907177+00:00",
+    "updated_at": "2025-08-01T09:59:15.159901+00:00",
+    "system_prompt": "You are a professional video content creator.",
+    "image_url": "https://...",
+    "video_url": "https://...",
+    "name": "agent name",
+    "model_url": "https://..."
+  }
+}
+```
+
+**Example**
+
+```python
+import requests
+
+response = requests.get(
+    "https://api.bithuman.ai/v1/agent/status/A91XMB7113",
+    headers={"api-secret": "YOUR_API_SECRET"}
+)
+print(response.json())
+```
+
+---
+
+## Complete Example: Generate and Poll
+
+```python
+import requests
+import time
+
+API_SECRET = "YOUR_API_SECRET"
+BASE = "https://api.bithuman.ai"
+headers = {"Content-Type": "application/json", "api-secret": API_SECRET}
+
+# Generate agent
+resp = requests.post(f"{BASE}/v1/agent/generate", headers=headers, json={
+    "prompt": "You are a friendly AI assistant."
+})
+agent_id = resp.json()["agent_id"]
+print(f"Agent created: {agent_id}")
+
+# Poll until ready
+while True:
+    status = requests.get(
+        f"{BASE}/v1/agent/status/{agent_id}",
+        headers={"api-secret": API_SECRET}
+    ).json()
+
+    if status["data"]["status"] == "ready":
+        print(f"Agent ready: {status['data']['model_url']}")
+        break
+    elif status["data"]["status"] == "failed":
+        print(f"Generation failed: {status['data']['error_message']}")
+        break
+
+    time.sleep(5)
+```
+
+## Error Codes
+
+| HTTP Status | Meaning |
+|-------------|---------|
+| `200` | Success |
+| `400` | Invalid request parameters |
+| `401` | Invalid or missing `api-secret` |
+| `429` | Rate limit exceeded |
+| `500` | Internal server error |

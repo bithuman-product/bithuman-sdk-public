@@ -1,0 +1,174 @@
+---
+title: "Self-Hosted GPU Container"
+description: "Deploy GPU avatar workers on your infrastructure with full control over scaling, costs, and data privacy."
+icon: "gpu-card"
+---
+
+<Info>
+**Preview Feature** — 2 credits per minute while using the GPU container.
+</Info>
+
+## Overview
+
+The self-hosted GPU avatar container (`docker.io/bithumanhubs/expression-avatar:latest`) enables production-grade avatar generation on your own GPU infrastructure.
+
+- **Full Control** — Complete control over deployment, scaling, and configuration
+- **Cost Optimization** — Pay only for the GPU resources you use
+- **Data Privacy** — Avatar images and audio never leave your infrastructure
+- **Customization** — Extend the worker with custom logic and integrations
+
+---
+
+## Quick Start
+
+```bash
+# Pull the latest image
+docker pull docker.io/bithumanhubs/expression-avatar:latest
+
+# Run with GPU support
+docker run --gpus all -p 8089:8089 \
+    -v /path/to/model-storage:/persistent-storage/avatar-model \
+    -e AVATAR_MODEL_DIR=/persistent-storage/avatar-model \
+    docker.io/bithumanhubs/expression-avatar:latest
+```
+
+```bash
+# Health check
+curl http://localhost:8089/health
+# Returns: {"status": "ok", "active_workers": 0}
+```
+
+---
+
+## Storage Architecture
+
+### AVATAR_MODEL_DIR (Required)
+
+Stores the avatar generation models required for all avatar processing.
+
+- **Mandatory** for all avatar generation
+- **Automatic download** on first container startup
+- **Persistent storage recommended** to avoid re-downloading
+- **100% local processing** — no cloud API calls after models are loaded
+- **Size**: ~2-3 GB
+
+### PRESET_AVATARS_DIR (Optional but Recommended)
+
+Stores pre-encoded avatar reference images for faster startup.
+
+```
+/persistent-storage/preset-avatars/
+├── avatar_001/
+│   └── face.jpg          # avatar_001 is the avatar_id
+├── avatar_002/
+│   └── portrait.png      # avatar_002 is the avatar_id
+└── avatar_003/
+    └── avatar.webp       # avatar_003 is the avatar_id
+```
+
+- Each subdirectory name becomes the `avatar_id`
+- Each contains one image file (`.jpg`, `.jpeg`, `.png`, or `.webp`)
+- Pre-encoded at startup for faster first frame (~4s vs ~6s)
+
+### How They Work Together
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Avatar Generation Flow                    │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  1. Container Startup                                       │
+│     ├─ Load models from AVATAR_MODEL_DIR (~30s, one-time)  │
+│     └─ If PRESET_AVATARS_DIR: Pre-encode images            │
+│                                                             │
+│  2. Avatar Request (Preset Avatar)                          │
+│     └─ avatar_id="avatar_001"                               │
+│        ├─ Load pre-encoded features from memory (~4s)       │
+│        └─ Generate frames using local models                │
+│           → NO cloud calls                                  │
+│                                                             │
+│  3. Avatar Request (Custom Image)                           │
+│     └─ avatar_image=<custom image>                          │
+│        ├─ Encode image using local models (~2s)             │
+│        └─ Generate frames using local models                │
+│           → NO cloud calls                                  │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Storage Recommendations
+
+| Component | Size | Mount Type | Required |
+|-----------|------|------------|----------|
+| **AVATAR_MODEL_DIR** | ~2-3 GB | Persistent volume | Yes |
+| **PRESET_AVATARS_DIR** | Varies | Persistent volume | Recommended |
+
+---
+
+## Performance Characteristics
+
+| Configuration | Time to First Frame | Description |
+|---------------|---------------------|-------------|
+| Long-running + Preset | ~4 seconds | Avatar images pre-processed, minimal GPU init |
+| Long-running + No Cache | ~6 seconds | Avatar processing on first request |
+| Cold Start | ~30-40 seconds | Full avatar engine initialization |
+
+### Long-Running Containers (Recommended)
+
+Containers stay running and handle multiple requests.
+
+- Avatar engine initialized at startup (~30s one-time)
+- With presets: first frame in ~4s
+- Without presets: first frame in ~6s
+- Subsequent frames at ~25 FPS
+
+### Cold Start Containers
+
+Each request gets a fresh container.
+
+- ~30s initialization time per container
+- Higher latency per request, lower idle costs
+- No persistent state between requests
+
+---
+
+## Mounting Preset Avatars
+
+```bash
+docker run --gpus all -p 8089:8089 \
+    -v /path/to/model-storage:/persistent-storage/avatar-model \
+    -v /path/to/preset-avatars:/persistent-storage/preset-avatars \
+    -e AVATAR_MODEL_DIR=/persistent-storage/avatar-model \
+    -e PRESET_AVATARS_DIR=/persistent-storage/preset-avatars \
+    docker.io/bithumanhubs/expression-avatar:latest
+```
+
+**Image requirements:**
+- High-quality portrait images (512x512 recommended)
+- Front-facing photos with visible faces
+- Good lighting and neutral expression
+- File size under 10MB
+
+---
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| Container won't start | Check GPU: `nvidia-smi`, verify storage mounts, check logs: `docker logs <id>` |
+| High first frame latency | Configure PRESET_AVATARS_DIR, use long-running containers |
+| Out of memory | Increase memory limit, reduce audio buffer, use larger GPU |
+| Slow encoding | Pre-process avatars into PRESET_AVATARS_DIR, optimize image size |
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Docker Example" icon="docker" href="https://github.com/bithuman-product/examples/tree/main/public-docker-example">
+    Full GPU integration setup
+  </Card>
+  <Card title="LiveKit Agents" icon="book" href="https://docs.livekit.io/agents">
+    LiveKit Agents documentation
+  </Card>
+</CardGroup>

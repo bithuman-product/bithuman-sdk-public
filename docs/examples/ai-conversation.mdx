@@ -1,0 +1,123 @@
+---
+title: "AI Conversation"
+description: "Full AI conversation with avatar in browser."
+icon: "comments"
+---
+
+Complete chatbot with avatar that users can talk to on the web.
+
+## Quick Start
+
+<Steps>
+  <Step title="Install">
+    ```bash
+    pip install bithuman --upgrade livekit-agents openai
+    ```
+  </Step>
+  <Step title="Get accounts">
+    - **bitHuman**: [imaginex.bithuman.ai](https://imaginex.bithuman.ai)
+    - **OpenAI**: [openai.com](https://openai.com)
+    - **LiveKit**: [livekit.io](https://livekit.io) (free)
+  </Step>
+  <Step title="Set environment">
+    ```bash
+    export BITHUMAN_API_SECRET="your_secret"
+    export BITHUMAN_MODEL_PATH="/path/to/model.imx"
+    export OPENAI_API_KEY="your_openai_key"
+    export LIVEKIT_API_KEY="your_livekit_key"
+    export LIVEKIT_API_SECRET="your_livekit_secret"
+    export LIVEKIT_URL="wss://your-project.livekit.cloud"
+    ```
+  </Step>
+  <Step title="Setup web interface">
+    ```bash
+    git clone https://github.com/livekit/agents-playground.git
+    cd agents-playground
+    npm install && npm run dev
+    ```
+  </Step>
+  <Step title="Run agent">
+    [View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/agent-livekit-openai.py)
+
+    <CodeGroup>
+
+    ```bash Web streaming (recommended)
+    python examples/agent-livekit-openai.py dev
+    ```
+
+    ```bash Command line testing
+    python examples/agent-livekit-openai.py console
+    ```
+
+    </CodeGroup>
+  </Step>
+  <Step title="Open browser">
+    Go to `http://localhost:3000` and join a room to chat.
+  </Step>
+</Steps>
+
+---
+
+## What It Does
+
+1. User speaks in browser
+2. AI processes speech and responds intelligently
+3. Avatar shows AI's response with dynamic movement
+4. Works from any device with internet
+
+**Built with:**
+- **OpenAI GPT-4** for intelligent conversation
+- **LiveKit** for web streaming
+- **bitHuman** for avatar animation
+
+---
+
+## Run Modes
+
+| Mode | Use Case | Description |
+|------|----------|-------------|
+| `dev` | Production | Connects to LiveKit for web browsers |
+| `console` | Testing | Runs in terminal for debugging |
+
+---
+
+## Customization
+
+Change the agent's personality by editing the `instructions`:
+
+```python
+agent=Agent(
+    instructions=(
+        "You are a helpful customer service assistant. "
+        "Be friendly, professional, and solve problems quickly."
+    )
+)
+```
+
+**Example personalities:**
+- **Tech Support**: "You are a patient tech expert who explains things simply"
+- **Sales Assistant**: "You are an enthusiastic product advisor"
+- **Teacher**: "You are an encouraging tutor who makes learning fun"
+
+---
+
+## Common Issues
+
+| Problem | Solution |
+|---------|----------|
+| Agent won't start | Check all API keys are set |
+| No audio in browser | Allow microphone permissions, try Chrome |
+| Can't connect | Check LiveKit URL format: `wss://your-project.livekit.cloud` |
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Apple Local Agent" icon="apple" href="/examples/apple-local">
+    Full privacy — speech never leaves your Mac
+  </Card>
+  <Card title="Raspberry Pi" icon="microchip" href="/examples/raspberry-pi">
+    Edge deployment on IoT devices
+  </Card>
+</CardGroup>

@@ -1,0 +1,166 @@
+---
+title: "Raspberry Pi"
+description: "Run avatar on Raspberry Pi for IoT, kiosks, and edge devices."
+icon: "microchip"
+---
+
+<img src="/images/example-raspberry-pi-device.jpg" alt="Raspberry Pi Device" style={{ borderRadius: '8px' }} />
+
+## Quick Start
+
+<Steps>
+  <Step title="Hardware needed">
+    - Raspberry Pi 4B (8GB RAM recommended)
+    - microSD card (32GB+, Class 10)
+    - USB microphone
+    - Stable internet connection
+    - **Separate computer** for web interface (recommended)
+  </Step>
+  <Step title="Install OS">
+    Use **Raspberry Pi OS (64-bit)** with Raspberry Pi Imager.
+  </Step>
+  <Step title="Setup Pi">
+    ```bash
+    sudo apt update && sudo apt upgrade -y
+    sudo apt install python3.11 python3.11-venv -y
+    python3.11 -m venv bithuman-env
+    source bithuman-env/bin/activate
+    ```
+  </Step>
+  <Step title="Install dependencies">
+    ```bash
+    pip install bithuman --upgrade livekit-agents openai
+    sudo apt install portaudio19-dev -y
+    ```
+  </Step>
+  <Step title="Set environment">
+    ```bash
+    export BITHUMAN_API_SECRET="your_secret"
+    export BITHUMAN_MODEL_PATH="/home/pi/model.imx"
+    export LIVEKIT_API_KEY="your_livekit_key"
+    export LIVEKIT_API_SECRET="your_livekit_secret"
+    export LIVEKIT_URL="wss://your-project.livekit.cloud"
+    export OPENAI_API_KEY="your_openai_key"
+    export LOADING_MODE="SYNC"  # Important for Pi performance
+    ```
+  </Step>
+  <Step title="Run agent">
+    [View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/agent-livekit-rasp-pi.py)
+
+    <CodeGroup>
+
+    ```bash Web streaming (recommended)
+    python examples/agent-livekit-rasp-pi.py dev
+    ```
+
+    ```bash Command line testing
+    python examples/agent-livekit-rasp-pi.py console
+    ```
+
+    </CodeGroup>
+  </Step>
+</Steps>
+
+<Warning>
+For best results, run the web interface on a **separate computer**. Running both agent and web UI on the same Pi causes significant slowdown.
+</Warning>
+
+---
+
+## What It Does
+
+1. Runs avatar agent optimized for Raspberry Pi
+2. Uses `SYNC` loading mode for memory efficiency
+3. Connects to web browsers via LiveKit
+4. Suited for always-on edge applications
+
+<img src="/images/example-raspberry-pi-ui.jpg" alt="Raspberry Pi UI" style={{ borderRadius: '8px' }} />
+
+**Pi-specific optimizations:**
+- Synchronous model loading (`LOADING_MODE="SYNC"`)
+- Lower memory limits (1500MB warning threshold)
+- Single process mode for stability
+- Extended initialization timeout (120s)
+
+---
+
+## Auto-start Service
+
+Make it run automatically on boot:
+
+```ini /etc/systemd/system/bithuman-agent.service
+[Unit]
+Description=bitHuman Avatar Agent
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi
+Environment=LOADING_MODE=SYNC
+Environment=BITHUMAN_API_SECRET=your_secret
+Environment=BITHUMAN_MODEL_PATH=/home/pi/model.imx
+ExecStart=/home/pi/bithuman-env/bin/python examples/agent-livekit-rasp-pi.py dev
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl enable bithuman-agent
+sudo systemctl start bithuman-agent
+sudo systemctl status bithuman-agent
+```
+
+---
+
+## Performance Tips
+
+```bash
+# Enable performance governor
+echo 'performance' | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+
+# Disable unnecessary services
+sudo systemctl disable bluetooth
+sudo systemctl disable wifi  # if using ethernet
+```
+
+- Use swap file for extra memory
+- Store models on USB SSD if possible
+- Monitor with `htop` or `free -h`
+
+---
+
+## Common Issues
+
+| Problem | Solution |
+|---------|----------|
+| Out of memory | Use Pi 4B 8GB, enable swap: `sudo dphys-swapfile swapon` |
+| Slow performance | Use ethernet, check CPU temp: `vcgencmd measure_temp` |
+| Audio problems | Check USB mic: `arecord -l`, test: `arecord -d 5 test.wav` |
+| Model loading timeout | Ensure `LOADING_MODE="SYNC"`, use faster storage |
+
+---
+
+## Hardware Add-ons
+
+```python
+import board
+import adafruit_dht
+
+# Add environmental awareness
+dht = adafruit_dht.DHT22(board.D4)
+temperature = dht.temperature
+humidity = dht.humidity
+```
+
+---
+
+## Next Steps
+
+- **Add sensors** — Integrate environmental awareness
+- **Add camera** — Use Pi camera for visual context
+- **Scale up** — Deploy multiple Pi devices
+- **Go local** — Replace OpenAI with local LLM

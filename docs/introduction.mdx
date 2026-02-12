@@ -1,0 +1,81 @@
+---
+title: "bitHuman SDK"
+description: "Create lifelike digital avatars that respond to audio in real-time."
+---
+
+<img src="/images/bithuman-banner.jpg" alt="bitHuman Avatars" style={{ borderRadius: '12px', width: '100%' }} />
+
+## Quick Start
+
+<CodeGroup>
+
+```bash Docker (Recommended)
+git clone https://github.com/bithuman-product/examples.git
+cd examples/public-docker-example
+
+# Add your API keys to .env
+echo "BITHUMAN_API_SECRET=your_secret" > .env
+echo "OPENAI_API_KEY=your_openai_key" >> .env
+
+# Add your .imx model to models/
+mkdir -p models && cp ~/Downloads/avatar.imx models/
+
+docker compose up
+# Open http://localhost:4202
+```
+
+```python Python SDK
+from bithuman import AsyncBithuman
+
+# Create runtime
+runtime = await AsyncBithuman.create(
+    model_path="avatar.imx",
+    api_secret="sk_bh_..."
+)
+await runtime.start()
+
+# Push audio and get animated frames
+await runtime.push_audio(audio_bytes, sample_rate=16000)
+await runtime.flush()
+
+async for frame in runtime.run():
+    frame.bgr_image       # numpy array (H, W, 3)
+    frame.audio_chunk     # synchronized audio output
+    frame.end_of_speech   # True when utterance ends
+```
+
+</CodeGroup>
+
+## Developer Guides
+
+<CardGroup cols={3}>
+  <Card title="Quick Start" icon="rocket" href="/getting-started/quickstart">
+    Get an avatar running in 5 minutes
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/overview">
+    REST API for agent generation and management
+  </Card>
+  <Card title="Examples" icon="book-open" href="/examples/overview">
+    8 working examples from basic to advanced
+  </Card>
+</CardGroup>
+
+## Core API
+
+| Method | Description |
+|--------|-------------|
+| `AsyncBithuman.create(model_path, api_secret)` | Initialize the avatar runtime |
+| `runtime.start()` | Begin processing |
+| `runtime.push_audio(data, sample_rate)` | Send audio for lip-sync |
+| `runtime.flush()` | Signal end of audio input |
+| `runtime.run()` | Async generator yielding video + audio frames |
+| `runtime.get_frame_size()` | Returns `(width, height)` of output |
+
+## Platform Support
+
+| Platform | Status | Notes |
+|----------|--------|-------|
+| **Linux (x86_64)** | Full Support | Production ready |
+| **Linux (ARM64)** | Full Support | Edge deployments |
+| **macOS (Apple Silicon)** | Full Support | M2+, M4 ideal |
+| **Windows** | Full Support | Via WSL |

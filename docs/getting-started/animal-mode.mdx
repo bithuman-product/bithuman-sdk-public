@@ -1,0 +1,147 @@
+---
+title: "Animal Mode"
+description: "Create animal avatars with automatic face detection."
+icon: "paw"
+---
+
+Transform animals into interactive avatars using animal mode.
+
+---
+
+## Available Animal Characters
+
+Use prompts to generate or upload your own pet photos:
+
+<CardGroup cols={3}>
+  <Card>
+    <img src="/images/animals/capybara.jpg" alt="Capybara" style={{ borderRadius: '8px', width: '100%', aspectRatio: '1', objectFit: 'cover' }} />
+    **Capybara**
+  </Card>
+  <Card>
+    <img src="/images/animals/cat-hat.jpg" alt="Cat in a Hat" style={{ borderRadius: '8px', width: '100%', aspectRatio: '1', objectFit: 'cover' }} />
+    **Cat in Hat**
+  </Card>
+  <Card>
+    <img src="/images/animals/rainbow-creature.jpg" alt="Rainbow Creature" style={{ borderRadius: '8px', width: '100%', aspectRatio: '1', objectFit: 'cover' }} />
+    **Rainbow Creature**
+  </Card>
+  <Card>
+    <img src="/images/animals/koala.jpg" alt="Koala" style={{ borderRadius: '8px', width: '100%', aspectRatio: '1', objectFit: 'cover' }} />
+    **Koala**
+  </Card>
+  <Card>
+    <img src="/images/animals/turtle.jpg" alt="Pixar Turtle" style={{ borderRadius: '8px', width: '100%', aspectRatio: '1', objectFit: 'cover' }} />
+    **Pixar Turtle**
+  </Card>
+  <Card>
+    <img src="/images/animals/bunny-glasses.jpg" alt="Bunny with Glasses" style={{ borderRadius: '8px', width: '100%', aspectRatio: '1', objectFit: 'cover' }} />
+    **Bunny with Glasses**
+  </Card>
+  <Card>
+    <img src="/images/animals/bunny-white.jpg" alt="White Bunny" style={{ borderRadius: '8px', width: '100%', aspectRatio: '1', objectFit: 'cover' }} />
+    **White Bunny**
+  </Card>
+  <Card>
+    <img src="/images/animals/sheepdog.jpg" alt="Sheepdog" style={{ borderRadius: '8px', width: '100%', aspectRatio: '1', objectFit: 'cover' }} />
+    **English Sheepdog**
+  </Card>
+  <Card>
+    <img src="/images/animals/teddy-bear.jpg" alt="Teddy Bear" style={{ borderRadius: '8px', width: '100%', aspectRatio: '1', objectFit: 'cover' }} />
+    **Teddy Bear**
+  </Card>
+  <Card>
+    <img src="/images/animals/d12.jpg" alt="Character D12" style={{ borderRadius: '8px', width: '100%', aspectRatio: '1', objectFit: 'cover' }} />
+    **Character D12**
+  </Card>
+  <Card>
+    <img src="/images/animals/d7.jpg" alt="Character D7" style={{ borderRadius: '8px', width: '100%', aspectRatio: '1', objectFit: 'cover' }} />
+    **Character D7**
+  </Card>
+  <Card>
+    <img src="/images/animals/fluffy-creature.jpg" alt="Fluffy Rainbow Creature" style={{ borderRadius: '8px', width: '100%', aspectRatio: '1', objectFit: 'cover' }} />
+    **Fluffy Creature**
+  </Card>
+</CardGroup>
+
+---
+
+## Automatic Face Detection
+
+The AI system automatically locates the character's face and body in animal images, enabling natural movement and expression mapping.
+
+**What works automatically:**
+- Eye tracking for natural gaze
+- Mouth detection for speech sync
+- Expression mapping for emotions
+- Facial landmarks for precise animation
+
+---
+
+## Manual Face Marking
+
+When the AI cannot locate facial features automatically, you'll be prompted to manually mark key points.
+
+<img src="/images/example-help-needed.jpg" alt="Help Needed" style={{ borderRadius: '8px' }} />
+
+### Marking Process
+
+<Steps>
+  <Step title="Click Mark Face">
+    When the "Help Needed" prompt appears, click the **Mark Face** button.
+  </Step>
+  <Step title="Draw a rectangle">
+    Draw a rectangle around the entire facial area — eyes, nose, mouth, and chin.
+
+    <img src="/images/example-mark-face-points.jpg" alt="Mark Face Points" style={{ borderRadius: '8px' }} />
+  </Step>
+  <Step title="Submit">
+    The system will extract facial landmarks from your selection.
+  </Step>
+</Steps>
+
+<Tip>
+The rectangle should cover all key features: both eyes, nose, mouth, and chin. No need to select individual points — just one bounding rectangle.
+</Tip>
+
+---
+
+## Best Practices
+
+**For optimal results:**
+- **Clear facial features** — ensure eyes, nose, mouth are visible
+- **Front-facing pose** — straight-on view works best
+- **Good contrast** — features should stand out from background
+- **High resolution** — more detail means better detection
+
+**Troubleshooting:**
+
+| Problem | Solution |
+|---------|----------|
+| Face not detected | Use a front-facing photo with clear eyes, nose, and mouth visible |
+| Poor lip-sync | Try a higher-resolution image with more contrast around the mouth |
+| Unnatural movement | Avoid side profiles — straight-on views work best |
+
+**Tips:**
+- Start with the pre-built animals above for guaranteed compatibility
+- Use well-lit, high-contrast images
+- For custom pets, crop the image so the face fills most of the frame
+- Test with simple expressions first
+
+---
+
+## Getting Started
+
+<Steps>
+  <Step title="Choose an animal">
+    Pick an animal character from the grid above
+  </Step>
+  <Step title="Let AI detect">
+    The system automatically attempts face detection
+  </Step>
+  <Step title="Help mark if needed">
+    Manually mark facial points if prompted
+  </Step>
+  <Step title="Generate">
+    Your interactive animal avatar is ready
+  </Step>
+</Steps>

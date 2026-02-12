@@ -1,0 +1,139 @@
+---
+title: "Apple Local Agent"
+description: "Private AI using Mac's built-in speech — voice never leaves your device."
+icon: "apple"
+---
+
+Full privacy — speech never leaves your Mac.
+
+## Quick Start
+
+<Steps>
+  <Step title="Requirements">
+    - macOS 13+ (Apple Silicon recommended)
+    - Microphone permissions
+  </Step>
+  <Step title="Install voice service">
+    ```bash
+    pip install https://github.com/bithuman-product/examples/releases/download/v0.1/bithuman_voice-1.3.2-py3-none-any.whl
+    ```
+  </Step>
+  <Step title="Start voice service">
+    ```bash
+    bithuman-voice serve --port 8091
+    ```
+    <Note>macOS will ask for Speech permissions — approve this.</Note>
+  </Step>
+  <Step title="Install dependencies">
+    ```bash
+    pip install bithuman --upgrade livekit-agents openai silero
+    ```
+  </Step>
+  <Step title="Set environment">
+    ```bash
+    export BITHUMAN_API_SECRET="your_secret"
+    export BITHUMAN_MODEL_PATH="/path/to/model.imx"
+    export LIVEKIT_API_KEY="your_livekit_key"
+    export LIVEKIT_API_SECRET="your_livekit_secret"
+    export LIVEKIT_URL="wss://your-project.livekit.cloud"
+    export OPENAI_API_KEY="your_openai_key"  # Only for AI brain
+    ```
+  </Step>
+  <Step title="Run agent">
+    [View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/agent-livekit-apple-local.py)
+
+    <CodeGroup>
+
+    ```bash Web streaming
+    python examples/agent-livekit-apple-local.py dev
+    ```
+
+    ```bash Command line testing
+    python examples/agent-livekit-apple-local.py console
+    ```
+
+    </CodeGroup>
+  </Step>
+</Steps>
+
+---
+
+## What It Does
+
+**Stays on your Mac:**
+- Speech-to-text (Apple Speech Framework)
+- Text-to-speech (Apple Voice Synthesis)
+- Avatar animation (bitHuman)
+- Voice activity detection (Silero)
+
+**Uses internet:**
+- Only AI conversation (OpenAI LLM)
+
+**Privacy benefits:**
+- Voice patterns never leave your device
+- Apple's hardware-accelerated speech processing
+- Full control over your data
+
+---
+
+## Make it 100% Private
+
+For 100% local operation with no internet required, use the complete Docker setup:
+
+[Complete macOS Offline Example](https://github.com/bithuman-product/examples/tree/main/public-macos-offline-example)
+
+**What you get:**
+- **Apple Speech Recognition** — Local STT
+- **Apple Voices/Siri** — Local TTS
+- **Ollama LLM** — Local language models (Llama 3.2)
+- **bitHuman Avatar** — Real-time facial animation
+- **LiveKit + Web UI** — Complete conversation interface
+- **Zero Internet Dependency**
+
+```bash
+git clone https://github.com/bithuman-product/examples.git
+cd public-macos-offline-example
+
+pip install https://github.com/bithuman-product/examples/releases/download/v0.1/bithuman_voice-1.3.2-py3-none-any.whl
+bithuman-voice serve --port 8000
+
+ollama run llama3.2:1b
+docker compose up
+# Access at http://localhost:4202
+```
+
+<Tip>
+**Enterprise Offline Mode:** Contact bitHuman for offline tokens to eliminate all internet requirements for authentication and metering.
+</Tip>
+
+---
+
+## Common Issues
+
+| Problem | Solution |
+|---------|----------|
+| Voice service won't start | Check microphone permissions, enable "Speech Recognition" in Privacy & Security |
+| No speech recognition | Restart `bithuman-voice` service, test with built-in dictation |
+| Permission errors | Run voice service from Terminal (not IDE) |
+
+---
+
+## Performance
+
+**Recommended specs:**
+- M2+ Mac (M4 ideal)
+- 16GB+ RAM
+- macOS 13+
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Raspberry Pi" icon="microchip" href="/examples/raspberry-pi">
+    Edge deployment on IoT devices
+  </Card>
+  <Card title="AI Conversation" icon="comments" href="/examples/ai-conversation">
+    Simpler cloud-based setup
+  </Card>
+</CardGroup>

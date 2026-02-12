@@ -1,0 +1,214 @@
+---
+title: "Webhooks"
+description: "Receive HTTP POST callbacks when avatar events occur."
+icon: "webhook"
+---
+
+## Quick Setup
+
+<Steps>
+  <Step title="Open webhook settings">
+    Go to [imaginex.bithuman.ai/#developer](https://imaginex.bithuman.ai/#developer) and open the **Webhooks** section.
+  </Step>
+  <Step title="Enter endpoint URL">
+    Must be HTTPS.
+  </Step>
+  <Step title="Select events">
+    Choose **room.join**, **chat.push**, or both.
+  </Step>
+  <Step title="Add authentication (optional)">
+    ```http
+    Authorization: Bearer your-api-token
+    X-API-Key: your-secret-key
+    ```
+  </Step>
+</Steps>
+
+---
+
+## Payload Format
+
+All payloads follow the same structure:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `agent_id` | string | The agent that triggered the event |
+| `event_type` | string | Event name (`room.join` or `chat.push`) |
+| `data` | object | Event-specific data |
+| `timestamp` | float | Unix timestamp |
+
+### room.join
+
+```json
+{
+  "agent_id": "agent_abc123",
+  "event_type": "room.join",
+  "data": {
+    "room_name": "customer-support",
+    "participant_count": 1,
+    "session_id": "session_xyz789"
+  },
+  "timestamp": 1705312200.0
+}
+```
+
+### chat.push
+
+```json
+{
+  "agent_id": "agent_abc123",
+  "event_type": "chat.push",
+  "data": {
+    "role": "user",
+    "message": "Hello, I need help with my order",
+    "session_id": "session_xyz789",
+    "timestamp": 1705312285.0
+  },
+  "timestamp": 1705312285.0
+}
+```
+
+---
+
+## Implementation Examples
+
+<CodeGroup>
+
+```python Flask (Python)
+from flask import Flask, request, jsonify
+import hmac, hashlib
+
+app = Flask(__name__)
+WEBHOOK_SECRET = "your-webhook-secret"
+
+@app.route('/webhook', methods=['POST'])
+def handle_webhook():
+    signature = request.headers.get('X-bitHuman-Signature', '')
+    if not verify_signature(request.data, signature):
+        return jsonify({'error': 'Invalid signature'}), 401
+
+    data = request.json
+    event_type = data.get('event_type')
+
+    if event_type == 'room.join':
+        print(f"User joined session {data['data']['session_id']}")
+    elif event_type == 'chat.push':
+        print(f"[{data['data']['role']}] {data['data']['message']}")
+
+    return jsonify({'status': 'ok'})
+
+def verify_signature(payload, signature):
+    expected = hmac.new(
+        WEBHOOK_SECRET.encode(), payload, hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(f"sha256={expected}", signature)
+
+if __name__ == '__main__':
+    app.run(port=3000)
+```
+
+```javascript Express (Node.js)
+const express = require('express');
+const crypto = require('crypto');
+
+const app = express();
+app.use(express.json());
+const WEBHOOK_SECRET = 'your-webhook-secret';
+
+app.post('/webhook', (req, res) => {
+  const signature = req.headers['x-bithuman-signature'] || '';
+  if (!verifySignature(req.body, signature)) {
+    return res.status(401).json({ error: 'Invalid signature' });
+  }
+
+  const { event_type, data } = req.body;
+  if (event_type === 'room.join') {
+    console.log(`User joined session ${data.session_id}`);
+  } else if (event_type === 'chat.push') {
+    console.log(`[${data.role}] ${data.message}`);
+  }
+
+  res.json({ status: 'ok' });
+});
+
+function verifySignature(payload, signature) {
+  const expected = crypto
+    .createHmac('sha256', WEBHOOK_SECRET)
+    .update(JSON.stringify(payload))
+    .digest('hex');
+  return crypto.timingSafeEqual(
+    Buffer.from(`sha256=${expected}`),
+    Buffer.from(signature)
+  );
+}
+
+app.listen(3000, () => console.log('Listening on port 3000'));
+```
+
+</CodeGroup>
+
+---
+
+## Signature Verification
+
+All webhook requests include an `X-bitHuman-Signature` header. Verify it using HMAC SHA-256:
+
+1. Compute `HMAC-SHA256(secret, raw_request_body)`
+2. Compare the hex digest against the signature header (strip `sha256=` prefix)
+3. Use constant-time comparison to prevent timing attacks
+
+<Warning>
+Always use HTTPS. HTTP endpoints are rejected.
+</Warning>
+
+---
+
+## Testing
+
+### Local development with ngrok
+
+```bash
+ngrok http 3000
+# Use the resulting HTTPS URL as your webhook endpoint
+```
+
+### Manual curl test
+
+```bash
+curl -X POST https://your-app.com/webhook \
+  -H "Content-Type: application/json" \
+  -H "X-bitHuman-Signature: sha256=test" \
+  -d '{
+    "agent_id": "test_agent",
+    "event_type": "room.join",
+    "data": {
+      "room_name": "test-room",
+      "participant_count": 1,
+      "session_id": "session_123"
+    },
+    "timestamp": 1705312200.0
+  }'
+```
+
+---
+
+## Retry Policy
+
+Failed deliveries (non-2xx responses) are retried automatically:
+
+| Attempt | Delay |
+|---------|-------|
+| 1st retry | 1 second |
+| 2nd retry | 5 seconds |
+| 3rd retry | 30 seconds |
+
+Maximum 3 retries. Your endpoint must respond within 30 seconds.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Signature invalid | Verify HMAC SHA-256 against raw request body |
+| Timeout errors | Return 200 immediately, process async |
+| 404 Not Found | Check endpoint URL in dashboard |
+| SSL errors | Use a valid HTTPS certificate |

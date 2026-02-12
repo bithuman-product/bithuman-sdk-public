@@ -1,0 +1,176 @@
+---
+title: "File Upload"
+description: "Upload and process files organized by type in asset directories."
+icon: "upload"
+---
+
+Upload files to the system for processing. Supports both URL downloads and direct file uploads.
+
+## Upload File
+
+```
+POST /v1/files/upload
+```
+
+Files are automatically organized by type:
+
+| Category | Storage Path | Extensions |
+|----------|-------------|------------|
+| **Images** | `assets/image/` | `.jpg`, `.jpeg`, `.png`, `.gif`, `.webp`, `.bmp`, `.svg` |
+| **Videos** | `assets/video/` | `.mp4`, `.avi`, `.mov`, `.wmv`, `.flv`, `.webm`, `.mkv` |
+| **Audio** | `assets/audio/` | `.mp3`, `.wav`, `.flac`, `.aac`, `.ogg`, `.m4a` |
+| **Documents** | `assets/docs/` | `.pdf`, `.doc`, `.docx`, `.txt`, `.ppt`, `.pptx`, `.xls`, `.xlsx`, `.csv` |
+
+---
+
+### Method 1: URL Upload
+
+Download a file from a URL.
+
+```json
+{
+  "file_url": "https://example.com/document.pdf",
+  "file_type": "pdf"
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `file_url` | string | URL of the file to download |
+| `file_type` | string | Type of file (`pdf`, `image`, `audio`, `video`, `auto`) |
+
+```python
+import requests
+
+response = requests.post(
+    "https://api.bithuman.ai/v1/files/upload",
+    headers={
+        "Content-Type": "application/json",
+        "api-secret": "YOUR_API_SECRET"
+    },
+    json={
+        "file_url": "https://example.com/presentation.pdf",
+        "file_type": "pdf"
+    }
+)
+print(response.json())
+```
+
+### Method 2: Direct Upload
+
+Upload base64-encoded file data directly.
+
+```json
+{
+  "file_data": "JVBERi0xLjQKJcOkw7zDtsO...",
+  "file_name": "document.pdf",
+  "file_type": "pdf"
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `file_data` | string | Base64 encoded file data |
+| `file_name` | string | Original filename |
+| `file_type` | string | Type of file (`pdf`, `image`, `audio`, `video`, `auto`) |
+
+```python
+import requests
+import base64
+
+with open("document.pdf", "rb") as f:
+    file_data = base64.b64encode(f.read()).decode('utf-8')
+
+response = requests.post(
+    "https://api.bithuman.ai/v1/files/upload",
+    headers={
+        "Content-Type": "application/json",
+        "api-secret": "YOUR_API_SECRET"
+    },
+    json={
+        "file_data": file_data,
+        "file_name": "document.pdf",
+        "file_type": "pdf"
+    }
+)
+print(response.json())
+```
+
+---
+
+### Response (both methods)
+
+```json
+{
+  "success": true,
+  "message": "File uploaded successfully",
+  "data": {
+    "file_url": "https://storage.supabase.co/assets/docs/20250115_103000_abc12345.pdf",
+    "original_source": "https://example.com/document.pdf",
+    "file_type": "pdf",
+    "file_size": 1024000,
+    "mime_type": "application/pdf",
+    "asset_category": "docs",
+    "uploaded_at": "2025-01-15T10:30:00Z"
+  }
+}
+```
+
+---
+
+## Upload Methods Comparison
+
+| Method | Best For | Pros | Cons |
+|--------|----------|------|------|
+| **URL Upload** | External files, cloud storage | No file size limits, efficient | Requires accessible URL |
+| **Direct Upload** | Local files, form uploads | Works with any file source | Limited by request size |
+
+## Complete Examples
+
+### Batch Upload
+
+```python
+import requests
+import base64
+from pathlib import Path
+
+def batch_upload_files(directory_path):
+    results = []
+    for file_path in Path(directory_path).iterdir():
+        if file_path.is_file():
+            with open(file_path, "rb") as f:
+                file_data = base64.b64encode(f.read()).decode('utf-8')
+
+            response = requests.post(
+                "https://api.bithuman.ai/v1/files/upload",
+                headers={
+                    "Content-Type": "application/json",
+                    "api-secret": "YOUR_API_SECRET"
+                },
+                json={
+                    "file_data": file_data,
+                    "file_name": file_path.name,
+                    "file_type": "auto"
+                }
+            )
+            results.append({
+                "filename": file_path.name,
+                "status": "success" if response.status_code == 200 else "error"
+            })
+    return results
+
+results = batch_upload_files("./documents")
+for r in results:
+    print(f"{r['filename']}: {r['status']}")
+```
+
+## Error Codes
+
+| HTTP Status | Meaning |
+|-------------|---------|
+| `200` | Success |
+| `400` | Bad request (invalid parameters) |
+| `401` | Unauthorized (invalid API secret) |
+| `413` | File too large |
+| `415` | Unsupported file type |
+| `500` | Internal server error |

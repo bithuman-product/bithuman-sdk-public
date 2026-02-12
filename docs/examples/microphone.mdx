@@ -1,0 +1,121 @@
+---
+title: "Live Microphone"
+description: "Real-time avatar from your microphone."
+icon: "microphone"
+---
+
+Speak and see your avatar respond instantly.
+
+## Quick Start
+
+<Steps>
+  <Step title="Install">
+    ```bash
+    pip install bithuman --upgrade livekit-rtc livekit-agents
+    ```
+  </Step>
+  <Step title="Set environment">
+    ```bash
+    export BITHUMAN_API_SECRET="your_secret"
+    export BITHUMAN_MODEL_PATH="/path/to/model.imx"
+    ```
+  </Step>
+  <Step title="Run">
+    ```bash
+    python examples/avatar-with-microphone.py
+    ```
+    [View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/avatar-with-microphone.py)
+  </Step>
+  <Step title="Usage">
+    - **Speak into microphone** — Avatar animates in real-time
+    - **Stay quiet** — Avatar stops after silence timeout (3 seconds)
+    - **Press `q`** — Quit application
+  </Step>
+</Steps>
+
+---
+
+## What It Does
+
+1. Captures audio from your default microphone
+2. Creates real-time avatar animation as you speak
+3. Shows live video using LocalVideoPlayer
+4. Automatically detects voice activity and silence
+
+**Key features:**
+- Real-time audio processing at 24kHz
+- Voice activity detection with configurable threshold (-40dB)
+- Automatic silence detection (3-second timeout)
+- Local audio/video processing (no web interface)
+
+---
+
+## Command Line Options
+
+```bash
+# Adjust volume and silence detection
+python examples/avatar-with-microphone.py \
+  --volume 1.5 \
+  --silent-threshold-db -35
+
+# Enable audio echo for testing
+python examples/avatar-with-microphone.py --echo
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--model` | env | Path to .imx model file |
+| `--api-secret` | env | Your bitHuman API secret |
+| `--volume` | 1.0 | Audio volume multiplier |
+| `--silent-threshold-db` | -40 | Silence threshold in dB |
+| `--echo` | off | Enable audio echo for testing |
+
+---
+
+## Advanced Usage
+
+```bash
+# More sensitive (picks up quieter voices)
+python examples/avatar-with-microphone.py --silent-threshold-db -50
+
+# Less sensitive (only loud voices)
+python examples/avatar-with-microphone.py --silent-threshold-db -30
+
+# Boost quiet microphones
+python examples/avatar-with-microphone.py --volume 2.0
+```
+
+---
+
+## Common Issues
+
+| Problem | Solution |
+|---------|----------|
+| No microphone input | Check microphone permissions in system settings |
+| Avatar not responding | Speak louder or adjust `--silent-threshold-db` to lower value |
+| Performance lag | Close other audio applications, use wired microphone |
+| Audio echo/feedback | Don't use `--echo` flag, use headphones |
+
+---
+
+## Technical Details
+
+| Component | Specification |
+|-----------|--------------|
+| Audio sample rate | 24kHz |
+| Input | Mono microphone |
+| Buffer | 240 samples per chunk (10ms) |
+| Silence detection | -40dB threshold, 3s timeout |
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="AI Conversation" icon="comments" href="/examples/ai-conversation">
+    Full OpenAI voice chat with avatar
+  </Card>
+  <Card title="Apple Local Agent" icon="apple" href="/examples/apple-local">
+    100% private on-device processing
+  </Card>
+</CardGroup>

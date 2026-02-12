@@ -1,0 +1,111 @@
+---
+title: "Audio Clip"
+description: "Play audio files with avatar animation."
+icon: "play"
+---
+
+A simple first example that works reliably.
+
+## Quick Start
+
+<Steps>
+  <Step title="Install">
+    ```bash
+    pip install bithuman --upgrade opencv-python sounddevice
+    ```
+  </Step>
+  <Step title="Set environment">
+    ```bash
+    export BITHUMAN_API_SECRET="your_secret"
+    export BITHUMAN_MODEL_PATH="/path/to/model.imx"
+    export BITHUMAN_AUDIO_PATH="/path/to/audio.wav"  # optional
+    ```
+  </Step>
+  <Step title="Run">
+    ```bash
+    python examples/avatar-with-audio-clip.py
+    ```
+    [View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/avatar-with-audio-clip.py)
+  </Step>
+  <Step title="Controls">
+    - **Press `1`** — Play audio with avatar
+    - **Press `2`** — Stop playback
+    - **Press `q`** — Quit
+  </Step>
+</Steps>
+
+---
+
+## What It Does
+
+1. Loads your audio file (WAV, MP3, M4A supported)
+2. Creates synchronized avatar animation
+3. Shows real-time video in OpenCV window
+4. Plays audio through speakers with sounddevice
+
+**Key features:**
+- Smooth audio playback with buffering
+- Real-time video display at 25 FPS
+- Keyboard controls for interaction
+- Supports multiple audio formats
+
+---
+
+## Command Line Options
+
+```bash
+# Use specific files
+python examples/avatar-with-audio-clip.py \
+  --model /path/to/model.imx \
+  --audio-file /path/to/audio.wav \
+  --api-secret your_secret
+
+# Use JWT token instead of API secret
+python examples/avatar-with-audio-clip.py \
+  --token your_jwt_token \
+  --model /path/to/model.imx
+```
+
+| Option | Description |
+|--------|-------------|
+| `--model` | Path to .imx model file |
+| `--audio-file` | Path to audio file |
+| `--api-secret` | Your bitHuman API secret |
+| `--token` | JWT token (alternative to API secret) |
+| `--insecure` | Disable SSL verification (dev only) |
+
+---
+
+## Common Issues
+
+| Problem | Solution |
+|---------|----------|
+| No audio playing | Install sounddevice: `pip install sounddevice`. Try WAV format. |
+| Avatar not loading | Verify `BITHUMAN_API_SECRET` and `BITHUMAN_MODEL_PATH`. |
+| Video choppy | Close other applications using GPU/CPU. |
+| Controls not working | Click on the OpenCV window to focus it. |
+
+---
+
+## Technical Details
+
+| Component | Specification |
+|-----------|--------------|
+| Audio sample rate | 16kHz (auto-converted) |
+| Audio channels | Mono (stereo auto-converted) |
+| Video resolution | 512x512 pixels |
+| Frame rate | 25 FPS |
+| Audio formats | WAV, MP3, M4A, FLAC |
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Live Microphone" icon="microphone" href="/examples/microphone">
+    Real-time interaction with your voice
+  </Card>
+  <Card title="AI Conversation" icon="comments" href="/examples/ai-conversation">
+    Full OpenAI voice chat with avatar
+  </Card>
+</CardGroup>

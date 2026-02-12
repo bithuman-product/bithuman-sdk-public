@@ -1,0 +1,62 @@
+---
+title: "API Overview"
+description: "REST API for agent generation, management, and real-time control."
+icon: "code"
+---
+
+The bitHuman API lets you programmatically create, manage, and interact with avatar agents.
+
+## Base URL
+
+```
+https://api.bithuman.ai
+```
+
+## Authentication
+
+All requests require the `api-secret` header. Get your API secret from [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#developer).
+
+```http
+api-secret: YOUR_API_SECRET
+```
+
+## Available APIs
+
+<CardGroup cols={2}>
+  <Card title="Agent Generation" icon="wand-magic-sparkles" href="/api-reference/agent-generation">
+    Create new avatar agents from prompts, images, or video
+  </Card>
+  <Card title="Agent Management" icon="users-gear" href="/api-reference/agent-management">
+    Validate credentials, retrieve agent details, update prompts
+  </Card>
+  <Card title="Agent Context" icon="message" href="/api-reference/agent-context">
+    Send real-time messages and inject context into live sessions
+  </Card>
+  <Card title="File Upload" icon="upload" href="/api-reference/file-upload">
+    Upload images, audio, video, and documents
+  </Card>
+  <Card title="Dynamics" icon="person-running" href="/api-reference/dynamics">
+    Generate and manage avatar movements and gestures
+  </Card>
+</CardGroup>
+
+## Common Error Format
+
+All errors follow the same structure:
+
+```json
+{
+  "success": false,
+  "error": "ERROR_CODE",
+  "message": "Human-readable error description"
+}
+```
+
+| HTTP Status | Meaning |
+|-------------|---------|
+| `200` | Success |
+| `400` | Invalid request parameters |
+| `401` | Invalid or missing `api-secret` |
+| `404` | Resource not found |
+| `429` | Rate limit exceeded |
+| `500` | Internal server error |

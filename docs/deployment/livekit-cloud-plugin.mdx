@@ -1,0 +1,252 @@
+---
+title: "LiveKit Cloud Plugin"
+description: "Use bitHuman agents in real-time applications with cloud-hosted LiveKit plugin."
+icon: "cloud"
+---
+
+Use existing bitHuman agents in real-time applications with our cloud-hosted LiveKit plugin featuring Essence (CPU) and Expression (GPU) models.
+
+## Quick Start
+
+<Steps>
+  <Step title="Install cloud plugin">
+    ```bash
+    uv pip uninstall livekit-plugins-bithuman
+    GIT_LFS_SKIP_SMUDGE=1 uv pip install git+https://github.com/livekit/agents@main#subdirectory=livekit-plugins/livekit-plugins-bithuman
+    ```
+  </Step>
+  <Step title="Get API credentials">
+    Get your API Secret from [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#developer).
+  </Step>
+  <Step title="Find your Agent ID">
+    Navigate to your [imaginex.bithuman.ai](https://imaginex.bithuman.ai) dashboard and click on the agent card you want to use.
+
+    <img src="/images/agent-dashboard.jpg" alt="Agent Dashboard" style={{ borderRadius: '8px' }} />
+
+    The **Agent Settings** dialog displays your unique **Agent ID** at the top.
+
+    <img src="/images/agent-settings-dialog.jpg" alt="Agent Settings" style={{ borderRadius: '8px' }} />
+
+    <Tip>
+    The Agent ID (e.g., `A78WKV4515`) is your avatar's unique identifier. Use this as the `avatar_id` parameter in your code.
+    </Tip>
+  </Step>
+  <Step title="Set environment">
+    ```bash
+    export BITHUMAN_API_SECRET="your_api_secret"
+    ```
+  </Step>
+</Steps>
+
+---
+
+## Usage Examples
+
+### Essence Model (CPU)
+
+For standard avatar interactions with built-in personalities:
+
+```python
+import bithuman
+
+bithuman_avatar = bithuman.AvatarSession(
+    avatar_id="your_agent_code",
+    api_secret="your_api_secret",
+)
+```
+
+### Expression Model (GPU) — Agent ID
+
+For custom avatars created through the platform:
+
+```python
+import bithuman
+
+bithuman_avatar = bithuman.AvatarSession(
+    avatar_id="your_agent_code",
+    api_secret="your_api_secret",
+    model="expression"
+)
+```
+
+### Expression Model (GPU) — Custom Image
+
+For dynamic avatar creation using custom images:
+
+```python
+import bithuman
+from PIL import Image
+
+bithuman_avatar = bithuman.AvatarSession(
+    avatar_image=Image.open("your_image_path"),
+    api_secret="your_api_secret",
+    model="expression"
+)
+```
+
+---
+
+## Essence Model with Dynamics
+
+For reactive avatar gestures triggered by user speech keywords.
+
+### Step 1: Get Available Gestures
+
+Retrieve available gesture actions from the [Dynamics API](/api-reference/dynamics):
+
+```python
+import requests
+
+agent_id = "A31KJC8622"
+url = f"https://api.bithuman.ai/v1/dynamics/{agent_id}"
+headers = {"api-secret": "YOUR_API_SECRET"}
+
+response = requests.get(url, headers=headers)
+dynamics_data = response.json()
+
+if dynamics_data.get("success"):
+    gestures_dict = dynamics_data["data"].get("gestures", {})
+    available_gestures = list(gestures_dict.keys())
+    print(f"Available gestures: {available_gestures}")
+```
+
+### Step 2: Set Up Keyword Triggers
+
+```python
+from livekit.agents import AgentSession, JobContext, UserInputTranscribedEvent
+from livekit import rtc
+import asyncio
+import json
+from datetime import datetime
+
+KEYWORD_ACTION_MAP = {
+    "laugh": "laugh_react",
+    "funny": "laugh_react",
+    "hello": "mini_wave_hello",
+}
+
+async def send_dynamics_trigger(
+    local_participant: rtc.LocalParticipant,
+    destination_identity: str,
+    action: str,
+) -> None:
+    payload = {
+        "action": action,
+        "identity": local_participant.identity,
+        "timestamp": datetime.utcnow().isoformat(),
+    }
+    await local_participant.perform_rpc(
+        destination_identity=destination_identity,
+        method="trigger_dynamics",
+        payload=json.dumps(payload),
+    )
+
+async def entrypoint(ctx: JobContext):
+    await ctx.connect()
+    await ctx.wait_for_participant()
+
+    # ... setup avatar session ...
+
+    @session.on("user_input_transcribed")
+    def on_user_input_transcribed(event: UserInputTranscribedEvent):
+        if not event.is_final:
+            return
+        transcript = event.transcript.lower()
+
+        for keyword, action in KEYWORD_ACTION_MAP.items():
+            if keyword in transcript:
+                for identity in ctx.room.remote_participants.keys():
+                    asyncio.create_task(
+                        send_dynamics_trigger(
+                            ctx.room.local_participant, identity, action
+                        )
+                    )
+                break
+```
+
+---
+
+## Configuration
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `avatar_id` | string | Yes* | Unique identifier for pre-created avatar |
+| `avatar_image` | PIL.Image | Yes* | Custom image for dynamic avatar creation |
+| `api_secret` | string | Yes | Authentication secret |
+| `model` | string | No | `"essence"` (default) or `"expression"` |
+
+*Either `avatar_id` or `avatar_image` is required, not both.
+
+## Model Types
+
+| Feature | Essence (CPU) | Expression (GPU) |
+|---------|--------------|------------------|
+| Personalities | Pre-trained | Dynamic |
+| Response time | Faster | Standard |
+| Body support | Full body + animal mode | Face and shoulders only |
+| Animal mode | Yes | No |
+
+## Cloud Advantages
+
+- **No Local Storage** — No large model files to download
+- **Auto-Updates** — Always use the latest model versions
+- **Scalability** — Handle multiple concurrent sessions
+- **Cross-Platform** — Works on any device with internet
+
+---
+
+## Error Handling
+
+```python
+import bithuman
+
+try:
+    avatar = bithuman.AvatarSession(
+        avatar_id="your_agent_code",
+        api_secret="your_api_secret"
+    )
+    response = avatar.generate_response("Test message")
+
+except bithuman.AuthenticationError:
+    print("Invalid API secret.")
+
+except bithuman.QuotaExceededError:
+    print("API quota exceeded.")
+
+except bithuman.NetworkError:
+    print("Network connectivity issues.")
+```
+
+---
+
+## Pricing
+
+Visit [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#api) for current pricing.
+
+**Free Tier:** 199 credits per month, community support
+
+**Pro:** Unlimited credits, priority support, custom model training
+
+---
+
+## Common Issues
+
+| Problem | Solution |
+|---------|----------|
+| Authentication errors | Verify API secret from [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#api) |
+| Network timeouts | Ensure stable internet, implement retry logic |
+| Model loading issues | Verify avatar_id exists in your account |
+| Plugin installation | Use `uv` with `GIT_LFS_SKIP_SMUDGE=1` flag |
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Agent Generation API" icon="wand-magic-sparkles" href="/api-reference/agent-generation">
+    Create new agents programmatically
+  </Card>
+  <Card title="Self-Hosted Plugin" icon="server" href="/examples/self-hosted-plugin">
+    Deploy on your own infrastructure
+  </Card>
+</CardGroup>
