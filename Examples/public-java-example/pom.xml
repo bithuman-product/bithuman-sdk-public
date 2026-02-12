@@ -9,10 +9,10 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>BitHuman Java Streaming Example</name>
+    <name>bitHuman Java Streaming Example</name>
     <description>
-        Demonstrates streaming audio to a BitHuman avatar server and
-        receiving video frames back — all over a single WebSocket connection.
+        Demonstrates streaming audio to a bitHuman avatar server and
+        receiving video frames back over a single WebSocket connection.
     </description>
 
     <properties>

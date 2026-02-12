@@ -6,7 +6,7 @@ A local deployment of bitHuman's AI visual agent with real-time conversation cap
 
 - Docker and Docker Compose (**For MacOS we strongly recommend [OrbStack](https://orbstack.dev/) for better performance and easier management**)
 - API keys: `BITHUMAN_API_SECRET` and `OPENAI_API_KEY`
-- `.imx` model files (place in `./models/` directory)
+- `.imx` model files (place in `./models/` directory) for CPU mode
 
 ## Quick Setup
 
@@ -57,11 +57,22 @@ Open http://localhost:4202 in your browser.
 
 ![App Screenshot](./assets/example-screenshot.jpg)
 
+## GPU Mode
+
+The same `agent.py` supports GPU rendering via a custom expression-avatar endpoint.
+Set `AVATAR_MODE=gpu` and provide `CUSTOM_GPU_URL`:
+
+```bash
+docker compose -f docker-compose.gpu.yml up
+```
+
+See `.env.gpu` for the full list of GPU-specific environment variables.
+
 ## That's It!
 
 The system runs 4 services:
 - **LiveKit**: WebRTC communication server
-- **Agent**: AI conversation handler  
+- **Agent**: AI conversation handler
 - **Frontend**: Web interface
 - **Redis**: Message broker
 
@@ -99,4 +110,3 @@ docker compose down
 docker compose down -v
 docker compose up --build
 ```
-

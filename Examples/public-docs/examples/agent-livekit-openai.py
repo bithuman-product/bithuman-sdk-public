@@ -26,7 +26,7 @@ load_dotenv()
 async def entrypoint(ctx: JobContext):
     await ctx.connect()
 
-    logger.info("staring bithuman runtime")
+    logger.info("starting bitHuman runtime")
     bithuman_avatar = bithuman.AvatarSession(
         model_path=os.getenv("BITHUMAN_MODEL_PATH"),
         api_secret=os.getenv("BITHUMAN_API_SECRET"),

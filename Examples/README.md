@@ -1,6 +1,6 @@
-# BitHuman Examples
+# bitHuman Examples
 
-Public examples, documentation, and integrations for the [BitHuman](https://bithuman.io) avatar platform.
+Public examples, documentation, and integrations for the [bitHuman](https://bithuman.io) avatar platform.
 
 ## Contents
 
@@ -8,7 +8,7 @@ Public examples, documentation, and integrations for the [BitHuman](https://bith
 |-----------|-------------|
 | [public-docs/](public-docs/) | SDK documentation, API guides, and code examples |
 | [public-sdk-examples/](public-sdk-examples/) | Python SDK examples (basic usage, LiveKit, FastRTC) |
-| [public-docker-example/](public-docker-example/) | Docker Compose setup for BitHuman + LiveKit |
+| [public-docker-example/](public-docker-example/) | Docker Compose setup for bitHuman + LiveKit |
 | [public-livekit-ui-example/](public-livekit-ui-example/) | Example Agent UI for LiveKit |
 | [public-macos-offline-example/](public-macos-offline-example/) | Offline macOS setup with Ollama + Apple Speech |
 
@@ -34,8 +34,8 @@ Browse the full SDK documentation at [public-docs/](public-docs/) or visit the [
 
 ## Resources
 
-- [BitHuman Runtime (PyPI)](https://pypi.org/project/bithuman/)
-- [BitHuman Website](https://bithuman.io)
+- [bitHuman Runtime (PyPI)](https://pypi.org/project/bithuman/)
+- [bitHuman Website](https://bithuman.io)
 
 ## License
 

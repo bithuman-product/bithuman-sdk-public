@@ -132,7 +132,7 @@ python diagnose.py
 This will verify:
 - ✅ All packages installed
 - ✅ API keys configured
-- ✅ BitHuman API accessible
+- ✅ bitHuman API accessible
 - ✅ Avatar ID valid
 
 ### 2. LiveKit Playground Test
@@ -155,7 +155,7 @@ This will verify:
 1. **"Avatar session failed"**
    - Try different avatar ID from [community gallery](https://imaginex.bithuman.ai/#community)
    - Check account access to avatar
-   - Verify BitHuman service status
+   - Verify bitHuman service status
 
 2. **"Module not found"**
    ```bash

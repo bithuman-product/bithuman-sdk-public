@@ -40,12 +40,12 @@ RUN uv pip uninstall livekit-agents livekit-plugins-bithuman livekit-plugins-ope
     GIT_LFS_SKIP_SMUDGE=1 uv pip install git+https://github.com/livekit/agents@${LIVEKIT_COMMIT}#subdirectory=livekit-plugins/livekit-plugins-openai && \
     GIT_LFS_SKIP_SMUDGE=1 uv pip install git+https://github.com/livekit/agents@${LIVEKIT_COMMIT}#subdirectory=livekit-plugins/livekit-plugins-bithuman
 
-# Copy GPU agent code
-COPY agent_gpu.py .
+# Copy unified agent code
+COPY agent.py .
 
 # Ensure that any dependent models are downloaded at build-time
-RUN python agent_gpu.py download-files
+RUN python agent.py download-files
 
 # Run the application
-ENTRYPOINT ["python", "agent_gpu.py"]
+ENTRYPOINT ["python", "agent.py"]
 CMD ["start"]

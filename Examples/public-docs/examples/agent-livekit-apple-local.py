@@ -18,9 +18,9 @@ logger.setLevel(logging.INFO)
 
 load_dotenv()
 
-# This is an example to use Apple's local STT and TTS.
-# Both STT and TTS are locally hosted, and written by bitHuman.
-# The service is locally hosted, no need to connect to the internet.
+# This is an example using Apple's local STT and TTS.
+# Both STT and TTS are locally hosted, written by bitHuman.
+# The service runs locally, no internet connection required.
 
 # Instructions:
 # First, install bithuman-voice from `pip install https://github.com/bithuman-product/examples/releases/download/v0.1/bithuman_voice-1.3.2-py3-none-any.whl`
@@ -31,7 +31,7 @@ load_dotenv()
 async def entrypoint(ctx: JobContext):
     await ctx.connect()
 
-    logger.info("staring bithuman runtime")
+    logger.info("starting bitHuman runtime")
     bithuman_avatar = bithuman.AvatarSession(
         model_path=os.getenv("BITHUMAN_MODEL_PATH"),
         api_secret=os.getenv("BITHUMAN_API_SECRET"),

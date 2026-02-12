@@ -42,9 +42,9 @@ These agents demonstrate how to build conversational AI avatars using:
 Both agents use the same pipeline architecture:
 
 ```
-User Audio → Deepgram STT → GPT-4o-mini → OpenAI TTS → BitHuman Runtime
+User Audio → Deepgram STT → GPT-4o-mini → OpenAI TTS → bitHuman Runtime
                                                                      ↓
-User Display ← Video/Audio Frames ← BitHuman Avatar Generation ←─────┘
+User Display ← Video/Audio Frames ← bitHuman Avatar Generation ←─────┘
 ```
 
 The `BitHumanAvatarProcessor` is a custom Pipecat `FrameProcessor` that:

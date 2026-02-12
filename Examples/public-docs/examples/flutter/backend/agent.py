@@ -66,7 +66,7 @@ async def entrypoint(ctx: JobContext):
                 api_secret=api_secret,
                 avatar_image=avatar_image,
             )
-            logger.info("BitHuman avatar session initialized with custom image")
+            logger.info("bitHuman avatar session initialized with custom image")
         else:
             # Use pre-configured avatar ID
             bithuman_avatar = bithuman.AvatarSession(
@@ -74,14 +74,14 @@ async def entrypoint(ctx: JobContext):
                 api_secret=api_secret,
                 avatar_id=avatar_id,
             )
-            logger.info("BitHuman avatar session initialized with avatar ID")
+            logger.info("bitHuman avatar session initialized with avatar ID")
             
     except Exception as e:
-        logger.error(f"Failed to initialize BitHuman avatar session: {str(e)}")
+        logger.error(f"Failed to initialize bitHuman avatar session: {str(e)}")
         logger.error("Please check:")
         logger.error("1. BITHUMAN_API_SECRET is valid")
         logger.error(f"2. Avatar ID '{avatar_id}' exists and is accessible")
-        logger.error("3. BitHuman service is available")
+        logger.error("3. bitHuman service is available")
         if avatar_image:
             logger.error(f"4. Custom image '{avatar_image}' exists and is valid")
         raise
@@ -98,7 +98,7 @@ async def entrypoint(ctx: JobContext):
 
     # Start the bitHuman avatar session
     try:
-        logger.info("Starting BitHuman avatar session...")
+        logger.info("Starting bitHuman avatar session...")
         logger.info(f"Room name: {ctx.room.name}")
         logger.info(f"Room participants: {len(ctx.room.remote_participants)}")
         
@@ -106,7 +106,7 @@ async def entrypoint(ctx: JobContext):
             session, 
             room=ctx.room
         )
-        logger.info("BitHuman avatar session started successfully")
+        logger.info("bitHuman avatar session started successfully")
         
         # Log room state after avatar start
         logger.info(f"Room participants after avatar start: {len(ctx.room.remote_participants)}")
@@ -115,11 +115,11 @@ async def entrypoint(ctx: JobContext):
             for publication in participant.track_publications.values():
                 logger.info(f"  Track: {publication.kind} - {publication.sid}")
     except Exception as e:
-        logger.error(f"Failed to start BitHuman avatar session: {str(e)}")
+        logger.error(f"Failed to start bitHuman avatar session: {str(e)}")
         logger.error("This could be due to:")
         logger.error("1. Avatar ID not found or inaccessible")
         logger.error("2. Insufficient resources in CPU mode")
-        logger.error("3. BitHuman service temporary unavailability")
+        logger.error("3. bitHuman service temporary unavailability")
         logger.error("4. Network connectivity issues")
         raise
 

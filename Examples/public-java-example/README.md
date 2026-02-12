@@ -1,10 +1,10 @@
-# BitHuman Java Streaming Example
+# bitHuman Java Streaming Example
 
-A complete, tested example showing how to stream audio to a BitHuman avatar
-server and receive lip-synced video frames back — all from Java over a single
-WebSocket connection.
+A complete example showing how to stream audio to a bitHuman avatar server and
+receive lip-synced video frames back -- all from Java over a single WebSocket
+connection.
 
-**Tested with:** BitHuman SDK 1.6.7, Java 17, Maven 3.6+, Python 3.10
+**Tested with:** bitHuman SDK 1.6.7, Java 17, Maven 3.6+, Python 3.10
 
 ## Architecture
 
@@ -21,9 +21,9 @@ WebSocket connection.
 ```
 
 **How it works:**
-1. The Python server loads a BitHuman `.imx` avatar model and listens on a WebSocket port
+1. The Python server loads a bitHuman `.imx` avatar model and listens on a WebSocket port
 2. The Java client connects, streams audio as raw PCM bytes
-3. The BitHuman SDK generates lip-synced avatar video in real time
+3. The bitHuman SDK generates lip-synced avatar video in real time
 4. The server encodes each frame as JPEG and sends it back over the same WebSocket
 5. The Java client receives frames and can save them, display them, or stream them onward
 
@@ -31,18 +31,18 @@ WebSocket connection.
 
 ## Step-by-Step Setup Guide
 
-### Step 1: Get Your BitHuman Credentials
+### Step 1: Get Your bitHuman Credentials
 
 1. Go to **https://imaginex.bithuman.ai** and create an account
 2. Navigate to the **SDK** section and create an API secret
    - It will look like: `sk_bh_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
-   - Save this — you'll need it to authenticate
+   - Save this -- you'll need it to authenticate
 3. Go to the **Community** page and download an avatar model (`.imx` file)
    - Or use any `.imx` model you already have
 
 ### Step 2: Set Up the Python Server
 
-The server requires Python 3.10+ with the BitHuman SDK.
+The server requires Python 3.10+ with the bitHuman SDK.
 
 ```bash
 # Install Python dependencies
@@ -150,14 +150,14 @@ java -jar target/bithuman-java-example-1.0.0.jar \
 
 You should see output like:
 ```
-INFO - BitHuman Java Streaming Client
+INFO - bitHuman Java Streaming Client
 INFO -   Server:     ws://localhost:8765
 INFO -   Audio:      test_speech.wav
 INFO -   Output dir: ./frames
 INFO - Connecting to ws://localhost:8765...
 INFO - WebSocket opened (status 101)
 INFO - Connected!
-INFO - Server message [connected]: BitHuman streaming server ready
+INFO - Server message [connected]: bitHuman streaming server ready
 INFO - Source format: 44100.0 Hz, 2 ch, 16 bits, PCM_SIGNED
 INFO - Streaming audio as 16 kHz / mono / int16 LE in 100 ms chunks...
 INFO - Video: frame #25 (1280x2270, 25.0 FPS)
@@ -194,7 +194,7 @@ You should see the avatar with mouth movements matching the audio.
 
 The server (with GPU/model) and client (Java app) can run on separate hosts:
 
-**Server machine** (with BitHuman SDK + model):
+**Server machine** (with bitHuman SDK + model):
 ```bash
 python bithuman_streaming_server.py \
     --model /path/to/avatar.imx \
@@ -237,8 +237,8 @@ Usage:
 
 Options:
   --model <path>           Path to .imx avatar model (or BITHUMAN_MODEL_PATH env)
-  --api-secret <secret>    BitHuman API secret (or BITHUMAN_API_SECRET env)
-  --token <token>          BitHuman runtime token, optional (or BITHUMAN_RUNTIME_TOKEN env)
+  --api-secret <secret>    bitHuman API secret (or BITHUMAN_API_SECRET env)
+  --token <token>          bitHuman runtime token, optional (or BITHUMAN_RUNTIME_TOKEN env)
   --host <addr>            Listen address (default: 0.0.0.0)
   --port <port>            Listen port (default: 8765)
   --insecure               Disable SSL verification (development only)
@@ -304,7 +304,7 @@ Offset  Size  Type      Field
 
 ## Audio Input Requirements
 
-BitHuman expects audio in this exact format:
+bitHuman expects audio in this exact format:
 
 | Property | Value |
 |----------|-------|
@@ -369,7 +369,7 @@ speaker.write(pcmData, 0, pcmData.length);
 ### Live Video Display with Swing
 
 ```java
-JFrame window = new JFrame("BitHuman Avatar");
+JFrame window = new JFrame("bitHuman Avatar");
 JLabel imageLabel = new JLabel();
 window.add(imageLabel);
 window.setSize(640, 1136);
@@ -448,7 +448,7 @@ ffmpeg -framerate 25 -i frames/frame_%06d.jpg -c:v libx264 -pix_fmt yuv420p outp
 
 ```
 public-java-example/
-├── bithuman_streaming_server.py                       # Python server (wraps BitHuman SDK)
+├── bithuman_streaming_server.py                       # Python server (wraps bitHuman SDK)
 ├── pom.xml                                            # Maven build config
 ├── README.md                                          # This file
 └── src/main/java/ai/bithuman/example/
@@ -458,7 +458,7 @@ public-java-example/
 ## Dependencies
 
 **Python server:**
-- `bithuman` (BitHuman SDK)
+- `bithuman` (bitHuman SDK)
 - `websockets`
 - `opencv-python-headless`
 - `loguru`
@@ -474,5 +474,5 @@ All Java dependencies are bundled into the fat JAR by `maven-shade-plugin`.
 
 ## License
 
-This example is provided as part of the BitHuman platform documentation.
+This example is provided as part of the bitHuman platform documentation.
 See https://bithuman.ai for terms of use.

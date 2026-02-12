@@ -79,9 +79,9 @@ async def check_bithuman_api() -> Tuple[bool, str]:
         # Presence is sufficient for diagnostics; avoid strict prefix checks
         # Optionally keep a soft warning for unexpected formats
         if not check_api_key_format(api_secret, "sk_bh_"):
-            return True, "BitHuman API key present (format not validated)"
+            return True, "bitHuman API key present (format not validated)"
         
-        return True, "BitHuman API key present"
+        return True, "bitHuman API key present"
             
     except ImportError:
         return False, "livekit.plugins.bithuman not installed"
@@ -168,9 +168,9 @@ async def main():
     # Check API configurations
     print("\n4. API Configuration Check")
     
-    # BitHuman API
+    # bitHuman API
     passed, message = await check_bithuman_api()
-    print(f"   BitHuman API: {message}")
+    print(f"   bitHuman API: {message}")
     if not passed:
         all_checks_passed = False
     

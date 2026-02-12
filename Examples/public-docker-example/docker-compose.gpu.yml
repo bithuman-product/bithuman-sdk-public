@@ -59,9 +59,11 @@ services:
     build:
       context: .  # Build from current directory
       dockerfile: agent.gpu.dockerfile
-    entrypoint: ["python", "agent_gpu.py", "start"]
+    entrypoint: ["python", "agent.py", "start"]
     restart: always
     environment:
+      # Avatar mode -- unified agent.py supports both cpu and gpu
+      - AVATAR_MODE=gpu
       # LiveKit connection settings
       - LIVEKIT_URL=ws://livekit:17880  # Internal Docker network URL
       - LIVEKIT_API_KEY=devkey  # Default dev key (change in production)

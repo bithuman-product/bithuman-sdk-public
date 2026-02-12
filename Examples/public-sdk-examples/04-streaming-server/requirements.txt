@@ -1,0 +1,9 @@
+bithuman>=1.6.0
+livekit>=0.11
+livekit-api>=0.6
+websockets>=12.0
+python-dotenv~=1.1
+opencv-python>=4.8
+soundfile>=0.12
+resampy>=0.4
+numpy>=1.24

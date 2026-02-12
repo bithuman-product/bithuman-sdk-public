@@ -21,15 +21,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * BitHuman Java Streaming Client
+ * bitHuman Java Streaming Client
  *
- * Demonstrates the complete audio-in / video-out pipeline:
- *
- *   ┌────────────────┐    WebSocket     ┌──────────────────────────┐
- *   │  Java Client    │ ──── audio ───> │  BitHuman Streaming      │
- *   │                 │ <─── video ──── │  Server (Python + SDK)   │
- *   │  (this file)    │ <─── audio ──── │                          │
- *   └────────────────┘                  └──────────────────────────┘
+ * Streams PCM audio over WebSocket and receives JPEG video frames + PCM audio
+ * from the bitHuman streaming server.
  *
  * Audio input:   16 kHz, mono, signed 16-bit little-endian PCM
  * Video output:  JPEG frames at 25 FPS
@@ -46,20 +41,18 @@ public class BithumanStreamingClient {
     private static final Logger log = LoggerFactory.getLogger(BithumanStreamingClient.class);
     private static final Gson gson = new Gson();
 
-    // Binary message type tags (must match the Python server)
+    // Binary message type tags — must match the Python server
     private static final byte TAG_VIDEO = 0x01;
     private static final byte TAG_AUDIO = 0x02;
     private static final byte TAG_END_OF_SPEECH = 0x03;
 
-    // Audio format expected by BitHuman
+    // Audio format: 16 kHz, mono, int16 LE
     private static final int SAMPLE_RATE = 16_000;
     private static final int CHANNELS = 1;
     private static final int BITS_PER_SAMPLE = 16;
-    private static final int CHUNK_MS = 100; // send 100 ms chunks
-    private static final int SAMPLES_PER_CHUNK = SAMPLE_RATE * CHUNK_MS / 1000; // 1600
-    private static final int BYTES_PER_CHUNK = SAMPLES_PER_CHUNK * (BITS_PER_SAMPLE / 8); // 3200
-
-    // ── State ───────────────────────────────────────────────────────
+    private static final int CHUNK_MS = 100;
+    private static final int SAMPLES_PER_CHUNK = SAMPLE_RATE * CHUNK_MS / 1000;
+    private static final int BYTES_PER_CHUNK = SAMPLES_PER_CHUNK * (BITS_PER_SAMPLE / 8);
 
     private final URI serverUri;
     private final Path audioFile;
@@ -77,8 +70,6 @@ public class BithumanStreamingClient {
     private final AtomicLong audioChunksReceived = new AtomicLong(0);
     private final AtomicLong audioChunksSent = new AtomicLong(0);
 
-    // ── Constructor ─────────────────────────────────────────────────
-
     public BithumanStreamingClient(URI serverUri, Path audioFile, Path outputDir,
                                    boolean saveFrames, boolean playAudio) {
         this.serverUri = serverUri;
@@ -88,30 +79,19 @@ public class BithumanStreamingClient {
         this.playAudio = playAudio;
     }
 
-    // ── Public API ──────────────────────────────────────────────────
-
-    /**
-     * Run the full streaming session:
-     *   1. Connect to the server
-     *   2. Stream audio from WAV file
-     *   3. Receive video frames (saved to disk or counted)
-     *   4. Disconnect when end-of-speech is received
-     */
+    /** Run the full streaming session: connect, stream audio, receive frames, disconnect. */
     public void run() throws Exception {
         if (saveFrames) {
             Files.createDirectories(outputDir);
         }
 
-        // 1. Connect
         log.info("Connecting to {}...", serverUri);
         ws = new AvatarWebSocket(serverUri);
         ws.connectBlocking(10, TimeUnit.SECONDS);
         if (!connected.get()) {
             throw new IOException("Failed to connect to server");
         }
-        log.info("Connected!");
 
-        // 2. Stream audio in a background thread
         CompletableFuture<Void> audioFuture = CompletableFuture.runAsync(() -> {
             try {
                 streamAudioFile();
@@ -120,13 +100,11 @@ public class BithumanStreamingClient {
             }
         });
 
-        // 3. Wait for completion (end-of-speech from server or timeout)
         boolean finished = doneLatch.await(120, TimeUnit.SECONDS);
         if (!finished) {
-            log.warn("Timed out waiting for end-of-speech — stopping");
+            log.warn("Timed out waiting for end-of-speech");
         }
 
-        // 4. Disconnect
         audioFuture.cancel(true);
         ws.closeBlocking();
 
@@ -134,12 +112,7 @@ public class BithumanStreamingClient {
                 videoFramesReceived.get(), audioChunksReceived.get(), audioChunksSent.get());
     }
 
-    // ── Audio Streaming ─────────────────────────────────────────────
-
-    /**
-     * Read a WAV file, resample to 16 kHz mono int16 if needed,
-     * and stream it over the WebSocket in 100 ms chunks.
-     */
+    /** Read a WAV file, resample to 16 kHz mono int16 if needed, and stream over WebSocket. */
     private void streamAudioFile() throws Exception {
         log.info("Loading audio file: {}", audioFile);
 
@@ -149,24 +122,20 @@ public class BithumanStreamingClient {
                     srcFormat.getSampleRate(), srcFormat.getChannels(),
                     srcFormat.getSampleSizeInBits(), srcFormat.getEncoding());
 
-            // Target format: 16 kHz, mono, signed 16-bit LE
             AudioFormat targetFormat = new AudioFormat(
                     AudioFormat.Encoding.PCM_SIGNED,
                     SAMPLE_RATE, BITS_PER_SAMPLE, CHANNELS,
-                    CHANNELS * (BITS_PER_SAMPLE / 8), // frame size
-                    SAMPLE_RATE, false // little-endian
+                    CHANNELS * (BITS_PER_SAMPLE / 8),
+                    SAMPLE_RATE, false
             );
 
-            // Convert if necessary
             AudioInputStream pcmStream;
             if (srcFormat.matches(targetFormat)) {
                 pcmStream = rawStream;
             } else {
-                // Two-step conversion if source is compressed (e.g., MP3/Vorbis)
                 if (srcFormat.getEncoding() != AudioFormat.Encoding.PCM_SIGNED
                         && srcFormat.getEncoding() != AudioFormat.Encoding.PCM_UNSIGNED
                         && srcFormat.getEncoding() != AudioFormat.Encoding.PCM_FLOAT) {
-                    // Decode to PCM first
                     AudioFormat decodedFormat = new AudioFormat(
                             AudioFormat.Encoding.PCM_SIGNED,
                             srcFormat.getSampleRate(),
@@ -194,31 +163,19 @@ public class BithumanStreamingClient {
                 ws.send(chunk);
                 totalSent += read;
                 audioChunksSent.incrementAndGet();
-
-                // Pace at roughly real-time to avoid flooding the server
                 Thread.sleep(CHUNK_MS);
             }
-
             pcmStream.close();
-
             log.info("Audio streaming complete — {} bytes sent", totalSent);
-
-            // Signal end-of-speech
             sendJson("end");
         }
     }
 
-    // ── Frame Handling ──────────────────────────────────────────────
-
-    /**
-     * Called when a video frame is received from the server.
-     */
     private void onVideoFrame(int width, int height, float fps, double timestamp, byte[] jpegData) {
         long n = videoFramesReceived.incrementAndGet();
 
         if (saveFrames) {
             try {
-                // Decode JPEG and save as PNG
                 BufferedImage img = ImageIO.read(new ByteArrayInputStream(jpegData));
                 if (img != null) {
                     Path outPath = outputDir.resolve(String.format("frame_%06d.jpg", n));
@@ -234,32 +191,21 @@ public class BithumanStreamingClient {
         }
     }
 
-    /**
-     * Called when an audio chunk is received from the server.
-     */
     private void onAudioChunk(int sampleRate, int channels, double timestamp, byte[] pcmData) {
         audioChunksReceived.incrementAndGet();
-        // In a real app you'd push pcmData into a SourceDataLine for playback.
-        // Omitted here for simplicity — see the README for playback tips.
+        // To play audio, push pcmData into a SourceDataLine — see README for details.
     }
 
-    /**
-     * Called when the server signals end-of-speech (avatar done talking).
-     */
     private void onEndOfSpeech() {
         log.info("End-of-speech received from server");
         doneLatch.countDown();
     }
-
-    // ── Helpers ─────────────────────────────────────────────────────
 
     private void sendJson(String type) {
         JsonObject msg = new JsonObject();
         msg.addProperty("type", type);
         ws.send(msg.toString());
     }
-
-    // ── WebSocket Inner Class ───────────────────────────────────────
 
     private class AvatarWebSocket extends WebSocketClient {
 
@@ -276,7 +222,6 @@ public class BithumanStreamingClient {
 
         @Override
         public void onMessage(String message) {
-            // JSON text messages from the server (welcome, status, etc.)
             try {
                 JsonObject json = gson.fromJson(message, JsonObject.class);
                 String type = json.has("type") ? json.get("type").getAsString() : "unknown";
@@ -289,7 +234,6 @@ public class BithumanStreamingClient {
 
         @Override
         public void onMessage(ByteBuffer buffer) {
-            // Binary messages — video frames, audio chunks, or end-of-speech
             if (buffer.remaining() < 1) return;
 
             buffer.order(ByteOrder.BIG_ENDIAN);
@@ -316,10 +260,7 @@ public class BithumanStreamingClient {
             log.error("WebSocket error", ex);
         }
 
-        // ── Binary parsers ──────────────────────────────────────────
-
         private void parseVideoFrame(ByteBuffer buf) {
-            // Header after tag: width(2) + height(2) + fps(4) + jpeg_len(4) + timestamp(8) = 20 bytes
             if (buf.remaining() < 20) {
                 log.warn("Truncated video header");
                 return;
@@ -341,7 +282,6 @@ public class BithumanStreamingClient {
         }
 
         private void parseAudioChunk(ByteBuffer buf) {
-            // Header after tag: sample_rate(4) + channels(1) + pcm_len(4) + timestamp(8) = 17 bytes
             if (buf.remaining() < 17) {
                 log.warn("Truncated audio header");
                 return;
@@ -362,8 +302,6 @@ public class BithumanStreamingClient {
         }
     }
 
-    // ── Main ────────────────────────────────────────────────────────
-
     public static void main(String[] args) throws Exception {
         String serverUrl = "ws://localhost:8765";
         String audioPath = null;
@@ -371,7 +309,6 @@ public class BithumanStreamingClient {
         boolean save = true;
         boolean play = false;
 
-        // Simple arg parsing
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
                 case "--server", "-s" -> serverUrl = args[++i];
@@ -398,7 +335,7 @@ public class BithumanStreamingClient {
             System.exit(1);
         }
 
-        log.info("BitHuman Java Streaming Client");
+        log.info("bitHuman Java Streaming Client");
         log.info("  Server:     {}", serverUrl);
         log.info("  Audio:      {}", audioPath);
         log.info("  Output dir: {}", save ? outputPath : "(disabled)");
@@ -410,7 +347,7 @@ public class BithumanStreamingClient {
 
     private static void printUsage() {
         System.out.println("""
-                BitHuman Java Streaming Client
+                bitHuman Java Streaming Client
 
                 Usage:
                   java -jar bithuman-java-example.jar [options]
@@ -426,13 +363,8 @@ public class BithumanStreamingClient {
                   --help, -h               Show this help
 
                 Examples:
-                  # Stream audio and save video frames
                   java -jar bithuman-java-example.jar --audio speech.wav
-
-                  # Connect to remote server
                   java -jar bithuman-java-example.jar --server ws://gpu-server:8765 --audio speech.wav
-
-                  # Just count frames, don't save
                   java -jar bithuman-java-example.jar --audio speech.wav --no-save
                 """);
     }
