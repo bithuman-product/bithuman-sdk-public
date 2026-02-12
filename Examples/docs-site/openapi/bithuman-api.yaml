@@ -1,0 +1,809 @@
+openapi: 3.1.0
+info:
+  title: BitHuman API
+  version: "1.0.0"
+  description: |
+    The BitHuman API lets you create lifelike AI avatars that respond to audio in real-time.
+
+    ## Authentication
+
+    All endpoints (except `/health`) require an `api-secret` header.
+    Get your API key at [imaginex.bithuman.ai](https://imaginex.bithuman.ai).
+
+    ```bash
+    curl -H "api-secret: YOUR_API_KEY" https://api.bithuman.ai/v1/validate
+    ```
+
+    ## Base URL
+
+    ```
+    https://api.bithuman.ai
+    ```
+servers:
+  - url: https://api.bithuman.ai
+    description: Production
+
+security:
+  - apiSecret: []
+
+tags:
+  - name: Agent Generation
+    description: Create new AI avatar agents from images or videos.
+  - name: Agent Management
+    description: Retrieve and update existing agents.
+  - name: Agent Context
+    description: Send messages or context to a live agent session.
+  - name: File Upload
+    description: Upload media assets (images, videos, audio, documents).
+  - name: Dynamics
+    description: Generate and manage agent movement animations.
+  - name: Health
+    description: Service health check.
+
+paths:
+  /v1/agent/generate:
+    post:
+      operationId: generateAgent
+      summary: Generate Agent
+      description: |
+        Start generating a new AI avatar agent. This is an async operation —
+        the endpoint returns immediately with an `agent_id` you can poll via
+        [Get Agent Status](#get-/v1/agent/status/-agent_id-).
+
+        You must provide either an `image` or `video` source for the avatar appearance.
+        Values can be a public URL or base64-encoded file data.
+      tags: [Agent Generation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: string
+                  description: System prompt that defines the agent's personality and behavior.
+                  example: "You are a friendly customer support agent."
+                image:
+                  type: string
+                  nullable: true
+                  description: Image URL or base64-encoded image data for the avatar.
+                  example: "https://example.com/avatar.jpg"
+                video:
+                  type: string
+                  nullable: true
+                  description: Video URL or base64-encoded video data for the avatar.
+                  example: "https://example.com/avatar.mp4"
+                audio:
+                  type: string
+                  nullable: true
+                  description: Audio URL or base64-encoded audio for voice cloning.
+                aspect_ratio:
+                  type: string
+                  default: "16:9"
+                  description: Aspect ratio for the generated avatar.
+                  enum: ["16:9", "9:16", "1:1"]
+                video_aspect_ratio:
+                  type: string
+                  default: "16:9"
+                  description: Aspect ratio for the video output.
+                  enum: ["16:9", "9:16", "1:1"]
+                agent_id:
+                  type: string
+                  description: Custom agent ID. Auto-generated if not provided.
+                duration:
+                  type: integer
+                  default: 10
+                  description: Duration in seconds for the source video generation.
+      responses:
+        "200":
+          description: Generation started successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Agent generation started"
+                  agent_id:
+                    type: string
+                    example: "A72DEQ7832"
+                  status:
+                    type: string
+                    example: "processing"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /v1/agent/status/{agent_id}:
+    get:
+      operationId: getAgentStatus
+      summary: Get Agent Status
+      description: |
+        Check the generation status of an agent. Poll this endpoint after
+        calling [Generate Agent](#post-/v1/agent/generate) until `status`
+        is `completed` or `failed`.
+      tags: [Agent Generation]
+      parameters:
+        - name: agent_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The agent ID returned from the generate endpoint.
+          example: "A72DEQ7832"
+      responses:
+        "200":
+          description: Agent status retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/AgentDetails"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/validate:
+    post:
+      operationId: validateApiSecret
+      summary: Validate API Secret
+      description: |
+        Validate your API secret. Returns `{"valid": true}` if the key is correct.
+        This is useful for verifying credentials before making other API calls.
+      tags: [Agent Management]
+      responses:
+        "200":
+          description: Validation result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                    description: Whether the API secret is valid.
+                    example: true
+
+  /v1/agent/{code}:
+    get:
+      operationId: getAgentInfo
+      summary: Get Agent Info
+      description: Retrieve detailed information about an agent by its code.
+      tags: [Agent Management]
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The agent code identifier.
+          example: "A72DEQ7832"
+      responses:
+        "200":
+          description: Agent info retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/AgentInfo"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    post:
+      operationId: updateAgentPrompt
+      summary: Update Agent Prompt
+      description: Update the system prompt for an existing agent.
+      tags: [Agent Management]
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The agent code identifier.
+          example: "A72DEQ7832"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [system_prompt]
+              properties:
+                system_prompt:
+                  type: string
+                  description: The new system prompt for the agent.
+                  example: "You are a helpful assistant specialized in technical support."
+      responses:
+        "200":
+          description: Agent prompt updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  agent_code:
+                    type: string
+                    example: "A72DEQ7832"
+                  updated:
+                    type: boolean
+                    example: true
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /v1/agent/{code}/speak:
+    post:
+      operationId: makeAgentSpeak
+      summary: Make Agent Speak
+      description: |
+        Send a message for the agent to speak proactively to connected users.
+        The message is delivered to all active rooms, or a specific room if `room_id` is provided.
+      tags: [Agent Context]
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The agent code.
+          example: "A72DEQ7832"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                  description: The message for the agent to speak.
+                  example: "Hello! How can I help you today?"
+                room_id:
+                  type: string
+                  nullable: true
+                  description: Target a specific LiveKit room. If omitted, broadcasts to all active rooms.
+      responses:
+        "200":
+          description: Message delivered.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  agent_code:
+                    type: string
+                    example: "A72DEQ7832"
+                  context_type:
+                    type: string
+                    example: "speak"
+                  delivered_to_rooms:
+                    type: integer
+                    description: Number of rooms the message was delivered to.
+                    example: 1
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/agent/{code}/add-context:
+    post:
+      operationId: addContext
+      summary: Add Context
+      description: |
+        Add context or background knowledge to a live agent session.
+        Use `type: "speak"` to make the agent say something, or
+        `type: "add_context"` to silently inject knowledge the agent can reference.
+      tags: [Agent Context]
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The agent code.
+          example: "A72DEQ7832"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [context, type]
+              properties:
+                context:
+                  type: string
+                  description: The context message or knowledge to inject.
+                  example: "The user's account was created on January 15, 2025."
+                type:
+                  type: string
+                  enum: [speak, add_context]
+                  description: |
+                    - `speak`: Agent will vocalize the context
+                    - `add_context`: Silently add background knowledge
+                room_id:
+                  type: string
+                  nullable: true
+                  description: Target a specific room. Omit to broadcast to all rooms.
+      responses:
+        "200":
+          description: Context added.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  agent_code:
+                    type: string
+                    example: "A72DEQ7832"
+                  context_type:
+                    type: string
+                    example: "add_context"
+                  delivered_to_rooms:
+                    type: integer
+                    example: 1
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/files/upload:
+    post:
+      operationId: uploadFile
+      summary: Upload File
+      description: |
+        Upload a media file by URL or base64-encoded data. Supported formats include
+        images, videos, audio files, and documents. The uploaded file is stored on
+        BitHuman's CDN and returns a public URL.
+      tags: [File Upload]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file_url:
+                  type: string
+                  description: Public URL of the file to upload. Provide either `file_url` or `file_data`.
+                  example: "https://example.com/photo.jpg"
+                file_data:
+                  type: string
+                  description: Base64-encoded file data. Provide either `file_url` or `file_data`.
+                file_name:
+                  type: string
+                  description: Original filename. Required when using `file_data`.
+                  example: "avatar.png"
+                file_type:
+                  type: string
+                  enum: [auto, image, video, audio, pdf]
+                  default: auto
+                  description: File type hint. Use `auto` for automatic detection.
+      responses:
+        "200":
+          description: File uploaded successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "File uploaded successfully"
+                  data:
+                    type: object
+                    properties:
+                      file_url:
+                        type: string
+                        description: Public CDN URL of the uploaded file.
+                        example: "https://cdn.bithuman.ai/uploads/abc123.jpg"
+                      original_source:
+                        type: string
+                        example: "avatar.png"
+                      file_type:
+                        type: string
+                        example: "image"
+                      file_size:
+                        type: integer
+                        description: File size in bytes.
+                        example: 245760
+                      mime_type:
+                        type: string
+                        example: "image/png"
+                      asset_category:
+                        type: string
+                        enum: [image, video, audio, docs]
+                        example: "image"
+                      uploaded_at:
+                        type: string
+                        format: date-time
+                        example: "2025-01-15T10:30:00Z"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /v1/dynamics/generate:
+    post:
+      operationId: generateDynamics
+      summary: Generate Dynamics
+      description: |
+        Start generating movement dynamics (gestures, idle animations) for an agent.
+        This is an async operation — poll [Get Dynamics](#get-/v1/dynamics/-agent_id-)
+        to check the status.
+      tags: [Dynamics]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [agent_id]
+              properties:
+                agent_id:
+                  type: string
+                  description: The agent ID to generate dynamics for.
+                  example: "A72DEQ7832"
+                image_url:
+                  type: string
+                  nullable: true
+                  description: Agent image URL. If omitted, fetched from agent data.
+                duration:
+                  type: integer
+                  default: 5
+                  description: Duration of the dynamics animation in seconds.
+                model:
+                  type: string
+                  default: "seedance"
+                  description: The dynamics generation model to use.
+      responses:
+        "202":
+          description: Dynamics generation started.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Dynamics generation started"
+                  agent_id:
+                    type: string
+                    example: "A72DEQ7832"
+                  status:
+                    type: string
+                    example: "processing"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/dynamics/{agent_id}:
+    get:
+      operationId: getDynamics
+      summary: Get Dynamics
+      description: Get the dynamics data and generation status for an agent.
+      tags: [Dynamics]
+      parameters:
+        - name: agent_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The agent ID.
+          example: "A72DEQ7832"
+      responses:
+        "200":
+          description: Dynamics data retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                        nullable: true
+                        description: URL of the dynamics model.
+                      status:
+                        type: string
+                        description: Generation status.
+                        enum: [generating, ready, failed]
+                        example: "ready"
+                      agent_id:
+                        type: string
+                        example: "A72DEQ7832"
+                      gestures:
+                        type: object
+                        additionalProperties:
+                          type: string
+                        description: Map of gesture names to video URLs.
+                        example:
+                          wave: "https://cdn.bithuman.ai/dynamics/wave.mp4"
+                          nod: "https://cdn.bithuman.ai/dynamics/nod.mp4"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    put:
+      operationId: updateDynamics
+      summary: Update Dynamics
+      description: Update the dynamics configuration for an agent.
+      tags: [Dynamics]
+      parameters:
+        - name: agent_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The agent ID.
+          example: "A72DEQ7832"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [dynamics]
+              properties:
+                dynamics:
+                  type: object
+                  description: The dynamics configuration object.
+                  properties:
+                    enabled:
+                      type: boolean
+                      description: Whether dynamics are enabled for this agent.
+                toggle_enabled:
+                  type: boolean
+                  nullable: true
+                  description: Toggle dynamics on or off.
+      responses:
+        "200":
+          description: Dynamics updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Dynamics updated successfully"
+                  agent_id:
+                    type: string
+                    example: "A72DEQ7832"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /health:
+    get:
+      operationId: healthCheck
+      summary: Health Check
+      description: Check if the API service is healthy. No authentication required.
+      tags: [Health]
+      security: []
+      responses:
+        "200":
+          description: Service is healthy.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                  service:
+                    type: string
+                    example: "api-gateway"
+                  version:
+                    type: string
+                    example: "1.0.0"
+
+components:
+  securitySchemes:
+    apiSecret:
+      type: apiKey
+      in: header
+      name: api-secret
+      description: |
+        Your BitHuman API secret key. Get one at [imaginex.bithuman.ai](https://imaginex.bithuman.ai).
+
+  schemas:
+    AgentDetails:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "A72DEQ7832"
+        name:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        agent_id:
+          type: string
+          example: "A72DEQ7832"
+        status:
+          type: string
+          enum: [generating, completed, failed, ready]
+          example: "completed"
+        image_url:
+          type: string
+          nullable: true
+        video_url:
+          type: string
+          nullable: true
+        model_url:
+          type: string
+          nullable: true
+        voice_id:
+          type: string
+          nullable: true
+        system_prompt:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        event_type:
+          type: string
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+        error_type:
+          type: string
+          nullable: true
+        dynamics:
+          type: object
+          nullable: true
+
+    AgentInfo:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "A72DEQ7832"
+        name:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        system_prompt:
+          type: string
+          nullable: true
+        image_url:
+          type: string
+          nullable: true
+        video_url:
+          type: string
+          nullable: true
+        model_url:
+          type: string
+          nullable: true
+        voice_id:
+          type: string
+          nullable: true
+        status:
+          type: string
+          example: "ready"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: "UNAUTHORIZED"
+            message:
+              type: string
+              example: "Invalid or missing API secret"
+            httpStatus:
+              type: integer
+              example: 401
+        status:
+          type: string
+          example: "error"
+        status_code:
+          type: integer
+          example: 401
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid API secret.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: "UNAUTHORIZED"
+              message: "Invalid or missing API secret"
+              httpStatus: 401
+            status: "error"
+            status_code: 401
+    BadRequest:
+      description: Invalid request parameters.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: "MISSING_PARAM"
+              message: "Required parameter missing"
+              httpStatus: 400
+            status: "error"
+            status_code: 400
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error:
+              code: "NOT_FOUND"
+              message: "Agent not found"
+              httpStatus: 404
+            status: "error"
+            status_code: 404

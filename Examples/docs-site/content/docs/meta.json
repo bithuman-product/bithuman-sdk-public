@@ -1,0 +1,16 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "index",
+    "---Getting Started---",
+    "getting-started",
+    "---Cloud Services---",
+    "cloud-services",
+    "---Examples---",
+    "examples",
+    "---Integrations---",
+    "integrations",
+    "---API Reference---",
+    "api-reference"
+  ]
+}

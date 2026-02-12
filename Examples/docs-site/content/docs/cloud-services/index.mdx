@@ -1,0 +1,32 @@
+---
+title: Cloud Services
+description: Deploy BitHuman avatars using our cloud infrastructure.
+---
+
+import { Cards, Card } from "fumadocs-ui/components/card";
+
+BitHuman offers cloud-hosted infrastructure for deploying avatars at scale. Choose between our managed cloud plugin for quick integration or self-hosted GPU containers for full control.
+
+<Cards>
+  <Card
+    title="LiveKit Cloud Plugin"
+    description="Use BitHuman agents with cloud-hosted LiveKit integration. No local GPU required."
+    href="/docs/cloud-services/livekit-cloud-plugin"
+  />
+  <Card
+    title="Self-Hosted GPU Container"
+    description="Deploy GPU avatar workers on your own infrastructure for full control and data privacy."
+    href="/docs/cloud-services/self-hosted-gpu"
+  />
+</Cards>
+
+## Cloud vs Self-Hosted
+
+| Feature | Cloud Plugin | Self-Hosted GPU |
+|---------|-------------|-----------------|
+| **Setup Time** | Minutes | Hours |
+| **GPU Required** | No | Yes |
+| **Data Privacy** | Cloud-processed | On-premises |
+| **Scaling** | Automatic | Manual |
+| **Cost Model** | Per-use credits | Infrastructure costs |
+| **Model Updates** | Automatic | Manual pulls |

@@ -1,0 +1,24 @@
+{
+  "title": "API Reference",
+  "pages": [
+    "index",
+    "---Agent Generation---",
+    "generate-agent",
+    "get-agent-status",
+    "---Agent Management---",
+    "validate-api-secret",
+    "get-agent-info",
+    "update-agent-prompt",
+    "---Agent Context---",
+    "make-agent-speak",
+    "add-context",
+    "---File Upload---",
+    "upload-file",
+    "---Dynamics---",
+    "generate-dynamics",
+    "get-dynamics",
+    "update-dynamics",
+    "---Health---",
+    "health-check"
+  ]
+}

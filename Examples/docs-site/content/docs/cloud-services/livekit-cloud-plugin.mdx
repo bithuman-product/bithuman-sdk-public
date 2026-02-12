@@ -1,0 +1,176 @@
+---
+title: LiveKit Cloud Plugin
+description: Use BitHuman agents with cloud-hosted LiveKit integration.
+---
+
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+Use existing BitHuman agents in real-time applications with our cloud-hosted LiveKit plugin featuring Essence (CPU) and Expression (GPU) models.
+
+## Quick Start
+
+### 1. Install
+
+```bash
+uv pip uninstall livekit-plugins-bithuman
+GIT_LFS_SKIP_SMUDGE=1 uv pip install git+https://github.com/livekit/agents@main#subdirectory=livekit-plugins/livekit-plugins-bithuman
+```
+
+### 2. Get API Credentials
+
+Get your API secret at [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#developer).
+
+### 3. Find Your Agent ID
+
+Navigate to your [imaginex.bithuman.ai](https://imaginex.bithuman.ai) dashboard and click on the agent card you want to use.
+
+![Agent Dashboard](/images/agent-dashboard.jpg)
+
+The **Agent Settings** dialog shows your unique **Agent ID** at the top.
+
+![Agent Settings Dialog](/images/agent-settings-dialog.jpg)
+
+### 4. Set Environment
+
+```bash
+export BITHUMAN_API_SECRET="your_api_secret"
+```
+
+---
+
+## Model Types
+
+<Tabs items={["Essence (CPU)", "Expression (GPU)"]}>
+<Tab value="Essence (CPU)">
+
+Pre-trained personalities and behaviors. Optimized for conversational AI with faster response times. Supports full body and animal mode.
+
+```python
+import bithuman
+
+bithuman_avatar = bithuman.AvatarSession(
+    avatar_id="your_agent_code",
+    api_secret="your_api_secret",
+)
+```
+
+</Tab>
+<Tab value="Expression (GPU)">
+
+Dynamic facial expression mapping. Image-based avatar generation. Supports face and shoulder & above only.
+
+**Using Agent ID:**
+```python
+import bithuman
+
+bithuman_avatar = bithuman.AvatarSession(
+    avatar_id="your_agent_code",
+    api_secret="your_api_secret",
+    model="expression"
+)
+```
+
+**Using Custom Image:**
+```python
+import bithuman
+from PIL import Image
+
+bithuman_avatar = bithuman.AvatarSession(
+    avatar_image=Image.open("your_image_path"),
+    api_secret="your_api_secret",
+    model="expression"
+)
+```
+
+</Tab>
+</Tabs>
+
+---
+
+## Dynamics (Gesture Triggers)
+
+For reactive avatar gestures triggered by user speech keywords.
+
+### Step 1: Get Available Gestures
+
+```python
+import requests
+
+agent_id = "A31KJC8622"
+url = f"https://api.bithuman.ai/v1/dynamics/{agent_id}"
+headers = {"api-secret": "YOUR_API_SECRET"}
+
+response = requests.get(url, headers=headers)
+dynamics_data = response.json()
+
+if dynamics_data.get("success"):
+    gestures_dict = dynamics_data["data"].get("gestures", {})
+    available_gestures = list(gestures_dict.keys())
+    print(f"Available gestures: {available_gestures}")
+```
+
+### Step 2: Set Up Keyword Mapping
+
+```python
+from livekit.agents import AgentSession, UserInputTranscribedEvent
+from livekit import rtc
+import asyncio
+import json
+
+KEYWORD_ACTION_MAP = {
+    "laugh": "laugh_react",
+    "haha": "laugh_react",
+    "funny": "laugh_react",
+    "hello": "mini_wave_hello",
+}
+
+async def send_dynamics_trigger(
+    local_participant: rtc.LocalParticipant,
+    destination_identity: str,
+    action: str,
+) -> None:
+    payload = {
+        "action": action,
+        "identity": local_participant.identity,
+    }
+    await local_participant.perform_rpc(
+        destination_identity=destination_identity,
+        method="trigger_dynamics",
+        payload=json.dumps(payload),
+    )
+```
+
+See [agent_with_dynamics.py](https://github.com/bithuman-product/examples/tree/main/public-docs/examples/cloud/essence/agent_with_dynamics.py) for a complete example.
+
+---
+
+## Configuration
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `avatar_id` | string | Yes* | Unique identifier for pre-created avatar |
+| `avatar_image` | PIL.Image | Yes* | Custom image for dynamic avatar creation |
+| `api_secret` | string | Yes | Authentication secret |
+| `model` | string | No | `"essence"` (default) or `"expression"` |
+
+*Either `avatar_id` or `avatar_image` is required, not both.
+
+---
+
+## Cloud Advantages
+
+- **No Local Storage** — No large model files to download
+- **Auto-Updates** — Always use the latest model versions
+- **Scalability** — Handle multiple concurrent sessions
+- **Cross-Platform** — Works on any device with internet
+
+---
+
+## Pricing
+
+Visit [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#api) for current pricing.
+
+| Tier | Credits | Support |
+|------|---------|---------|
+| Free | 199/month | Community |
+| Pro | Unlimited | Priority |

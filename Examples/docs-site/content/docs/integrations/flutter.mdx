@@ -1,0 +1,155 @@
+---
+title: Flutter Integration
+description: Cross-platform mobile app with AI avatar integration.
+---
+
+Build a Flutter app that connects to BitHuman AI avatars through LiveKit for real-time video chat.
+
+## Architecture
+
+```
+Flutter App <-> LiveKit Room <-> Python Agent <-> BitHuman Avatar
+     |              |              |              |
+  Video/Audio   Real-time      AI Processing   Avatar Rendering
+  Capture      Streaming       (OpenAI)        (Cloud)
+```
+
+## Quick Start
+
+### 1. Backend Setup
+
+```bash
+cd examples/flutter/backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+cp .env.example .env
+# Edit .env with your credentials
+
+python diagnose.py  # Diagnostic check
+python agent.py dev  # Start the agent
+```
+
+### 2. Frontend Setup
+
+```bash
+cd examples/flutter/frontend
+flutter pub get
+# Edit lib/config/livekit_config.dart
+flutter run
+```
+
+---
+
+## Configuration
+
+### Backend (.env)
+
+```bash
+BITHUMAN_API_SECRET=sk_bh_your_api_secret_here
+BITHUMAN_AVATAR_ID=A33NZN6384  # Optional
+OPENAI_API_KEY=sk-proj_your_openai_api_key_here
+LIVEKIT_API_KEY=APIyour_livekit_api_key
+LIVEKIT_API_SECRET=your_livekit_api_secret
+LIVEKIT_URL=wss://your-project.livekit.cloud
+```
+
+### Frontend (lib/config/livekit_config.dart)
+
+```dart
+class LiveKitConfig {
+  static const String serverUrl = 'wss://your-project.livekit.cloud';
+  static const String? tokenEndpoint = 'http://localhost:3000/token';
+  static const String roomName = 'flutter-avatar-room';
+  static const String participantName = 'Flutter User';
+}
+```
+
+---
+
+## Features
+
+- **Real-time Video Chat** — Connect with AI avatar through LiveKit
+- **Voice Interaction** — Natural conversation with OpenAI Realtime API
+- **Cross-platform** — Single codebase for iOS, Android, and Web
+- **Responsive UI** — Adaptive design for different screen sizes
+
+### Platform Support
+
+| Platform | Minimum |
+|----------|---------|
+| iOS | 12.0+ |
+| Android | API 21+ |
+| Web | Modern browsers, HTTPS |
+
+---
+
+## Customization
+
+### Avatar Selection
+
+```python
+# backend/agent.py
+avatar_id = os.getenv("BITHUMAN_AVATAR_ID", "A33NZN6384")
+
+# Or use custom image
+bithuman_avatar = bithuman.AvatarSession(
+    api_secret=api_secret,
+    avatar_image="path/to/your/image.jpg"
+)
+```
+
+### AI Personality
+
+```python
+agent_instructions = """
+You are a helpful AI assistant integrated with a Flutter mobile app.
+Respond naturally and concisely to user questions.
+"""
+```
+
+---
+
+## Deployment
+
+### Backend (Docker)
+
+```dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["python", "agent.py", "start"]
+```
+
+### Flutter
+
+```bash
+# iOS
+flutter build ios --release
+
+# Android
+flutter build apk --release
+
+# Web
+flutter build web --release
+```
+
+---
+
+## Troubleshooting
+
+**"No camera found"** — Check device permissions, verify camera not in use
+
+**"Connection failed"** — Verify LiveKit server URL, check token validity
+
+**"Avatar not showing"** — Check backend logs, verify bitHuman API key
+
+---
+
+## Resources
+
+- [Flutter Documentation](https://docs.flutter.dev)
+- [LiveKit Flutter SDK](https://pub.dev/packages/livekit_client)

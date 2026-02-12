@@ -1,0 +1,4 @@
+{
+  "title": "Cloud Services",
+  "pages": ["index", "livekit-cloud-plugin", "self-hosted-gpu"]
+}
