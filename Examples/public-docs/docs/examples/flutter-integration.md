@@ -8,24 +8,24 @@ Build a Flutter app that connects to bitHuman AI avatars through LiveKit for rea
 
 ---
 
-## ✨ What This Example Does
+## What This Example Does
 
 - **Cross-platform**: Works on iOS, Android, and Web
 - **Real-time Video**: Live AI avatar video streaming
 - **Voice Interaction**: Two-way audio communication
-- **Modern UI**: Beautiful, responsive interface
+- **Modern UI**: Responsive interface
 - **Easy Setup**: Follow the guide to get running quickly
 
-## 🏗️ Architecture
+## Architecture
 
 ```
-Flutter App ←→ LiveKit Room ←→ Python Agent ←→ bitHuman Avatar
-     ↓              ↓              ↓              ↓
+Flutter App <-> LiveKit Room <-> Python Agent <-> bitHuman Avatar
+     |              |              |              |
   Video/Audio   Real-time      AI Processing   Avatar Rendering
   Capture      Streaming       (OpenAI)        (Cloud)
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Backend Setup
 
@@ -67,7 +67,7 @@ flutter pub get
 flutter run
 ```
 
-## 🔧 Configuration
+## Configuration
 
 ### Backend Configuration
 
@@ -100,7 +100,7 @@ class LiveKitConfig {
 }
 ```
 
-## 📱 Features
+## Features
 
 ### Core Features
 - **Real-time Video Chat**: Connect with AI avatar through LiveKit
@@ -119,7 +119,7 @@ class LiveKitConfig {
 - **Android**: API 21+ with required permissions
 - **Web**: Modern browsers with HTTPS support
 
-## 🧪 Testing
+## Testing
 
 ### Backend Testing
 
@@ -146,7 +146,7 @@ class LiveKitConfig {
    - Test network connectivity
    - Test avatar loading
 
-## 🎨 Customization
+## Customization
 
 ### Avatar Selection
 
@@ -187,7 +187,7 @@ class AppTheme {
 }
 ```
 
-## 🚀 Deployment
+## Deployment
 
 ### Backend Deployment
 
@@ -226,7 +226,7 @@ flutter build web --release
 # Deploy to Firebase, Vercel, Netlify, etc.
 ```
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -260,20 +260,15 @@ final logger = Logger('MyApp');
 logger.d('Debug message');
 ```
 
-## 📚 Next Steps
+## Next Steps
 
 1. **Customize UI**: Modify the interface to match your brand
 2. **Add Features**: Implement chat, screen sharing, etc.
 3. **Optimize Performance**: Fine-tune for your use case
 4. **Deploy**: Publish to app stores or web
 
-## 🆘 Support
+## Resources
 
-- 💬 [Discord Community](https://discord.gg/ES953n7bPA)
-- 📖 [Flutter Documentation](https://docs.flutter.dev)
-- 🔧 [LiveKit Flutter SDK](https://pub.dev/packages/livekit_client)
-- 🎯 [bitHuman Documentation](https://docs.bithuman.ai)
-
----
-
-**Ready to start?** Follow the setup instructions above and check the [Complete Integration Guide](../integrations/flutter-integration.md) for detailed documentation!
+- [Flutter Documentation](https://docs.flutter.dev)
+- [LiveKit Flutter SDK](https://pub.dev/packages/livekit_client)
+- [bitHuman Documentation](https://docs.bithuman.ai)

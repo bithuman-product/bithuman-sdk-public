@@ -1,20 +1,20 @@
-# 🐾 Animal Mode
+# Animal Mode
 
-> **Create amazing animal avatars with automatic face detection**
+> **Create animal avatars with automatic face detection.**
 
-Transform your favorite animals into interactive avatars with our specialized animal mode.
-
----
-
-## 🎯 Animal Avatar Creation
-
-Animal Mode uses advanced AI to automatically detect and map animal facial features, enabling you to create engaging animal characters for your applications.
+Transform animals into interactive avatars using animal mode.
 
 ---
 
-## 🐨 Available Animal Characters
+## Animal Avatar Creation
 
-Checkout some example animal agents. You can either use prompts to generate or upload your favorite pet photos:
+Animal Mode uses AI to detect and map animal facial features, enabling animal character creation for your applications.
+
+---
+
+## Available Animal Characters
+
+Checkout some example animal agents. You can either use prompts to generate or upload your own pet photos:
 
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 20px 0;">
 
@@ -104,30 +104,30 @@ Checkout some example animal agents. You can either use prompts to generate or u
 
 </div>
 
-*Choose any animal above to get started with your animal avatar creation!*
+*Choose any animal above to get started with animal avatar creation.*
 
 ---
 
-## 🤖 Automatic Face Detection
+## Automatic Face Detection
 
-Our AI system automatically attempts to locate the character's face and body in animal images. This enables natural movement and expression mapping.
+The AI system automatically attempts to locate the character's face and body in animal images. This enables natural movement and expression mapping.
 
-### ✅ **What Works Automatically:**
-- 👁️ **Eye tracking** for natural gaze
-- 👄 **Mouth detection** for speech sync
-- 🎭 **Expression mapping** for emotions
-- 📐 **Facial landmarks** for precise animation
+### What Works Automatically:
+- **Eye tracking** for natural gaze
+- **Mouth detection** for speech sync
+- **Expression mapping** for emotions
+- **Facial landmarks** for precise animation
 
 ---
 
-## 🛠️ Manual Face Marking
+## Manual Face Marking
 
-Sometimes automatic detection needs a helping hand! When our AI can't locate facial features automatically, you'll be prompted to manually mark key points.
+When the AI cannot locate facial features automatically, you will be prompted to manually mark key points.
 
 ![Help Needed](../assets/images/example-help-needed.jpg)
 *When automatic detection needs assistance*
 
-### 📍 **Manual Marking Process:**
+### Manual Marking Process:
 
 When prompted, you'll mark these key facial points:
 
@@ -136,48 +136,40 @@ When prompted, you'll mark these key facial points:
 
 **Required Area:**
 The marked rectangle should cover the required facial region including:
-- 👁️ **Eyes** - both left and right eyes
-- 👃 **Nose** - nose area
-- 👄 **Mouth** - complete mouth region
-- 🔹 **Chin** - lower face boundary
+- **Eyes** -- both left and right eyes
+- **Nose** -- nose area
+- **Mouth** -- complete mouth region
+- **Chin** -- lower face boundary
 
 Simply draw a rectangle that encompasses the entire face area. There is no need to individually select specific points.
 
 ---
 
-## 💡 Best Practices for Animal Avatars
+## Best Practices for Animal Avatars
 
-**🎯 For Optimal Results:**
-- ✅ **Clear facial features** - ensure eyes, nose, mouth are visible
-- ✅ **Front-facing pose** - straight-on view works best
-- ✅ **Good contrast** - features should stand out from background
-- ✅ **High resolution** - more detail = better detection
+**For Optimal Results:**
+- **Clear facial features** -- ensure eyes, nose, mouth are visible
+- **Front-facing pose** -- straight-on view works best
+- **Good contrast** -- features should stand out from background
+- **High resolution** -- more detail means better detection
 
-**⚠️ Common Challenges:**
+**Common Challenges:**
 - Fur covering facial features
 - Side profile poses
 - Complex lighting or shadows
 - Cartoonish or stylized features
 
-**🔧 Pro Tips:**
-- Start with our pre-selected animals for guaranteed compatibility
+**Tips:**
+- Start with the pre-selected animals for guaranteed compatibility
 - Use well-lit, high-contrast images
-- Be patient with manual marking - precision improves results
+- Be patient with manual marking -- precision improves results
 - Test with simple expressions first
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
-**Ready to create your animal avatar?**
-
-1. **🎯 Choose** an animal character from the grid above
-2. **⚡ Let AI** attempt automatic face detection
-3. **✋ Help mark** facial points if needed
-4. **🎬 Generate** your interactive animal avatar!
-
----
-
-*Create your animal avatar at [imaginex.bithuman.ai](https://imaginex.bithuman.ai)!*
-
-**Love animals?** Join our [Discord community](https://discord.gg/ES953n7bPA) to share your creations and get tips! 🐾 
+1. **Choose** an animal character from the grid above
+2. **Let AI** attempt automatic face detection
+3. **Help mark** facial points if needed
+4. **Generate** your interactive animal avatar

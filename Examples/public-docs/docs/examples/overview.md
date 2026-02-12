@@ -1,4 +1,4 @@
-# 💡 Examples
+# Examples
 
 > **5 simple examples to get you started**
 
@@ -9,11 +9,11 @@ Choose based on what you want to build.
 
 ---
 
-## 🚀 Pick Your Example
+## Pick Your Example
 
-### **🎵 Desktop Apps**
+### Desktop Apps
 
-**[Audio Clip Avatar](examples/avatar-with-audio-clip.md)** ⭐ **Start here!**
+**[Audio Clip Avatar](examples/avatar-with-audio-clip.md)** -- Start here
 - Play audio files with avatar animation
 - **Good for**: Demos, presentations
 - **Time**: 5 minutes
@@ -23,7 +23,7 @@ Choose based on what you want to build.
 - **Good for**: Voice assistants, kiosks
 - **Time**: 10 minutes
 
-### **🌐 Web Apps**
+### Web Apps
 
 **[OpenAI Agent](examples/livekit-openai-agent.md)**
 - Full AI conversation in browser
@@ -40,7 +40,7 @@ Choose based on what you want to build.
 - **Good for**: IoT, edge devices
 - **Time**: 30 minutes
 
-### **📱 Mobile Apps**
+### Mobile Apps
 
 **[Flutter Integration](examples/flutter/)**
 - Cross-platform mobile/web app
@@ -49,7 +49,7 @@ Choose based on what you want to build.
 
 ---
 
-## 🛠️ Before You Start
+## Before You Start
 
 ```bash
 # Install SDK
@@ -61,31 +61,29 @@ export BITHUMAN_MODEL_PATH="/path/to/model.imx"
 ```
 
 **Get your setup:**
-- 🔑 **API secret**: [imaginex.bithuman.ai](https://imaginex.bithuman.ai)
-- 🤖 **Avatar models**: Download from Community page
-- 📁 **Source code**: [GitHub Examples Repository](https://github.com/bithuman-product/examples/tree/main/public-docs/examples)
+- **API secret**: [imaginex.bithuman.ai](https://imaginex.bithuman.ai)
+- **Avatar models**: Download from Community page
+- **Source code**: [GitHub Examples Repository](https://github.com/bithuman-product/examples/tree/main/public-docs/examples)
 
 <!-- Image removed: download models screenshot -->
 *Download .imx models from the Community page*
 
 ---
 
-## ❓ Which Example?
+## Which Example?
 
-**👋 New to bitHuman?** → [Audio Clip Avatar](examples/avatar-with-audio-clip.md)
+**New to bitHuman?** → [Audio Clip Avatar](examples/avatar-with-audio-clip.md)
 
-**🎤 Want real-time?** → [Live Microphone Avatar](examples/avatar-with-microphone.md)
+**Want real-time?** → [Live Microphone Avatar](examples/avatar-with-microphone.md)
 
-**🌐 Building web apps?** → [OpenAI Agent](examples/livekit-openai-agent.md)
+**Building web apps?** → [OpenAI Agent](examples/livekit-openai-agent.md)
 
-**🔒 Need privacy?** → [Apple Local Agent](examples/livekit-apple-local.md)
+**Need privacy?** → [Apple Local Agent](examples/livekit-apple-local.md)
 
-**🤖 Using IoT/edge?** → [Raspberry Pi Agent](examples/livekit-raspberry-pi.md)
+**Using IoT/edge?** → [Raspberry Pi Agent](examples/livekit-raspberry-pi.md)
 
-**📱 Building mobile apps?** → [Flutter Integration](examples/flutter/)
+**Building mobile apps?** → [Flutter Integration](examples/flutter/)
 
 ---
 
-*Pick one and follow the guide - you'll have an avatar running in minutes!*
-
-**Questions or requests?** Join our [Discord community](https://discord.gg/ES953n7bPA) for support and discussions! ✨ 
+*Pick one and follow the guide -- you will have an avatar running in minutes.*

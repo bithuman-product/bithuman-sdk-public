@@ -1,14 +1,14 @@
-# 🍎 Apple Local Agent
+# Apple Local Agent
 
 ![Apple](https://img.shields.io/badge/Apple-000000?style=for-the-badge&logo=apple&logoColor=white)
 
 > **Private AI using Mac's built-in speech**
 
-Full privacy - speech never leaves your Mac.
+Full privacy -- speech never leaves your Mac.
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Requirements
 - macOS 13+ (Apple Silicon recommended)
@@ -23,7 +23,7 @@ pip install https://github.com/bithuman-product/examples/releases/download/v0.1/
 ```bash
 bithuman-voice serve --port 8091
 ```
-*macOS will ask for Speech permissions - approve this!*
+*macOS will ask for Speech permissions -- approve this.*
 
 ### 4. Install dependencies
 ```bash
@@ -49,7 +49,7 @@ npm install && npm run dev
 
 ### 7. Run agent
 
-📁 **[View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/agent-livekit-apple-local.py)**
+**[View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/agent-livekit-apple-local.py)**
 
 **Choose your mode:**
 
@@ -65,16 +65,16 @@ python examples/agent-livekit-apple-local.py console
 
 ---
 
-## 💡 What it does
+## What it does
 
 **Stays on your Mac:**
-✅ Speech-to-text (Apple Speech Framework)  
-✅ Text-to-speech (Apple Voice Synthesis)  
-✅ Avatar animation (bitHuman)  
-✅ Voice activity detection (Silero)  
+- Speech-to-text (Apple Speech Framework)
+- Text-to-speech (Apple Voice Synthesis)
+- Avatar animation (bitHuman)
+- Voice activity detection (Silero)
 
 **Uses internet:**
-❌ Only AI conversation (OpenAI LLM)
+- Only AI conversation (OpenAI LLM)
 
 **Privacy benefits:**
 - Voice patterns never leave your device
@@ -83,7 +83,7 @@ python examples/agent-livekit-apple-local.py console
 
 ---
 
-## 🔧 Common Issues
+## Common Issues
 
 **Voice service won't start?**
 - Check microphone permissions in System Preferences
@@ -101,37 +101,37 @@ python examples/agent-livekit-apple-local.py console
 
 ---
 
-## 🎯 Perfect for
+## Use Cases
 
-✅ **Privacy-sensitive applications**  
-✅ **Healthcare/legal/finance**  
-✅ **Offline demonstrations**  
-✅ **Corporate internal tools**  
-✅ **HIPAA/GDPR compliance scenarios**
+- **Privacy-sensitive applications**
+- **Healthcare/legal/finance**
+- **Offline demonstrations**
+- **Corporate internal tools**
+- **HIPAA/GDPR compliance scenarios**
 
 ---
 
-## 🔒 Make it 100% Private
+## Make it 100% Private
 
-**🍎 Complete Offline macOS Example**
+**Complete Offline macOS Example**
 
-For **100% local operation with no internet required**, we have a complete Docker setup that runs everything locally on your Mac!
+For 100% local operation with no internet required, there is a complete Docker setup that runs everything locally on your Mac.
 
-🚀 **[Complete macOS Offline Example →](https://github.com/bithuman-product/examples/tree/main/public-macos-offline-example)**
+**[Complete macOS Offline Example](https://github.com/bithuman-product/examples/tree/main/public-macos-offline-example)**
 
 **What you get:**
-- ✅ **Apple Speech Recognition** - Local STT via bitHuman's Apple plugin
-- ✅ **Apple Voices/Siri** - Local TTS with premium voice support  
-- ✅ **Ollama LLM** - Local language models (Llama 3.2:1b/3b)
-- ✅ **bitHuman Avatar** - Real-time facial animation
-- ✅ **LiveKit + Web UI** - Complete conversation interface
-- ✅ **Zero Internet Dependency** - Everything runs on your Mac
+- **Apple Speech Recognition** -- Local STT via bitHuman's Apple plugin
+- **Apple Voices/Siri** -- Local TTS with premium voice support
+- **Ollama LLM** -- Local language models (Llama 3.2:1b/3b)
+- **bitHuman Avatar** -- Real-time facial animation
+- **LiveKit + Web UI** -- Complete conversation interface
+- **Zero Internet Dependency** -- Everything runs on your Mac
 
-**Perfect for:**
-- 🏥 Healthcare applications requiring HIPAA compliance
-- 🏛️ Government/military with strict data policies
-- 💼 Financial services with privacy requirements
-- 🔒 Any scenario requiring complete data isolation
+**Suited for:**
+- Healthcare applications requiring HIPAA compliance
+- Government/military with strict data policies
+- Financial services with privacy requirements
+- Any scenario requiring complete data isolation
 
 **Quick Setup:**
 ```bash
@@ -153,11 +153,11 @@ docker compose up
 # Access at http://localhost:4202
 ```
 
-**🌟 Enterprise Offline Mode:** Contact bitHuman for offline tokens to eliminate all internet requirements for authentication and metering.
+**Enterprise Offline Mode:** Contact bitHuman for offline tokens to eliminate all internet requirements for authentication and metering.
 
 ---
 
-## 📊 Performance
+## Performance
 
 **Apple Silicon benefits:**
 - Hardware-accelerated speech processing
@@ -165,18 +165,14 @@ docker compose up
 - Fast local inference
 
 **Recommended specs:**
-- M2+ Mac (M4 ideal)  
+- M2+ Mac (M4 ideal)
 - 16GB+ RAM
 - macOS 13+
 
 ---
 
-## ➡️ Next Steps
+## Next Steps
 
-**Want edge deployment?** → Try [Raspberry Pi Agent](examples/livekit-raspberry-pi.md)
+**Want edge deployment?** -- Try [Raspberry Pi Agent](examples/livekit-raspberry-pi.md)
 
-**Need simpler setup?** → Try [OpenAI Agent](examples/livekit-openai-agent.md)
-
----
-
-*Privacy-first AI made simple!* 🔒 
+**Need simpler setup?** -- Try [OpenAI Agent](examples/livekit-openai-agent.md)

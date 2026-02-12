@@ -1,18 +1,17 @@
-# 🎭 Dynamics API
+# Dynamics API
 
-> **Agent Movement Generation Service**  
 > Generate and manage dynamic movements and animations for bitHuman agents.
 
-## 🔑 Authentication
+## Authentication
 
 Get your API secret from [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#developer)
 
-## 📡 Base URL
+## Base URL
 ```
 https://api.bithuman.ai
 ```
 
-## 🚀 Endpoints
+## Endpoints
 
 ### Generate Dynamics
 
@@ -247,7 +246,7 @@ response = requests.put(url, headers=headers, json=payload)
 print(response.json())
 ```
 
-## 🎯 Motion Types
+## Motion Types
 
 | Motion | Description | Use Case |
 |--------|-------------|----------|
@@ -257,7 +256,7 @@ print(response.json())
 | `idle` | Subtle idle animation | Background movement |
 | `talking` | Speech-synchronized motion | Conversation |
 
-## ⚙️ Configuration Options
+## Configuration Options
 
 **Duration Settings:**
 - `1-3 seconds`: Quick gestures
@@ -269,7 +268,7 @@ print(response.json())
 - `kling`: Alternative motion model
 - `auto`: Automatic model selection
 
-## 🔧 Error Handling
+## Error Handling
 
 **Common HTTP Status Codes:**
 - `200` - Success
@@ -288,19 +287,19 @@ print(response.json())
 }
 ```
 
-## 💡 Use Cases
+## Use Cases
 
 - **Interactive Agents**: Add natural movements to conversational agents
-- **Presentation Avatars**: Create engaging presentation assistants
+- **Presentation Avatars**: Create presentation assistants with gestures
 - **Customer Service**: Enhance virtual customer service representatives
-- **Educational Content**: Make learning experiences more engaging
+- **Educational Content**: Add motion to educational avatar content
 
-## 🔗 Related APIs
+## Related APIs
 
 - [Agent Generation API](./agent-generation-api.md) - Create agents with dynamic capabilities
 - [File Upload API](./file-upload-api.md) - Upload media assets for agent customization
 
-## 📊 Integration Example
+## Integration Example
 
 ```python
 import requests
@@ -325,7 +324,7 @@ status_url = f"https://api.bithuman.ai/v1/agent/status/{agent_id}"
 while True:
     status_response = requests.get(status_url, headers={"api-secret": "YOUR_API_SECRET"})
     status_data = status_response.json()
-    
+
     if status_data["data"]["status"] == "ready":
         break
     time.sleep(5)

@@ -1,18 +1,17 @@
-# 🤖 Agent Management API
+# Agent Management API
 
-> **Agent Validation, Retrieval & Prompt Updates**
-> Validate API credentials, retrieve agent details, and update agent prompts through our cloud-hosted REST API.
+> Validate API credentials, retrieve agent details, and update agent prompts through the cloud-hosted REST API.
 
-## 🔑 Authentication
+## Authentication
 
 Get your API secret from [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#developer)
 
-## 📡 Base URL
+## Base URL
 ```
 https://api.bithuman.ai
 ```
 
-## 🚀 Endpoints
+## Endpoints
 
 ### Validate API Secret
 
@@ -54,7 +53,7 @@ response = requests.post(url, headers=headers)
 result = response.json()
 
 if result["valid"]:
-    print("API secret is valid!")
+    print("API secret is valid.")
 else:
     print("Invalid API secret. Get one at https://imaginex.bithuman.ai/#developer")
 ```
@@ -247,7 +246,7 @@ const result = await response.json();
 console.log('Update result:', result);
 ```
 
-**Complete Example — Create, Check, and Update:**
+**Complete Example -- Create, Check, and Update:**
 ```python
 import requests
 import time
@@ -293,7 +292,7 @@ update = requests.post(
 print(f"Prompt updated: {update}")
 ```
 
-## 🔧 Error Handling
+## Error Handling
 
 **Common HTTP Status Codes:**
 - `200` - Success
@@ -318,7 +317,7 @@ print(f"Prompt updated: {update}")
 - `VALIDATION_ERROR` - Invalid request body format
 - `INTERNAL_ERROR` - Server-side error
 
-## 🔗 Related APIs
+## Related APIs
 
 - [Agent Generation API](./agent-generation-api.md) - Create new agents
 - [Agent Context API](./agent-context-api.md) - Add context and trigger speech

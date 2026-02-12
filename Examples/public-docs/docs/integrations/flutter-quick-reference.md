@@ -1,8 +1,8 @@
 # Flutter + LiveKit + bitHuman Quick Reference
 
-> **Copy & Paste Ready** - One-minute setup with latest LiveKit Components
+> **Copy & Paste Ready** -- One-minute setup with latest LiveKit Components
 
-## 🚀 One-Minute Setup
+## One-Minute Setup
 
 ### 1. Create Project
 ```bash
@@ -77,27 +77,27 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
+
   # LiveKit components (includes livekit_client) - fixed version
   livekit_components: 1.2.2+hotfix.1
-  
+
   # HTTP requests for token generation
   http: ^1.1.0
-  
+
   # UI components
   cupertino_icons: ^1.0.6
-  
+
   # Structured logging
   logging: ^1.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  
+
   # Code generation (optional)
   json_serializable: ^6.7.1
   build_runner: ^2.4.7
-  
+
   # Linting
   flutter_lints: ^6.0.0
 
@@ -108,7 +108,7 @@ EOF
 flutter pub get
 ```
 
-## 📱 Complete Flutter Code
+## Complete Flutter Code
 
 ### main.dart
 ```dart
@@ -128,7 +128,7 @@ void main() {
   Logger.root.onRecord.listen((record) {
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
-  
+
   runApp(const BitHumanFlutterApp());
 }
 
@@ -179,12 +179,12 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
       // Generate random room and participant names
       final roomName = _generateRoomName();
       final participantName = _generateParticipantName();
-      
+
       _logger.info('Connecting to room: $roomName as $participantName');
-      
+
       // Get token from server
       final tokenData = await _getToken(roomName, participantName);
-      
+
       // Navigate to video room using LiveKit Components
       if (mounted) {
         Navigator.of(context).pushReplacement(
@@ -220,7 +220,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
 
   Future<Map<String, dynamic>> _getToken(String roomName, String participantName) async {
     const tokenEndpoint = 'http://localhost:3000/token';
-    
+
     try {
       final response = await http.post(
         Uri.parse(tokenEndpoint),
@@ -230,7 +230,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
           'participant': participantName,
         }),
       );
-      
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -341,12 +341,12 @@ class _VideoRoomScreenState extends State<VideoRoomScreen> {
                   child: _VideoDisplayWidget(roomCtx: roomCtx),
                 ),
               ),
-              
+
               // Audio handling
               Positioned.fill(
                 child: _AudioHandlerWidget(roomCtx: roomCtx),
               ),
-              
+
               // Loading overlay
               Positioned.fill(
                 child: _LoadingOverlay(),
@@ -362,9 +362,9 @@ class _VideoRoomScreenState extends State<VideoRoomScreen> {
 /// Video display widget with caching to prevent re-rendering
 class _VideoDisplayWidget extends StatefulWidget {
   final RoomContext roomCtx;
-  
+
   const _VideoDisplayWidget({required this.roomCtx});
-  
+
   @override
   State<_VideoDisplayWidget> createState() => _VideoDisplayWidgetState();
 }
@@ -372,27 +372,27 @@ class _VideoDisplayWidget extends StatefulWidget {
 class _VideoDisplayWidgetState extends State<_VideoDisplayWidget> {
   lk.VideoTrackRenderer? _cachedVideoRenderer;
   String? _lastVideoTrackId;
-  
+
   @override
   void initState() {
     super.initState();
     widget.roomCtx.room.addListener(_onRoomChanged);
   }
-  
+
   @override
   void dispose() {
     widget.roomCtx.room.removeListener(_onRoomChanged);
     super.dispose();
   }
-  
+
   void _onRoomChanged() {
     if (mounted) setState(() {});
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final remoteParticipants = widget.roomCtx.room.remoteParticipants.values.toList();
-    
+
     if (remoteParticipants.isEmpty) {
       return const Center(
         child: Column(
@@ -405,15 +405,15 @@ class _VideoDisplayWidgetState extends State<_VideoDisplayWidget> {
         ),
       );
     }
-    
+
     for (final participant in remoteParticipants) {
       final videoTracks = participant.videoTrackPublications
           .where((pub) => pub.track != null)
           .toList();
-      
+
       if (videoTracks.isNotEmpty) {
         final videoTrack = videoTracks.first.track as lk.VideoTrack;
-        
+
         if (_lastVideoTrackId != videoTrack.sid) {
           _cachedVideoRenderer = lk.VideoTrackRenderer(
             videoTrack,
@@ -421,16 +421,16 @@ class _VideoDisplayWidgetState extends State<_VideoDisplayWidget> {
           );
           _lastVideoTrackId = videoTrack.sid;
         }
-        
+
         return Container(
           color: Colors.black,
           child: _cachedVideoRenderer!,
         );
       }
     }
-    
+
     return const Center(
-      child: Text('AI Avatar connected but no video yet', 
+      child: Text('AI Avatar connected but no video yet',
         style: TextStyle(color: Colors.white70)),
     );
   }
@@ -440,7 +440,7 @@ class _VideoDisplayWidgetState extends State<_VideoDisplayWidget> {
 class _AudioHandlerWidget extends StatefulWidget {
   final RoomContext roomCtx;
   const _AudioHandlerWidget({required this.roomCtx});
-  
+
   @override
   State<_AudioHandlerWidget> createState() => _AudioHandlerWidgetState();
 }
@@ -463,11 +463,11 @@ class _LoadingOverlayState extends State<_LoadingOverlay> {
   @override
   Widget build(BuildContext context) {
     final roomContext = RoomContext.of(context);
-    
+
     if (roomContext != null) {
       final hasRemoteVideo = roomContext.room.remoteParticipants.values
           .any((participant) => participant.videoTrackPublications.isNotEmpty);
-      
+
       if (!hasRemoteVideo) {
         return Container(
           color: Colors.black.withOpacity(0.8),
@@ -484,12 +484,12 @@ class _LoadingOverlayState extends State<_LoadingOverlay> {
         );
       }
     }
-    
+
     return const SizedBox.shrink();
   }
 ```
 
-## 🐍 Complete Python Backend
+## Complete Python Backend
 
 ### agent.py
 ```python
@@ -509,16 +509,16 @@ async def entrypoint(ctx: JobContext):
         llm=openai.LLM(),
         tts=openai.TTS(),
     )
-    
+
     # Initialize bitHuman avatar
     avatar = BitHumanAvatar(
         api_secret=os.getenv("BITHUMAN_API_SECRET"),
         avatar_id=os.getenv("BITHUMAN_AVATAR_ID", "A33NZN6384"),
     )
-    
+
     # Connect avatar to room
     await avatar.connect(ctx.room)
-    
+
     # Start voice assistant
     await assistant.start(ctx.room, ctx.participant)
 
@@ -540,7 +540,7 @@ def create_token():
     data = request.get_json() or {}
     room = data.get('room', 'flutter-avatar-room')
     identity = data.get('participant', 'Flutter User')
-    
+
     at = api.AccessToken(
         os.getenv("LIVEKIT_API_KEY"),
         os.getenv("LIVEKIT_API_SECRET"),
@@ -548,7 +548,7 @@ def create_token():
     )
     at.add_grant(api.VideoGrant(room_join=True, room=room))
     at.ttl = timedelta(hours=1)
-    
+
     return jsonify({
         'token': at.to_jwt(),
         'server_url': os.getenv("LIVEKIT_URL")
@@ -558,7 +558,7 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000, debug=True)
 ```
 
-## 🚀 Run Everything
+## Run Everything
 
 ### 1. Start Backend
 ```bash
@@ -574,27 +574,20 @@ cd frontend
 flutter run
 ```
 
-## ✅ Success Criteria
+## Success Criteria
 
-- ✅ Flutter app connects to LiveKit room
-- ✅ AI Avatar appears in video
-- ✅ Audio works (speech recognition + synthesis)
-- ✅ No flashing during speech
-- ✅ Clean console output (INFO level logs)
+- Flutter app connects to LiveKit room
+- AI Avatar appears in video
+- Audio works (speech recognition + synthesis)
+- No flashing during speech
+- Clean console output (INFO level logs)
 
-## 🐛 Common Issues
+## Common Issues
 
 - **No video**: Check if backend agent is running
 - **No audio**: Verify microphone permissions
 - **Connection failed**: Check token server and LiveKit credentials
 
-## 📚 Next Steps
+## Full Documentation
 
-- Customize avatar appearance
-- Add more conversation features
-- Deploy to production
-- Add error handling
-
-## 📚 Full Documentation
-
-For detailed implementation guide, see [Flutter Integration Guide](./flutter-integration.md)
+For the detailed implementation guide, see [Flutter Integration Guide](./flutter-integration.md).

@@ -93,7 +93,7 @@ async def send_rpc_message(
     Send a point-to-point RPC message to a specific participant.
 
     This is a functional abstraction for RPC communication, following
-    the pattern from core-agent-worker/handlers/rpc_handler.py.
+    the pattern from agent-worker/handlers/rpc_handler.py.
 
     Args:
         local_participant: The local participant instance

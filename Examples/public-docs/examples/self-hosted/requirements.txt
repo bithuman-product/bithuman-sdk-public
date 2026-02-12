@@ -2,7 +2,7 @@
 livekit-agents[openai,bithuman,silero]>=1.3.12
 
 # bitHuman runtime SDK (required for stop_on_agent_speech support)
-# bithuman>=0.7.0
+bithuman>=0.7.0
 
 # Environment and configuration
 python-dotenv>=1.1.1

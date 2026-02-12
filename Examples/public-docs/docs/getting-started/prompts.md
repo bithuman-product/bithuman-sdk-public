@@ -1,19 +1,19 @@
-# ✨ Prompt Guide
+# Prompt Guide
 
-> **Create award-winning prompts using the CO-STAR framework**
+> **Create effective prompts using the CO-STAR framework.**
 
-Learn the proven structure that won Singapore's GPT-4 prompt engineering competition.
+Learn the structure that won Singapore's GPT-4 prompt engineering competition.
 
 ---
 
-## 🏆 The CO-STAR Framework
+## The CO-STAR Framework
 
-The **CO-STAR framework** is an award-winning method for creating highly effective prompts. It considers all key aspects that influence an AI's response quality.
+The **CO-STAR framework** is an award-winning method for creating effective prompts. It considers all key aspects that influence an AI's response quality.
 
 ![Example Agent Variety](../assets/images/example-agent-images.jpg)
 *The variety of agents you can create with effective prompts*
 
-### **C - Context** 🎯
+### **C - Context**
 **Provide background information**
 
 Give your avatar the setting and situation they need to understand.
@@ -23,7 +23,7 @@ CONTEXT: You are working as a customer service representative for a tech company
 Customers often call frustrated with technical issues.
 ```
 
-### **O - Objective** 🎯  
+### **O - Objective**
 **Define the specific task**
 
 Be crystal clear about what you want your avatar to accomplish.
@@ -33,7 +33,7 @@ OBJECTIVE: Help customers solve their technical problems while making them feel
 heard and valued. Always aim to resolve issues on the first interaction.
 ```
 
-### **S - Style** ✍️
+### **S - Style**
 **Specify the communication style**
 
 This could be like a famous person, profession, or communication approach.
@@ -43,7 +43,7 @@ STYLE: Communicate like an experienced Apple Genius Bar technician -
 knowledgeable but approachable, using analogies to explain technical concepts.
 ```
 
-### **T - Tone** 🎵
+### **T - Tone**
 **Set the emotional attitude**
 
 Define how your avatar should "feel" in their responses.
@@ -53,7 +53,7 @@ TONE: Patient, empathetic, and solution-focused. Remain calm even when
 customers are frustrated.
 ```
 
-### **A - Audience** 👥
+### **A - Audience**
 **Identify who they're talking to**
 
 Tailor responses to the specific audience characteristics.
@@ -63,7 +63,7 @@ AUDIENCE: Everyday technology users with varying technical skill levels,
 from beginners to intermediate users.
 ```
 
-### **R - Response** 📋
+### **R - Response**
 **Specify the output format**
 
 Define exactly how responses should be structured.
@@ -79,9 +79,9 @@ RESPONSE: Always follow this format:
 
 ---
 
-## 📝 Complete CO-STAR Examples
+## Complete CO-STAR Examples
 
-### **🏪 E-commerce Assistant**
+### **E-commerce Assistant**
 
 ```text
 CONTEXT: You work for an online fashion retailer during the busy holiday season. 
@@ -107,7 +107,7 @@ RESPONSE:
 - End with "How else can I help you today?"
 ```
 
-### **📚 Educational Tutor**
+### **Educational Tutor**
 
 ```text
 CONTEXT: You are an online tutor helping high school students with mathematics 
@@ -134,7 +134,7 @@ RESPONSE:
 - End with a confidence-building statement
 ```
 
-### **🏥 Healthcare Assistant**
+### **Healthcare Assistant**
 
 ```text
 CONTEXT: You work for a telehealth platform where patients schedule appointments 
@@ -163,41 +163,41 @@ RESPONSE:
 
 ---
 
-## 🔧 Pro Tips for CO-STAR Success
+## Tips for CO-STAR Success
 
-### **✅ Do This**
+### **Do This**
 
 **Be Specific in Context**
 ```text
-❌ "You work in customer service"
-✅ "You work as a Level 2 technical support specialist for a cloud software company, 
+Bad:  "You work in customer service"
+Good: "You work as a Level 2 technical support specialist for a cloud software company,
 handling escalated cases from customers who've already tried basic troubleshooting"
 ```
 
 **Use Professional Examples in Style**
 ```text
-❌ "Be professional"
-✅ "Communicate like a McKinsey consultant - structured, data-driven, and confident 
+Bad:  "Be professional"
+Good: "Communicate like a McKinsey consultant -- structured, data-driven, and confident
 while remaining accessible to non-experts"
 ```
 
 **Define Clear Response Formats**
 ```text
-❌ "Give helpful responses"
-✅ "Always structure responses as: Problem Summary | Root Cause Analysis | 
+Bad:  "Give helpful responses"
+Good: "Always structure responses as: Problem Summary | Root Cause Analysis |
 3 Recommended Solutions | Next Steps"
 ```
 
-### **❌ Avoid This**
+### **Avoid This**
 
-- **Vague objectives** - "Be helpful" vs "Increase customer satisfaction scores by resolving issues in under 5 minutes"
-- **Conflicting tones** - Don't mix "professional" with "casual and fun"
-- **Unclear audiences** - "Everyone" vs "Small business owners with 10-50 employees"
-- **Missing context** - Jumping straight to objectives without setting the scene
+- **Vague objectives** -- "Be helpful" vs "Increase customer satisfaction scores by resolving issues in under 5 minutes"
+- **Conflicting tones** -- Don't mix "professional" with "casual and fun"
+- **Unclear audiences** -- "Everyone" vs "Small business owners with 10-50 employees"
+- **Missing context** -- Jumping straight to objectives without setting the scene
 
 ---
 
-## 🎯 Quick CO-STAR Template
+## Quick CO-STAR Template
 
 Use this template for any avatar:
 
@@ -217,12 +217,8 @@ RESPONSE: [What format/structure should responses follow?]
 
 ---
 
-## ➡️ Ready to Build?
+## Next Steps
 
 1. **Write your CO-STAR prompt** using the template above
 2. **Test with sample conversations** to refine it
-3. **Try it in our [Examples](../examples/overview.md)** to see it work!
-
----
-
-*Master the award-winning CO-STAR framework for consistently effective prompts!* ✨ 
+3. **Try it in the [Examples](../examples/overview.md)** to see it in action

@@ -223,7 +223,7 @@ BITHUMAN_AVATAR_IMAGE=https://example.com/avatar.jpg
 
 **BitHuman Cloud:**
 ```
-https://api.bithuman.ai/v4/p-xxxxx/gpu-avatar-worker/launch?async=true
+https://api.bithuman.ai/v4/p-xxxxx/expression-avatar/launch?async=true
 ```
 
 
@@ -254,12 +254,12 @@ GIT_LFS_SKIP_SMUDGE=1 uv pip install git+https://github.com/livekit/agents@${LIV
 
 ```bash
 # Pull the official image
-docker pull docker.io/bithumanhubs/gpu-avatar-worker:latest
+docker pull docker.io/bithumanhubs/expression-avatar:latest
 
 # Run with GPU support
 docker run --gpus all -p 8089:8089 \
     -v /path/to/model-storage:/persistent-storage/avatar-model \
-    docker.io/bithumanhubs/gpu-avatar-worker:latest
+    docker.io/bithumanhubs/expression-avatar:latest
 
 # Test the endpoint
 curl http://localhost:8089/health
@@ -294,7 +294,7 @@ docker run --gpus all -p 8089:8089 \
     -v /path/to/preset-avatars:/persistent-storage/preset-avatars \
     -e AVATAR_MODEL_DIR=/persistent-storage/avatar-model \
     -e PRESET_AVATARS_DIR=/persistent-storage/preset-avatars \
-    docker.io/bithumanhubs/gpu-avatar-worker:latest
+    docker.io/bithumanhubs/expression-avatar:latest
 ```
 
 **Directory Structure:**

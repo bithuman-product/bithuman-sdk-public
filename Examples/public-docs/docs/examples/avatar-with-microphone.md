@@ -1,4 +1,4 @@
-# 🎤 Live Microphone Avatar
+# Live Microphone Avatar
 
 > **Real-time avatar from your microphone**
 
@@ -6,7 +6,7 @@ Speak and see your avatar respond instantly.
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Install
 ```bash
@@ -21,20 +21,20 @@ export BITHUMAN_MODEL_PATH="/path/to/model.imx"
 
 ### 3. Run
 
-📁 **[View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/avatar-with-microphone.py)**
+**[View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/avatar-with-microphone.py)**
 
 ```bash
 python examples/avatar-with-microphone.py
 ```
 
 ### 4. Usage
-- **Speak into microphone** → Avatar animates in real-time
-- **Stay quiet** → Avatar stops after silence timeout (3 seconds)
-- **Press `q`** → Quit application
+- **Speak into microphone** -- Avatar animates in real-time
+- **Stay quiet** -- Avatar stops after silence timeout (3 seconds)
+- **Press `q`** -- Quit application
 
 ---
 
-## 💡 What it does
+## What it does
 
 1. Captures audio from your default microphone
 2. Creates real-time avatar animation as you speak
@@ -49,7 +49,7 @@ python examples/avatar-with-microphone.py
 
 ---
 
-## 🔧 Command Line Options
+## Command Line Options
 
 Customize the behavior with command line arguments:
 
@@ -70,7 +70,7 @@ python examples/avatar-with-microphone.py --echo
 
 **Available options:**
 - `--model`: Path to .imx model file
-- `--api-secret`: Your bitHuman API secret  
+- `--api-secret`: Your bitHuman API secret
 - `--token`: JWT token (alternative to API secret)
 - `--volume`: Audio volume multiplier (default: 1.0)
 - `--silent-threshold-db`: Silence threshold in dB (default: -40)
@@ -79,7 +79,7 @@ python examples/avatar-with-microphone.py --echo
 
 ---
 
-## 🔧 Common Issues
+## Common Issues
 
 **No microphone input detected?**
 - Check microphone permissions in system settings
@@ -103,17 +103,17 @@ python examples/avatar-with-microphone.py --echo
 
 ---
 
-## 🎯 Perfect for
+## Use Cases
 
-✅ **Voice assistant prototypes**  
-✅ **Interactive kiosk applications**  
-✅ **Live demonstration setups**  
-✅ **Real-time avatar testing**  
-✅ **Voice-controlled interfaces**
+- **Voice assistant prototypes**
+- **Interactive kiosk applications**
+- **Live demonstration setups**
+- **Real-time avatar testing**
+- **Voice-controlled interfaces**
 
 ---
 
-## 🔧 Technical Details
+## Technical Details
 
 **Audio processing:**
 - Sample rate: 24kHz
@@ -136,7 +136,7 @@ python examples/avatar-with-microphone.py --echo
 
 ---
 
-## ⚙️ Advanced Usage
+## Advanced Usage
 
 **Fine-tune voice detection:**
 ```bash
@@ -158,12 +158,8 @@ python examples/avatar-with-microphone.py --echo
 
 ---
 
-## ➡️ Next Steps
+## Next Steps
 
-**Want AI conversation?** → Try [OpenAI Agent](examples/livekit-openai-agent.md)
+**Want AI conversation?** -- Try [OpenAI Agent](examples/livekit-openai-agent.md)
 
-**Need web deployment?** → Try [Apple Local Agent](examples/livekit-apple-local.md)
-
----
-
-*Real-time interaction made simple with local processing!* 🚀 
+**Need web deployment?** -- Try [Apple Local Agent](examples/livekit-apple-local.md)

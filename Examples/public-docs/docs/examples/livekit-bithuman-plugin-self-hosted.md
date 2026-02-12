@@ -1,4 +1,4 @@
-# 🚀 LiveKit bitHuman Plugin - Self-Hosted Mode
+# LiveKit bitHuman Plugin -- Self-Hosted Mode
 
 ![Self-Hosted](https://img.shields.io/badge/Self--Hosted-FF6B6B?style=for-the-badge) ![LiveKit](https://img.shields.io/badge/LiveKit-00D4AA?style=for-the-badge&logo=livekit&logoColor=white)
 
@@ -8,7 +8,7 @@ Use bitHuman agents in real-time applications with self-hosted deployment, featu
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Install Dependencies
 
@@ -48,9 +48,9 @@ python agent.py dev
 
 ---
 
-## 💡 Usage Examples
+## Usage Examples
 
-### **Basic Self-Hosted Agent**
+### Basic Self-Hosted Agent
 
 For standard avatar interactions without dynamics:
 
@@ -65,7 +65,7 @@ For standard avatar interactions without dynamics:
 - High-performance streaming with VideoGenerator pattern
 - Real-time audio/video processing
 
-### **Self-Hosted Agent with Dynamics**
+### Self-Hosted Agent with Dynamics
 
 For reactive avatar gestures triggered by user speech keywords:
 
@@ -133,26 +133,26 @@ async def entrypoint(ctx: JobContext):
     """Agent entrypoint with dynamics support"""
     await ctx.connect()
     await ctx.wait_for_participant()
-    
+
     # Initialize bitHuman avatar session with model_path (self-hosted mode)
     bithuman_avatar = bithuman.AvatarSession(
         api_secret=os.getenv("BITHUMAN_API_SECRET"),
         model_path=os.getenv("BITHUMAN_MODEL_PATH"),  # Use model_path for self-hosted
     )
-    
+
     # Configure and start session (see agent_with_dynamics.py for full implementation)
     session = AgentSession(...)
     await bithuman_avatar.start(session, room=ctx.room)
-    
+
     @session.on("user_input_transcribed")
     def on_user_input_transcribed(event: UserInputTranscribedEvent):
         """Detect keywords and trigger dynamics"""
         if not event.is_final:
             return
-        
+
         transcript = event.transcript.lower()
         action = detect_keyword_action(transcript, KEYWORD_ACTION_MAP)
-        
+
         if action:
             # Trigger gesture using VideoControl (self-hosted pattern)
             asyncio.create_task(
@@ -161,31 +161,31 @@ async def entrypoint(ctx: JobContext):
 ```
 
 **How it works:**
-1. **Get available gestures** - Call `GET /v1/dynamics/{agent_id}` to retrieve the dictionary of available gesture actions (keys are gesture names, values are video URLs)
-2. **Extract gesture keys** - Get the list of gesture names from the `gestures` dictionary keys
-3. **Map keywords to actions** - Create a keyword-to-action mapping using the gesture names from step 2
-4. **Listen for user input** - Agent listens to user speech via `user_input_transcribed` events
-5. **Detect keywords** - When keywords like "laugh" are detected, it triggers gestures via VideoControl
-6. **Trigger gestures** - Avatar runtime receives `VideoControl(action=action)` and executes corresponding gestures
-7. **Cooldown protection** - Gestures are triggered with cooldown protection to prevent spam
+1. **Get available gestures** -- Call `GET /v1/dynamics/{agent_id}` to retrieve the dictionary of available gesture actions (keys are gesture names, values are video URLs)
+2. **Extract gesture keys** -- Get the list of gesture names from the `gestures` dictionary keys
+3. **Map keywords to actions** -- Create a keyword-to-action mapping using the gesture names from step 2
+4. **Listen for user input** -- Agent listens to user speech via `user_input_transcribed` events
+5. **Detect keywords** -- When keywords like "laugh" are detected, it triggers gestures via VideoControl
+6. **Trigger gestures** -- Avatar runtime receives `VideoControl(action=action)` and executes corresponding gestures
+7. **Cooldown protection** -- Gestures are triggered with cooldown protection to prevent spam
 
 **Example Flow:**
-1. Get dynamics status: `GET /v1/dynamics/A31KJC8622` → Returns `{"gestures": {"mini_wave_hello": "https://...", "laugh_react": "https://..."}}`
-2. Extract gesture keys: `available_gestures = list(response["data"]["gestures"].keys())` → `["mini_wave_hello", "laugh_react"]`
-3. User says "That's funny!" → Agent detects "funny" keyword
-4. Agent calls `bithuman_avatar.runtime.push(VideoControl(action="laugh_react"))` → Avatar performs laughing gesture
+1. Get dynamics status: `GET /v1/dynamics/A31KJC8622` -- Returns `{"gestures": {"mini_wave_hello": "https://...", "laugh_react": "https://..."}}`
+2. Extract gesture keys: `available_gestures = list(response["data"]["gestures"].keys())` -- `["mini_wave_hello", "laugh_react"]`
+3. User says "That's funny." -- Agent detects "funny" keyword
+4. Agent calls `bithuman_avatar.runtime.push(VideoControl(action="laugh_react"))` -- Avatar performs laughing gesture
 
 **Important:** Always verify that the gesture action exists in the `gestures` dictionary keys before using it in your keyword mapping. Using a non-existent gesture will result in the gesture being ignored by the avatar runtime.
 
-> **⏱️ Performance Note:** When using dynamics with self-hosted deployment, the avatar runtime model connection and loading typically takes approximately **20 seconds** on first initialization.
+> **Performance Note:** When using dynamics with self-hosted deployment, the avatar runtime model connection and loading typically takes approximately **20 seconds** on first initialization.
 
 See [agent_with_dynamics.py](https://github.com/bithuman-product/examples/tree/main/public-docs/examples/self-hosted/agent_with_dynamics.py) for a complete working example.
 
 ---
 
-## 🔧 Configuration Options
+## Configuration Options
 
-### **Agent Parameters**
+### Agent Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -194,7 +194,7 @@ See [agent_with_dynamics.py](https://github.com/bithuman-product/examples/tree/m
 | `api_token` | string | No | Optional API token for authentication |
 | `agent_id` | string | No | Agent ID for fetching dynamics gestures from API |
 
-### **Model Types**
+### Model Types
 
 **Self-Hosted Model:**
 - Direct access to `.imx` model files
@@ -205,19 +205,19 @@ See [agent_with_dynamics.py](https://github.com/bithuman-product/examples/tree/m
 
 ---
 
-## 🌐 Self-Hosted Advantages
+## Self-Hosted Advantages
 
-✅ **Full Control** - Complete control over model files and deployment  
-✅ **Privacy** - Models stay on your infrastructure  
-✅ **Customization** - Modify and extend agent behavior  
-✅ **Performance** - Optimize for your specific hardware  
-✅ **Offline Capable** - Works without internet after initial setup  
+- **Full Control** -- Complete control over model files and deployment
+- **Privacy** -- Models stay on your infrastructure
+- **Customization** -- Modify and extend agent behavior
+- **Performance** -- Optimize for your specific hardware
+- **Offline Capable** -- Works without internet after initial setup
 
 ---
 
-## 🛠️ Advanced Integration
+## Advanced Integration
 
-### **Session Management**
+### Session Management
 
 ```python
 from livekit.plugins import bithuman
@@ -228,7 +228,7 @@ class SelfHostedAvatarManager:
         self.model_path = model_path
         self.api_secret = api_secret
         self.avatar_session: Optional[bithuman.AvatarSession] = None
-    
+
     async def create_avatar_session(self):
         """Create BitHuman avatar session"""
         self.avatar_session = bithuman.AvatarSession(
@@ -236,14 +236,14 @@ class SelfHostedAvatarManager:
             model_path=self.model_path,
         )
         return self.avatar_session
-    
+
     async def trigger_gesture(self, action: str):
         """Trigger gesture using VideoControl"""
         if self.avatar_session:
             await self.avatar_session.runtime.push(VideoControl(action=action))
 ```
 
-### **Error Handling**
+### Error Handling
 
 ```python
 from livekit.plugins import bithuman
@@ -253,24 +253,24 @@ try:
         api_secret="your_api_secret",
         model_path="path/to/model.imx",
     )
-    
+
     # Use avatar_session...
-    
+
 except FileNotFoundError:
     print("Model file not found. Check BITHUMAN_MODEL_PATH.")
-    
+
 except ValueError as e:
     print(f"Invalid configuration: {e}")
-    
+
 except Exception as e:
     print(f"Unexpected error: {e}")
 ```
 
 ---
 
-## 🔍 Monitoring & Debugging
+## Monitoring and Debugging
 
-### **Enable Logging**
+### Enable Logging
 
 ```python
 import logging
@@ -281,7 +281,7 @@ logger = logging.getLogger('bithuman-selfhosted')
 # Runtime will log detailed information
 ```
 
-### **Performance Metrics**
+### Performance Metrics
 
 ```python
 import time
@@ -294,7 +294,7 @@ print(f"Runtime initialized in {init_time:.2f} seconds")
 
 ---
 
-## 🚨 Common Issues
+## Common Issues
 
 **Model Loading Errors:**
 - Verify model file path is correct and accessible
@@ -318,17 +318,17 @@ print(f"Runtime initialized in {init_time:.2f} seconds")
 
 ---
 
-## 🎯 Perfect for
+## Use Cases
 
-✅ **Enterprise Deployment** - Full control over infrastructure  
-✅ **Privacy-Sensitive Applications** - Models stay on-premises  
-✅ **Custom Integrations** - Extend and modify as needed  
-✅ **High-Performance Requirements** - Optimize for your hardware  
-✅ **Offline Applications** - Work without cloud dependencies  
+- **Enterprise Deployment** -- Full control over infrastructure
+- **Privacy-Sensitive Applications** -- Models stay on-premises
+- **Custom Integrations** -- Extend and modify as needed
+- **High-Performance Requirements** -- Optimize for your hardware
+- **Offline Applications** -- Work without cloud dependencies
 
 ---
 
-## 📊 Model Requirements
+## Model Requirements
 
 **Supported Formats:**
 - `.imx` files (bitHuman's optimized format)
@@ -345,15 +345,9 @@ print(f"Runtime initialized in {init_time:.2f} seconds")
 
 ---
 
-## ➡️ Next Steps
+## Next Steps
 
-**Full Example:** [agent_with_dynamics.py](https://github.com/bithuman-product/examples/tree/main/public-docs/examples/self-hosted/agent_with_dynamics.py)  
-**Basic Example:** [agent.py](https://github.com/bithuman-product/examples/tree/main/public-docs/examples/self-hosted/agent.py)  
-**API Documentation:** [Dynamics API](../preview/dynamics-api.md)  
-**Cloud Plugin:** [LiveKit Cloud Plugin](../preview/livekit-cloud-plugin.md)  
-**Community Support:** [Discord](https://discord.gg/ES953n7bPA)  
-
----
-
-*Self-hosted avatars with full control!* 🏠✨
-
+**Full Example:** [agent_with_dynamics.py](https://github.com/bithuman-product/examples/tree/main/public-docs/examples/self-hosted/agent_with_dynamics.py)
+**Basic Example:** [agent.py](https://github.com/bithuman-product/examples/tree/main/public-docs/examples/self-hosted/agent.py)
+**API Documentation:** [Dynamics API](../preview/dynamics-api.md)
+**Cloud Plugin:** [LiveKit Cloud Plugin](../preview/livekit-cloud-plugin.md)

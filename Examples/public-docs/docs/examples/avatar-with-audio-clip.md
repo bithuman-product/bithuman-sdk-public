@@ -1,12 +1,12 @@
-# 🎵 Audio Clip Avatar
+# Audio Clip Avatar
 
 > **Play audio files with avatar animation**
 
-Perfect first example - simple and works every time.
+A simple first example that works reliably.
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Install
 ```bash
@@ -22,23 +22,23 @@ export BITHUMAN_AUDIO_PATH="/path/to/audio.wav"  # optional
 
 ### 3. Run
 
-📁 **[View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/avatar-with-audio-clip.py)**
+**[View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/avatar-with-audio-clip.py)**
 
 ```bash
 python examples/avatar-with-audio-clip.py
 ```
 
 ### 4. Controls
-- **Press `1`** → Play audio with avatar
-- **Press `2`** → Stop playback
-- **Press `q`** → Quit
+- **Press `1`** -- Play audio with avatar
+- **Press `2`** -- Stop playback
+- **Press `q`** -- Quit
 
 ---
 
-## 💡 What it does
+## What it does
 
 1. Loads your audio file (WAV, MP3, M4A supported)
-2. Creates synchronized avatar animation 
+2. Creates synchronized avatar animation
 3. Shows real-time video in OpenCV window
 4. Plays audio through speakers with sounddevice
 
@@ -50,7 +50,7 @@ python examples/avatar-with-audio-clip.py
 
 ---
 
-## 🔧 Command Line Options
+## Command Line Options
 
 You can also run with custom parameters:
 
@@ -69,14 +69,14 @@ python examples/avatar-with-audio-clip.py \
 
 **Available options:**
 - `--model`: Path to .imx model file
-- `--audio-file`: Path to audio file  
+- `--audio-file`: Path to audio file
 - `--api-secret`: Your bitHuman API secret
 - `--token`: JWT token (alternative to API secret)
 - `--insecure`: Disable SSL verification (dev only)
 
 ---
 
-## 🔧 Common Issues
+## Common Issues
 
 **No audio playing?**
 - Install sounddevice: `pip install sounddevice`
@@ -100,17 +100,17 @@ python examples/avatar-with-audio-clip.py \
 
 ---
 
-## 🎯 Perfect for
+## Use Cases
 
-✅ **Product demos and presentations**  
-✅ **Testing new audio content**  
-✅ **Learning bitHuman SDK basics**  
-✅ **Creating voice-over videos**  
-✅ **Batch processing audio files**
+- **Product demos and presentations**
+- **Testing new audio content**
+- **Learning bitHuman SDK basics**
+- **Creating voice-over videos**
+- **Batch processing audio files**
 
 ---
 
-## 🔧 Technical Details
+## Technical Details
 
 **Audio processing:**
 - Sample rate: 16kHz (automatically converted)
@@ -126,12 +126,8 @@ python examples/avatar-with-audio-clip.py \
 
 ---
 
-## ➡️ Next Steps
+## Next Steps
 
-**Want real-time interaction?** → Try [Live Microphone Avatar](examples/avatar-with-microphone.md)
+**Want real-time interaction?** -- Try [Live Microphone Avatar](examples/avatar-with-microphone.md)
 
-**Ready for web deployment?** → Try [OpenAI Agent](examples/livekit-openai-agent.md)
-
----
-
-*Master this first example, then move to interactive demos!* 🚀 
+**Ready for web deployment?** -- Try [OpenAI Agent](examples/livekit-openai-agent.md)

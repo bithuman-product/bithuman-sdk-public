@@ -1,4 +1,4 @@
-# 🤖 OpenAI Agent
+# OpenAI Agent
 
 ![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
 
@@ -8,7 +8,7 @@ Complete chatbot with avatar that users can talk to on the web.
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Install
 ```bash
@@ -39,7 +39,7 @@ npm install && npm run dev
 
 ### 5. Run agent
 
-📁 **[View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/agent-livekit-openai.py)**
+**[View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/agent-livekit-openai.py)**
 
 **Choose your mode:**
 
@@ -54,11 +54,11 @@ python examples/agent-livekit-openai.py console
 ```
 
 ### 6. Open browser
-Go to `http://localhost:3000` and join a room to chat!
+Go to `http://localhost:3000` and join a room to chat.
 
 ---
 
-## 💡 What it does
+## What it does
 
 1. User speaks in browser
 2. AI processes speech and responds intelligently
@@ -72,21 +72,21 @@ Go to `http://localhost:3000` and join a room to chat!
 
 ---
 
-## 🔧 Run Modes
+## Run Modes
 
 **`dev` mode** (streaming to web):
 - Connects to LiveKit for web browsers
 - Users interact through web interface
 - Best for production deployment
 
-**`console` mode** (command line):  
+**`console` mode** (command line):
 - Runs in terminal for testing
 - Useful for debugging
 - No web interface needed
 
 ---
 
-## 🛠️ Common Issues
+## Common Issues
 
 **Agent won't start?**
 - Check all API keys are set
@@ -102,16 +102,16 @@ Go to `http://localhost:3000` and join a room to chat!
 
 ---
 
-## 🎯 Perfect for
+## Use Cases
 
-✅ **Customer service bots**  
-✅ **Educational assistants**  
-✅ **Website chatbots**  
-✅ **Interactive demos**
+- **Customer service bots**
+- **Educational assistants**
+- **Website chatbots**
+- **Interactive demos**
 
 ---
 
-## ⚙️ Customization
+## Customization
 
 Change the agent's personality by editing the `instructions`:
 
@@ -131,12 +131,8 @@ agent=Agent(
 
 ---
 
-## ➡️ Next Steps
+## Next Steps
 
-**Want privacy?** → Try [Apple Local Agent](examples/livekit-apple-local.md)
+**Want privacy?** -- Try [Apple Local Agent](examples/livekit-apple-local.md)
 
-**Using IoT?** → Try [Raspberry Pi Agent](examples/livekit-raspberry-pi.md)
-
----
-
-*Full AI conversation made easy!* 🚀 
+**Using IoT?** -- Try [Raspberry Pi Agent](examples/livekit-raspberry-pi.md)

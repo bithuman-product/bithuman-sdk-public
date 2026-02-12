@@ -2,7 +2,7 @@
 LiveKit Agent with BitHuman Avatar using Custom GPU Endpoint
 
 This example demonstrates how to use a custom GPU avatar worker endpoint
-(e.g., self-hosted gpu-avatar-worker, BitHuman Cloud deployment) instead of
+(e.g., self-hosted expression-avatar, BitHuman Cloud deployment) instead of
 the default BitHuman cloud API.
 
 Custom endpoints are useful for:
@@ -56,7 +56,7 @@ def get_custom_gpu_endpoint() -> str:
     Get the custom GPU endpoint URL from environment or configuration.
 
     Supported endpoint formats:
-    - BitHuman Cloud: https://api.bithuman.ai/v4/{project}/gpu-avatar-worker/launch
+    - BitHuman Cloud: https://api.bithuman.ai/v4/{project}/expression-avatar/launch
     - Self-hosted: https://your-domain.com/launch
     - Local development: http://localhost:8089/launch
 
@@ -74,7 +74,7 @@ def get_custom_gpu_endpoint() -> str:
         if bithuman_project:
             custom_url = (
                 f"https://api.bithuman.ai/v4/"
-                f"{bithuman_project}/gpu-avatar-worker/launch"
+                f"{bithuman_project}/expression-avatar/launch"
             )
             logger.info(f"Using BitHuman Cloud endpoint: {custom_url}")
         else:
@@ -148,7 +148,7 @@ async def entrypoint(ctx: JobContext):
     # Initialize bitHuman avatar session with custom GPU endpoint
     # When api_url is a custom endpoint (not default BitHuman API),
     # the plugin automatically uses FormData format compatible with
-    # gpu-avatar-worker's /launch endpoint
+    # expression-avatar's /launch endpoint
     bithuman_avatar = bithuman.AvatarSession(
         # BitHuman API secret for authorization and authentication (required)
         api_secret=os.getenv("BITHUMAN_API_SECRET"),

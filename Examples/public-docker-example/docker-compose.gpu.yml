@@ -17,9 +17,9 @@ services:
         condition: service_started
 
   # GPU Avatar Worker - Self-hosted GPU rendering service
-  # This service runs the gpu-avatar-worker container for local GPU rendering
-  gpu-avatar-worker:
-    image: docker.io/bithumanhubs/gpu-avatar-worker:latest
+  # This service runs the expression-avatar container for local GPU rendering
+  expression-avatar:
+    image: docker.io/bithumanhubs/expression-avatar:latest
     restart: always
     # GPU support using Docker Compose v2 syntax
     deploy:
@@ -67,7 +67,7 @@ services:
       - LIVEKIT_API_KEY=devkey  # Default dev key (change in production)
       - LIVEKIT_API_SECRET=UPivas8PQvWiYhubkqxqfkY8kfB9TgGj
       # Custom GPU endpoint settings
-      - CUSTOM_GPU_URL=http://gpu-avatar-worker:8089/launch  # Internal Docker network URL
+      - CUSTOM_GPU_URL=http://expression-avatar:8089/launch  # Internal Docker network URL
       - CUSTOM_GPU_TOKEN=${CUSTOM_GPU_TOKEN:-}  # Optional token for GPU worker auth
       # Avatar settings
       - AVATAR_ID=${AVATAR_ID:-}  # Optional: Pre-configured avatar ID on worker
@@ -88,9 +88,9 @@ services:
     depends_on:
       livekit:
         condition: service_started
-      # Note: gpu-avatar-worker is not required for agent to connect to LiveKit
+      # Note: expression-avatar is not required for agent to connect to LiveKit
       # Agent will connect immediately, and GPU worker will be called when needed
-      # gpu-avatar-worker:
+      # expression-avatar:
       #   condition: service_healthy
 
   # Frontend - Web interface (LiveKit agents playground)

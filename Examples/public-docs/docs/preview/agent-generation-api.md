@@ -1,60 +1,49 @@
+# Agent Generation API
 
-# 🤖 Agent Generation API
+Programmatically create interactive avatar agents through the BitHuman REST API.
 
-> **Early Access: bitHuman Agent Creation Service**  
-> Programmatically create interactive avatar agents through our cloud-hosted REST API.
+## Authentication
 
-## 🔑 Authentication
+All requests require the `api-secret` header. Get your API secret from [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#developer).
 
-Get your API secret from [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#developer)
+## Base URL
 
-## 📡 Base URL
 ```
 https://api.bithuman.ai
 ```
 
-## 🚀 Endpoints
+## Endpoints
 
 ### Generate Agent
 
-**`POST /v1/agent/generate`**
-
-Create a new interactive avatar agent with customizable parameters.
-
-**Headers:**
-```http
-Content-Type: application/json
-api-secret: YOUR_API_SECRET
+```
+POST /v1/agent/generate
 ```
 
-**Request Body:**
-```json
-{
-  "prompt": "string (optional)",
-  "image": "string (optional)",
-  "video": "string (optional)",
-  "audio": "string (optional)",
-  "aspect_ratio": "string (optional, default: '16:9')",
-  "video_aspect_ratio": "string (optional, default: '16:9')",
-  "agent_id": "string (optional)",
-  "duration": "number (optional, default: 10)"
-}
-```
+Creates a new avatar agent. Generation is asynchronous -- poll the status endpoint for completion.
 
-**Parameters:**
+**Headers**
 
-| Parameter | Type | Description | Example |
-|-----------|------|-------------|----------|
-| `prompt` | string | Custom system prompt for the agent. If not provided, a random default prompt is used. | `"You are a friendly AI assistant"` |
-| `image` | string | Image URL or base64 data | `"https://example.com/image.jpg"` |
-| `video` | string | Video URL or base64 data | `"https://example.com/video.mp4"` |
-| `audio` | string | Audio URL or base64 data | `"https://example.com/audio.mp3"` |
-| `aspect_ratio` | string | Aspect ratio for image generation | `"16:9"`, `"9:16"`, `"1:1"` |
-| `video_aspect_ratio` | string | Aspect ratio for video generation | `"16:9"`, `"9:16"`, `"1:1"` |
-| `agent_id` | string | Custom agent ID. If not provided, one is auto-generated. | `"A91XMB7113"` |
-| `duration` | number | Duration in seconds for video generation | `10` |
+| Header | Value |
+|--------|-------|
+| `Content-Type` | `application/json` |
+| `api-secret` | Your API secret |
 
-**Response:**
+**Request Body**
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `prompt` | string | No | Random | System prompt for the agent |
+| `image` | string | No | -- | Image URL or base64 data for the agent's appearance |
+| `video` | string | No | -- | Video URL or base64 data |
+| `audio` | string | No | -- | Audio URL or base64 data for the agent's voice |
+| `aspect_ratio` | string | No | `16:9` | Aspect ratio for image generation (`16:9`, `9:16`, `1:1`) |
+| `video_aspect_ratio` | string | No | `16:9` | Aspect ratio for video generation (`16:9`, `9:16`, `1:1`) |
+| `agent_id` | string | No | Auto-generated | Custom agent identifier |
+| `duration` | number | No | `10` | Video duration in seconds |
+
+**Response**
+
 ```json
 {
   "success": true,
@@ -64,143 +53,130 @@ api-secret: YOUR_API_SECRET
 }
 ```
 
-**Example Request:**
+**Example**
+
 ```python
 import requests
 
-url = "https://api.bithuman.ai/v1/agent/generate"
-headers = {
-    "Content-Type": "application/json",
-    "api-secret": "YOUR_API_SECRET"
-}
-payload = {
-    "prompt": "You are a professional video content creator who helps with social media content."
-}
-
-response = requests.post(url, headers=headers, json=payload)
+response = requests.post(
+    "https://api.bithuman.ai/v1/agent/generate",
+    headers={
+        "Content-Type": "application/json",
+        "api-secret": "YOUR_API_SECRET"
+    },
+    json={
+        "prompt": "You are a professional video content creator.",
+        "image": "https://example.com/avatar.jpg"
+    }
+)
 print(response.json())
-```
-
-**Example with Media:**
-```python
-payload = {
-    "prompt": "You are an art critic who analyzes visual artworks.",
-    "image": "https://example.com/artwork.jpg"
-}
-
-response = requests.post(url, headers=headers, json=payload)
 ```
 
 ---
 
 ### Get Agent Status
 
-**`GET /v1/agent/status/{agent_id}`**
-
-Retrieve the current status and details of a specific agent.
-
-**Headers:**
-```http
-api-secret: YOUR_API_SECRET
+```
+GET /v1/agent/status/{agent_id}
 ```
 
-**Path Parameters:**
+Returns the current status of an agent generation request.
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `agent_id` | string | The unique identifier of the agent |
+**Headers**
 
-**Response:**
+| Header | Value |
+|--------|-------|
+| `api-secret` | Your API secret |
+
+**Status Values**
+
+| Status | Description |
+|--------|-------------|
+| `processing` | Agent is being generated |
+| `ready` | Generation completed successfully |
+| `failed` | Generation failed |
+
+**Response**
+
 ```json
 {
   "success": true,
   "data": {
-    "agent_id": "agent id",
+    "agent_id": "A91XMB7113",
     "event_type": "lip_created",
     "status": "ready",
     "error_message": null,
     "created_at": "2025-08-01T13:58:51.907177+00:00",
     "updated_at": "2025-08-01T09:59:15.159901+00:00",
-    "system_prompt": "your agent prompt",
-    "image_url": "your_image_url",
-    "video_url": "your_video_url",
+    "system_prompt": "You are a professional video content creator.",
+    "image_url": "https://...",
+    "video_url": "https://...",
     "name": "agent name",
-    "model_url": "your model url"
+    "model_url": "https://..."
   }
 }
 ```
 
-**Status Values:**
-- `processing` - Agent is currently being generated
-- `ready` - Agent generation completed successfully
-- `failed` - Agent generation failed
+**Example**
 
-**Example Request:**
 ```python
 import requests
 
-agent_id = "A81FMS8296"
-url = f"https://api.bithuman.ai/v1/agent/status/{agent_id}"
-headers = {
-    "api-secret": "YOUR_API_SECRET"
-}
-
-response = requests.get(url, headers=headers)
+response = requests.get(
+    "https://api.bithuman.ai/v1/agent/status/A91XMB7113",
+    headers={"api-secret": "YOUR_API_SECRET"}
+)
 print(response.json())
 ```
 
-**Complete Example:**
+---
+
+### Complete Example: Generate and Poll
+
 ```python
 import requests
 import time
 
-# Step 1: Create agent
-generate_url = "https://api.bithuman.ai/v1/agent/generate"
-headers = {
-    "Content-Type": "application/json",
-    "api-secret": "YOUR_API_SECRET"
-}
-
-payload = {
-    "prompt": "You are a friendly AI assistant that helps with creative writing."
-}
+API_SECRET = "YOUR_API_SECRET"
+BASE = "https://api.bithuman.ai"
+headers = {"Content-Type": "application/json", "api-secret": API_SECRET}
 
 # Generate agent
-response = requests.post(generate_url, headers=headers, json=payload)
-result = response.json()
-agent_id = result["agent_id"]
-
+resp = requests.post(f"{BASE}/v1/agent/generate", headers=headers, json={
+    "prompt": "You are a friendly AI assistant."
+})
+agent_id = resp.json()["agent_id"]
 print(f"Agent created: {agent_id}")
 
-# Step 2: Poll for completion
-status_url = f"https://api.bithuman.ai/v1/agent/status/{agent_id}"
-status_headers = {"api-secret": "YOUR_API_SECRET"}
-
+# Poll until ready
 while True:
-    status_response = requests.get(status_url, headers=status_headers)
-    status_data = status_response.json()
-    status = status_data["data"]["status"]
-    
-    if status == "ready":
-        print(f"Agent ready: {status_data['data']['model_url']}")
+    status = requests.get(
+        f"{BASE}/v1/agent/status/{agent_id}",
+        headers={"api-secret": API_SECRET}
+    ).json()
+
+    if status["data"]["status"] == "ready":
+        print(f"Agent ready: {status['data']['model_url']}")
         break
-    elif status == "failed":
-        print("Generation failed")
+    elif status["data"]["status"] == "failed":
+        print(f"Generation failed: {status['data']['error_message']}")
         break
-    
-    time.sleep(5)  # Wait 5 seconds before checking again
+
+    time.sleep(5)
 ```
 
-## 🔧 Error Handling
+## Error Codes
 
-**Common HTTP Status Codes:**
-- `200` - Success
-- `400` - Bad Request (invalid parameters)
-- `401` - Unauthorized (invalid API secret)
-- `429` - Rate Limit Exceeded
-- `500` - Internal Server Error
+| HTTP Status | Meaning |
+|-------------|---------|
+| `200` | Success |
+| `400` | Invalid request parameters |
+| `401` | Invalid or missing `api-secret` |
+| `429` | Rate limit exceeded |
+| `500` | Internal server error |
 
-**Error Response Format:**
+**Error response format:**
+
 ```json
 {
   "error": "Invalid API secret",

@@ -1,8 +1,8 @@
 # Flutter + LiveKit + bitHuman Integration Guide
 
-This comprehensive guide shows how to integrate Flutter with LiveKit and bitHuman Cloud Essence to create real-time video chat applications with AI-powered avatars.
+This guide shows how to integrate Flutter with LiveKit and bitHuman Cloud Essence to build real-time video chat applications with AI-powered avatars.
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -20,10 +20,10 @@ This comprehensive guide shows how to integrate Flutter with LiveKit and bitHuma
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-## 🔑 Why a Token Server is required (Production)
+## Why a Token Server is Required (Production)
 
 - LiveKit requires a JWT to join rooms. Creating this JWT needs your LiveKit API key and secret, which must never ship in client apps (Flutter).
-- Provide a tiny server endpoint `/token` that mints short‑lived tokens with room grants and identity.
+- Provide a server endpoint `/token` that mints short-lived tokens with room grants and identity.
 - For development you can hardcode a token in Flutter; for production use the token endpoint.
 
 Minimal endpoint (Python/Flask):
@@ -45,7 +45,7 @@ def create_token():
 - **LiveKit Room**: Real-time media routing, participant management, signaling
 - **Python Agent**: AI conversation processing, avatar rendering, media coordination
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -240,7 +240,7 @@ brew install cocoapods
 flutter doctor --android-licenses
 ```
 
-## 📱 Flutter Implementation
+## Flutter Implementation
 
 ### Core Flutter Code
 
@@ -261,27 +261,27 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
+
   # LiveKit components (includes livekit_client) - fixed version
   livekit_components: 1.2.2+hotfix.1
-  
+
   # HTTP requests for token generation
   http: ^1.1.0
-  
+
   # UI components
   cupertino_icons: ^1.0.6
-  
+
   # Structured logging
   logging: ^1.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  
+
   # Code generation (optional)
   json_serializable: ^6.7.1
   build_runner: ^2.4.7
-  
+
   # Linting
   flutter_lints: ^6.0.0
 
@@ -309,7 +309,7 @@ void main() {
   Logger.root.onRecord.listen((record) {
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
-  
+
   runApp(const BitHumanFlutterApp());
 }
 
@@ -361,16 +361,16 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
       final serverUrl = LiveKitConfig.serverUrl;
       final roomName = LiveKitConfig.roomName;
       final participantName = LiveKitConfig.participantName;
-      
+
       _logger.info('Connecting to room: $roomName as $participantName');
       _logger.info('Server: $serverUrl');
-      
+
       // Get token from token server
       final token = await LiveKitConfig.getToken();
       _logger.info('Token obtained successfully');
-      
+
       if (!mounted) return;
-      
+
       // Navigate to video room using LiveKit Components
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
@@ -433,7 +433,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
 
 }
     const tokenEndpoint = 'http://localhost:3000/token';
-    
+
     try {
       final response = await http.post(
         Uri.parse(tokenEndpoint),
@@ -498,7 +498,7 @@ class _VideoRoomScreenState extends State<VideoRoomScreen> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           try {
             roomCtx.room.localParticipant?.setMicrophoneEnabled(true);
-            _logger.info('🎤 Microphone enabled by default');
+            _logger.info('Microphone enabled by default');
           } catch (error) {
             _logger.warning('Could not enable microphone, error: $error');
           }
@@ -543,12 +543,12 @@ class _VideoRoomScreenState extends State<VideoRoomScreen> {
                   child: _VideoDisplayWidget(roomCtx: roomCtx),
                 ),
               ),
-              
+
               // Audio handling - separate from video to prevent re-rendering
               Positioned.fill(
                 child: _AudioHandlerWidget(roomCtx: roomCtx),
               ),
-              
+
               // Loading indicator overlay (only show when no remote video)
               Positioned.fill(
                 child: _LoadingOverlay(),
@@ -585,9 +585,9 @@ class _VideoRoomScreenState extends State<VideoRoomScreen> {
 /// Video display widget that caches the video renderer to prevent re-rendering
 class _VideoDisplayWidget extends StatefulWidget {
   final RoomContext roomCtx;
-  
+
   const _VideoDisplayWidget({required this.roomCtx});
-  
+
   @override
   State<_VideoDisplayWidget> createState() => _VideoDisplayWidgetState();
 }
@@ -595,32 +595,32 @@ class _VideoDisplayWidget extends StatefulWidget {
 class _VideoDisplayWidgetState extends State<_VideoDisplayWidget> {
   lk.VideoTrackRenderer? _cachedVideoRenderer;
   String? _lastVideoTrackId;
-  
+
   @override
   void initState() {
     super.initState();
     // Listen for track published events
     widget.roomCtx.room.addListener(_onRoomChanged);
   }
-  
+
   @override
   void dispose() {
     widget.roomCtx.room.removeListener(_onRoomChanged);
     super.dispose();
   }
-  
+
   void _onRoomChanged() {
     // Force rebuild when room state changes (e.g., new tracks published)
     if (mounted) {
       setState(() {});
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     // Get remote participants
     final remoteParticipants = widget.roomCtx.room.remoteParticipants.values.toList();
-    
+
     if (remoteParticipants.isEmpty) {
       return const Center(
         child: Column(
@@ -643,42 +643,42 @@ class _VideoDisplayWidgetState extends State<_VideoDisplayWidget> {
         ),
       );
     }
-    
+
     // Find the first remote participant with video
     for (final participant in remoteParticipants) {
-      _logger.fine('🔍 Checking participant: ${participant.identity}');
+      _logger.fine('Checking participant: ${participant.identity}');
       _logger.fine('   Video tracks count: ${participant.videoTrackPublications.length}');
-      
+
       // Check all video tracks, not just subscribed ones
       final videoTracks = participant.videoTrackPublications
           .where((pub) => pub.track != null)
           .toList();
-      
+
       _logger.fine('   Available video tracks: ${videoTracks.length}');
       for (final pub in videoTracks) {
         _logger.fine('     Track: ${pub.sid}, enabled: ${pub.enabled}, subscribed: ${pub.subscribed}');
       }
-      
+
       if (videoTracks.isNotEmpty) {
         final videoTrack = videoTracks.first.track as lk.VideoTrack;
-        
+
         // Only recreate renderer if track ID changed
         if (_lastVideoTrackId != videoTrack.sid) {
-          _logger.info('🎬 Creating new video renderer for ${participant.identity}');
+          _logger.info('Creating new video renderer for ${participant.identity}');
           _cachedVideoRenderer = lk.VideoTrackRenderer(
             videoTrack,
             fit: lk.VideoViewFit.cover,
           );
           _lastVideoTrackId = videoTrack.sid;
         }
-        
+
         return Container(
           color: Colors.black,
           child: _cachedVideoRenderer!,
         );
       }
     }
-    
+
     return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -707,9 +707,9 @@ class _VideoDisplayWidgetState extends State<_VideoDisplayWidget> {
 /// Audio handler widget that manages audio without affecting video rendering
 class _AudioHandlerWidget extends StatefulWidget {
   final RoomContext roomCtx;
-  
+
   const _AudioHandlerWidget({required this.roomCtx});
-  
+
   @override
   State<_AudioHandlerWidget> createState() => _AudioHandlerWidgetState();
 }
@@ -719,20 +719,20 @@ class _AudioHandlerWidgetState extends State<_AudioHandlerWidget> {
   Widget build(BuildContext context) {
     // Get remote participants
     final remoteParticipants = widget.roomCtx.room.remoteParticipants.values.toList();
-    
+
     for (final participant in remoteParticipants) {
       final audioTracks = participant.audioTrackPublications
           .where((pub) => pub.track != null && pub.subscribed)
           .toList();
-      
+
       if (audioTracks.isNotEmpty) {
-        _logger.fine('🔊 Audio track active for ${participant.identity}');
+        _logger.fine('Audio track active for ${participant.identity}');
         // Audio is handled automatically by LiveKit Components
         // We just need to ensure the track is subscribed
         break;
       }
     }
-    
+
     return const SizedBox.shrink();
   }
 }
@@ -745,24 +745,24 @@ class _LoadingOverlay extends StatefulWidget {
 
 class _LoadingOverlayState extends State<_LoadingOverlay> {
   int _lastParticipantCount = 0;
-  
+
   @override
   Widget build(BuildContext context) {
     final roomContext = RoomContext.of(context);
-    
+
     if (roomContext != null) {
       final remoteParticipants = roomContext.room.remoteParticipants.values;
-      
+
       // Only log when state changes
       if (remoteParticipants.length != _lastParticipantCount) {
-        _logger.fine('🔍 Loading overlay: ${remoteParticipants.length} remote participants');
+        _logger.fine('Loading overlay: ${remoteParticipants.length} remote participants');
         _lastParticipantCount = remoteParticipants.length;
       }
-      
+
       final hasRemoteVideo = remoteParticipants.any((participant) {
         return participant.videoTrackPublications.isNotEmpty;
       });
-      
+
       if (!hasRemoteVideo) {
         return Container(
           color: Colors.black.withOpacity(0.8),
@@ -784,7 +784,7 @@ class _LoadingOverlayState extends State<_LoadingOverlay> {
         );
       }
     }
-    
+
     return const SizedBox.shrink();
   }
 }
@@ -809,7 +809,7 @@ class ControlBar extends StatelessWidget {
             shape: const CircleBorder(),
           ),
         ),
-        
+
         // Camera toggle
         IconButton(
           onPressed: () {
@@ -821,7 +821,7 @@ class ControlBar extends StatelessWidget {
             shape: const CircleBorder(),
           ),
         ),
-        
+
         // End call
         IconButton(
           onPressed: () {
@@ -839,7 +839,7 @@ class ControlBar extends StatelessWidget {
 }
 ```
 
-## 📱 LiveKit Configuration
+## LiveKit Configuration
 
 ### 3. config/livekit_config.dart
 ```dart
@@ -851,26 +851,26 @@ class LiveKitConfig {
   // LiveKit server configuration
   static const String serverUrl = 'wss://your-project.livekit.cloud';
   static const String? tokenEndpoint = 'http://localhost:3000/token';
-  
+
   // Generate random room and participant names
   static String get roomName {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
     final random = Random();
     return 'room-${String.fromCharCodes(Iterable.generate(12, (_) => chars.codeUnitAt(random.nextInt(chars.length))))}';
   }
-  
+
   static String get participantName {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
     final random = Random();
     return 'user-${String.fromCharCodes(Iterable.generate(8, (_) => chars.codeUnitAt(random.nextInt(chars.length))))}';
   }
-  
+
   // Get JWT token from token server
   static Future<String> getToken() async {
     if (tokenEndpoint == null) {
       throw Exception('Token endpoint not configured. Please set LIVEKIT_TOKEN_ENDPOINT environment variable.');
     }
-    
+
     try {
       final response = await http.post(
         Uri.parse(tokenEndpoint!),
@@ -880,7 +880,7 @@ class LiveKitConfig {
           'participant': participantName,
         }),
       );
-      
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         return data['token'] as String;
@@ -893,7 +893,7 @@ class LiveKitConfig {
   }
 ```
 
-## 🔧 Logging Configuration
+## Logging Configuration
 
 ### 4. Logging Setup
 ```dart
@@ -908,7 +908,7 @@ void main() {
   Logger.root.onRecord.listen((record) {
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
-  
+
   runApp(const BitHumanFlutterApp());
 ```
 
@@ -954,12 +954,12 @@ class MediaService extends ChangeNotifier {
   // Permission management
   Future<bool> requestCameraPermission();
   Future<bool> requestMicrophonePermission();
-  
+
   // Media controls
   void toggleCamera();
   void toggleMicrophone();
   void switchCamera();
-  
+
   // State properties
   bool get cameraPermissionGranted;
   bool get microphonePermissionGranted;
@@ -989,7 +989,7 @@ class LiveKitConfig {
   static const String? tokenEndpoint = 'http://localhost:3000/token';
   static const String roomName = 'flutter-avatar-room';
   static const String participantName = 'Flutter User';
-  
+
   // Media settings
   static const int videoWidth = 1280;
   static const int videoHeight = 720;
@@ -1016,7 +1016,7 @@ class LiveKitConfig {
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 ```
 
-## 🐍 Backend Implementation
+## Backend Implementation
 
 ### Python Backend Code
 
@@ -1054,11 +1054,11 @@ class BitHumanAvatarAgent:
     def __init__(self, ctx: JobContext):
         self.ctx = ctx
         self.agent = None
-        
+
         # Get environment variables
         self.api_secret = os.getenv("BITHUMAN_API_SECRET")
         self.avatar_id = os.getenv("BITHUMAN_AVATAR_ID", "A33NZN6384")
-        
+
         if not self.api_secret:
             raise ValueError("BITHUMAN_API_SECRET environment variable is required")
 
@@ -1066,13 +1066,13 @@ class BitHumanAvatarAgent:
         """Start the AI avatar agent"""
         try:
             logger.info("Starting bitHuman avatar agent...")
-            
+
             # Initialize bitHuman avatar session
             bithuman_avatar = bithuman.AvatarSession(
                 api_secret=self.api_secret,
                 avatar_id=self.avatar_id,
             )
-            
+
             # Configure AI voice assistant
             self.agent = VoiceAssistant(
                 vad=openai.VAD(),  # Voice Activity Detection
@@ -1080,18 +1080,18 @@ class BitHumanAvatarAgent:
                 llm=openai.LLM(),  # Language Model
                 tts=bithuman.TTS(),  # Text-to-Speech (bitHuman)
             )
-            
+
             # Start the agent
             await self.agent.start()
-            
+
             # Connect avatar to the room
             await bithuman_avatar.start(self.agent, room=self.ctx.room)
-            
+
             logger.info("Flutter integration agent is ready and running")
-            
+
             # Keep the agent running
             await self.agent.run()
-            
+
         except Exception as e:
             logger.error(f"Error starting agent: {e}")
             raise
@@ -1101,11 +1101,11 @@ async def entrypoint(ctx: JobContext):
     try:
         # Connect to the room
         await ctx.connect()
-        
+
         # Create and start the agent
         agent = BitHumanAvatarAgent(ctx)
         await agent.start()
-        
+
     except Exception as e:
         logger.error(f"Agent failed: {e}")
         raise
@@ -1153,28 +1153,28 @@ def create_token():
         data = request.get_json() or {}
         room = data.get('room', 'flutter-avatar-room')
         identity = data.get('participant', 'Flutter User')
-        
+
         # Create access token
         at = api.AccessToken(
-            LIVEKIT_API_KEY, 
-            LIVEKIT_API_SECRET, 
+            LIVEKIT_API_KEY,
+            LIVEKIT_API_SECRET,
             identity=identity
         )
-        
+
         # Add video grant (permission to join room)
         at.add_grant(api.VideoGrant(room_join=True, room=room))
-        
+
         # Set token expiration (1 hour)
         at.ttl = timedelta(hours=1)
-        
+
         # Generate JWT token
         token = at.to_jwt()
-        
+
         return jsonify({
             'token': token,
             'server_url': LIVEKIT_URL
         })
-        
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -1184,11 +1184,11 @@ def health_check():
     return jsonify({'status': 'healthy'})
 
 if __name__ == '__main__':
-    print("🚀 Starting LiveKit Token Server...")
-    print(f"📡 Server URL: {LIVEKIT_URL}")
-    print("🔑 Token endpoint: http://localhost:3000/token")
-    print("❤️  Health check: http://localhost:3000/health")
-    
+    print("Starting LiveKit Token Server...")
+    print(f"Server URL: {LIVEKIT_URL}")
+    print("Token endpoint: http://localhost:3000/token")
+    print("Health check: http://localhost:3000/health")
+
     app.run(host='0.0.0.0', port=3000, debug=True)
 ```
 
@@ -1211,11 +1211,11 @@ LIVEKIT_URL=wss://your-project.livekit.cloud
 ```bash
 #!/bin/bash
 
-echo "🚀 Starting Flutter + bitHuman Backend..."
+echo "Starting Flutter + bitHuman Backend..."
 
 # Check if .env exists
 if [ ! -f .env ]; then
-    echo "❌ .env file not found. Please copy .env.example to .env and configure it."
+    echo "ERROR: .env file not found. Please copy .env.example to .env and configure it."
     exit 1
 fi
 
@@ -1224,19 +1224,19 @@ export $(cat .env | grep -v '^#' | xargs)
 
 # Check required environment variables
 if [ -z "$BITHUMAN_API_SECRET" ]; then
-    echo "❌ BITHUMAN_API_SECRET is required"
+    echo "ERROR: BITHUMAN_API_SECRET is required"
     exit 1
 fi
 
 if [ -z "$LIVEKIT_API_KEY" ]; then
-    echo "❌ LIVEKIT_API_KEY is required"
+    echo "ERROR: LIVEKIT_API_KEY is required"
     exit 1
 fi
 
-echo "✅ Environment variables loaded"
+echo "Environment variables loaded"
 
 # Start token server in background
-echo "🔑 Starting token server..."
+echo "Starting token server..."
 python token_server.py &
 TOKEN_PID=$!
 
@@ -1244,7 +1244,7 @@ TOKEN_PID=$!
 sleep 2
 
 # Start the agent
-echo "🤖 Starting LiveKit agent..."
+echo "Starting LiveKit agent..."
 python agent.py dev
 
 # Cleanup on exit
@@ -1259,19 +1259,19 @@ The Python backend uses LiveKit agents with bitHuman integration:
 async def entrypoint(ctx: JobContext):
     # Connect to LiveKit room
     await ctx.connect()
-    
+
     # Initialize bitHuman avatar
     bithuman_avatar = bithuman.AvatarSession(
         api_secret=api_secret,
         avatar_id=avatar_id,
     )
-    
+
     # Configure AI session
     session = AgentSession(
         llm=openai.realtime.RealtimeModel(voice="coral"),
         vad=silero.VAD.load()
     )
-    
+
     # Start avatar and AI
     await bithuman_avatar.start(session, room=ctx.room)
     await session.start(agent=Agent(instructions=...), room=ctx.room)
@@ -1302,7 +1302,7 @@ LIVEKIT_API_SECRET=your_secret
 LIVEKIT_URL=wss://your-project.livekit.cloud
 ```
 
-## 🔧 Advanced Configuration
+## Advanced Configuration
 
 ### Custom Avatar Integration
 
@@ -1364,7 +1364,7 @@ class LiveKitConfig {
 }
 ```
 
-## 🧪 Testing and Debugging
+## Testing and Debugging
 
 ### Backend Testing
 
@@ -1417,7 +1417,7 @@ final logger = Logger('MyApp');
 logger.d('Debug message');
 ```
 
-## 🚀 Deployment
+## Deployment
 
 ### Backend Deployment
 
@@ -1458,7 +1458,7 @@ flutter build web --release
 # Deploy to Firebase, Vercel, Netlify, etc.
 ```
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -1513,7 +1513,7 @@ WorkerOptions(
 - Optimize video quality based on device capabilities
 - Use efficient state management
 
-## 📚 API Reference
+## API Reference
 
 ### LiveKit Flutter SDK
 
@@ -1575,7 +1575,7 @@ session = AgentSession(
 await session.start(agent=Agent(instructions=...), room=room)
 ```
 
-## 🎯 Best Practices
+## Best Practices
 
 ### Security
 - Use secure token generation
@@ -1601,7 +1601,7 @@ await session.start(agent=Agent(instructions=...), room=room)
 - Write comprehensive tests
 - Document complex logic
 
-## 🆘 Support and Resources
+## Resources
 
 ### Documentation
 - [Flutter Documentation](https://docs.flutter.dev)
@@ -1609,17 +1609,12 @@ await session.start(agent=Agent(instructions=...), room=room)
 - [bitHuman Documentation](https://docs.bithuman.ai)
 - [LiveKit Agents Documentation](https://docs.livekit.io/agents)
 
-### Community
-- [Discord Community](https://discord.gg/ES953n7bPA)
-- [GitHub Issues](https://github.com/bithuman-product/examples/issues)
-- [LiveKit Community](https://github.com/livekit/livekit)
-
 ### Examples
 - [Flutter Example](../examples/flutter/)
 - [Cloud Essence Example](../examples/cloud/essence/)
 - [Expression Examples](../examples/cloud/expression/)
 
-## 📋 Implementation Checklist
+## Implementation Checklist
 
 ### Backend Setup
 - [ ] Python virtual environment created
@@ -1651,17 +1646,13 @@ await session.start(agent=Agent(instructions=...), room=room)
 - [ ] Error handling works
 - [ ] Debug logs show expected output
 
-## 🎯 Success Criteria
+## Success Criteria
 
 Your implementation is successful when:
-1. ✅ Flutter app launches without errors
-2. ✅ Backend agent connects to LiveKit room
-3. ✅ AI avatar video appears in full screen
-4. ✅ Audio plays from AI avatar
-5. ✅ Loading indicator shows when no video
-6. ✅ Error handling works for connection issues
-7. ✅ Debug logs show proper track rendering
-
----
-
-**Ready to build?** Start with the [Flutter Example](../examples/flutter/) and follow the setup instructions!
+1. Flutter app launches without errors
+2. Backend agent connects to LiveKit room
+3. AI avatar video appears in full screen
+4. Audio plays from AI avatar
+5. Loading indicator shows when no video
+6. Error handling works for connection issues
+7. Debug logs show proper track rendering

@@ -1,15 +1,15 @@
-# 🥧 Raspberry Pi Agent
+# Raspberry Pi Agent
 
 > **Run avatar on Raspberry Pi**
 
-Perfect for IoT, kiosks, and edge devices.
+Suited for IoT, kiosks, and edge devices.
 
 ![Raspberry Pi Device](../assets/images/example-raspberry-pi-device.jpg)
 *Raspberry Pi 4B setup for avatar deployment*
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Hardware needed
 - Raspberry Pi 4B (8GB RAM recommended)
@@ -48,12 +48,12 @@ export LIVEKIT_API_KEY="your_livekit_key"
 export LIVEKIT_API_SECRET="your_livekit_secret"
 export LIVEKIT_URL="wss://your-project.livekit.cloud"
 export OPENAI_API_KEY="your_openai_key"
-export LOADING_MODE="SYNC"  # Important for Pi performance!
+export LOADING_MODE="SYNC"  # Important for Pi performance
 ```
 
-### 6. Setup web interface (**Recommended: Separate Device**)
+### 6. Setup web interface (Recommended: Separate Device)
 
-⚠️ **Performance Note**: For best results, run the web interface on a separate computer. Running both the agent and web UI on the same Pi can cause significant slowdown and throttling.
+**Performance Note**: For best results, run the web interface on a separate computer. Running both the agent and web UI on the same Pi can cause significant slowdown and throttling.
 
 **On a separate computer:**
 ```bash
@@ -64,7 +64,7 @@ npm install && npm run dev
 
 ### 7. Run agent
 
-📁 **[View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/agent-livekit-rasp-pi.py)**
+**[View source code on GitHub](https://github.com/bithuman-product/examples/blob/main/public-docs/examples/agent-livekit-rasp-pi.py)**
 
 **Choose your mode:**
 
@@ -80,12 +80,12 @@ python examples/agent-livekit-rasp-pi.py console
 
 ---
 
-## 💡 What it does
+## What it does
 
 1. Runs avatar agent optimized for Raspberry Pi
 2. Uses `SYNC` loading mode for memory efficiency
 3. Connects to web browsers via LiveKit
-4. Perfect for always-on edge applications
+4. Suited for always-on edge applications
 
 ![Raspberry Pi UI](../assets/images/example-raspberry-pi-ui.jpg)
 *Web interface showing Pi-powered avatar in action*
@@ -98,7 +98,7 @@ python examples/agent-livekit-rasp-pi.py console
 
 ---
 
-## 🔧 Common Issues
+## Common Issues
 
 **Out of memory?**
 - Use Pi 4B with 8GB RAM (recommended)
@@ -123,20 +123,20 @@ python examples/agent-livekit-rasp-pi.py console
 
 ---
 
-## 🎯 Perfect for
+## Use Cases
 
-✅ **Headless server deployments**  
-✅ **Smart home assistants**  
-✅ **IoT projects**  
-✅ **Edge computing**  
-✅ **Always-on applications**  
-✅ **Remote installations**
+- **Headless server deployments**
+- **Smart home assistants**
+- **IoT projects**
+- **Edge computing**
+- **Always-on applications**
+- **Remote installations**
 
-**💡 Pro Tip**: Run Pi in headless mode with web interface on terminal devices for optimal performance.
+**Tip**: Run Pi in headless mode with web interface on terminal devices for optimal performance.
 
 ---
 
-## 🔧 Auto-start Service
+## Auto-start Service
 
 Make it run automatically on boot:
 
@@ -177,7 +177,7 @@ sudo systemctl status bithuman-agent
 
 ---
 
-## ⚡ Performance Tips
+## Performance Tips
 
 **System optimization:**
 ```bash
@@ -196,7 +196,7 @@ sudo systemctl disable wifi  # if using ethernet
 
 ---
 
-## 🔌 Hardware Add-ons
+## Hardware Add-ons
 
 **Sensors integration:**
 - Temperature/humidity sensors
@@ -217,15 +217,9 @@ humidity = dht.humidity
 
 ---
 
-## ➡️ Next Steps
+## Next Steps
 
-**Add sensors?** → Integrate environmental awareness  
-**Add camera?** → Use Pi camera for visual context  
-**Scale up?** → Deploy multiple Pi devices  
-**Go local?** → Replace OpenAI with local LLM
-
-**Need help?** → Join our [Discord community](https://discord.gg/ES953n7bPA) for Pi-specific discussions!
-
----
-
-*Edge AI made accessible!* 🤖 
+**Add sensors?** -- Integrate environmental awareness
+**Add camera?** -- Use Pi camera for visual context
+**Scale up?** -- Deploy multiple Pi devices
+**Go local?** -- Replace OpenAI with local LLM
