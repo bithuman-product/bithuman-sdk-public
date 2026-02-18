@@ -34,7 +34,7 @@ Each directory has its own README with setup instructions.
 
 - [bitHuman Documentation](https://docs.bithuman.ai)
 - [bitHuman Runtime (PyPI)](https://pypi.org/project/bithuman/)
-- [bitHuman Console](https://imaginex.bithuman.ai)
+- [bitHuman Console](https://www.bithuman.ai)
 - [bitHuman Website](https://bithuman.io)
 
 ## License

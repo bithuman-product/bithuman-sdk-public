@@ -4,8 +4,8 @@ Build interactive AI avatars that respond to audio with real-time lip sync. Thes
 
 ## Quick Setup
 
-1. **Get an API secret** at [imaginex.bithuman.ai](https://imaginex.bithuman.ai) → SDK page
-2. **Download an avatar model** (`.imx` file) from the [Community page](https://imaginex.bithuman.ai/#community)
+1. **Get an API secret** at [www.bithuman.ai](https://www.bithuman.ai) → SDK page
+2. **Download an avatar model** (`.imx` file) from the [Community page](https://www.bithuman.ai/#community)
 3. **Install the SDK**: `pip install bithuman`
 4. **Set environment variables**:
    ```bash
@@ -50,4 +50,4 @@ await runtime.stop()
 ## Links
 
 - [bitHuman Documentation](https://docs.bithuman.ai)
-- [bitHuman Console](https://imaginex.bithuman.ai)
+- [bitHuman Console](https://www.bithuman.ai)

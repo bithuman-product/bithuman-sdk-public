@@ -33,7 +33,7 @@ connection.
 
 ### Step 1: Get Your bitHuman Credentials
 
-1. Go to **https://imaginex.bithuman.ai** and create an account
+1. Go to **https://www.bithuman.ai** and create an account
 2. Navigate to the **SDK** section and create an API secret
    - It will look like: `sk_bh_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
    - Save this -- you'll need it to authenticate
