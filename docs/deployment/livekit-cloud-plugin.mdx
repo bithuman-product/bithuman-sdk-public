@@ -20,10 +20,10 @@ Use existing bitHuman agents in real-time applications with our cloud-hosted Liv
     ```
   </Step>
   <Step title="Get your API Secret">
-    Go to [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#developer) and copy your **API Secret**.
+    Go to [www.bithuman.ai](https://www.bithuman.ai/#developer) and copy your **API Secret**.
   </Step>
   <Step title="Find your Agent ID">
-    Click on any agent card in [your dashboard](https://imaginex.bithuman.ai). The **Agent Settings** dialog shows your Agent ID (e.g., `A78WKV4515`).
+    Click on any agent card in [your dashboard](https://www.bithuman.ai). The **Agent Settings** dialog shows your Agent ID (e.g., `A78WKV4515`).
 
     <img src="/images/agent-dashboard.jpg" alt="Agent Dashboard" style={{ borderRadius: '8px' }} />
     <img src="/images/agent-settings-dialog.jpg" alt="Agent Settings" style={{ borderRadius: '8px' }} />
@@ -247,7 +247,7 @@ Gesture actions vary by agent. Always check the Dynamics API response first to s
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `avatar_id` | string | Yes* | Agent ID from the ImagineX dashboard |
+| `avatar_id` | string | Yes* | Agent ID from the bitHuman dashboard |
 | `avatar_image` | PIL.Image | Yes* | Face image for on-the-fly avatar (Expression only) |
 | `api_secret` | string | Yes | Your API secret |
 | `model` | string | No | `"essence"` (default) or `"expression"` |
@@ -267,7 +267,7 @@ Gesture actions vary by agent. Always check the Dynamics API response first to s
 
 ## Pricing
 
-Visit [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#api) for current pricing.
+Visit [www.bithuman.ai](https://www.bithuman.ai/#api) for current pricing.
 
 **Free Tier:** 199 credits per month, community support
 
@@ -279,7 +279,7 @@ Visit [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#api) for current pric
 
 | Problem | Solution |
 |---------|----------|
-| Authentication errors | Verify API secret at [imaginex.bithuman.ai](https://imaginex.bithuman.ai/#developer) |
+| Authentication errors | Verify API secret at [www.bithuman.ai](https://www.bithuman.ai/#developer) |
 | Avatar doesn't appear | Check agent_id exists in your dashboard |
 | Network timeouts | Ensure stable internet; the plugin retries automatically |
 | Plugin installation fails | Use `uv` with `GIT_LFS_SKIP_SMUDGE=1` flag |

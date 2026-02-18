@@ -105,7 +105,7 @@ if __name__ == "__main__":
 
 ```bash
 # Required
-export BITHUMAN_API_SECRET="sk_bh_..."          # From imaginex.bithuman.ai/#developer
+export BITHUMAN_API_SECRET="sk_bh_..."          # From www.bithuman.ai/#developer
 export BITHUMAN_AGENT_ID="A78WKV4515"           # Your agent's ID
 export OPENAI_API_KEY="sk-..."                   # For STT, LLM, TTS
 
@@ -325,7 +325,7 @@ For detailed GPU container setup, see [Self-Hosted GPU Container](/deployment/se
 Make your avatar perform gestures like waving, nodding, or laughing in response to conversation keywords.
 
 <Warning>
-Dynamics require a cloud-generated agent with gestures enabled. Create one at [imaginex.bithuman.ai](https://imaginex.bithuman.ai).
+Dynamics require a cloud-generated agent with gestures enabled. Create one at [www.bithuman.ai](https://www.bithuman.ai).
 </Warning>
 
 ### Step 1: Check Available Gestures
@@ -523,7 +523,7 @@ Open [http://localhost:4202](http://localhost:4202) to talk to your avatar.
 
 <AccordionGroup>
   <Accordion title="Avatar doesn't appear in the room">
-    **Cloud mode:** Check that your `avatar_id` exists — look it up in the [ImagineX dashboard](https://imaginex.bithuman.ai). Verify your API secret is valid with:
+    **Cloud mode:** Check that your `avatar_id` exists — look it up in the [bitHuman dashboard](https://www.bithuman.ai). Verify your API secret is valid with:
     ```bash
     curl -X POST https://api.bithuman.ai/v1/validate \
       -H "api-secret: $BITHUMAN_API_SECRET"
