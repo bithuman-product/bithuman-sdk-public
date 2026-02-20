@@ -32,7 +32,7 @@ services:
       - ./.env  # API keys (BITHUMAN_API_SECRET, OPENAI_API_KEY)
     volumes:
       - ./models:/imx-models  # Mount .imx models directory
-      - ./agent.py:/agent.py
+      - ./agent.py:/app/agent.py  # Mount for live editing
     networks:
       - livekit-network
     extra_hosts:

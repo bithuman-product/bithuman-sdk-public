@@ -71,18 +71,18 @@ services:
       # Custom GPU endpoint settings
       - CUSTOM_GPU_URL=http://expression-avatar:8089/launch  # Internal Docker network URL
       - CUSTOM_GPU_TOKEN=${CUSTOM_GPU_TOKEN:-}  # Optional token for GPU worker auth
-      # Avatar settings
-      - AVATAR_ID=${AVATAR_ID:-}  # Optional: Pre-configured avatar ID on worker
-      # Avatar image path - maps to the ./avatars directory in the container
-      - BITHUMAN_AVATAR_IMAGE=/app/avatars/custom-avatar.jpg
+      # Avatar settings -- set AVATAR_ID or BITHUMAN_AVATAR_IMAGE in .env.gpu (one is required)
+      - AVATAR_ID=${AVATAR_ID:-}  # Pre-configured avatar ID on the worker
+      - BITHUMAN_AVATAR_IMAGE=${BITHUMAN_AVATAR_IMAGE:-}  # Local path or URL (e.g. /app/avatars/avatar.jpg)
       - OPENAI_VOICE=${OPENAI_VOICE:-alloy}  # Voice for OpenAI realtime
       - AVATAR_PERSONALITY=${AVATAR_PERSONALITY:-}  # Optional: Custom personality prompt
     env_file:
-      - ./.env.gpu  # API keys (BITHUMAN_API_SECRET, OPENAI_API_KEY, CUSTOM_GPU_TOKEN)
+      - ./.env.gpu  # API keys (BITHUMAN_API_SECRET, OPENAI_API_KEY) + avatar config
     volumes:
       # Mount avatars directory for custom avatar images
-      # Place your avatar images in ./avatars on host
+      # Place your avatar images in ./avatars on host, then set BITHUMAN_AVATAR_IMAGE=/app/avatars/your-image.jpg
       - ./avatars:/app/avatars
+      - ./agent.py:/app/agent.py  # Mount for live editing
     networks:
       - livekit-gpu-network
     extra_hosts:

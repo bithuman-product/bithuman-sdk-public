@@ -15,8 +15,7 @@ RUN apt-get update && \
     libsm6 \
     libxext6 \
     libxrender-dev \
-    libgomp1 \
-    git && \
+    libgomp1 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -32,13 +31,6 @@ COPY requirements.txt .
 RUN uv pip install -r requirements.txt --upgrade && \
     uv pip uninstall opencv-python && \
     uv pip install opencv-python-headless --no-deps
-
-# Install LiveKit agents and plugins from specific commit for GPU endpoint support
-ENV LIVEKIT_COMMIT=ca532f35f600f87c8b37c166c9ffec2fea279977
-RUN uv pip uninstall livekit-agents livekit-plugins-bithuman livekit-plugins-openai && \
-    GIT_LFS_SKIP_SMUDGE=1 uv pip install git+https://github.com/livekit/agents@${LIVEKIT_COMMIT}#subdirectory=livekit-agents && \
-    GIT_LFS_SKIP_SMUDGE=1 uv pip install git+https://github.com/livekit/agents@${LIVEKIT_COMMIT}#subdirectory=livekit-plugins/livekit-plugins-openai && \
-    GIT_LFS_SKIP_SMUDGE=1 uv pip install git+https://github.com/livekit/agents@${LIVEKIT_COMMIT}#subdirectory=livekit-plugins/livekit-plugins-bithuman
 
 # Copy unified agent code
 COPY agent.py .

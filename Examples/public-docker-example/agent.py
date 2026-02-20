@@ -35,15 +35,34 @@ def _build_avatar_session() -> bithuman.AvatarSession:
         if not custom_url:
             raise ValueError("CUSTOM_GPU_URL is required when AVATAR_MODE=gpu")
         logger.info(f"GPU mode -- endpoint: {custom_url}")
-        return bithuman.AvatarSession(
-            api_secret=os.getenv("BITHUMAN_API_SECRET"),
-            api_url=custom_url,
-            api_token=os.getenv("CUSTOM_GPU_TOKEN"),
-            avatar_image=os.getenv("BITHUMAN_AVATAR_IMAGE"),
-        )
+
+        kwargs: dict = {
+            "api_secret": os.getenv("BITHUMAN_API_SECRET"),
+            "api_url": custom_url,
+            "api_token": os.getenv("CUSTOM_GPU_TOKEN") or None,
+        }
+
+        # avatar_id takes precedence; avatar_image is used if avatar_id is not set.
+        # At least one must be provided for GPU (cloud) mode.
+        avatar_id = os.getenv("AVATAR_ID", "").strip()
+        avatar_image = os.getenv("BITHUMAN_AVATAR_IMAGE", "").strip()
+
+        if avatar_id:
+            kwargs["avatar_id"] = avatar_id
+            logger.info(f"GPU mode -- avatar_id: {avatar_id}")
+        elif avatar_image:
+            kwargs["avatar_image"] = avatar_image
+            logger.info(f"GPU mode -- avatar_image: {avatar_image}")
+        else:
+            raise ValueError(
+                "GPU mode requires AVATAR_ID or BITHUMAN_AVATAR_IMAGE to be set. "
+                "Set one of these in your .env.gpu file."
+            )
+
+        return bithuman.AvatarSession(**kwargs)
 
     # CPU (essence) mode -- pick first .imx model
-    model_root = os.getenv("IMX_MODEL_ROOT", "/persistent-storage/imx-models")
+    model_root = os.getenv("IMX_MODEL_ROOT", "/imx-models")
     models = sorted(Path(model_root).glob("*.imx"))
     if not models:
         raise ValueError(f"No .imx models found in {model_root}")
@@ -51,7 +70,7 @@ def _build_avatar_session() -> bithuman.AvatarSession:
     return bithuman.AvatarSession(
         model_path=str(models[0]),
         api_secret=os.getenv("BITHUMAN_API_SECRET"),
-        api_token=os.getenv("BITHUMAN_API_TOKEN"),
+        api_token=os.getenv("BITHUMAN_API_TOKEN") or None,
     )
 
 
