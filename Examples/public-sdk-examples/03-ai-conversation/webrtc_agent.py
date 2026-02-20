@@ -24,7 +24,7 @@ from livekit.agents.voice.avatar import (
     QueueAudioOutput,
     VideoGenerator,
 )
-from livekit.agents.voice.room_io import RoomOutputOptions
+from livekit.agents.voice.room_io import RoomOptions
 from livekit.plugins import openai
 
 from bithuman import AsyncBithuman
@@ -127,9 +127,7 @@ async def entrypoint(ctx: JobContext):
             llm=openai.realtime.RealtimeModel(voice="alloy"),
         ),
         room=ctx.room,
-        room_output_options=RoomOutputOptions(
-            audio_enabled=False, audio_sample_rate=video_gen.audio_sample_rate,
-        ),
+        room_options=RoomOptions(audio_output=False),
     )
 
 

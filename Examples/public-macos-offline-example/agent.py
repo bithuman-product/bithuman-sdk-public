@@ -12,11 +12,11 @@ from livekit.agents import (
     Agent,
     AgentSession,
     JobContext,
-    RoomOutputOptions,
     WorkerOptions,
     WorkerType,
     cli,
 )
+from livekit.agents.voice.room_io import RoomOptions
 from livekit.plugins import bithuman, openai, silero
 
 logger = logging.getLogger("bithuman-agent")
@@ -63,7 +63,7 @@ async def entrypoint(ctx: JobContext):
             )
         ),
         room=ctx.room,
-        room_output_options=RoomOutputOptions(audio_enabled=False),
+        room_options=RoomOptions(audio_output=False),
     )
 
 
