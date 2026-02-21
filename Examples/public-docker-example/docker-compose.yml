@@ -26,7 +26,7 @@ services:
       # LiveKit connection settings
       - LIVEKIT_URL=ws://livekit:17880  # Internal Docker network URL
       - LIVEKIT_API_KEY=devkey  # Default dev key (change in production)
-      - LIVEKIT_API_SECRET=UPivas8PQvWiYhubkqxqfkY8kfB9TgGj
+      - LIVEKIT_API_SECRET=your-livekit-api-secret-here
       - IMX_MODEL_ROOT=/imx-models  # Path to mounted models
     env_file:
       - ./.env  # API keys (BITHUMAN_API_SECRET, OPENAI_API_KEY)
@@ -52,7 +52,7 @@ services:
       - "4202:4202"
     environment:
       - LIVEKIT_API_KEY=devkey  # API key for LiveKit connection
-      - LIVEKIT_API_SECRET=UPivas8PQvWiYhubkqxqfkY8kfB9TgGj
+      - LIVEKIT_API_SECRET=your-livekit-api-secret-here
       - PORT=4202  # Override Next.js default port
     networks:
       - livekit-network
