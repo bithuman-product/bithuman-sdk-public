@@ -18,6 +18,14 @@ services:
 
   # GPU Avatar Worker - Self-hosted GPU rendering service
   # This service runs the expression-avatar container for local GPU rendering
+  #
+  # Prerequisites:
+  #   Model weights are provided by bitHuman upon access approval.
+  #   Place the provided model files in ./models/ before starting.
+  #   Expected layout:
+  #     ./models/bithuman-expression/   ← DiT model weights
+  #     ./models/wav2vec2-base-960h/    ← audio encoder
+  #     ./models/dit_lite_fp16.trt      ← TRT engine
   expression-avatar:
     image: docker.io/sgubithuman/expression-avatar:latest
     restart: always
@@ -31,12 +39,10 @@ services:
               capabilities: [gpu]
     environment:
       - BITHUMAN_API_SECRET=${BITHUMAN_API_SECRET}
-      # Directory for avatar model files (downloaded on first run if absent)
-      - AVATAR_MODEL_DIR=/app/avatar-model
       - CUDA_VISIBLE_DEVICES=0  # Use first GPU
     volumes:
-      # Mount avatar model directory — models downloaded here on first run if absent
-      - ./avatar-model:/app/avatar-model
+      # Mount directory containing model weights provided by bitHuman
+      - ./models:/data/models:ro
     networks:
       - livekit-gpu-network
     healthcheck:
@@ -44,7 +50,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
-      start_period: 90s  # Longer start period for GPU initialization
+      start_period: 120s  # ~48s GPU compilation + buffer
 
   # AI Agent (GPU) - Backend service with custom GPU endpoint support
   agent-gpu:
