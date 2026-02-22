@@ -10,7 +10,7 @@ Wire protocol details are documented in README.md.
 Usage:
     python bithuman_streaming_server.py \
         --model /path/to/avatar.imx \
-        --api-secret sk_bh_xxxxx \
+        --api-secret your_api_secret \
         --port 8765
 """
 
@@ -205,7 +205,7 @@ if __name__ == "__main__":
     parser.add_argument("--model", type=str, default=os.environ.get("BITHUMAN_MODEL_PATH"),
                         help="Path to .imx avatar model")
     parser.add_argument("--api-secret", type=str, default=os.environ.get("BITHUMAN_API_SECRET"),
-                        help="bitHuman API secret (sk_bh_...)")
+                        help="bitHuman API secret")
     parser.add_argument("--token", type=str, default=os.environ.get("BITHUMAN_RUNTIME_TOKEN"),
                         help="bitHuman runtime token (optional)")
     parser.add_argument("--host", type=str, default="0.0.0.0")

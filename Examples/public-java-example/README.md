@@ -35,7 +35,6 @@ connection.
 
 1. Go to **https://www.bithuman.ai** and create an account
 2. Navigate to the **SDK** section and create an API secret
-   - It will look like: `sk_bh_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
    - Save this -- you'll need it to authenticate
 3. Go to the **Community** page and download an avatar model (`.imx` file)
    - Or use any `.imx` model you already have
@@ -114,7 +113,7 @@ Open **Terminal 1** (server):
 ```bash
 python bithuman_streaming_server.py \
     --model /path/to/your/avatar.imx \
-    --api-secret sk_bh_your_secret_here \
+    --api-secret your_api_secret \
     --port 8765
 ```
 
@@ -127,7 +126,7 @@ INFO | WebSocket server listening on ws://0.0.0.0:8765
 **Using environment variables instead** (recommended):
 ```bash
 export BITHUMAN_MODEL_PATH=/path/to/your/avatar.imx
-export BITHUMAN_API_SECRET=sk_bh_your_secret_here
+export BITHUMAN_API_SECRET=your_api_secret
 
 python bithuman_streaming_server.py
 ```
@@ -198,7 +197,7 @@ The server (with GPU/model) and client (Java app) can run on separate hosts:
 ```bash
 python bithuman_streaming_server.py \
     --model /path/to/avatar.imx \
-    --api-secret sk_bh_xxx \
+    --api-secret your_api_secret \
     --host 0.0.0.0 \
     --port 8765
 ```
@@ -439,7 +438,7 @@ ffmpeg -framerate 25 -i frames/frame_%06d.jpg -c:v libx264 -pix_fmt yuv420p outp
 | Garbled/corrupted frames | Network packet loss (rare over TCP) | Check server logs for errors. Ensure WebSocket message size limit is sufficient. |
 | High latency | Network distance or slow model | Run server close to client. CPU-only mode is slower than GPU. |
 | `Model path required` | Missing `--model` argument | Pass `--model /path/to/avatar.imx` or set `BITHUMAN_MODEL_PATH` env |
-| `API secret or token required` | Missing credentials | Pass `--api-secret sk_bh_xxx` or set `BITHUMAN_API_SECRET` env |
+| `API secret or token required` | Missing credentials | Pass `--api-secret your_api_secret` or set `BITHUMAN_API_SECRET` env |
 | Server exits immediately | Invalid model or credentials | Check the server logs for authentication or model loading errors |
 
 ---
