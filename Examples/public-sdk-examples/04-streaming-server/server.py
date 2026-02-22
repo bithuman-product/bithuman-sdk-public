@@ -152,7 +152,7 @@ class AvatarStreamingServer:
 
 async def main():
     parser = argparse.ArgumentParser(description="bitHuman avatar streaming server")
-    parser.add_argument("--avatar-model", default=os.getenv("BITHUMAN_AVATAR_MODEL"), required=True)
+    parser.add_argument("--avatar-model", default=os.getenv("BITHUMAN_MODEL_PATH"), required=True)
     parser.add_argument("--api-secret", default=os.getenv("BITHUMAN_API_SECRET"))
     parser.add_argument("--livekit-url", default=os.getenv("LIVEKIT_URL"), required=True)
     parser.add_argument("--livekit-api-key", default=os.getenv("LIVEKIT_API_KEY"), required=True)

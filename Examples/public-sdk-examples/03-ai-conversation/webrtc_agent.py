@@ -96,10 +96,10 @@ class BithumanVideoGenerator(VideoGenerator):
 async def entrypoint(ctx: JobContext):
     await ctx.connect()
 
-    model = os.getenv("BITHUMAN_AVATAR_MODEL")
+    model = os.getenv("BITHUMAN_MODEL_PATH")
     secret = os.getenv("BITHUMAN_API_SECRET")
     if not model or not secret:
-        raise ValueError("Set BITHUMAN_AVATAR_MODEL and BITHUMAN_API_SECRET")
+        raise ValueError("Set BITHUMAN_MODEL_PATH and BITHUMAN_API_SECRET")
 
     runtime = await AsyncBithuman.create(model_path=model, api_secret=secret)
     video_gen = BithumanVideoGenerator(runtime)
