@@ -61,14 +61,12 @@ Once received, extract the weights so your directory looks like:
 
 ```
 models/
-├── bithuman-expression/
-│   ├── Model_Lite/         ← DiT model weights (5.7 GB)
-│   └── VAE_LTX/            ← video VAE (1.6 GB)
+├── bithuman-expression/    ← video VAE (1.6 GB)
 ├── wav2vec2-base-960h/     ← audio encoder (1.1 GB)
 ├── dit_lite_fp16.trt       ← TRT engine (2.9 GB)
 └── turbo-vaed/             ← fast VAE decoder (162 MB)
 
-Total: ~11.5 GB
+Total: ~5.8 GB
 ```
 
 ---
@@ -114,11 +112,10 @@ echo "BITHUMAN_AVATAR_IMAGE=/app/avatars/avatar.jpg" >> .env.gpu
 
 # Place model weights in ./models/
 # Expected layout:
-#   models/bithuman-expression/Model_Lite/
-#   models/bithuman-expression/VAE_LTX/
-#   models/wav2vec2-base-960h/
-#   models/dit_lite_fp16.trt
-#   models/turbo-vaed/
+#   models/bithuman-expression/   (VAE_LTX contents, 1.6 GB)
+#   models/wav2vec2-base-960h/    (1.1 GB)
+#   models/dit_lite_fp16.trt      (2.9 GB)
+#   models/turbo-vaed/            (162 MB)
 
 # Copy your avatar image into ./avatars/
 mkdir -p avatars
