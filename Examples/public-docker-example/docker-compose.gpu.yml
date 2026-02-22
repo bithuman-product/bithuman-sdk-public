@@ -31,20 +31,12 @@ services:
               capabilities: [gpu]
     environment:
       - BITHUMAN_API_SECRET=${BITHUMAN_API_SECRET}
-      # Directory for avatar model files (float.pth, wav2vec models, etc.)
+      # Directory for avatar model files (downloaded on first run if absent)
       - AVATAR_MODEL_DIR=/app/avatar-model
-      # Directory for preset avatar images (zero-latency switching)
-      - PRESET_AVATARS_DIR=/app/preset-avatars
       - CUDA_VISIBLE_DEVICES=0  # Use first GPU
     volumes:
-      # Mount avatar model directory (contains float.pth, wav2vec models, etc.)
-      # Models will be downloaded here on first run if not present
+      # Mount avatar model directory — models downloaded here on first run if absent
       - ./avatar-model:/app/avatar-model
-      # Mount preset avatars directory for zero-latency avatar switching
-      # Place your preset avatar images in ./preset-avatars on host
-      - ./preset-avatars:/app/preset-avatars
-      # Cache directory for downloads
-      - gpu-worker-cache:/app/.cache
     networks:
       - livekit-gpu-network
     healthcheck:
@@ -137,6 +129,4 @@ networks:
     driver: bridge  # Default Docker bridge network
 
 # Docker volumes for persistent data
-volumes:
-  gpu-worker-cache:
-    driver: local  # Cache for GPU worker models and downloads
+volumes: {}
