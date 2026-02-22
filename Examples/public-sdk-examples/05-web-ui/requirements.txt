@@ -1,4 +1,6 @@
 bithuman>=1.7.0
 livekit-agents[openai,silero]~=1.4
 fastrtc>=0.0.18
+gradio>=4.0
+numpy>=1.24
 python-dotenv~=1.1

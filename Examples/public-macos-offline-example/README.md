@@ -1,6 +1,6 @@
-# bitHuman Visual Agent App - 100% Local on macOS
+# bitHuman Visual Agent App - Local on macOS
 
-A completely local deployment of bitHuman's AI visual agent running on Apple M2+/M3/M4 devices with real-time conversation capabilities. Everything runs locally: Apple Speech Recognition (STT), Ollama LLM, Apple Voices/Siri (TTS), LiveKit, and bitHuman SDK.
+A local deployment of bitHuman's AI visual agent running on Apple M2+/M3/M4 devices with real-time conversation capabilities. Everything runs locally: Apple Speech Recognition (STT), Ollama LLM, Apple Voices/Siri (TTS), LiveKit, and bitHuman SDK. Note: the bitHuman API secret requires periodic internet access for authentication.
 
 ## What You Need
 
@@ -30,9 +30,7 @@ Configure Apple voices by going to System Settings. We recommend either **Siri v
 
 **Select and download premium voices:**
 
-![Select Voice Example](./assets/example-select-voice.jpg)
-
-![Select Premium Voice Example](./assets/example-select-premium-voice.jpg)
+Go to System Settings > Accessibility > Spoken Content > System Voice and download a Siri or premium voice.
 
 ### 3. Start bitHuman's Apple TTS/STT Services
 
@@ -43,10 +41,6 @@ bithuman-voice serve --port 8000
 ```
 
 This provides both STT and TTS endpoints at port 8000.
-
-**bitHuman Voice Service Running:**
-
-![bitHuman Voice Example](./assets/example-bithuman-voice.jpg)
 
 ### 4. Install and Run Ollama (Local LLM)
 
@@ -63,15 +57,9 @@ ollama run llama3.2:3b
 
 Ollama serves on port 11434 by default.
 
-**Download Ollama Model:**
-
-![Download Ollama Example](./assets/example-download-ollama.jpg)
-
 ### 5. Configure Environment
 
-**Get your bitHuman API Secret:**
-
-![Get API Key Example](./assets/example-get-api-key.jpg)
+**Get your bitHuman API Secret** from [https://www.bithuman.ai](https://www.bithuman.ai) (Developer section).
 
 Create a `.env` file:
 
@@ -98,9 +86,7 @@ models/
 └── YourModel.imx
 ```
 
-**Download .imx models from bitHuman:**
-
-![Model Download Example](./assets/example-download.jpg)
+**Download .imx models from bitHuman** at [https://www.bithuman.ai](https://www.bithuman.ai).
 
 ### 7. Start Services
 
@@ -110,21 +96,13 @@ docker compose up
 
 Wait for all services to start (first run takes a few minutes).
 
-**Docker Services Running:**
-
-![Docker Services Example](./assets/example-docker.jpg)
-
 ### 8. Access the App
 
 Open http://localhost:4202 in your browser.
 
-**App Interface:**
-
-![App Screenshot](./assets/example-screenshot.jpg)
-
 ## That's It!
 
-Now you have a **100% local AI agent** running on your Mac! The system includes:
+Now you have a **locally-running AI agent** on your Mac! The system includes:
 
 **Local Services:**
 - **Apple Speech Recognition**: Local STT via bitHuman's Apple plugin

@@ -213,7 +213,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 - [bitHuman Website](https://bithuman.ai/)
 - [LiveKit Documentation](https://docs.livekit.io/)
 - [Next.js Documentation](https://nextjs.org/docs)
-- [Report Issues](https://github.com/your-username/bithuman-livekit-ui-example/issues)
+- [Report Issues](https://github.com/bithuman-product/platform/issues)
 
 ---
 
