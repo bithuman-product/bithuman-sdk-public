@@ -8,27 +8,36 @@ icon: "book-open"
 
 ---
 
-## SDK Examples
+## Platform API
 
-Progressive examples — each builds on the previous one.
-
-| # | Example | What It Does | Source |
-|---|---------|-------------|--------|
-| 1 | **[Audio Clip](/examples/audio-clip)** | Play audio file through avatar | [01-quickstart](https://github.com/bithuman-product/examples/tree/main/public-sdk-examples/01-quickstart) |
-| 2 | **[Live Microphone](/examples/microphone)** | Real-time mic input to avatar | [02-microphone](https://github.com/bithuman-product/examples/tree/main/public-sdk-examples/02-microphone) |
-| 3 | **[AI Conversation](/examples/ai-conversation)** | OpenAI voice chat with avatar | [03-ai-conversation](https://github.com/bithuman-product/examples/tree/main/public-sdk-examples/03-ai-conversation) |
-| 4 | **Streaming Server** | WebSocket server with LiveKit | [04-streaming-server](https://github.com/bithuman-product/examples/tree/main/public-sdk-examples/04-streaming-server) |
-| 5 | **Web UI** | Browser-based Gradio interface | [05-web-ui](https://github.com/bithuman-product/examples/tree/main/public-sdk-examples/05-web-ui) |
-
-## Full-Stack Examples
+Programmatic agent management -- no SDK or local runtime needed.
 
 | Example | What It Does | Source |
 |---------|-------------|--------|
-| **Docker App** | Complete app: LiveKit + OpenAI + Web UI | [public-docker-example](https://github.com/bithuman-product/examples/tree/main/public-docker-example) |
-| **[Apple Local Agent](/examples/apple-local)** | 100% offline on macOS (Siri + Ollama) | [public-macos-offline-example](https://github.com/bithuman-product/examples/tree/main/public-macos-offline-example) |
+| **Agent Management** | Validate credentials, get/update agents | [api/](https://github.com/bithuman-product/examples/tree/main/api) |
+| **Agent Generation** | Create agents from prompt, poll status | [api/](https://github.com/bithuman-product/examples/tree/main/api) |
+| **Dynamics** | Generate gestures, list available gestures | [api/](https://github.com/bithuman-product/examples/tree/main/api) |
+
+## Avatar Integration
+
+Four combinations of model type and deployment mode.
+
+| Example | Model | Deployment | Source |
+|---------|-------|------------|--------|
+| **[Essence + Cloud](/examples/audio-clip)** | Essence (CPU) | bitHuman Cloud | [essence-cloud/](https://github.com/bithuman-product/examples/tree/main/essence-cloud) |
+| **[Essence + Self-Hosted](/examples/audio-clip)** | Essence (CPU) | Your machine | [essence-selfhosted/](https://github.com/bithuman-product/examples/tree/main/essence-selfhosted) |
+| **Expression + Cloud** | Expression (GPU) | bitHuman Cloud | [expression-cloud/](https://github.com/bithuman-product/examples/tree/main/expression-cloud) |
+| **Expression + Self-Hosted** | Expression (GPU) | Your machine | [expression-selfhosted/](https://github.com/bithuman-product/examples/tree/main/expression-selfhosted) |
+
+## Full-Stack & Integration Examples
+
+| Example | What It Does | Source |
+|---------|-------------|--------|
+| **[Apple Local Agent](/examples/apple-local)** | 100% offline on macOS (Siri + Ollama) | [integrations/macos-offline/](https://github.com/bithuman-product/examples/tree/main/integrations/macos-offline) |
 | **[Raspberry Pi](/examples/raspberry-pi)** | Edge deployment on Raspberry Pi | — |
-| **Java Client** | WebSocket streaming from Java | [public-java-example](https://github.com/bithuman-product/examples/tree/main/public-java-example) |
-| **[Self-Hosted Plugin](/examples/self-hosted-plugin)** | Self-hosted LiveKit plugin | — |
+| **Web UI** | Browser-based Gradio interface | [integrations/web-ui/](https://github.com/bithuman-product/examples/tree/main/integrations/web-ui) |
+| **Java Client** | WebSocket streaming from Java | [integrations/java/](https://github.com/bithuman-product/examples/tree/main/integrations/java) |
+| **Next.js UI** | Drop-in LiveKit web interface | [integrations/nextjs-ui/](https://github.com/bithuman-product/examples/tree/main/integrations/nextjs-ui) |
 
 ---
 
@@ -38,4 +47,4 @@ Progressive examples — each builds on the previous one.
 
 ---
 
-**New to bitHuman?** Start with [Audio Clip](/examples/audio-clip) — you'll have an avatar running in 5 minutes.
+**New to bitHuman?** Start with [Essence + Cloud](https://github.com/bithuman-product/examples/tree/main/essence-cloud) -- the simplest setup with no models to download.

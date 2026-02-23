@@ -79,26 +79,22 @@ Once healthy, the container is ready to accept avatar sessions via `/launch`.
 
 ## Docker Compose Setup
 
-Use the [full example](https://github.com/bithuman-product/examples/tree/main/public-docker-example) for a complete setup with LiveKit, an AI agent, and a web frontend:
+Use the [full example](https://github.com/bithuman-product/examples/tree/main/expression-selfhosted) for a complete setup with LiveKit, an AI agent, and a web frontend:
 
 ```bash
 git clone https://github.com/bithuman-product/examples.git
-cd examples/public-docker-example
+cd examples/expression-selfhosted
 
-# Create .env.gpu with your credentials
-echo "BITHUMAN_API_SECRET=your_api_secret" > .env.gpu
-echo "OPENAI_API_KEY=sk-..." >> .env.gpu
-
-# Set your avatar image (local path or public URL):
-echo "BITHUMAN_AVATAR_IMAGE=/app/avatars/avatar.jpg" >> .env.gpu
-# or: echo "BITHUMAN_AVATAR_IMAGE=https://example.com/avatar.jpg" >> .env.gpu
+# Configure environment
+cp .env.example .env
+# Edit .env with your API secret, OpenAI key, and avatar image
 
 # Copy your avatar image into ./avatars/
 mkdir -p avatars
 cp /path/to/your/avatar.jpg avatars/
 
 # Model weights download automatically on first run — nothing to pre-download!
-docker compose -f docker-compose.gpu.yml up
+docker compose up
 ```
 
 Open `http://localhost:4202` to start a conversation with your GPU avatar.
@@ -387,7 +383,7 @@ docker run --gpus all -p 8089:8089 --restart always \
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="Docker Example" icon="docker" href="https://github.com/bithuman-product/examples/tree/main/public-docker-example">
+  <Card title="Docker Example" icon="docker" href="https://github.com/bithuman-product/examples/tree/main/expression-selfhosted">
     Full GPU setup with LiveKit server, AI agent, and web frontend
   </Card>
   <Card title="LiveKit Agents" icon="book" href="https://docs.livekit.io/agents">
