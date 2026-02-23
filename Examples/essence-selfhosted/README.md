@@ -7,8 +7,22 @@ No GPU needed. Audio stays on your machine -- only authentication calls the clou
 
 - Python 3.9+ (or Docker)
 - bitHuman API secret ([www.bithuman.ai](https://www.bithuman.ai) > Developer section)
-- `.imx` model file (download from [www.bithuman.ai](https://www.bithuman.ai) > Community)
+- `.imx` model file (see below)
 - OpenAI API key (for `conversation.py` and `agent.py`)
+
+## Get an .imx Model
+
+Option A -- **Download from the console**: Browse [www.bithuman.ai](https://www.bithuman.ai) > Community
+
+Option B -- **Generate via API**: Use the [api/](../api/) scripts to create a new agent and download its model:
+```bash
+cd ../api
+pip install -r requirements.txt
+export BITHUMAN_API_SECRET=your_secret
+
+# Generate a new agent and download the .imx file (~4 min)
+python generation.py --prompt "You are a friendly assistant" --download --output ../essence-selfhosted/models/avatar.imx
+```
 
 ## Terminal Quickstart (no Docker)
 
@@ -21,7 +35,7 @@ cp .env.example .env
 ### Play an audio file through the avatar
 
 ```bash
-python quickstart.py --model avatar.imx --audio-file speech.wav
+python quickstart.py --model models/avatar.imx --audio-file speech.wav
 ```
 
 Press `Q` to quit.

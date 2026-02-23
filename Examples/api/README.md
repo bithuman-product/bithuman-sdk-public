@@ -41,6 +41,12 @@ python generation.py --prompt "You are a fitness coach"
 # Generate with a custom face
 python generation.py --prompt "You are a news anchor" --image https://example.com/face.jpg
 
+# Generate and download the .imx model for self-hosted use
+python generation.py --prompt "You are a tutor" --download
+
+# Download .imx model for an existing agent
+python generation.py --download --agent-id A91XMB7113
+
 # Check dynamics / gestures
 python dynamics.py --agent-id A91XMB7113
 
