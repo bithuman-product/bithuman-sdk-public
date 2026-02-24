@@ -1,10 +1,10 @@
 ---
 title: "Event Handling"
-description: "Event types and handler patterns for avatar webhooks."
+description: "Event types for avatar webhooks."
 icon: "bolt"
 ---
 
-Webhooks deliver HTTP POST requests to your endpoint when avatar events occur. For setup instructions, see the [Webhook Integration Guide](/integrations/webhooks).
+Webhooks deliver HTTP POST requests to your endpoint when avatar events occur. For setup instructions, handler examples, and retry policies, see the [Webhook Integration Guide](/integrations/webhooks).
 
 ## Event Types
 
@@ -45,65 +45,17 @@ Fired for each message sent in the conversation (both user and agent).
 
 ---
 
-## Handler Examples
-
-<CodeGroup>
-
-```python Flask (Python)
-from flask import Flask, request, jsonify
-
-app = Flask(__name__)
-
-@app.route('/webhook', methods=['POST'])
-def handle_webhook():
-    data = request.json
-    event_type = data.get('event_type')
-
-    if event_type == 'room.join':
-        session_id = data['data']['session_id']
-        print(f"User joined session {session_id}")
-    elif event_type == 'chat.push':
-        role = data['data']['role']
-        message = data['data']['message']
-        print(f"[{role}] {message}")
-
-    return jsonify({'status': 'ok'}), 200
-
-if __name__ == '__main__':
-    app.run(port=3000)
-```
-
-```javascript Express (Node.js)
-const express = require('express');
-const app = express();
-app.use(express.json());
-
-app.post('/webhook', (req, res) => {
-  const { event_type, data } = req.body;
-
-  if (event_type === 'room.join') {
-    console.log(`User joined session ${data.session_id}`);
-  } else if (event_type === 'chat.push') {
-    console.log(`[${data.role}] ${data.message}`);
-  }
-
-  res.json({ status: 'ok' });
-});
-
-app.listen(3000, () => console.log('Listening on port 3000'));
-```
-
-</CodeGroup>
+<Info>
+For complete handler examples (Flask, Express), signature verification, endpoint setup, testing, and retry policy, see the [Webhook Integration Guide](/integrations/webhooks).
+</Info>
 
 ---
 
 ## Async Processing
 
 <Tip>
-Return `200` immediately and process events in the background. Long-running work (database writes, API calls, analytics) should be offloaded to a task queue so your endpoint responds within the timeout window.
+Return `200` immediately and process events in the background. Long-running work (database writes, API calls, analytics) should be offloaded to a task queue so your endpoint responds within the timeout window. Any standard job queue (Celery, BullMQ, Sidekiq, etc.) works.
 </Tip>
-
-Any standard job queue (Celery, BullMQ, Sidekiq, etc.) works.
 
 ---
 

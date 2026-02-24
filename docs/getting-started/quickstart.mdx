@@ -74,6 +74,54 @@ asyncio.run(main())
 
 ---
 
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="ModuleNotFoundError: No module named 'bithuman'">
+    The SDK is not installed. Run:
+    ```bash
+    pip install bithuman --upgrade
+    ```
+    Make sure you're using the correct Python environment (virtualenv, conda, etc.).
+  </Accordion>
+
+  <Accordion title="Authentication failed / 401 error">
+    Your API secret is invalid or missing. Check:
+    1. You copied the full secret from [Developer Dashboard](https://www.bithuman.ai/#developer)
+    2. The `api_secret` parameter or `BITHUMAN_API_SECRET` env var is set correctly
+    3. Your account is active with available credits
+
+    Quick test:
+    ```bash
+    curl -X POST https://api.bithuman.ai/v1/validate \
+      -H "api-secret: YOUR_SECRET"
+    ```
+  </Accordion>
+
+  <Accordion title="Avatar shows but no lip movement">
+    The avatar needs audio input to animate:
+    1. Ensure you're calling `push_audio()` with valid audio data
+    2. Call `flush()` after pushing all audio
+    3. Check that the audio is 16-bit PCM format (use `float32_to_int16()` helper)
+    4. Verify audio sample rate matches the file (typically 16000 or 44100)
+  </Accordion>
+
+  <Accordion title="Slow startup (~20 seconds)">
+    This is normal for the first session — the `.imx` model takes time to load and initialize. Subsequent sessions in the same process start instantly.
+
+    To reduce perceived latency, keep the runtime alive between sessions instead of recreating it.
+  </Accordion>
+
+  <Accordion title="FileNotFoundError: avatar.imx not found">
+    The model file path is wrong. Check:
+    1. The `.imx` file exists at the path you specified
+    2. Use an absolute path if running from a different directory
+    3. Download a model from [Community Models](https://www.bithuman.ai/#community) if you don't have one
+  </Accordion>
+</AccordionGroup>
+
+---
+
 ## Next Steps
 
 <CardGroup cols={3}>

@@ -73,6 +73,23 @@ All of this happens in real-time — fast enough for a natural conversation.
 
 ---
 
+## Which Approach Should I Use?
+
+Start here:
+
+- **No GPU?** → Use **Cloud Plugin** (easiest) or **Self-Hosted CPU** (most private)
+- **Have a GPU?** → Use **Self-Hosted GPU** for dynamic face images without pre-built models
+- **Want the fastest setup?** → Cloud Plugin — just an API secret and agent ID
+- **Need privacy?** → Self-Hosted CPU — audio never leaves your machine
+
+| | Cloud Plugin | Self-Hosted CPU | Self-Hosted GPU |
+|---|---|---|---|
+| **Setup time** | ~2 min | ~5 min | ~10 min |
+| **GPU required** | No | No | Yes (8 GB+ VRAM) |
+| **Privacy** | Audio sent to cloud | Audio stays local | Audio stays local |
+| **Avatar source** | Pre-built agent ID | `.imx` model file | Any face image |
+| **Best for** | Web apps, quick demos | Edge, offline, privacy | Dynamic faces, high volume |
+
 ## Three Ways to Use bitHuman
 
 Choose the approach that fits your project:

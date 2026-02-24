@@ -575,6 +575,22 @@ Open [http://localhost:4202](http://localhost:4202) to talk to your avatar.
 
 ---
 
+## Billing & Credits
+
+Avatar sessions consume credits based on the deployment mode and session duration.
+
+| Deployment | Credit Cost | Billed By | Notes |
+|------------|-------------|-----------|-------|
+| **Cloud Plugin** | Per session minute | Session duration | Includes GPU rendering |
+| **Self-Hosted CPU** | Per authentication | Auth call | Rendering is free (your hardware) |
+| **Self-Hosted GPU** | Per authentication | Auth call | Rendering is free (your hardware) |
+
+<Info>
+Check your remaining credits at [www.bithuman.ai](https://www.bithuman.ai) > Developer section. Credits are consumed only for active sessions — idle containers cost nothing.
+</Info>
+
+---
+
 ## Next Steps
 
 <CardGroup cols={3}>
