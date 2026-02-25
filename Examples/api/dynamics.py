@@ -117,8 +117,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="bitHuman dynamics management")
     parser.add_argument("--agent-id", required=True, help="Agent code (e.g. A91XMB7113)")
     parser.add_argument("--generate", action="store_true", help="Generate new dynamics")
-    parser.add_argument("--duration", type=int, default=3, help="Gesture duration in seconds")
-    parser.add_argument("--model", default="seedance", choices=["seedance", "kling", "auto"])
+    parser.add_argument("--duration", type=int, default=5, help="Gesture duration in seconds (default: 5)")
+    parser.add_argument("--model", default="seedance", choices=["seedance", "kling"])
     args = parser.parse_args()
 
     if args.generate:

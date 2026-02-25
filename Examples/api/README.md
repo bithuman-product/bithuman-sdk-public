@@ -90,7 +90,7 @@ python management.py --agent-id A91XMB7113
 # List available gestures
 python dynamics.py --agent-id A91XMB7113
 
-# Generate new gestures (default: 3s, seedance model)
+# Generate new gestures (default: 5s, seedance model)
 python dynamics.py --agent-id A91XMB7113 --generate
 
 # Custom duration and model
