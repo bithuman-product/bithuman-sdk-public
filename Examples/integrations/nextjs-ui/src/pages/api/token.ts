@@ -4,21 +4,30 @@ import { AccessToken, AgentDispatchClient, RoomServiceClient, VideoGrant } from 
 const apiKey = process.env.LIVEKIT_API_KEY;
 const apiSecret = process.env.LIVEKIT_API_SECRET;
 
-// Server-side HTTP URL for LiveKit API calls (room creation, agent dispatch).
-// LIVEKIT_API_URL is preferred (explicit HTTP URL for server-side use).
-// Falls back to LIVEKIT_URL, but that may contain ws:// from build args — fix it.
+// Resolve the server-side HTTP URL for LiveKit API calls.
+// Priority: LIVEKIT_API_URL > auto-detect Docker > convert LIVEKIT_URL > default
 function resolveLivekitApiUrl(): string {
-  const explicit = process.env.LIVEKIT_API_URL;
-  if (explicit) return explicit;
+  // 1. Explicit API URL (always wins)
+  if (process.env.LIVEKIT_API_URL) return process.env.LIVEKIT_API_URL;
 
-  const fallback = process.env.LIVEKIT_URL || "http://localhost:17880";
-  // Fix ws:// URLs — the RoomServiceClient needs http://
-  return fallback.replace(/^ws:\/\//, "http://").replace(/^wss:\/\//, "https://");
+  // 2. Convert LIVEKIT_URL from ws:// to http:// and fix localhost for Docker
+  const raw = process.env.LIVEKIT_URL || "";
+  if (raw) {
+    const httpUrl = raw.replace(/^ws:\/\//, "http://").replace(/^wss:\/\//, "https://");
+    // Inside Docker compose, localhost won't reach other containers.
+    // The LiveKit service is named "livekit" in docker-compose.yml.
+    if (httpUrl.includes("localhost")) {
+      return httpUrl.replace("localhost", "livekit");
+    }
+    return httpUrl;
+  }
+
+  // 3. Default: try Docker service name first
+  return "http://livekit:17880";
 }
 
 const livekitApiUrl = resolveLivekitApiUrl();
 
-// Log config once at startup so debugging is immediate
 console.log('[token-api] Config:', {
   LIVEKIT_API_URL: process.env.LIVEKIT_API_URL || '(not set)',
   LIVEKIT_URL: process.env.LIVEKIT_URL || '(not set)',
@@ -30,7 +39,6 @@ async function ensureAgentDispatch(roomName: string): Promise<boolean> {
   const roomService = new RoomServiceClient(livekitApiUrl, apiKey!, apiSecret!);
   const agentDispatch = new AgentDispatchClient(livekitApiUrl, apiKey!, apiSecret!);
 
-  // Retry up to 5 times with increasing delay (covers LiveKit startup)
   for (let attempt = 1; attempt <= 5; attempt++) {
     try {
       await roomService.createRoom({ name: roomName });
@@ -48,7 +56,6 @@ async function ensureAgentDispatch(roomName: string): Promise<boolean> {
         console.error(`[token-api] FAILED: Cannot reach LiveKit at ${livekitApiUrl} after 5 attempts. Check LIVEKIT_API_URL and network.`);
         return false;
       } else {
-        // Non-connection error (room exists, dispatch exists, etc.) — that's OK
         console.log(`[token-api] Room/dispatch note: ${msg.substring(0, 120)}`);
         return true;
       }
