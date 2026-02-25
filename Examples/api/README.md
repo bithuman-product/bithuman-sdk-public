@@ -38,7 +38,7 @@ Validates your API secret and lists your agents. Shows PASS/FAIL with actionable
 |--------|-------------|---------------|
 | `generation.py` | Generate agent, download `.imx` model | `POST /v1/agent/generate`, `GET /v1/agent/status/{id}` |
 | `management.py` | Validate credentials, get/update agents | `POST /v1/validate`, `GET/POST /v1/agent/{code}` |
-| `test.py` | Quick API credential validation | `POST /v1/validate`, `GET /v1/agents` |
+| `test.py` | Quick API credential validation | `POST /v1/validate`, `GET /v1/agent/{code}` |
 | `dynamics.py` | Generate gestures, list available gestures | `POST /v1/dynamics/generate`, `GET /v1/dynamics/{id}` |
 | `context.py` | Make agent speak, inject background context | `POST /v1/agent/{code}/speak`, `POST /v1/agent/{code}/add-context` |
 | `upload.py` | Upload files by URL or from disk | `POST /v1/files/upload` |

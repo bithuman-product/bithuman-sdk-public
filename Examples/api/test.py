@@ -8,8 +8,12 @@ Usage:
 
     # Or with a .env file in the current directory:
     python test.py
+
+    # Optionally test agent access:
+    python test.py --agent-id A91XMB7113
 """
 
+import argparse
 import os
 import sys
 
@@ -62,11 +66,11 @@ def test_validate():
     return False
 
 
-def test_agents():
-    """Test 2: GET /v1/agents -- list agents (verifies broader API access)."""
-    print("Test 2: Listing agents...")
+def test_agent(agent_id):
+    """Test 2: GET /v1/agent/{code} -- verify agent access."""
+    print(f"Test 2: Fetching agent {agent_id}...")
     try:
-        resp = requests.get(f"{BASE_URL}/v1/agents", headers=get_headers())
+        resp = requests.get(f"{BASE_URL}/v1/agent/{agent_id}", headers=get_headers())
     except requests.exceptions.ConnectionError:
         print(f"  FAIL: Cannot reach {BASE_URL}")
         return False
@@ -76,30 +80,28 @@ def test_agents():
         return False
 
     if resp.status_code == 404:
-        # Endpoint may not exist in all API versions -- not a failure
-        print("  SKIP: /v1/agents endpoint not available")
-        return True
+        print(f"  FAIL: Agent {agent_id} not found")
+        print("  Fix:  Check the agent ID, or create one at www.bithuman.ai")
+        return False
 
     if resp.status_code != 200:
         print(f"  FAIL: HTTP {resp.status_code} -- {resp.text[:200]}")
         return False
 
     data = resp.json()
-    agents = data.get("data", [])
-    if isinstance(agents, list):
-        print(f"  PASS: Found {len(agents)} agent(s)")
-        for agent in agents[:3]:
-            name = agent.get("name", "unnamed")
-            agent_id = agent.get("agent_id", "?")
-            print(f"        - {name} ({agent_id})")
-        if len(agents) > 3:
-            print(f"        ... and {len(agents) - 3} more")
-    else:
-        print(f"  PASS: API responded successfully")
+    agent = data.get("data", {})
+    name = agent.get("name", "unnamed")
+    status = agent.get("status", "unknown")
+    print(f"  PASS: {name} ({agent_id}) — status: {status}")
     return True
 
 
 def main():
+    parser = argparse.ArgumentParser(description="bitHuman API quick test")
+    parser.add_argument("--agent-id", default=os.getenv("BITHUMAN_AGENT_ID"),
+                        help="Agent code to test (e.g. A91XMB7113)")
+    args = parser.parse_args()
+
     print(f"bitHuman API Test ({BASE_URL})")
     print("=" * 50)
     print()
@@ -107,8 +109,10 @@ def main():
     results = []
     results.append(("Validate API Secret", test_validate()))
     print()
-    results.append(("List Agents", test_agents()))
-    print()
+
+    if args.agent_id:
+        results.append(("Fetch Agent", test_agent(args.agent_id)))
+        print()
 
     # Summary
     print("=" * 50)
