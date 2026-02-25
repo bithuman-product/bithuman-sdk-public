@@ -76,6 +76,20 @@ All configuration is via `.env`. See `.env.example` for all options.
 | `OPENAI_API_KEY` | Yes | For AI conversation |
 | `OPENAI_VOICE` | No | TTS voice, default `coral` |
 
+## Remote / VPS Deployment
+
+The stack auto-detects the server address — no extra configuration needed.
+Just open the required firewall ports:
+
+```bash
+sudo ufw allow 4202/tcp          # Web UI
+sudo ufw allow 17880/tcp         # LiveKit signaling
+sudo ufw allow 17881/tcp         # LiveKit TCP fallback
+sudo ufw allow 50700:50720/udp   # LiveKit WebRTC media
+```
+
+Then access `http://YOUR_VPS_IP:4202` from any browser.
+
 ## How It Works
 
 1. The SDK connects to bitHuman's cloud with your `avatar_id`
