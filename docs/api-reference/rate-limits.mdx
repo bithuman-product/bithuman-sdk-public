@@ -1,0 +1,120 @@
+---
+title: "Rate Limits & Quotas"
+description: "API request limits, concurrency limits, and retry guidance for the bitHuman REST API."
+icon: "gauge-high"
+---
+
+## Request Limits
+
+All API endpoints are rate-limited to protect service quality. Limits are applied per API secret.
+
+| Tier | Requests/min | Concurrent Sessions | Agent Generations/day |
+|------|-------------|---------------------|----------------------|
+| **Free** | 60 | 2 | 5 |
+| **Pro** | 300 | 10 | 50 |
+| **Enterprise** | Custom | Custom | Custom |
+
+<Info>
+Check your current tier and usage at [www.bithuman.ai](https://www.bithuman.ai) > Developer section.
+</Info>
+
+## Rate Limit Headers
+
+Every API response includes rate limit headers:
+
+```
+X-RateLimit-Limit: 300
+X-RateLimit-Remaining: 297
+X-RateLimit-Reset: 1705312260
+```
+
+| Header | Description |
+|--------|-------------|
+| `X-RateLimit-Limit` | Maximum requests per window |
+| `X-RateLimit-Remaining` | Remaining requests in current window |
+| `X-RateLimit-Reset` | Unix timestamp when the window resets |
+
+## Handling 429 Responses
+
+When you exceed the rate limit, the API returns HTTP `429 Too Many Requests`:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "RATE_LIMITED",
+    "message": "Rate limit exceeded. Retry after 12 seconds.",
+    "retry_after": 12
+  }
+}
+```
+
+### Recommended Retry Strategy
+
+Use exponential backoff with jitter:
+
+```python
+import time
+import random
+import requests
+
+def api_request_with_retry(url, headers, max_retries=3):
+    for attempt in range(max_retries):
+        resp = requests.post(url, headers=headers)
+
+        if resp.status_code != 429:
+            return resp
+
+        # Exponential backoff with jitter
+        retry_after = resp.json().get("error", {}).get("retry_after", 2 ** attempt)
+        jitter = random.uniform(0, 1)
+        time.sleep(retry_after + jitter)
+
+    return resp  # Return last response if all retries exhausted
+```
+
+## Concurrency Limits
+
+Avatar sessions have per-account concurrency limits:
+
+| Resource | Limit | Notes |
+|----------|-------|-------|
+| **Cloud avatar sessions** | Based on tier | Active WebRTC sessions |
+| **Agent generation** | 3 concurrent | Queued if exceeded |
+| **Dynamics generation** | 2 concurrent | Queued if exceeded |
+| **File uploads** | 10 concurrent | Per API secret |
+
+## Endpoint-Specific Limits
+
+| Endpoint | Limit | Notes |
+|----------|-------|-------|
+| `POST /v1/validate` | 30/min | Lightweight, for health checks |
+| `POST /v1/agent/generate` | 10/min | Heavy — triggers GPU pipeline |
+| `GET /v1/agent/status/*` | 120/min | Polling — use 5s intervals |
+| `POST /v1/agent/*/speak` | 30/min | Per agent |
+| `POST /v1/files/upload` | 30/min | Per API secret |
+| `POST /v1/dynamics/generate` | 10/min | Triggers video generation |
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use webhooks instead of polling">
+    Instead of polling `/v1/agent/status/{id}` in a loop, configure [webhooks](/integrations/webhooks) to get notified when generation completes.
+  </Accordion>
+
+  <Accordion title="Cache agent details">
+    Agent data rarely changes. Cache `GET /v1/agent/{code}` responses locally and refresh only when needed.
+  </Accordion>
+
+  <Accordion title="Batch file uploads">
+    Upload multiple files in parallel (up to 10 concurrent), but implement a semaphore to stay within limits.
+  </Accordion>
+
+  <Accordion title="Reuse sessions">
+    Keep avatar sessions alive between conversations instead of creating new ones. Session creation is the most expensive operation.
+  </Accordion>
+</AccordionGroup>
+
+## Need Higher Limits?
+
+Contact us via [Discord](https://discord.gg/ES953n7bPA) or email for enterprise tier pricing with custom limits.

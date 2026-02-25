@@ -1,0 +1,125 @@
+---
+title: "Error Reference"
+description: "Complete list of bitHuman API error codes, HTTP statuses, and resolution steps."
+icon: "triangle-exclamation"
+---
+
+## Error Response Format
+
+All error responses follow a consistent format:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable description of what went wrong."
+  }
+}
+```
+
+## HTTP Status Codes
+
+| Status | Meaning | Common Cause |
+|--------|---------|-------------|
+| `200` | Success | Request completed |
+| `400` | Bad Request | Invalid parameters or missing required fields |
+| `401` | Unauthorized | Invalid or missing `api-secret` header |
+| `404` | Not Found | Agent, resource, or endpoint doesn't exist |
+| `413` | Payload Too Large | File exceeds size limit |
+| `415` | Unsupported Media Type | File type not supported |
+| `422` | Validation Error | Parameters are present but invalid |
+| `429` | Rate Limited | Too many requests — see [Rate Limits](/api-reference/rate-limits) |
+| `500` | Internal Error | Server-side error — retry or contact support |
+| `503` | Service Unavailable | All workers busy — retry with backoff |
+
+## Error Codes
+
+### Authentication
+
+| Code | HTTP | Message | Resolution |
+|------|------|---------|------------|
+| `UNAUTHORIZED` | 401 | Invalid API secret | Check your `api-secret` header value. Get a valid secret from [Developer Dashboard](https://www.bithuman.ai/#developer). |
+| `MISSING_AUTH` | 401 | Missing api-secret header | Add `api-secret` header to your request. |
+| `ACCOUNT_SUSPENDED` | 401 | Account suspended | Contact support via [Discord](https://discord.gg/ES953n7bPA). |
+| `INSUFFICIENT_CREDITS` | 402 | Insufficient credits | Top up credits at [www.bithuman.ai](https://www.bithuman.ai). |
+
+### Agent Operations
+
+| Code | HTTP | Message | Resolution |
+|------|------|---------|------------|
+| `AGENT_NOT_FOUND` | 404 | Agent not found | Check the agent code. Use `POST /v1/validate` to verify your API secret has access. |
+| `AGENT_PROCESSING` | 409 | Agent is still generating | Wait for generation to complete. Poll `/v1/agent/status/{id}`. |
+| `AGENT_FAILED` | 400 | Agent generation failed | Check generation logs. Retry with different parameters. |
+| `VALIDATION_ERROR` | 422 | prompt is required | Include all required fields. See endpoint documentation. |
+| `NO_ACTIVE_ROOMS` | 404 | No active rooms for agent | The agent must be in an active LiveKit session for `/speak` and `/add-context`. |
+
+### File Operations
+
+| Code | HTTP | Message | Resolution |
+|------|------|---------|------------|
+| `FILE_TOO_LARGE` | 413 | File exceeds size limit | Images: 10 MB max. Videos: 100 MB max. Audio: 50 MB max. |
+| `UNSUPPORTED_TYPE` | 415 | Unsupported file type | Supported: JPEG, PNG, WebP, MP4, WAV, MP3, OGG. |
+| `DOWNLOAD_FAILED` | 400 | Could not download URL | Ensure the URL is publicly accessible and returns a valid file. |
+
+### Dynamics
+
+| Code | HTTP | Message | Resolution |
+|------|------|---------|------------|
+| `DYNAMICS_NOT_FOUND` | 404 | No dynamics for agent | Generate dynamics first with `POST /v1/dynamics/generate`. |
+| `DYNAMICS_PROCESSING` | 409 | Dynamics still generating | Wait for generation to complete. |
+
+### Session & Infrastructure
+
+| Code | HTTP | Message | Resolution |
+|------|------|---------|------------|
+| `RATE_LIMITED` | 429 | Rate limit exceeded | Back off and retry. See [Rate Limits](/api-reference/rate-limits). |
+| `NO_AVAILABLE_WORKERS` | 503 | All workers busy | Retry with exponential backoff (up to 5 times). |
+| `SESSION_LIMIT` | 429 | Concurrent session limit reached | Wait for an existing session to end, or upgrade your tier. |
+| `INTERNAL_ERROR` | 500 | Internal server error | Retry once. If persistent, report via [Discord](https://discord.gg/ES953n7bPA). |
+
+## Handling Errors in Python
+
+```python
+import requests
+
+resp = requests.post(
+    "https://api.bithuman.ai/v1/agent/generate",
+    headers={"api-secret": api_secret, "Content-Type": "application/json"},
+    json={"prompt": "You are a helpful assistant"},
+)
+
+if resp.status_code == 200:
+    data = resp.json()["data"]
+    print(f"Agent {data['agent_id']} is generating...")
+
+elif resp.status_code == 401:
+    print("Invalid API secret. Check BITHUMAN_API_SECRET.")
+
+elif resp.status_code == 429:
+    retry_after = resp.json()["error"].get("retry_after", 5)
+    print(f"Rate limited. Retry after {retry_after}s.")
+
+elif resp.status_code == 503:
+    print("Workers busy. Retry in a few seconds.")
+
+else:
+    error = resp.json().get("error", {})
+    print(f"Error {error.get('code')}: {error.get('message')}")
+```
+
+## GPU Container Errors
+
+The self-hosted expression-avatar container returns its own error responses:
+
+| Endpoint | Error | Resolution |
+|----------|-------|------------|
+| `GET /health` | Connection refused | Container not started or still initializing |
+| `GET /ready` | `503 Not Ready` | Model still loading (~50s cold start) or all session slots full |
+| `POST /launch` | `401 Unauthorized` | Invalid `BITHUMAN_API_SECRET` in container env |
+| `POST /launch` | `400 No face detected` | Image has no detectable face. Use a clear front-facing photo. |
+| `POST /launch` | `503 No capacity` | All session slots in use. Wait or add more containers. |
+
+<Tip>
+For GPU container troubleshooting, see [Self-Hosted GPU](/deployment/self-hosted-gpu#troubleshooting).
+</Tip>

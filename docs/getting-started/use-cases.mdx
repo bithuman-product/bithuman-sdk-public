@@ -1,0 +1,129 @@
+---
+title: "Use Cases"
+description: "What you can build with bitHuman — AI companions, customer support avatars, virtual tutors, and more."
+icon: "lightbulb"
+---
+
+## What Can You Build?
+
+bitHuman turns audio into a real-time talking avatar. Anywhere you need a visual character that speaks — that's where bitHuman fits.
+
+---
+
+## Customer Support Avatar
+
+Replace hold music with a face. An avatar greets visitors, answers FAQs, and escalates to a human when needed.
+
+**Architecture:** Website embed (iframe) → bitHuman cloud → OpenAI for conversation
+
+```python
+avatar = bithuman.AvatarSession(
+    avatar_id="YOUR_SUPPORT_AGENT",
+    api_secret=os.getenv("BITHUMAN_API_SECRET"),
+)
+```
+
+**Best deployment:** [Cloud Plugin](/deployment/livekit-cloud-plugin) for fastest setup, or [Website Embed](/integrations/embed) for dropping into existing pages.
+
+---
+
+## AI Tutor / Virtual Teacher
+
+A patient avatar that explains concepts, answers questions, and adapts to the student's pace. Lip-sync creates presence that text chat can't match.
+
+**Architecture:** LiveKit room → AI agent (GPT-4 + domain knowledge) → bitHuman avatar
+
+**Best deployment:** [Cloud Plugin](/deployment/livekit-cloud-plugin) with custom system prompt via [Prompt Guide](/getting-started/prompts).
+
+---
+
+## Digital Receptionist / Kiosk
+
+A lobby screen or tablet that greets visitors, provides directions, and handles check-in. Runs on a Raspberry Pi or any Linux machine.
+
+**Architecture:** Kiosk browser → LiveKit → AI agent → bitHuman (self-hosted CPU)
+
+**Best deployment:** [Self-Hosted CPU](/examples/self-hosted-plugin) for offline capability, or [Raspberry Pi](/examples/raspberry-pi) for dedicated hardware.
+
+---
+
+## AI Companion / Virtual Friend
+
+A character with a persistent personality that remembers past conversations. Use [context injection](/api-reference/agent-context) to maintain relationship state.
+
+**Architecture:** Mobile app (Flutter/React) → LiveKit → AI agent with memory → bitHuman
+
+**Best deployment:** [Cloud Plugin](/deployment/livekit-cloud-plugin) + [Flutter integration](/integrations/flutter).
+
+---
+
+## Game NPC / Interactive Character
+
+Non-player characters that respond dynamically to player actions. Use [dynamics](/api-reference/dynamics) for gestures (wave, nod, laugh) triggered by game events.
+
+**Architecture:** Game client → WebSocket → AI agent → bitHuman (GPU for custom faces)
+
+**Best deployment:** [Self-Hosted GPU](/deployment/self-hosted-gpu) for dynamic face generation from character art.
+
+---
+
+## Accessibility Tool
+
+Give a face and voice to text-to-speech output. Visual lip-sync helps hearing-impaired users follow along. Audio output helps visually impaired users interact with content.
+
+**Architecture:** Screen reader / TTS → bitHuman SDK → overlay window
+
+**Best deployment:** [Python SDK directly](/deployment/avatar-sessions#using-the-sdk-without-livekit) (no LiveKit needed).
+
+---
+
+## Content Creation / Video Generation
+
+Generate talking-head videos from scripts without recording. Batch-process audio files through avatars to create training videos, announcements, or social content.
+
+**Architecture:** Script → TTS → bitHuman SDK → video frames → ffmpeg → MP4
+
+```python
+runtime = await AsyncBithuman.create(model_path="presenter.imx", api_secret="...")
+await runtime.start()
+await runtime.push_audio(tts_audio, sample_rate=16000)
+await runtime.flush()
+
+# Collect frames and encode to video
+frames = []
+async for frame in runtime.run():
+    if frame.has_image:
+        frames.append(frame.bgr_image)
+```
+
+**Best deployment:** [Python SDK directly](/deployment/avatar-sessions#using-the-sdk-without-livekit) with [Self-Hosted GPU](/deployment/self-hosted-gpu) for custom faces.
+
+---
+
+## Choosing the Right Deployment
+
+| Use Case | Recommended Deployment | Why |
+|----------|----------------------|-----|
+| Customer support | Cloud Plugin | Fast setup, scales automatically |
+| AI tutor | Cloud Plugin | Low latency, no infrastructure |
+| Receptionist kiosk | Self-Hosted CPU | Offline capable, privacy |
+| AI companion | Cloud Plugin + Flutter | Mobile-friendly, cross-platform |
+| Game NPC | Self-Hosted GPU | Dynamic faces, low latency |
+| Accessibility | Python SDK | Lightweight, no WebRTC overhead |
+| Content creation | Python SDK + GPU | Batch processing, custom faces |
+
+---
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Quick Start" icon="rocket" href="/getting-started/quickstart">
+    Run your first avatar in 5 minutes
+  </Card>
+  <Card title="Avatar Sessions" icon="book-open" href="/deployment/avatar-sessions">
+    Complete deployment guide
+  </Card>
+  <Card title="Examples" icon="code" href="/examples/overview">
+    Working code for every use case
+  </Card>
+</CardGroup>

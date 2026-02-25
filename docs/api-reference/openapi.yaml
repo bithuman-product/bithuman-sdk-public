@@ -1,0 +1,627 @@
+openapi: 3.1.0
+info:
+  title: bitHuman API
+  description: |
+    Real-time avatar animation API. Generate agents, manage avatars,
+    trigger speech and gestures, and upload media assets.
+
+    ## Authentication
+    All requests require an `api-secret` header containing your API secret.
+    Get yours at [www.bithuman.ai](https://www.bithuman.ai/#developer).
+
+    ## Base URL
+    All endpoints are relative to `https://api.bithuman.ai`.
+  version: "1.0"
+  contact:
+    name: bitHuman Support
+    url: https://discord.gg/ES953n7bPA
+  x-logo:
+    url: https://docs.bithuman.ai/images/bithuman-logo.png
+
+servers:
+  - url: https://api.bithuman.ai
+    description: Production
+
+security:
+  - apiSecret: []
+
+paths:
+  /v1/validate:
+    post:
+      operationId: validateApiSecret
+      summary: Validate API secret
+      description: Verify that your API secret is valid and your account is active.
+      tags: [Authentication]
+      responses:
+        "200":
+          description: API secret is valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                    example: true
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /v1/agent/generate:
+    post:
+      operationId: generateAgent
+      summary: Generate a new agent
+      description: |
+        Create a new avatar agent from a text prompt, with optional image,
+        video, and audio assets. Generation takes 2-5 minutes. Poll
+        `/v1/agent/status/{agent_id}` to check progress.
+      tags: [Agent Generation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [prompt]
+              properties:
+                prompt:
+                  type: string
+                  description: System prompt / personality for the agent.
+                  example: "You are a friendly fitness coach who motivates users."
+                image:
+                  type: string
+                  description: URL to a face image for avatar appearance.
+                  example: "https://example.com/face.jpg"
+                video:
+                  type: string
+                  description: URL to a video for avatar appearance and mannerisms.
+                  example: "https://example.com/clip.mp4"
+                audio:
+                  type: string
+                  description: URL to audio for voice cloning.
+                  example: "https://example.com/voice.wav"
+                aspect_ratio:
+                  type: string
+                  enum: ["9:16", "16:9", "1:1"]
+                  default: "9:16"
+                  description: Output video aspect ratio.
+                duration:
+                  type: integer
+                  default: 8
+                  description: Source video duration in seconds.
+      responses:
+        "200":
+          description: Generation started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      agent_id:
+                        type: string
+                        example: "A91XMB7113"
+                      status:
+                        type: string
+                        example: "processing"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /v1/agent/status/{agent_id}:
+    get:
+      operationId: getAgentStatus
+      summary: Get agent generation status
+      description: |
+        Poll this endpoint to check generation progress. Status transitions:
+        `processing` → `ready` (success) or `failed` (error).
+        Recommended polling interval: 5 seconds.
+      tags: [Agent Generation]
+      parameters:
+        - name: agent_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "A91XMB7113"
+      responses:
+        "200":
+          description: Agent status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      agent_id:
+                        type: string
+                      status:
+                        type: string
+                        enum: [processing, ready, failed]
+                      name:
+                        type: string
+                      image_url:
+                        type: string
+                      model_url:
+                        type: string
+                        description: URL to download the .imx model file (when status is ready).
+                      system_prompt:
+                        type: string
+                      progress:
+                        type: number
+                        description: Generation progress 0-100.
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/agent/{code}:
+    get:
+      operationId: getAgent
+      summary: Get agent details
+      description: Retrieve full details for an agent by its code.
+      tags: [Agent Management]
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "A91XMB7113"
+      responses:
+        "200":
+          description: Agent details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: "#/components/schemas/Agent"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    post:
+      operationId: updateAgent
+      summary: Update agent
+      description: Update an agent's system prompt or other properties.
+      tags: [Agent Management]
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "A91XMB7113"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                system_prompt:
+                  type: string
+                  description: New system prompt for the agent.
+                  example: "You are a professional sales assistant."
+      responses:
+        "200":
+          description: Agent updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Agent updated"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/agent/{agent_code}/speak:
+    post:
+      operationId: agentSpeak
+      summary: Make agent speak
+      description: |
+        Send text for the avatar to speak aloud in all active sessions.
+        The agent must be in at least one active LiveKit room.
+      tags: [Agent Context]
+      parameters:
+        - name: agent_code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "A91XMB7113"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                  description: Text for the avatar to speak.
+                  example: "Hello! Welcome to our demo."
+                room_id:
+                  type: string
+                  description: Target a specific room (optional, defaults to all active rooms).
+      responses:
+        "200":
+          description: Speech triggered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      rooms_notified:
+                        type: integer
+                        example: 1
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/agent/{agent_code}/add-context:
+    post:
+      operationId: addContext
+      summary: Add context to agent
+      description: |
+        Inject background knowledge into the agent's context. The avatar
+        won't say this aloud, but will use the information in future responses.
+      tags: [Agent Context]
+      parameters:
+        - name: agent_code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "A91XMB7113"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [context, type]
+              properties:
+                context:
+                  type: string
+                  description: Knowledge to inject.
+                  example: "The customer just purchased a premium plan."
+                type:
+                  type: string
+                  enum: [add_context, speak]
+                  description: "`add_context` for silent knowledge, `speak` to trigger verbal response."
+                room_id:
+                  type: string
+                  description: Target a specific room (optional).
+      responses:
+        "200":
+          description: Context added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      rooms_notified:
+                        type: integer
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/files/upload:
+    post:
+      operationId: uploadFile
+      summary: Upload a file
+      description: |
+        Upload images, videos, audio, or documents. Files are auto-organized
+        by type. Supports URL download or direct base64 upload.
+      tags: [Files]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  title: Upload by URL
+                  required: [url]
+                  properties:
+                    url:
+                      type: string
+                      description: Public URL to download the file from.
+                      example: "https://example.com/avatar.jpg"
+                    type:
+                      type: string
+                      enum: [image, video, audio, document]
+                      description: File type (auto-detected if omitted).
+                - type: object
+                  title: Upload by base64
+                  required: [data, filename]
+                  properties:
+                    data:
+                      type: string
+                      description: Base64-encoded file data.
+                    filename:
+                      type: string
+                      description: Original filename with extension.
+                      example: "avatar.jpg"
+                    type:
+                      type: string
+                      enum: [image, video, audio, document]
+      responses:
+        "200":
+          description: File uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      file_id:
+                        type: string
+                      url:
+                        type: string
+                      type:
+                        type: string
+                      size:
+                        type: integer
+        "413":
+          description: File too large (max 10 MB for images, 100 MB for video)
+        "415":
+          description: Unsupported file type
+
+  /v1/dynamics/generate:
+    post:
+      operationId: generateDynamics
+      summary: Generate gesture animations
+      description: |
+        Create gesture animations (wave, nod, smile, laugh, etc.) for an agent.
+        These can be triggered during live sessions via keyword mapping.
+      tags: [Dynamics]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [agent_id]
+              properties:
+                agent_id:
+                  type: string
+                  example: "A91XMB7113"
+                duration:
+                  type: integer
+                  default: 3
+                  description: Gesture duration in seconds.
+                model:
+                  type: string
+                  enum: [seedance, kling]
+                  default: seedance
+                  description: Generation model.
+      responses:
+        "200":
+          description: Dynamics generation started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      agent_id:
+                        type: string
+                      status:
+                        type: string
+                        example: "processing"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /v1/dynamics/{agent_id}:
+    get:
+      operationId: getDynamics
+      summary: Get available gestures
+      description: List all available gesture animations for an agent.
+      tags: [Dynamics]
+      parameters:
+        - name: agent_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "A91XMB7113"
+      responses:
+        "200":
+          description: Available gestures
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      agent_id:
+                        type: string
+                      status:
+                        type: string
+                        enum: [ready, processing, failed]
+                      gestures:
+                        type: object
+                        description: Map of gesture name to gesture metadata.
+                        additionalProperties:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            duration:
+                              type: number
+                            type:
+                              type: string
+                              enum: [wave, nod, smile, idle, talking, custom]
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      operationId: updateDynamics
+      summary: Update dynamics configuration
+      description: Update gesture settings for an agent.
+      tags: [Dynamics]
+      parameters:
+        - name: agent_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gestures:
+                  type: object
+                  description: Updated gesture configuration.
+      responses:
+        "200":
+          description: Dynamics updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+components:
+  securitySchemes:
+    apiSecret:
+      type: apiKey
+      name: api-secret
+      in: header
+      description: |
+        Your bitHuman API secret. Get one at
+        [www.bithuman.ai/#developer](https://www.bithuman.ai/#developer).
+
+  schemas:
+    Agent:
+      type: object
+      properties:
+        agent_id:
+          type: string
+          example: "A91XMB7113"
+        name:
+          type: string
+          example: "Fitness Coach"
+        status:
+          type: string
+          enum: [processing, ready, failed]
+        system_prompt:
+          type: string
+          example: "You are a friendly fitness coach."
+        image_url:
+          type: string
+          description: Avatar face image URL.
+        model_url:
+          type: string
+          description: Downloadable .imx model URL.
+        created_at:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: "UNAUTHORIZED"
+            message:
+              type: string
+              example: "Invalid API secret"
+
+  responses:
+    Unauthorized:
+      description: Invalid or missing API secret
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            success: false
+            error:
+              code: "UNAUTHORIZED"
+              message: "Invalid API secret"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            success: false
+            error:
+              code: "NOT_FOUND"
+              message: "Agent not found"
+
+    ValidationError:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            success: false
+            error:
+              code: "VALIDATION_ERROR"
+              message: "prompt is required"
+
+tags:
+  - name: Authentication
+    description: Verify API credentials
+  - name: Agent Generation
+    description: Create new avatar agents from prompts and media
+  - name: Agent Management
+    description: Retrieve and update existing agents
+  - name: Agent Context
+    description: Control live avatar sessions — make them speak or inject knowledge
+  - name: Files
+    description: Upload images, videos, audio, and documents
+  - name: Dynamics
+    description: Generate and manage gesture animations

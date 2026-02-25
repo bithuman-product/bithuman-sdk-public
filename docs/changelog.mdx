@@ -1,0 +1,65 @@
+---
+title: "Changelog"
+description: "Release notes and version history for the bitHuman platform."
+icon: "clock-rotate-left"
+---
+
+## February 2026
+
+### Expression Avatar v2 — Turbo VAE Decoder
+- 2.5x faster VAE decode (32ms → 13ms) with distilled Turbo-VAED decoder
+- Total pipeline: 103ms → 79ms per chunk (24% faster)
+- Throughput: 233 → 305 FPS on H100
+- Per-session TRT contexts eliminate concurrent session artifacts
+
+### Self-Hosted GPU Container
+- Published `sgubithuman/expression-avatar:latest` Docker image
+- Supports up to 8 concurrent sessions per GPU
+- Cold start ~50s, warm start 4-6s
+- ~5 GB auto-downloaded model weights (cached in Docker volume)
+
+### Developer Examples Overhaul
+- Fixed Docker Compose env_file handling across all 4 example stacks
+- Standardized `.env.example` files with section headers and inline help
+- Expanded READMEs with architecture diagrams, config tables, verification steps
+- Added `api/test.py` for zero-friction API credential validation
+- Added `AGENTS.md` for AI coding agent discoverability
+- Added `llms.txt` and `llms-full.txt` for AI documentation indexing
+- Published OpenAPI specification
+
+### REST API
+- `POST /v1/agent/{code}/speak` — make avatar speak text in active sessions
+- `POST /v1/agent/{code}/add-context` — inject silent background knowledge
+- Improved error responses with consistent error codes and messages
+
+### SDK & Plugin
+- `livekit-plugins-bithuman` — Expression model support with `model="expression"`
+- `bithuman.AvatarSession` — unified interface for cloud, CPU, and GPU modes
+- Animal mode support for Essence avatars
+
+---
+
+## January 2026
+
+### Essence Avatar
+- CPU-only avatar rendering from `.imx` model files
+- 25 FPS real-time on 4+ core machines
+- Cross-platform: Linux, macOS (M2+), Windows (WSL)
+
+### Platform API
+- Agent generation from text prompts + image/video/audio
+- Agent management (CRUD operations)
+- File upload (URL and base64)
+- Dynamics/gesture generation and triggering
+
+### Integrations
+- LiveKit Cloud Plugin
+- Website embed (iframe with JWT)
+- Webhooks (room.join, chat.push events)
+- Flutter full-stack example
+
+---
+
+<Info>
+For feature requests and bug reports, visit our [GitHub](https://github.com/bithuman-product/examples/issues) or [Discord](https://discord.gg/ES953n7bPA).
+</Info>

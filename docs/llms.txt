@@ -1,0 +1,64 @@
+# bitHuman
+
+> Real-time avatar animation API. Turn any face image or pre-built .imx
+> model into a lifelike talking avatar with audio-driven lip sync.
+> Python SDK, REST API, LiveKit plugin, and Docker containers.
+> Three deployment modes: cloud (no GPU), self-hosted CPU, self-hosted GPU.
+
+bitHuman creates digital avatars that lip-sync to audio in real-time at
+25 FPS. Use it for AI companions, customer support bots, virtual tutors,
+digital receptionists, game NPCs, and any application needing a visual
+character that speaks. The platform provides:
+
+- **Python SDK** (`pip install bithuman`) — local CPU avatar rendering
+- **LiveKit Plugin** (`pip install livekit-plugins-bithuman`) — real-time WebRTC avatar sessions
+- **REST API** (api.bithuman.ai) — agent generation, management, dynamics, file upload
+- **GPU Docker Container** (`sgubithuman/expression-avatar`) — self-hosted GPU inference with any face image
+- **Embed** — iframe-based website embedding with token auth
+
+## Getting Started
+
+- [Quick Start](https://docs.bithuman.ai/getting-started/quickstart): Install SDK, create first avatar in 5 minutes. Python async API with push_audio/run pattern.
+- [How It Works](https://docs.bithuman.ai/getting-started/how-it-works): Architecture overview, key concepts (Runtime, AvatarSession, LiveKit Room, .imx model), three deployment modes compared.
+- [Use Cases](https://docs.bithuman.ai/getting-started/use-cases): Customer support, virtual tutor, digital receptionist, AI companion, game NPC, accessibility — with architecture patterns for each.
+
+## API Reference
+
+- [API Overview](https://docs.bithuman.ai/api-reference/overview): Base URL (https://api.bithuman.ai), authentication (api-secret header), error format.
+- [Agent Generation](https://docs.bithuman.ai/api-reference/agent-generation): POST /v1/agent/generate (create avatar from prompt + image/video/audio), GET /v1/agent/status/{id} (poll until ready/failed).
+- [Agent Management](https://docs.bithuman.ai/api-reference/agent-management): POST /v1/validate (verify API secret), GET /v1/agent/{code} (retrieve agent), POST /v1/agent/{code} (update prompt).
+- [Agent Context](https://docs.bithuman.ai/api-reference/agent-context): POST /v1/agent/{code}/speak (make avatar say text), POST /v1/agent/{code}/add-context (inject silent knowledge).
+- [File Upload](https://docs.bithuman.ai/api-reference/file-upload): POST /v1/files/upload (upload images, videos, audio by URL or base64).
+- [Dynamics & Gestures](https://docs.bithuman.ai/api-reference/dynamics): POST /v1/dynamics/generate (create gesture animations), GET /v1/dynamics/{id} (list available gestures).
+- [Rate Limits](https://docs.bithuman.ai/api-reference/rate-limits): Request limits, concurrency limits, and retry guidance.
+- [Error Reference](https://docs.bithuman.ai/api-reference/errors): Complete list of error codes, HTTP statuses, and resolution steps.
+
+## Deployment
+
+- [Avatar Sessions Guide](https://docs.bithuman.ai/deployment/avatar-sessions): Complete guide to all three modes — cloud plugin (AvatarSession with avatar_id), self-hosted CPU (model_path to .imx), self-hosted GPU (api_url to container). Includes gestures, REST control, SDK-only usage, Docker Compose example, billing.
+- [Cloud Plugin](https://docs.bithuman.ai/deployment/livekit-cloud-plugin): LiveKit plugin setup, Essence vs Expression models, gesture triggering, configuration parameters.
+- [Self-Hosted GPU](https://docs.bithuman.ai/deployment/self-hosted-gpu): Expression avatar Docker container. HTTP API reference (POST /launch, GET /health, GET /ready, GET /tasks, POST /tasks/{id}/stop, GET /test-frame, GET /benchmark). Performance tiers, troubleshooting.
+
+## Integrations
+
+- [Website Embed](https://docs.bithuman.ai/integrations/embed): Iframe embed with JWT token auth. Backend generates token, frontend renders avatar.
+- [Webhooks](https://docs.bithuman.ai/integrations/webhooks): room.join and chat.push events. HMAC SHA-256 signature verification. Flask and Express handler examples.
+- [Event Types](https://docs.bithuman.ai/integrations/events): Webhook event payload schemas for room.join and chat.push.
+- [Flutter](https://docs.bithuman.ai/integrations/flutter): Full-stack Flutter + Python backend with LiveKit, token server, platform permissions.
+
+## Examples
+
+- [Examples Overview](https://docs.bithuman.ai/examples/overview): Index of all working examples organized by category.
+- [Audio Clip](https://docs.bithuman.ai/examples/audio-clip): Simplest example — play audio file through avatar. Python, 20 lines.
+- [Microphone](https://docs.bithuman.ai/examples/microphone): Real-time mic input with voice activity detection.
+- [AI Conversation](https://docs.bithuman.ai/examples/ai-conversation): Full ChatGPT-style voice chat with LiveKit and OpenAI.
+- [Self-Hosted Plugin](https://docs.bithuman.ai/examples/self-hosted-plugin): LiveKit agent with local .imx model and gesture support.
+- [Raspberry Pi](https://docs.bithuman.ai/examples/raspberry-pi): Edge deployment on Pi 4B with systemd auto-start.
+- [Apple Local](https://docs.bithuman.ai/examples/apple-local): 100% local speech processing on macOS (M2+).
+
+## Optional
+
+- [Prompt Engineering](https://docs.bithuman.ai/getting-started/prompts): CO-STAR framework for avatar personality. E-commerce, education, healthcare examples.
+- [Media Guide](https://docs.bithuman.ai/getting-started/media-guide): Image (10MB, front-facing), video (30s, minimal movement), audio (1min, clear) upload specs.
+- [Animal Mode](https://docs.bithuman.ai/getting-started/animal-mode): Create animal character avatars. 12 pre-built animals. Manual face marking process.
+- [Changelog](https://docs.bithuman.ai/changelog): Release notes and version history.

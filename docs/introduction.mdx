@@ -1,10 +1,17 @@
 ---
-title: "bitHuman SDK"
-description: "Create lifelike digital avatars that respond to audio in real-time."
+title: "bitHuman — Real-Time Avatar Animation API"
+description: "Turn any face into a lifelike talking avatar. Audio in, animated video out — at 25 FPS. Python SDK, REST API, LiveKit plugin, and self-hosted GPU containers."
 ---
 
 <img src="/images/bithuman-banner.jpg" alt="bitHuman Avatars" className="block dark:hidden" style={{ borderRadius: '12px', width: '100%' }} />
 <img src="/images/bitHuman_banner_black.jpg" alt="bitHuman Avatars" className="hidden dark:block" style={{ borderRadius: '12px', width: '100%' }} />
+
+bitHuman creates digital avatars that lip-sync to audio in real-time. Feed in audio — get back an animated face at 25 FPS. Use it to build AI companions, customer support avatars, virtual tutors, game NPCs, and anything that needs a visual character that speaks.
+
+**Three ways to run:**
+- **Cloud** — no GPU, no model files. Just an API secret.
+- **Self-Hosted CPU** — download an `.imx` model, run on any machine.
+- **Self-Hosted GPU** — any face image, 1.3B parameter model, 250+ FPS.
 
 ## Quick Start
 
@@ -15,8 +22,8 @@ git clone https://github.com/bithuman-product/examples.git
 cd examples/essence-selfhosted
 
 # Add your API keys to .env
-echo "BITHUMAN_API_SECRET=your_secret" > .env
-echo "OPENAI_API_KEY=your_openai_key" >> .env
+cp .env.example .env
+# Edit .env: set BITHUMAN_API_SECRET and OPENAI_API_KEY
 
 # Add your .imx model to models/
 mkdir -p models && cp ~/Downloads/avatar.imx models/
@@ -47,6 +54,31 @@ async for frame in runtime.run():
 
 </CodeGroup>
 
+## What Can You Build?
+
+<CardGroup cols={3}>
+  <Card title="Customer Support" icon="headset">
+    Replace hold music with a talking avatar that answers questions.
+  </Card>
+  <Card title="AI Tutor" icon="graduation-cap">
+    A patient virtual teacher that explains and adapts to students.
+  </Card>
+  <Card title="Digital Receptionist" icon="building">
+    Lobby kiosks and tablets that greet and direct visitors.
+  </Card>
+  <Card title="AI Companion" icon="heart">
+    Persistent characters with personality and memory.
+  </Card>
+  <Card title="Game NPC" icon="gamepad">
+    Dynamic characters that react to player actions with gestures.
+  </Card>
+  <Card title="Video Generation" icon="film">
+    Batch-generate talking-head videos from scripts.
+  </Card>
+</CardGroup>
+
+[See all use cases with architecture patterns →](/getting-started/use-cases)
+
 ## Developer Guides
 
 <CardGroup cols={3}>
@@ -61,7 +93,7 @@ async for frame in runtime.run():
   </Card>
 </CardGroup>
 
-## Core API
+## Core SDK API
 
 | Method | Description |
 |--------|-------------|
@@ -72,6 +104,20 @@ async for frame in runtime.run():
 | `runtime.run()` | Async generator yielding video + audio frames |
 | `runtime.get_frame_size()` | Returns `(width, height)` of output |
 
+## REST API
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/v1/validate` | POST | Verify API secret |
+| `/v1/agent/generate` | POST | Generate new avatar agent |
+| `/v1/agent/{code}` | GET/POST | Get or update agent |
+| `/v1/agent/{code}/speak` | POST | Make avatar speak text |
+| `/v1/agent/{code}/add-context` | POST | Inject silent knowledge |
+| `/v1/files/upload` | POST | Upload image/video/audio |
+| `/v1/dynamics/generate` | POST | Generate gesture animations |
+
+Base URL: `https://api.bithuman.ai` — Auth: `api-secret` header — [Full reference →](/api-reference/overview)
+
 ## Platform Support
 
 | Platform | Status | Notes |
@@ -80,3 +126,12 @@ async for frame in runtime.run():
 | **Linux (ARM64)** | Full Support | Edge deployments |
 | **macOS (Apple Silicon)** | Full Support | M2+, M4 ideal |
 | **Windows** | Full Support | Via WSL |
+
+## AI Agent Integration
+
+bitHuman provides `llms.txt` and an OpenAPI specification for AI coding agent discoverability:
+
+- **[llms.txt](/llms.txt)** — Curated documentation index for LLM consumption
+- **[llms-full.txt](/llms-full.txt)** — Complete documentation in single markdown file
+- **[OpenAPI Spec](/api-reference/openapi.yaml)** — Machine-readable API contract
+- **[AGENTS.md](https://github.com/bithuman-product/examples/blob/main/AGENTS.md)** — Repository-level agent instructions

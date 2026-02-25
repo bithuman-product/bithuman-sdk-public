@@ -50,6 +50,7 @@
               "introduction",
               "getting-started/quickstart",
               "getting-started/how-it-works",
+              "getting-started/use-cases",
               "getting-started/prompts",
               "getting-started/media-guide",
               "getting-started/animal-mode"
@@ -71,6 +72,12 @@
               "integrations/events",
               "integrations/flutter"
             ]
+          },
+          {
+            "group": "Changelog",
+            "pages": [
+              "changelog"
+            ]
           }
         ]
       },
@@ -85,7 +92,9 @@
               "api-reference/agent-management",
               "api-reference/agent-context",
               "api-reference/file-upload",
-              "api-reference/dynamics"
+              "api-reference/dynamics",
+              "api-reference/rate-limits",
+              "api-reference/errors"
             ]
           }
         ]
@@ -108,6 +117,17 @@
         ]
       }
     ]
+  },
+  "openapi": "api-reference/openapi.yaml",
+  "api": {
+    "baseUrl": "https://api.bithuman.ai",
+    "auth": {
+      "method": "key",
+      "name": "api-secret"
+    }
+  },
+  "feedback": {
+    "thumbRating": true
   },
   "seo": {
     "metatags": {
