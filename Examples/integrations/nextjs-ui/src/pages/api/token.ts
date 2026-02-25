@@ -105,9 +105,14 @@ export default async function handleToken(
 
     console.log('[token-api] Token issued:', { roomName, identity, dispatched });
 
+    // Auto-detect LiveKit URL from the browser's request host when not configured.
+    // This makes the stack work on localhost AND remote VPS with zero config.
+    const clientUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL
+      || `ws://${(req.headers.host || 'localhost').split(':')[0]}:17880`;
+
     res.status(200).json({
       accessToken: token,
-      url: process.env.NEXT_PUBLIC_LIVEKIT_URL || ""
+      url: clientUrl,
     });
   } catch (e) {
     console.error('[token-api] Error:', e);

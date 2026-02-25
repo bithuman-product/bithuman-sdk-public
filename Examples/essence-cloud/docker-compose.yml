@@ -41,8 +41,6 @@ services:
     build:
       context: .
       dockerfile: webui.dockerfile
-      args:
-        LIVEKIT_URL: ws://localhost:17880
     restart: always
     ports:
       - "4202:4202"
@@ -50,6 +48,7 @@ services:
       # Dev-only credentials (matches livekit.yaml). Replace for production.
       - LIVEKIT_API_KEY=devkey
       - LIVEKIT_API_SECRET=UPivas8PQvWiYhubkqxqfkY8kfB9TgGj
+      - LIVEKIT_API_URL=http://livekit:17880
       - PORT=4202
     networks:
       - bh-network

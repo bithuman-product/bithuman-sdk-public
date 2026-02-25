@@ -3,7 +3,7 @@ rtc:
   tcp_port: 17881
   port_range_start: 50700
   port_range_end: 50720
-  use_external_ip: false
+  use_external_ip: true
 
 log_level: info
 

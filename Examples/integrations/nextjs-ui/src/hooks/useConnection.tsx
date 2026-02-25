@@ -44,11 +44,6 @@ export const ConnectionProvider = ({
       let url = "";
       
       if (mode === "env") {
-        if (!process.env.NEXT_PUBLIC_LIVEKIT_URL) {
-          throw new Error("NEXT_PUBLIC_LIVEKIT_URL is not set");
-        }
-        url = process.env.NEXT_PUBLIC_LIVEKIT_URL;
-        
         // Simple parameter setup
         const params = new URLSearchParams();
         if (config.settings.room_name) {
@@ -57,21 +52,27 @@ export const ConnectionProvider = ({
         if (config.settings.participant_name) {
           params.append('participantName', config.settings.participant_name);
         }
-        
-        // Get token from the API
+
+        // Get token and LiveKit URL from the API.
+        // The server auto-detects the correct URL from the request host,
+        // so this works on localhost AND remote VPS with zero config.
         const tokenUrl = `/api/token?${params.toString()}`;
         console.log('[connection] Fetching token from:', tokenUrl);
         const response = await fetch(tokenUrl);
-        
+
         if (!response.ok) {
           throw new Error(`Failed to fetch token: ${response.status}`);
         }
-        
+
         const data = await response.json();
         token = data.accessToken;
-        
+        url = data.url || process.env.NEXT_PUBLIC_LIVEKIT_URL || '';
+
         if (!token) {
           throw new Error("Failed to get access token");
+        }
+        if (!url) {
+          throw new Error("No LiveKit URL available");
         }
       }
 

@@ -79,8 +79,6 @@ services:
     build:
       context: .
       dockerfile: webui.dockerfile
-      args:
-        LIVEKIT_URL: ws://localhost:17880
     restart: always
     ports:
       - "4202:4202"
