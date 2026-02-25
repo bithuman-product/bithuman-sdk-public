@@ -24,6 +24,7 @@ export default async function handleToken(
     const grant: VideoGrant = {
       room: roomName,
       roomJoin: true,
+      roomCreate: true,
       canPublish: true,
       canPublishData: true,
       canSubscribe: true,
@@ -35,8 +36,12 @@ export default async function handleToken(
       name: identity,
       ttl: 3600, // Token valid for 1 hour
     });
-    
+
     at.addGrant(grant);
+    // Enable agent auto-dispatch so the livekit-agents worker gets assigned
+    at.roomConfig = {
+      agents: [{}],
+    };
     const token = await at.toJwt();
 
     console.log('[token-api] Token generated successfully');
