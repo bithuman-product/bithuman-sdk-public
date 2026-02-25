@@ -8,9 +8,10 @@ Full local control -- audio and video stay on your machine.
 - NVIDIA GPU with 8 GB+ VRAM (any CUDA GPU — tested on H100, A100, RTX 4090, RTX 3090)
 - [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
 - Docker 24+ with Compose v2
+- ~30 GB free disk space (19 GB image + 8 GB model weights)
 - bitHuman API secret ([www.bithuman.ai](https://www.bithuman.ai) > Developer section)
 - OpenAI API key (for the AI conversation agent)
-- A face image (any JPEG/PNG photo)
+- A face image (any JPEG/PNG, or use the default provided in `.env.example`)
 
 > **GPU compatibility:** The container uses PyTorch + torch.compile, which works on any CUDA GPU. No pre-built TensorRT engines required.
 
@@ -44,8 +45,7 @@ docker compose up
 
 Open **http://localhost:4202** in your browser. Click to start talking.
 
-First run takes 2-5 minutes (downloads ~5 GB model weights + GPU compilation).
-Subsequent starts take ~80 seconds.
+First run pulls the container image (~10 GB download), then downloads model weights (~5 GB) and compiles the GPU kernels. Total: **5-20 minutes** depending on internet speed. Subsequent starts take ~80 seconds.
 
 ## Quick Start (GPU Container Only)
 
@@ -86,7 +86,8 @@ curl http://localhost:8089/health
 curl http://localhost:8089/ready
 
 # Visual test -- generates frames and returns a JPEG
-curl http://localhost:8089/test-frame -o test.jpg && open test.jpg
+curl http://localhost:8089/test-frame -o test.jpg
+# Open test.jpg in any image viewer to verify
 ```
 
 ## Architecture
@@ -138,7 +139,7 @@ CUDA_VISIBLE_DEVICES=1   # Second GPU
 
 | Metric | Value |
 |--------|-------|
-| First run | 2-5 min (download ~5 GB + GPU compilation) |
+| First run | 5-20 min (10 GB image pull + 5 GB model download + compilation) |
 | Cold start | ~80s (decrypt + torch.compile, cached after first run) |
 | Warm start | 4-6s |
 | Inference | 90+ FPS on H100 (3.5x+ real-time) |
