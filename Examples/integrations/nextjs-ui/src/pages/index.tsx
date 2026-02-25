@@ -41,7 +41,7 @@ export default function Home() {
 }
 
 export function HomeInner() {
-  const { shouldConnect, wsUrl, token, mode, connect, disconnect } = useConnection();
+  const { shouldConnect, wsUrl, token, connect, disconnect } = useConnection();
   const { toastMessage, setToastMessage } = useToast();
   const [isClient, setIsClient] = useState(false);
   const hasAutoConnected = useRef(false);
