@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { AccessToken, VideoGrant, RoomAgentDispatch } from "livekit-server-sdk";
+import { AccessToken, VideoGrant } from "livekit-server-sdk";
 
 const apiKey = process.env.LIVEKIT_API_KEY;
 const apiSecret = process.env.LIVEKIT_API_SECRET;
@@ -39,9 +39,7 @@ export default async function handleToken(
 
     at.addGrant(grant);
     // Enable agent auto-dispatch so the livekit-agents worker gets assigned
-    at.roomConfig = {
-      agents: [new RoomAgentDispatch({ agentName: "" })],
-    };
+    (at as any).roomConfig = { agents: [{ agentName: "" }] };
     const token = await at.toJwt();
 
     console.log('[token-api] Token generated successfully');
