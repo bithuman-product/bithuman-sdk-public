@@ -76,9 +76,15 @@ Returns the current status of an agent generation request.
 
 | Status | Description |
 |--------|-------------|
-| `processing` | Agent is being generated |
-| `ready` | Generation completed successfully |
-| `failed` | Generation failed |
+| `processing` | Agent is being generated (initial state) |
+| `generating` | Active generation in progress (sub-steps running) |
+| `completed` | All generation steps finished (transitional, becomes `ready`) |
+| `ready` | Generation completed successfully — model available for use |
+| `failed` | Generation failed — check `error_message` for details |
+
+<Tip>
+For polling, check for `ready` or `failed` as terminal states. The `generating` and `completed` states are intermediate — keep polling.
+</Tip>
 
 **Response**
 

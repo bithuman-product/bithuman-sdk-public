@@ -3461,6 +3461,12 @@ All requests require the `api-secret` header. Get your API secret from [www.bith
 api-secret: YOUR_API_SECRET
 ```
 
+## Agent Identifiers
+
+All endpoints use the **agent code** (e.g. `A91XMB7113`) to identify agents. This is the same value across all endpoints, referred to as `{code}`, `{agent_code}`, or `{agent_id}` depending on the endpoint.
+
+You receive this code when you [generate an agent](/api-reference/agent-generation) or find it in the [bitHuman dashboard](https://www.bithuman.ai).
+
 ## Available APIs
 
 
@@ -3589,9 +3595,15 @@ Returns the current status of an agent generation request.
 
 | Status | Description |
 |--------|-------------|
-| `processing` | Agent is being generated |
-| `ready` | Generation completed successfully |
-| `failed` | Generation failed |
+| `processing` | Agent is being generated (initial state) |
+| `generating` | Active generation in progress (sub-steps running) |
+| `completed` | All generation steps finished (transitional, becomes `ready`) |
+| `ready` | Generation completed successfully — model available for use |
+| `failed` | Generation failed — check `error_message` for details |
+
+
+For polling, check for `ready` or `failed` as terminal states. The `generating` and `completed` states are intermediate — keep polling.
+
 
 **Response**
 
@@ -4277,7 +4289,7 @@ print(response.json())
 GET /v1/dynamics/{agent_id}
 ```
 
-Retrieve the current dynamics configuration and status for an agent.
+Retrieve the current dynamics configuration and available gestures for an agent.
 
 **Response (dynamics generated)**
 
@@ -4316,9 +4328,13 @@ Retrieve the current dynamics configuration and status for an agent.
 | Field | Type | Description |
 |-------|------|-------------|
 | `url` | string \| null | URL to the dynamics model file, or null if not generated |
-| `status` | string | `generating` or `ready` |
+| `status` | string | `generating` while in progress, `ready` when complete |
 | `agent_id` | string | The agent ID |
-| `gestures` | object | Dictionary of gesture action names to video URLs |
+| `gestures` | object | Map of gesture action names to video URLs (e.g. `mini_wave_hello`, `talk_head_nod_subtle`) |
+
+
+Gesture names like `mini_wave_hello` and `talk_head_nod_subtle` are the action identifiers you pass to `VideoControl(action=...)` or the RPC `trigger_dynamics` method. See [Avatar Sessions](/deployment/avatar-sessions#adding-gestures-dynamics) for integration examples.
+
 
 ```python
 agent_id = "A91XMB7113"
@@ -4337,39 +4353,31 @@ print(response.json())
 PUT /v1/dynamics/{agent_id}
 ```
 
-Update dynamics configuration for an agent. Allows enabling/disabling dynamics and updating video results.
+Update dynamics configuration for an agent. After a successful update, movements regeneration is automatically triggered in the background.
 
 **Request Body**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `dynamics` | object | Yes | Dynamics configuration to merge with existing data |
+| `dynamics.enabled` | boolean | No | Enable or disable dynamics for this agent |
+| `dynamics.batch_results` | object | No | Map of gesture names to video generation results |
+| `dynamics.result` | object | No | Result model path and hash (set when dynamics generation completes) |
+| `dynamics.talking` | object | No | Default talking model path and hash (used when dynamics are disabled) |
+| `toggle_enabled` | boolean | No | `true` to switch to dynamics model, `false` to restore default talking model |
+
+**Example: Enable dynamics after generation**
 
 ```json
 {
   "dynamics": {
-    "enabled": true,
-    "batch_results": {
-      "wave": {
-        "video_url": "https://storage.supabase.co/wave.mp4",
-        "status": "success"
-      }
-    }
+    "enabled": true
   },
   "toggle_enabled": true
 }
 ```
 
-**Response**
-
-```json
-{
-  "success": true,
-  "message": "Dynamics updated successfully",
-  "data": {
-    "agent_id": "A91XMB7113",
-    "updated_at": "2025-01-15T10:30:00Z"
-  }
-}
-```
-
-If dynamics regeneration is triggered:
+**Response (with regeneration)**
 
 ```json
 {
@@ -4380,29 +4388,46 @@ If dynamics regeneration is triggered:
 }
 ```
 
+**Response (regeneration failed to start)**
+
+```json
+{
+  "success": true,
+  "message": "Dynamics updated successfully, but movements regeneration failed to start",
+  "agent_id": "A91XMB7113",
+  "regeneration_status": "failed",
+  "regeneration_error": "Connection refused"
+}
+```
+
 ---
 
-## Motion Types
+## Gesture Names
 
-| Motion | Description | Use Case |
-|--------|-------------|----------|
-| `wave` | Hand waving gesture | Greeting, goodbye |
-| `nod` | Head nodding | Agreement, acknowledgment |
-| `smile` | Facial expression change | Happiness, friendliness |
-| `idle` | Subtle idle animation | Background movement |
-| `talking` | Speech-synchronized motion | Conversation |
+When dynamics are generated, the available gestures use descriptive action names:
+
+| Gesture Action | Category | Typical Use |
+|----------------|----------|-------------|
+| `mini_wave_hello` | wave | Greeting |
+| `talk_head_nod_subtle` | nod | Agreement, acknowledgment |
+| `blow_kiss_heart` | expression | Playful reaction |
+| `laugh_react` | expression | Humor response |
+| `idle_subtle` | idle | Background movement |
+
+
+The exact gesture names depend on what was generated. Use `GET /v1/dynamics/{agent_id}` to discover available gestures for each agent.
+
 
 ## Configuration Options
 
 **Duration Settings:**
-- `1-3 seconds`: Quick gestures
-- `3-5 seconds`: Standard motions
+- `1-3 seconds`: Quick gestures (waves, nods)
+- `3-5 seconds`: Standard motions (default)
 - `5-10 seconds`: Extended animations
 
 **Model Options:**
-- `seedance`: High-quality motion generation
+- `seedance`: High-quality motion generation (default)
 - `kling`: Alternative motion model
-- `auto`: Automatic model selection
 
 ---
 
@@ -4428,7 +4453,7 @@ while True:
         f"https://api.bithuman.ai/v1/agent/status/{agent_id}",
         headers={"api-secret": "YOUR_API_SECRET"}
     ).json()
-    if status["data"]["status"] == "ready":
+    if status["data"]["status"] in ("ready", "failed"):
         break
     time.sleep(5)
 
@@ -4436,9 +4461,18 @@ while True:
 resp = requests.post(
     "https://api.bithuman.ai/v1/dynamics/generate",
     headers=headers,
-    json={"agent_id": agent_id, "duration": 3, "model": "seedance"}
+    json={"agent_id": agent_id, "duration": 5, "model": "seedance"}
 )
-print("Dynamics generated:", resp.json())
+print("Dynamics generation started:", resp.json())
+
+# Step 4: Check available gestures
+time.sleep(30)  # Wait for generation
+resp = requests.get(
+    f"https://api.bithuman.ai/v1/dynamics/{agent_id}",
+    headers={"api-secret": "YOUR_API_SECRET"}
+)
+gestures = resp.json()["data"].get("gestures", {})
+print(f"Available gestures: {list(gestures.keys())}")
 ```
 
 ## Error Codes

@@ -540,7 +540,9 @@ paths:
     put:
       operationId: updateDynamics
       summary: Update dynamics configuration
-      description: Update gesture settings for an agent. Can trigger regeneration.
+      description: |
+        Update gesture settings for an agent. After a successful update,
+        movements regeneration is automatically triggered in the background.
       tags: [Dynamics]
       parameters:
         - name: agent_id
@@ -554,16 +556,34 @@ paths:
           application/json:
             schema:
               type: object
+              required: [dynamics]
               properties:
                 dynamics:
                   type: object
-                  description: Updated dynamics configuration.
+                  description: |
+                    Dynamics configuration to merge with existing data.
+                    Fields: `enabled` (boolean), `batch_results` (gesture results),
+                    `result` (model path/hash when generated), `talking` (default model path/hash).
+                  properties:
+                    enabled:
+                      type: boolean
+                      description: Enable or disable dynamics for this agent.
+                    batch_results:
+                      type: object
+                      description: Map of gesture names to video generation results.
+                    result:
+                      type: object
+                      description: Result model path and hash (set when dynamics generation completes).
+                    talking:
+                      type: object
+                      description: Default talking model path and hash (used when dynamics are disabled).
                 toggle_enabled:
                   type: boolean
-                  description: Enable or disable dynamics for the agent.
+                  description: |
+                    `true` to switch agent to dynamics model, `false` to restore default talking model.
       responses:
         "200":
-          description: Dynamics updated
+          description: Dynamics updated and movements regeneration triggered
           content:
             application/json:
               schema:
@@ -573,11 +593,16 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    example: "Dynamics updated successfully and movements regeneration started"
                   agent_id:
                     type: string
                   regeneration_status:
                     type: string
                     enum: [started, failed]
+                    description: Whether background movements regeneration was triggered.
+                  regeneration_error:
+                    type: string
+                    description: Error message if regeneration_status is "failed".
 
 components:
   securitySchemes:
