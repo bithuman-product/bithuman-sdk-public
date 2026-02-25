@@ -3,7 +3,9 @@ import { AccessToken, AgentDispatchClient, RoomServiceClient, VideoGrant } from 
 
 const apiKey = process.env.LIVEKIT_API_KEY;
 const apiSecret = process.env.LIVEKIT_API_SECRET;
-const livekitUrl = process.env.LIVEKIT_URL || "http://localhost:17880";
+// LIVEKIT_API_URL = server-side HTTP URL for LiveKit API (room creation, agent dispatch)
+// Separate from LIVEKIT_URL which is the client-side WebSocket URL (ws://...)
+const livekitUrl = process.env.LIVEKIT_API_URL || process.env.LIVEKIT_URL || "http://localhost:17880";
 
 export default async function handleToken(
   req: NextApiRequest,

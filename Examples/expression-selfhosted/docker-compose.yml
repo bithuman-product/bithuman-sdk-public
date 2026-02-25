@@ -84,7 +84,7 @@ services:
     environment:
       - LIVEKIT_API_KEY=devkey
       - LIVEKIT_API_SECRET=UPivas8PQvWiYhubkqxqfkY8kfB9TgGj
-      - LIVEKIT_URL=http://livekit:17880
+      - LIVEKIT_API_URL=http://livekit:17880
       - PORT=4202
     networks:
       - bh-network
