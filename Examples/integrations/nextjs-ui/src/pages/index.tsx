@@ -9,7 +9,7 @@ import {
   StartAudio,
 } from "@livekit/components-react";
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { ConnectionManager } from "@/components/connection/ConnectionManager";
 import { ConnectionStatusIndicator } from "@/components/connection/ConnectionStatusIndicator";
 import Head from "next/head";
@@ -44,6 +44,7 @@ export function HomeInner() {
   const { shouldConnect, wsUrl, token, mode, connect, disconnect } = useConnection();
   const { toastMessage, setToastMessage } = useToast();
   const [isClient, setIsClient] = useState(false);
+  const hasAutoConnected = useRef(false);
 
   // Safe access to browser APIs after component mount
   useEffect(() => {
@@ -61,18 +62,17 @@ export function HomeInner() {
     [connect, disconnect]
   );
 
-  // Auto-connect when component mounts
+  // Auto-connect once when component mounts
   useEffect(() => {
-    if (isClient && !shouldConnect) {
-      // Start connecting immediately when component is ready
+    if (isClient && !hasAutoConnected.current) {
+      hasAutoConnected.current = true;
       const timer = setTimeout(() => {
         console.log('Auto-connecting with mode: env');
         connect("env");
-      }, 100); // Minimal delay for component readiness
-      
+      }, 100);
       return () => clearTimeout(timer);
     }
-  }, [isClient, shouldConnect, connect, mode]);
+  }, [isClient, connect]);
 
   // Auto-dismiss toast messages after 3 seconds
   useEffect(() => {
@@ -125,7 +125,7 @@ export function HomeInner() {
             setToastMessage({ message: e.message, type: "error" });
             console.error(e);
           }}
-          key={`livekit-room-${token?.substring(0, 8) || 'no-token'}`}
+          key="livekit-room"
         >
           <ConnectionManager>
             <Playground
