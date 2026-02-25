@@ -37,7 +37,7 @@ character that speaks. The platform provides:
 
 - [Avatar Sessions Guide](https://docs.bithuman.ai/deployment/avatar-sessions): Complete guide to all three modes — cloud plugin (AvatarSession with avatar_id), self-hosted CPU (model_path to .imx), self-hosted GPU (api_url to container). Includes gestures, REST control, SDK-only usage, Docker Compose example, billing.
 - [Cloud Plugin](https://docs.bithuman.ai/deployment/livekit-cloud-plugin): LiveKit plugin setup, Essence vs Expression models, gesture triggering, configuration parameters.
-- [Self-Hosted GPU](https://docs.bithuman.ai/deployment/self-hosted-gpu): Expression avatar Docker container. HTTP API reference (POST /launch, GET /health, GET /ready, GET /tasks, POST /tasks/{id}/stop, GET /test-frame, GET /benchmark). Performance tiers, troubleshooting.
+- [Self-Hosted GPU](https://docs.bithuman.ai/deployment/self-hosted-gpu): Expression avatar Docker container. HTTP API reference (POST /launch, GET /health, GET /ready, GET /tasks, POST /tasks/{id}/stop, GET /test-frame, POST /benchmark). Performance tiers, troubleshooting.
 
 ## Integrations
 
