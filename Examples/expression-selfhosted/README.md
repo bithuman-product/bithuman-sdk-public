@@ -5,12 +5,14 @@ Full local control -- audio and video stay on your machine.
 
 ## Prerequisites
 
-- NVIDIA GPU with 8 GB+ VRAM (tested on H100, A100, RTX 4090, RTX 3090)
+- NVIDIA GPU with 8 GB+ VRAM (any CUDA GPU — tested on H100, A100, RTX 4090, RTX 3090)
 - [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
 - Docker 24+ with Compose v2
 - bitHuman API secret ([www.bithuman.ai](https://www.bithuman.ai) > Developer section)
 - OpenAI API key (for the AI conversation agent)
 - A face image (any JPEG/PNG photo)
+
+> **GPU compatibility:** The container uses PyTorch + torch.compile, which works on any CUDA GPU. No pre-built TensorRT engines required.
 
 ## Verify GPU Access
 
@@ -125,12 +127,13 @@ CUDA_VISIBLE_DEVICES=1   # Second GPU
 
 | Metric | Value |
 |--------|-------|
-| First run | 2-5 min (download + compilation) |
-| Cold start | ~50s (GPU compilation, cached after first run) |
+| First run | 2-5 min (download ~5 GB + GPU compilation) |
+| Cold start | ~80s (decrypt + torch.compile, cached after first run) |
 | Warm start | 4-6s |
-| Inference | 250+ FPS (25+ real-time) |
-| VRAM | ~6 GB per session |
+| Inference | 90+ FPS on H100 (3.5x+ real-time) |
+| VRAM | ~4 GB shared + ~50 MB per session |
 | Sessions per GPU | Up to 8 concurrent |
+| Image size | ~19 GB (PyTorch-only, no TensorRT) |
 
 ## Troubleshooting
 
@@ -148,9 +151,15 @@ docker compose logs expression-avatar
 Common errors:
 - `No CUDA GPUs are available` -- NVIDIA Container Toolkit not installed, or wrong CUDA_VISIBLE_DEVICES
 - `BITHUMAN_API_SECRET is required` -- Set your API secret in `.env`
+- `API key validation failed` -- Your API secret is invalid. Check at [bithuman.ai/dashboard](https://bithuman.ai/dashboard)
 - `Missing required model files` -- Weight download may have failed. Remove volume and retry:
   ```bash
   docker compose down -v
+  docker compose up
+  ```
+- `DiT safetensors not found after decryption` -- Encrypted volume may be corrupted. Remove and re-download:
+  ```bash
+  docker volume rm bithuman-models
   docker compose up
   ```
 
