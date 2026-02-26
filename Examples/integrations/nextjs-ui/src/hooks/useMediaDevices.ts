@@ -11,6 +11,7 @@ export function useMediaDevices(localParticipant: LocalParticipant | null) {
   
   // Flag to track if we've already attempted to enable the microphone
   const [initialMicEnabledSet, setInitialMicEnabledSet] = useState(false);
+  const [micRetryCount, setMicRetryCount] = useState(0);
 
   // Monitor for local camera track changes
   useEffect(() => {
@@ -87,9 +88,10 @@ export function useMediaDevices(localParticipant: LocalParticipant | null) {
       }
       
       // Make sure microphone state doesn't get out of sync with our enabled state
-      if (isMicEnabled && !localParticipant.isMicrophoneEnabled) {
-        localParticipant.setMicrophoneEnabled(true).catch(err => {
-          console.error('Failed to re-enable microphone:', err);
+      // Stop retrying after 3 failures (e.g., no mic device on headless servers)
+      if (isMicEnabled && !localParticipant.isMicrophoneEnabled && micRetryCount < 3) {
+        localParticipant.setMicrophoneEnabled(true).catch(() => {
+          setMicRetryCount(prev => prev + 1);
         });
       }
     }, 1000);
@@ -104,7 +106,7 @@ export function useMediaDevices(localParticipant: LocalParticipant | null) {
       // Clear interval
       clearInterval(stateCheckInterval);
     };
-  }, [localParticipant, isCameraEnabled, isMicEnabled, initialMicEnabledSet]);
+  }, [localParticipant, isCameraEnabled, isMicEnabled, initialMicEnabledSet, micRetryCount]);
 
   // Toggle camera
   const toggleCamera = useCallback(async () => {
