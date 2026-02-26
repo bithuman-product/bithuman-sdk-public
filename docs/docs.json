@@ -4,7 +4,8 @@
   "theme": "mint",
   "logo": {
     "light": "/images/bithuman-logo.png",
-    "dark": "/images/bithuman-logo.png"
+    "dark": "/images/bithuman-logo.png",
+    "href": "https://bithuman.ai"
   },
   "favicon": "/images/bitHuman-logo-circle.png",
   "colors": {
@@ -22,7 +23,7 @@
     "primary": {
       "type": "button",
       "label": "Get Started",
-      "href": "https://www.bithuman.ai/#live"
+      "href": "https://www.bithuman.ai/#explore"
     }
   },
   "navigation": {
