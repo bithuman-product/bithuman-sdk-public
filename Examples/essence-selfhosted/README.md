@@ -108,7 +108,28 @@ All configuration is via `.env`. See `.env.example` for all options.
 | `OPENAI_API_KEY` | Yes | For AI conversation |
 | `BITHUMAN_MODEL_PATH` | CLI only | Path to `.imx` file (for terminal scripts) |
 | `OPENAI_VOICE` | No | TTS voice, default `coral` |
-| `AGENT_PROMPT` | No | AI persona / system prompt |
+| `AGENT_PROMPT` | No | AI persona / system prompt (see [Customization](#customization)) |
+
+## Customization
+
+Edit `.env` to change the avatar's personality or voice:
+
+```bash
+# AI persona -- controls how the avatar responds
+AGENT_PROMPT="You are a friendly tech support agent. Help users troubleshoot issues step by step."
+
+# Voice -- OpenAI TTS voice (options: alloy, ash, ballad, coral, echo, fable, onyx, nova, sage, shimmer, verse)
+OPENAI_VOICE=sage
+```
+
+To use a different avatar, place a new `.imx` file in `./models/`. The agent auto-discovers the first `.imx` file in that directory.
+
+After changing `.env`, restart the agent:
+```bash
+docker compose restart agent
+```
+
+If left unset, `AGENT_PROMPT` defaults to `"You are a helpful assistant. Respond concisely."` and `OPENAI_VOICE` defaults to `coral`.
 
 ## Deployment Scenarios
 

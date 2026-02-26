@@ -75,7 +75,26 @@ All configuration is via `.env`. See `.env.example` for all options.
 | `BITHUMAN_AGENT_ID` | Yes | Agent code (e.g. `A78WKV4515`) |
 | `OPENAI_API_KEY` | Yes | For AI conversation |
 | `OPENAI_VOICE` | No | TTS voice, default `coral` |
-| `AGENT_PROMPT` | No | AI persona / system prompt |
+| `AGENT_PROMPT` | No | AI persona / system prompt (see [Customization](#customization)) |
+
+## Customization
+
+Edit `.env` to change the avatar's personality or voice:
+
+```bash
+# AI persona -- controls how the avatar responds
+AGENT_PROMPT="You are a friendly tech support agent. Help users troubleshoot issues step by step."
+
+# Voice -- OpenAI TTS voice (options: alloy, ash, ballad, coral, echo, fable, onyx, nova, sage, shimmer, verse)
+OPENAI_VOICE=sage
+```
+
+After changing `.env`, restart the agent:
+```bash
+docker compose restart agent
+```
+
+If left unset, `AGENT_PROMPT` defaults to `"You are a helpful assistant. Respond concisely."` and `OPENAI_VOICE` defaults to `coral`.
 
 ## Deployment Scenarios
 

@@ -127,6 +127,8 @@ await avatar.start(session, room=ctx.room)
 | `LIVEKIT_URL` | Docker stacks | LiveKit server URL |
 | `LIVEKIT_API_KEY` | Docker stacks | LiveKit API key |
 | `LIVEKIT_API_SECRET` | Docker stacks | LiveKit API secret |
+| `AGENT_PROMPT` | Agent examples | AI persona / system prompt (default: "You are a helpful assistant. Respond concisely.") |
+| `OPENAI_VOICE` | Agent examples | OpenAI TTS voice (default: `coral`) |
 | `CUDA_VISIBLE_DEVICES` | GPU examples | GPU index for multi-GPU machines |
 
 ## Requirements

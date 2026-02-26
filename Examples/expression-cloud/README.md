@@ -85,9 +85,33 @@ All configuration is via `.env`. See `.env.example` for all options.
 | `BITHUMAN_AVATAR_IMAGE` | Yes* | Face image URL or container path |
 | `BITHUMAN_AGENT_ID` | Yes* | Or use a pre-configured agent ID |
 | `OPENAI_VOICE` | No | TTS voice, default `coral` |
-| `AGENT_PROMPT` | No | AI persona / system prompt |
+| `AGENT_PROMPT` | No | AI persona / system prompt (see [Customization](#customization)) |
 
 \* Provide either `BITHUMAN_AVATAR_IMAGE` or `BITHUMAN_AGENT_ID`.
+
+## Customization
+
+Edit `.env` to change the avatar's personality, voice, or face:
+
+```bash
+# AI persona -- controls how the avatar responds
+AGENT_PROMPT="You are a friendly tech support agent. Help users troubleshoot issues step by step."
+
+# Voice -- OpenAI TTS voice (options: alloy, ash, ballad, coral, echo, fable, onyx, nova, sage, shimmer, verse)
+OPENAI_VOICE=sage
+
+# Face -- any JPEG/PNG with a clear face
+BITHUMAN_AVATAR_IMAGE=https://example.com/your-face.jpg
+# Or use a local file:
+# BITHUMAN_AVATAR_IMAGE=/app/avatars/face.jpg
+```
+
+After changing `.env`, restart the agent:
+```bash
+docker compose restart agent
+```
+
+If left unset, `AGENT_PROMPT` defaults to `"You are a helpful assistant. Respond concisely."` and `OPENAI_VOICE` defaults to `coral`.
 
 ## Deployment Scenarios
 
