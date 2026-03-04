@@ -8,7 +8,9 @@ icon: "webhook"
 
 <Steps>
   <Step title="Open webhook settings">
-    Go to [www.bithuman.ai/#developer](https://www.bithuman.ai/#developer) and open the **Webhooks** section.
+    Go to [Developer → Webhooks](https://www.bithuman.ai/#developer) and enable the webhook toggle.
+
+    <img src="/images/webhook-dashboard.jpg" alt="Webhook Configuration" style={{ borderRadius: '8px', width: '100%' }} />
   </Step>
   <Step title="Enter endpoint URL">
     Must be HTTPS.
@@ -210,5 +212,5 @@ Maximum 3 retries. Your endpoint must respond within 30 seconds.
 |-------|----------|
 | Signature invalid | Verify HMAC SHA-256 against raw request body |
 | Timeout errors | Return 200 immediately, process async |
-| 404 Not Found | Check endpoint URL in dashboard |
+| 404 Not Found | Check endpoint URL in [Developer → Webhooks](https://www.bithuman.ai/#developer) |
 | SSL errors | Use a valid HTTPS certificate |

@@ -25,12 +25,13 @@ Use existing bitHuman agents in real-time applications with our cloud-hosted Liv
     ```
   </Step>
   <Step title="Get your API Secret">
-    Go to [www.bithuman.ai](https://www.bithuman.ai/#developer) and copy your **API Secret**.
+    Go to [Developer → API Keys](https://www.bithuman.ai/#developer) and copy your **API Secret**.
+
+    <img src="/images/example-api-secret.jpg" alt="API Keys" style={{ borderRadius: '8px' }} />
   </Step>
   <Step title="Find your Agent ID">
-    Click on any agent card in [your dashboard](https://www.bithuman.ai). The **Agent Settings** dialog shows your Agent ID (e.g., `A78WKV4515`).
+    Go to your [Library](https://www.bithuman.ai/#library) and click any agent. The side panel shows your **Agent ID** (e.g., `A18MDE7951`).
 
-    <img src="/images/agent-dashboard.jpg" alt="Agent Dashboard" style={{ borderRadius: '8px' }} />
     <img src="/images/agent-settings-dialog.jpg" alt="Agent Settings" style={{ borderRadius: '8px' }} />
   </Step>
   <Step title="Set environment variables">
@@ -255,7 +256,7 @@ Gesture actions vary by agent. Always check the Dynamics API response first to s
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `avatar_id` | string | Yes* | Agent ID from the bitHuman dashboard |
+| `avatar_id` | string | Yes* | Agent ID from your [Library](https://www.bithuman.ai/#library) |
 | `avatar_image` | PIL.Image | Yes* | Face image for on-the-fly avatar (Expression only) |
 | `api_secret` | string | Yes | Your API secret |
 | `model` | string | No | `"essence"` (default) or `"expression"` |
@@ -275,11 +276,11 @@ Gesture actions vary by agent. Always check the Dynamics API response first to s
 
 ## Pricing
 
-Visit [www.bithuman.ai](https://www.bithuman.ai/#api) for current pricing.
+Visit [Billing](https://www.bithuman.ai/#library) or click the credit balance in the top navigation for current pricing.
 
-**Free Tier:** 199 credits per month, community support
+**Free Tier:** 99 credits per month, community support
 
-**Pro:** Unlimited credits, priority support
+**Pro:** Contact sales for unlimited credits and priority support
 
 ---
 
@@ -287,8 +288,8 @@ Visit [www.bithuman.ai](https://www.bithuman.ai/#api) for current pricing.
 
 | Problem | Solution |
 |---------|----------|
-| Authentication errors | Verify API secret at [www.bithuman.ai](https://www.bithuman.ai/#developer) |
-| Avatar doesn't appear | Check agent_id exists in your dashboard |
+| Authentication errors | Verify API secret at [Developer → API Keys](https://www.bithuman.ai/#developer) |
+| Avatar doesn't appear | Check agent_id exists in your [Library](https://www.bithuman.ai/#library) |
 | Network timeouts | Ensure stable internet; the plugin retries automatically |
 | Plugin installation fails | Use `uv` with `GIT_LFS_SKIP_SMUDGE=1` flag |
 | No lip movement | Ensure `avatar.start(session, room=ctx.room)` is called before `session.start()` |

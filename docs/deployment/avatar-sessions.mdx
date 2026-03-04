@@ -532,7 +532,7 @@ Open [http://localhost:4202](http://localhost:4202) to talk to your avatar.
 
 <AccordionGroup>
   <Accordion title="Avatar doesn't appear in the room">
-    **Cloud mode:** Check that your `avatar_id` exists — look it up in the [bitHuman dashboard](https://www.bithuman.ai). Verify your API secret is valid with:
+    **Cloud mode:** Check that your `avatar_id` exists — look it up in your [Library](https://www.bithuman.ai/#library). Verify your API secret is valid with:
     ```bash
     curl -X POST https://api.bithuman.ai/v1/validate \
       -H "api-secret: $BITHUMAN_API_SECRET"
@@ -552,7 +552,7 @@ Open [http://localhost:4202](http://localhost:4202) to talk to your avatar.
   </Accordion>
 
   <Accordion title="'Authentication failed' error">
-    - Verify your API secret is correct (copy-paste from dashboard)
+    - Verify your API secret is correct (copy-paste from [Developer → API Keys](https://www.bithuman.ai/#developer))
     - Check you have credits remaining in your account
     - Ensure the `BITHUMAN_API_SECRET` environment variable is set
   </Accordion>
@@ -586,7 +586,7 @@ Avatar sessions consume credits based on the deployment mode and session duratio
 | **Self-Hosted GPU** | Per authentication | Auth call | Rendering is free (your hardware) |
 
 <Info>
-Check your remaining credits at [www.bithuman.ai](https://www.bithuman.ai) > Developer section. Credits are consumed only for active sessions — idle containers cost nothing.
+Check your remaining credits at [www.bithuman.ai](https://www.bithuman.ai/#library) — your credit balance is shown in the top navigation bar. Credits are consumed only for active sessions — idle containers cost nothing.
 </Info>
 
 ---

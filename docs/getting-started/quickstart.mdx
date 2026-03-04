@@ -11,12 +11,12 @@ icon: "rocket"
     Create an account at [www.bithuman.ai](https://www.bithuman.ai)
   </Step>
   <Step title="Copy your API Secret">
-    Go to the Developer page and copy your **API Secret**.
+    Go to [Developer → API Keys](https://www.bithuman.ai/#developer) and copy your **API Secret**.
 
-    <img src="/images/example-api-secret.jpg" alt="API Secret" style={{ borderRadius: '8px' }} />
+    <img src="/images/example-api-secret.jpg" alt="API Keys" style={{ borderRadius: '8px' }} />
   </Step>
   <Step title="Download an avatar model">
-    Download an avatar model (`.imx` file) from [Community Models](https://www.bithuman.ai/#community).
+    Download an avatar model (`.imx` file) from the [Explore](https://www.bithuman.ai/#explore) page — click the **⋮** menu on any agent and select **Download**.
 
     <img src="/images/example-download-button.jpg" alt="Download Model" style={{ borderRadius: '8px' }} />
   </Step>
@@ -92,7 +92,7 @@ asyncio.run(main())
 
   <Accordion title="Authentication failed / 401 error">
     Your API secret is invalid or missing. Check:
-    1. You copied the full secret from [Developer Dashboard](https://www.bithuman.ai/#developer)
+    1. You copied the full secret from [Developer → API Keys](https://www.bithuman.ai/#developer)
     2. The `api_secret` parameter or `BITHUMAN_API_SECRET` env var is set correctly
     3. Your account is active with available credits
 
@@ -121,7 +121,7 @@ asyncio.run(main())
     The model file path is wrong. Check:
     1. The `.imx` file exists at the path you specified
     2. Use an absolute path if running from a different directory
-    3. Download a model from [Community Models](https://www.bithuman.ai/#community) if you don't have one
+    3. Download a model from the [Explore](https://www.bithuman.ai/#explore) page if you don't have one
   </Accordion>
 </AccordionGroup>
 
