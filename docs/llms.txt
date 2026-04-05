@@ -29,6 +29,8 @@ character that speaks. The platform provides:
 - [Agent Management](https://docs.bithuman.ai/api-reference/agent-management): POST /v1/validate (verify API secret), GET /v1/agent/{code} (retrieve agent), POST /v1/agent/{code} (update prompt).
 - [Agent Context](https://docs.bithuman.ai/api-reference/agent-context): POST /v1/agent/{code}/speak (make avatar say text), POST /v1/agent/{code}/add-context (inject silent knowledge).
 - [File Upload](https://docs.bithuman.ai/api-reference/file-upload): POST /v1/files/upload (upload images, videos, audio by URL or base64).
+- [Credit Balance](https://docs.bithuman.ai/api-reference/credit-summaries): GET /v2/credit-summaries (check credit balance, plan details, estimated minutes remaining).
+- [Embed Tokens](https://docs.bithuman.ai/api-reference/embed-tokens): POST /v1/embed-tokens/request (generate JWT token for website avatar embedding).
 - [Dynamics & Gestures](https://docs.bithuman.ai/api-reference/dynamics): POST /v1/dynamics/generate (create gesture animations), GET /v1/dynamics/{agent_id} (list available gestures).
 - [Rate Limits](https://docs.bithuman.ai/api-reference/rate-limits): Request limits, concurrency limits, and retry guidance.
 - [Error Reference](https://docs.bithuman.ai/api-reference/errors): Complete list of error codes, HTTP statuses, and resolution steps.
@@ -41,7 +43,7 @@ character that speaks. The platform provides:
 
 ## Integrations
 
-- [Website Embed](https://docs.bithuman.ai/integrations/embed): Iframe embed with JWT token auth. Backend generates token, frontend renders avatar.
+- [Website Embed](https://docs.bithuman.ai/integrations/embed): Iframe embed with JWT token auth. Backend generates token, frontend renders avatar. Chat Widget (bithuman-chat-widget-v5.js) for floating text/voice/video chat interface.
 - [Webhooks](https://docs.bithuman.ai/integrations/webhooks): room.join and chat.push events. HMAC SHA-256 signature verification. Flask and Express handler examples.
 - [Event Types](https://docs.bithuman.ai/integrations/events): Webhook event payload schemas for room.join and chat.push.
 - [Flutter](https://docs.bithuman.ai/integrations/flutter): Full-stack Flutter + Python backend with LiveKit, token server, platform permissions.

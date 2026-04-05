@@ -88,6 +88,9 @@ async for frame in runtime.run():
   <Card title="Examples" icon="book-open" href="/examples/overview">
     10+ working examples from basic to advanced
   </Card>
+  <Card title="Chat Widget" icon="comments" href="/integrations/embed#chat-widget">
+    Floating chat with text, voice, and video modes
+  </Card>
 </CardGroup>
 
 ## Core SDK API
@@ -112,6 +115,8 @@ async for frame in runtime.run():
 | `/v1/agent/{code}/add-context` | POST | Inject silent knowledge |
 | `/v1/files/upload` | POST | Upload image/video/audio |
 | `/v1/dynamics/generate` | POST | Generate gesture animations |
+| `/v2/credit-summaries` | GET | Check credit balance and plan details |
+| `/v1/embed-tokens/request` | POST | Generate JWT token for website embedding |
 
 Base URL: `https://api.bithuman.ai` — Auth: `api-secret` header from [Developer → API Keys](https://www.bithuman.ai/#developer) — [Full reference →](/api-reference/overview)
 

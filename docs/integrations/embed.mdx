@@ -48,6 +48,12 @@ Replace `YOUR_AGENT_CODE` with your agent's code (e.g. `A78WKV4515`). Find it in
 | `chat_mode` | `text` | Start in text-only mode (`text`, `voice`, or `video`) |
 | `greetingLang` | `de` | Greet in a specific language (ISO 639-1 code) |
 | `greetingMsg` | `Hello!` | Custom greeting message |
+| `embed_theme` | `light` | Widget theme (`light` or `dark`) |
+| `theme_color` | `blue` | Accent color (`blue`, `purple`, `green`, `red`, `orange`, `teal`, `pink`, `indigo`) |
+| `welcomeMsg` | `Hi there!` | Custom welcome message |
+| `suggestedQuestions` | `["How can I help?"]` | JSON array of suggested question chips |
+| `model` | `essence` | Avatar model type (`essence` or `expression`) |
+| `deployment` | `chat-widget` | Deployment context (`chat-widget`, `gadget`, `iframe`) |
 
 ```html
 <iframe
@@ -136,15 +142,70 @@ No API secret needed — the script uses the zero-config embed endpoint automati
 window.bitHuman.init({
   agentId: "A78WKV4515",
   position: "bottom-right",    // top-left, top-right, bottom-left, bottom-right, center
-  width: "400px",
-  height: "700px",
+  width: "320px",
+  height: "180px",
   container: "#my-container",  // Optional: embed in a specific element
 });
 ```
 
 ---
 
-## Gadget Widget
+## Chat Widget
+
+For a full-featured floating chat interface with text, voice, and video modes:
+
+```html
+<script src="https://www.bithuman.ai/bithuman-chat-widget-v5.js"></script>
+<script>
+  BitHumanChat.init({
+    agentUrl: 'https://bithuman.ai/YOUR_AGENT_CODE',
+    theme: 'light',
+    themeColor: 'blue',
+    fabText: 'Ask me anything...',
+    defaultChatMode: 'text',
+    welcomeMessage: 'Hi! How can I help you today?',
+    suggestedQuestions: [
+      'What services do you offer?',
+      'How does pricing work?',
+    ],
+  });
+</script>
+```
+
+### Configuration Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `agentUrl` | string | *required* | Full agent URL (e.g. `https://bithuman.ai/A78WKV4515`) |
+| `theme` | string | `"light"` | `"light"` or `"dark"` |
+| `themeColor` | string | `"blue"` | Accent color: `blue`, `purple`, `green`, `red`, `orange`, `teal`, `pink`, `indigo` |
+| `position` | string | `"bottom-right"` | Widget position: `"bottom-right"` or `"bottom-left"` |
+| `fabStyle` | string | `"bar"` | Button style: `"bar"` (text + avatar) or `"circle"` (avatar only) |
+| `fabText` | string | `"Ask me anything..."` | Text shown on the bar-style button |
+| `defaultChatMode` | string | `"text"` | Default mode: `"text"`, `"voice"`, or `"video"` |
+| `allowModeSwitch` | boolean | `true` | Allow users to switch between text, voice, and video |
+| `welcomeMessage` | string | `""` | Welcome message shown when chat opens |
+| `suggestedQuestions` | string[] | `[]` | Up to 3 clickable question suggestions |
+| `panelWidth` | number | `380` | Chat panel width in pixels |
+| `panelHeight` | number | `540` | Chat panel height in pixels |
+
+### Public Methods
+
+```javascript
+BitHumanChat.open();        // Open the chat panel
+BitHumanChat.close();       // Close to floating button
+BitHumanChat.isOpen();      // Returns true if panel is open
+BitHumanChat.setTheme('dark');  // Switch theme
+BitHumanChat.destroy();     // Remove widget completely
+```
+
+<Info>
+The widget automatically fetches the agent's avatar image for the floating button. No manual image configuration needed.
+</Info>
+
+---
+
+## Gadget Widget (Legacy)
 
 For a customizable floating button with avatar thumbnail:
 

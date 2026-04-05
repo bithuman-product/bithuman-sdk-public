@@ -334,6 +334,10 @@ For detailed GPU container setup, see [Self-Hosted GPU Container](/deployment/se
 Make your avatar perform gestures like waving, nodding, or laughing in response to conversation keywords.
 
 <Warning>
+Gestures are currently supported for **Essence avatars only**. Expression avatars do not have a gesture handler.
+</Warning>
+
+<Warning>
 Dynamics require a cloud-generated agent with gestures enabled. Create one at [www.bithuman.ai](https://www.bithuman.ai).
 </Warning>
 
@@ -579,11 +583,12 @@ Open [http://localhost:4202](http://localhost:4202) to talk to your avatar.
 
 Avatar sessions consume credits based on the deployment mode and session duration.
 
-| Deployment | Credit Cost | Billed By | Notes |
-|------------|-------------|-----------|-------|
-| **Cloud Plugin** | Per session minute | Session duration | Includes GPU rendering |
-| **Self-Hosted CPU** | Per authentication | Auth call | Rendering is free (your hardware) |
-| **Self-Hosted GPU** | Per authentication | Auth call | Rendering is free (your hardware) |
+| Deployment | Model | Credit Cost | Notes |
+|------------|-------|-------------|-------|
+| **Cloud** | Essence | 2 cr/min | CPU rendering on bitHuman servers |
+| **Cloud** | Expression | 4 cr/min | GPU rendering on bitHuman servers |
+| **Self-Hosted** | Essence | 1 cr/min | CPU rendering on your hardware |
+| **Self-Hosted** | Expression | 2 cr/min | GPU rendering on your hardware |
 
 <Info>
 Check your remaining credits at [www.bithuman.ai](https://www.bithuman.ai/#library) — your credit balance is shown in the top navigation bar. Credits are consumed only for active sessions — idle containers cost nothing.

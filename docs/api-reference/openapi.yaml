@@ -447,6 +447,83 @@ paths:
         "415":
           description: Unsupported file type
 
+  /v2/credit-summaries:
+    get:
+      operationId: getCreditSummaries
+      summary: Check credit balance
+      description: Returns current credit balance, plan details, and estimated minutes remaining for each usage type.
+      tags: [Billing]
+      security:
+        - apiSecret: []
+      responses:
+        "200":
+          description: Credit balance retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      balance:
+                        type: number
+                      plan_credits:
+                        type: number
+                      topup_credits:
+                        type: number
+                      is_enterprise:
+                        type: boolean
+                      minutes_estimate:
+                        type: object
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /v1/embed-tokens/request:
+    post:
+      operationId: requestEmbedToken
+      summary: Generate embed token
+      description: Generate a JWT token for embedding an avatar on a website. Use this from your backend — never expose your API secret in frontend code.
+      tags: [Embedding]
+      security:
+        - apiSecret: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - agent_id
+              properties:
+                agent_id:
+                  type: string
+                  description: Agent code (e.g. A78WKV4515)
+                fingerprint:
+                  type: string
+                  description: Unique visitor identifier for session tracking
+      responses:
+        "200":
+          description: Token generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      sid:
+                        type: string
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
   /v1/dynamics/generate:
     post:
       operationId: generateDynamics
@@ -748,5 +825,9 @@ tags:
     description: Control live avatar sessions — make them speak or inject knowledge
   - name: Files
     description: Upload images, videos, audio, and documents
+  - name: Billing
+    description: Check credit balance and plan details
+  - name: Embedding
+    description: Generate tokens for website avatar embeds
   - name: Dynamics
     description: Generate and manage gesture animations

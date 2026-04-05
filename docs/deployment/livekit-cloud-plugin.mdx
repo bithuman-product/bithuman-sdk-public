@@ -181,6 +181,10 @@ avatar = bithuman.AvatarSession(
 
 Make the avatar wave, nod, or laugh in response to conversation keywords.
 
+<Warning>
+Gestures are currently supported for **Essence avatars only**. Expression avatars do not have a gesture handler.
+</Warning>
+
 ### Step 1: Get Available Gestures
 
 ```python
@@ -278,9 +282,12 @@ Gesture actions vary by agent. Always check the Dynamics API response first to s
 
 Visit [Billing](https://www.bithuman.ai/#library) or click the credit balance in the top navigation for current pricing.
 
-**Free Tier:** 99 credits per month, community support
-
-**Pro:** Contact sales for unlimited credits and priority support
+| Plan | Price | Concurrent Sessions | Generations/Day |
+|------|-------|---------------------|-----------------|
+| **Free** | Free | 2 | 5 |
+| **Creator** | $20/mo | 5 | 20 |
+| **Pro** | $99/mo | 10 | 50 |
+| **Enterprise** | Custom | Custom | Custom |
 
 ---
 

@@ -4,6 +4,28 @@ description: "Release notes and version history for the bitHuman platform."
 icon: "clock-rotate-left"
 ---
 
+## April 2026
+
+### Chat Widget v5
+- New `bithuman-chat-widget-v5.js` with text, voice, and video modes in a single floating widget
+- Configurable themes (`light`/`dark`), accent colors, FAB styles (`bar`/`circle`)
+- Public API: `BitHumanChat.open()`, `close()`, `isOpen()`, `setTheme()`, `destroy()`
+- Suggested questions and custom welcome message support
+
+### FAQ Knowledge Base Improvements
+- FAQ search now always executes (no early exit on keyword match)
+- Removed duplicate FAQ deduplication logic that was dropping valid results
+
+### Voice Mode Enhancements
+- Siri-style animation during voice interactions
+- Multilingual TTS support: 11 new languages with automatic voice selection
+- Thai, Chinese, Arabic, and additional language support via Cartesia sonic-3
+
+### Streaming & Performance
+- `sync_transcription=False` for instant text streaming to the UI (no longer waits for TTS audio sync)
+
+---
+
 ## March 2026
 
 ### Platform UI Refresh
