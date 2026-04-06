@@ -11,19 +11,21 @@ A simple first example that works reliably.
 <Steps>
   <Step title="Install">
     ```bash
-    pip install bithuman --upgrade opencv-python sounddevice
+    pip install bithuman --upgrade sounddevice
     ```
+    <Note>The SDK includes `opencv-python-headless` automatically. Do **not** install `opencv-python` (full) separately — it conflicts with PyAV.</Note>
   </Step>
   <Step title="Set environment">
     ```bash
     export BITHUMAN_API_SECRET="your_secret"
     export BITHUMAN_MODEL_PATH="/path/to/model.imx"
-    export BITHUMAN_AUDIO_PATH="/path/to/audio.wav"  # optional
     ```
   </Step>
   <Step title="Run">
     ```bash
-    python examples/avatar-with-audio-clip.py
+    git clone https://github.com/bithuman-product/examples.git
+    cd examples/essence-selfhosted
+    python quickstart.py --model /path/to/model.imx --audio-file speech.wav
     ```
     [View source code on GitHub](https://github.com/bithuman-product/examples/tree/main/essence-selfhosted)
   </Step>
@@ -55,24 +57,17 @@ A simple first example that works reliably.
 
 ```bash
 # Use specific files
-python examples/avatar-with-audio-clip.py \
+python quickstart.py \
   --model /path/to/model.imx \
   --audio-file /path/to/audio.wav \
   --api-secret your_secret
-
-# Use JWT token instead of API secret
-python examples/avatar-with-audio-clip.py \
-  --token your_jwt_token \
-  --model /path/to/model.imx
 ```
 
 | Option | Description |
 |--------|-------------|
 | `--model` | Path to .imx model file |
-| `--audio-file` | Path to audio file |
+| `--audio-file` | Path to audio file (WAV, MP3, M4A) |
 | `--api-secret` | Your bitHuman API secret |
-| `--token` | JWT token (alternative to API secret) |
-| `--insecure` | Disable SSL verification (dev only) |
 
 ---
 

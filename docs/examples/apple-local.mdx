@@ -40,16 +40,20 @@ Full privacy — speech never leaves your Mac.
     ```
   </Step>
   <Step title="Run agent">
+    ```bash
+    git clone https://github.com/bithuman-product/examples.git
+    cd examples/integrations/macos-offline
+    ```
     [View source code on GitHub](https://github.com/bithuman-product/examples/tree/main/integrations/macos-offline)
 
     <CodeGroup>
 
     ```bash Web streaming
-    python examples/agent-livekit-apple-local.py dev
+    python agent.py dev
     ```
 
     ```bash Command line testing
-    python examples/agent-livekit-apple-local.py console
+    python agent.py console
     ```
 
     </CodeGroup>

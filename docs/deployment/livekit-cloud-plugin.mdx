@@ -14,15 +14,11 @@ Use existing bitHuman agents in real-time applications with our cloud-hosted Liv
 
 <Steps>
   <Step title="Install the plugin">
-    The bitHuman plugin ships inside the livekit/agents repository. Remove any PyPI version first to avoid conflicts, then install from GitHub:
-
     ```bash
-    # Remove old PyPI version if present (safe to ignore "not installed" warnings)
-    uv pip uninstall livekit-plugins-bithuman
-
-    # Install the latest version
-    GIT_LFS_SKIP_SMUDGE=1 uv pip install git+https://github.com/livekit/agents@main#subdirectory=livekit-plugins/livekit-plugins-bithuman
+    pip install livekit-plugins-bithuman
     ```
+
+    This installs the bitHuman LiveKit plugin along with all required dependencies (`bithuman`, `livekit-agents`, etc.).
   </Step>
   <Step title="Get your API Secret">
     Go to [Developer → API Keys](https://www.bithuman.ai/#developer) and copy your **API Secret**.
@@ -298,7 +294,7 @@ Visit [Billing](https://www.bithuman.ai/#library) or click the credit balance in
 | Authentication errors | Verify API secret at [Developer → API Keys](https://www.bithuman.ai/#developer) |
 | Avatar doesn't appear | Check agent_id exists in your [Library](https://www.bithuman.ai/#library) |
 | Network timeouts | Ensure stable internet; the plugin retries automatically |
-| Plugin installation fails | Use `uv` with `GIT_LFS_SKIP_SMUDGE=1` flag |
+| Plugin installation fails | Run `pip install livekit-plugins-bithuman --upgrade` |
 | No lip movement | Ensure `avatar.start(session, room=ctx.room)` is called before `session.start()` |
 
 ---

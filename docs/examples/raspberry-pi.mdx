@@ -45,16 +45,22 @@ icon: "microchip"
     ```
   </Step>
   <Step title="Run agent">
+    ```bash
+    git clone https://github.com/bithuman-product/examples.git
+    cd examples/essence-selfhosted
+    ```
     [View source code on GitHub](https://github.com/bithuman-product/examples/tree/main/essence-selfhosted)
 
     <CodeGroup>
 
-    ```bash Web streaming (recommended)
-    python examples/agent-livekit-rasp-pi.py dev
+    ```bash Docker (recommended)
+    cp .env.example .env
+    # Edit .env with your credentials
+    docker compose up
     ```
 
-    ```bash Command line testing
-    python examples/agent-livekit-rasp-pi.py console
+    ```bash Terminal quickstart
+    python quickstart.py --model /home/pi/model.imx --audio-file speech.wav
     ```
 
     </CodeGroup>
@@ -100,7 +106,7 @@ WorkingDirectory=/home/pi
 Environment=LOADING_MODE=SYNC
 Environment=BITHUMAN_API_SECRET=your_secret
 Environment=BITHUMAN_MODEL_PATH=/home/pi/model.imx
-ExecStart=/home/pi/bithuman-env/bin/python examples/agent-livekit-rasp-pi.py dev
+ExecStart=/home/pi/bithuman-env/bin/python examples/essence-selfhosted/agent.py start
 Restart=always
 RestartSec=10
 

@@ -11,8 +11,9 @@ Complete chatbot with avatar that users can talk to on the web.
 <Steps>
   <Step title="Install">
     ```bash
-    pip install bithuman --upgrade livekit-agents openai
+    pip install bithuman --upgrade openai sounddevice loguru
     ```
+    <Note>The SDK includes `opencv-python-headless` automatically. Do **not** install `opencv-python` (full) separately.</Note>
   </Step>
   <Step title="Get accounts">
     - **bitHuman**: [www.bithuman.ai](https://www.bithuman.ai)
@@ -24,35 +25,17 @@ Complete chatbot with avatar that users can talk to on the web.
     export BITHUMAN_API_SECRET="your_secret"
     export BITHUMAN_MODEL_PATH="/path/to/model.imx"
     export OPENAI_API_KEY="your_openai_key"
-    export LIVEKIT_API_KEY="your_livekit_key"
-    export LIVEKIT_API_SECRET="your_livekit_secret"
-    export LIVEKIT_URL="wss://your-project.livekit.cloud"
     ```
   </Step>
-  <Step title="Setup web interface">
+  <Step title="Run">
     ```bash
-    git clone https://github.com/livekit/agents-playground.git
-    cd agents-playground
-    npm install && npm run dev
+    git clone https://github.com/bithuman-product/examples.git
+    cd examples/essence-selfhosted
+    python conversation.py --model /path/to/model.imx
     ```
-  </Step>
-  <Step title="Run agent">
     [View source code on GitHub](https://github.com/bithuman-product/examples/tree/main/essence-selfhosted)
 
-    <CodeGroup>
-
-    ```bash Web streaming (recommended)
-    python examples/agent-livekit-openai.py dev
-    ```
-
-    ```bash Command line testing
-    python examples/agent-livekit-openai.py console
-    ```
-
-    </CodeGroup>
-  </Step>
-  <Step title="Open browser">
-    Go to `http://localhost:3000` and join a room to chat.
+    Speak into your microphone. The AI responds via OpenAI Realtime and the avatar lip-syncs in real time. Press `Q` to quit.
   </Step>
 </Steps>
 
@@ -60,24 +43,19 @@ Complete chatbot with avatar that users can talk to on the web.
 
 ## What It Does
 
-1. User speaks in browser
-2. AI processes speech and responds intelligently
-3. Avatar shows AI's response with dynamic movement
-4. Works from any device with internet
+1. Captures audio from your microphone
+2. Sends speech to OpenAI Realtime API for AI conversation
+3. Receives AI response audio and feeds it to the avatar
+4. Avatar lip-syncs in real time — no LiveKit server needed
 
 **Built with:**
-- **OpenAI GPT-4** for intelligent conversation
-- **LiveKit** for web streaming
-- **bitHuman** for avatar animation
+- **OpenAI Realtime API** for voice conversation
+- **bitHuman SDK** for avatar animation
+- **sounddevice** for mic capture and speaker output
 
----
-
-## Run Modes
-
-| Mode | Use Case | Description |
-|------|----------|-------------|
-| `dev` | Production | Connects to LiveKit for web browsers |
-| `console` | Testing | Runs in terminal for debugging |
+<Tip>
+For a full web-based setup with LiveKit and a browser UI, see the [Docker example](https://github.com/bithuman-product/examples/tree/main/essence-selfhosted) — run `docker compose up` and open `http://localhost:4202`.
+</Tip>
 
 ---
 
