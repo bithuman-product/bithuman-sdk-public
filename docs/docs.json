@@ -86,16 +86,26 @@
         "tab": "API Reference",
         "groups": [
           {
-            "group": "API Reference",
+            "group": "Overview",
             "pages": [
               "api-reference/overview",
-              "api-reference/agent-generation",
-              "api-reference/agent-management",
-              "api-reference/agent-context",
-              "api-reference/file-upload",
-              "api-reference/dynamics",
               "api-reference/rate-limits",
               "api-reference/errors"
+            ]
+          },
+          {
+            "group": "Agents",
+            "pages": [
+              "api-reference/agent-generation",
+              "api-reference/agent-management",
+              "api-reference/agent-context"
+            ]
+          },
+          {
+            "group": "Assets",
+            "pages": [
+              "api-reference/file-upload",
+              "api-reference/dynamics"
             ]
           }
         ]

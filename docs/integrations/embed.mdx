@@ -125,15 +125,20 @@ For a floating chat button that opens an avatar panel, use `embed.js`:
 
 No API secret needed — the script uses the zero-config embed endpoint automatically. The widget appears as a floating button in the bottom-right corner.
 
-### With API Secret (for custom billing)
+### With API Secret (server-rendered pages only)
+
+If you need usage billed to your account, pass the API secret — but **only on server-rendered pages** where the HTML is generated on your backend. Never include your API secret in a public static HTML file or client-side JavaScript.
 
 ```html
+<!-- Server-rendered only — do NOT use in static HTML or SPA bundles -->
 <script
   src="https://agent.viewer.bithuman.ai/embed.js"
   data-agent-id="A78WKV4515"
   data-api-secret="your_api_secret"
 ></script>
 ```
+
+For client-side apps, use the [embed token flow](#embed-token-flow) above instead.
 
 ### Programmatic Control
 

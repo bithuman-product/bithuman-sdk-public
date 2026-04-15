@@ -579,6 +579,22 @@ Open [http://localhost:4202](http://localhost:4202) to talk to your avatar.
 
 ---
 
+## Session Lifecycle
+
+Understanding how sessions behave helps you build reliable integrations.
+
+| Behavior | Essence (CPU) | Expression (GPU) |
+|----------|--------------|-------------------|
+| **Idle timeout** | None — sessions run indefinitely | 10 minutes of inactivity |
+| **Gestures** | Supported | Not supported |
+| **Use case** | Kiosks, always-on displays | Interactive conversations |
+
+<Info>
+Essence sessions are designed for 24/7 deployments like museum kiosks and lobby displays. They run until the client disconnects — there is no idle timeout. Expression sessions automatically close after 10 minutes of inactivity to free GPU resources.
+</Info>
+
+---
+
 ## Billing & Credits
 
 Avatar sessions consume credits based on the deployment mode and session duration.

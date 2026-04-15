@@ -46,14 +46,12 @@ icon: "clock-rotate-left"
 
 ## February 2026
 
-### Expression Avatar v2 — Turbo VAE Decoder
-- 2.5x faster VAE decode (32ms → 13ms) with distilled Turbo-VAED decoder
-- Total pipeline: 103ms → 79ms per chunk (24% faster)
-- Throughput: 233 → 305 FPS on H100
-- Per-session TRT contexts eliminate concurrent session artifacts
+### Expression Avatar v2
+- 24% faster rendering pipeline with optimized video decoder
+- Eliminates visual artifacts in concurrent sessions
 
 ### Self-Hosted GPU Container
-- Published `sgubithuman/expression-avatar:latest` Docker image
+- Published Expression Avatar Docker image for self-hosted deployment
 - Supports up to 8 concurrent sessions per GPU
 - Cold start ~50s, warm start 4-6s
 - ~5 GB auto-downloaded model weights (cached in Docker volume)
