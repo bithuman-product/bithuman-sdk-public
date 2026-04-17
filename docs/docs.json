@@ -62,8 +62,7 @@
             "pages": [
               "deployment/avatar-sessions",
               "deployment/livekit-cloud-plugin",
-              "deployment/self-hosted-gpu",
-              "deployment/swift-sdk"
+              "deployment/self-hosted-gpu"
             ]
           },
           {
