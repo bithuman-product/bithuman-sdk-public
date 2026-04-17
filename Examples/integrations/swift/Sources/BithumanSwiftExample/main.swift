@@ -1,8 +1,9 @@
 // BithumanSwiftExample — end-to-end demo of the bitHuman Swift SDK.
 //
 // What this does:
-//   1. Locate model weights under ~/Library/Caches/com.bithuman.sdk/weights/
-//   2. Construct a Bithuman runtime via the `create(paths:)` factory
+//   1. Open a packed `.imx` model file (one-file container — all
+//      weights + baked reference latent + manifest)
+//   2. Construct a Bithuman runtime via the `create(modelPath:)` factory
 //   3. Push a synthetic 3-second speech-like audio signal
 //   4. Poll the chunk queue and write every rendered frame to disk
 //      as a PNG, alongside a WAV containing the paired 24 kHz audio
@@ -30,12 +31,24 @@ let outputDir = URL(fileURLWithPath: "./output", isDirectory: true)
 /// the SDK's 1.32-second receptive-field window can fill.
 let secondsOfAudio: Double = 3.0
 
-/// Reference latent path. Ship one in your own app bundle; for this
-/// example we expect it next to the weights for simplicity. If you
-/// cloned the Halo repo, you'll find a bundled `default_ref_latent.npy`
-/// at `halo/Sources/bitHuman/Resources/default_ref_latent.npy`.
-let refLatentPath = ModelPaths.defaultCacheDirectory
-    .appendingPathComponent("default_ref_latent.npy").path
+/// Resolve the packed `.imx` model path from (in order): the first
+/// CLI argument, `BITHUMAN_MODEL_PATH` env var, or the conventional
+/// `~/Library/Caches/com.bithuman.sdk/weights/expression.imx` fallback.
+/// Build a model file with the Python CLI: `bithuman pack …` — see
+/// the README.
+func resolveModelPath() -> URL {
+    let args = CommandLine.arguments.dropFirst()
+    if let explicit = args.first {
+        return URL(fileURLWithPath: explicit)
+    }
+    if let env = ProcessInfo.processInfo.environment["BITHUMAN_MODEL_PATH"] {
+        return URL(fileURLWithPath: env)
+    }
+    let fallback = FileManager.default
+        .urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        .appendingPathComponent("com.bithuman.sdk/weights/expression.imx")
+    return fallback
+}
 
 // MARK: - Entry point
 
@@ -45,32 +58,30 @@ struct BithumanSwiftExample {
         print("BithumanSwiftExample — bitHuman Swift SDK demo")
         print("")
 
-        // Locate weights + validate.
-        guard FileManager.default.fileExists(atPath: refLatentPath) else {
+        let modelPath = resolveModelPath()
+        guard FileManager.default.fileExists(atPath: modelPath.path) else {
             fatalError("""
-                Reference latent not found at \(refLatentPath).
-                Copy `default_ref_latent.npy` from the Halo app's
-                Resources folder into the weights cache directory
-                and retry. See the README.
+                Model file not found at \(modelPath.path).
+                Build one with the Python CLI:
+
+                  pip install --upgrade bithuman
+                  bithuman pack \\
+                      --dit          path/to/dmd2_run9.safetensors \\
+                      --wav2vec      path/to/wav2vec2.safetensors \\
+                      --vae-encoder  path/to/vae_encoder.safetensors \\
+                      --ane-decoder  path/to/turbo_vaed_ane_384.mlpackage \\
+                      --ref-latent   path/to/default_ref_latent.npy \\
+                      -o expression.imx
+
+                Then pass the path as the first CLI argument, or set
+                BITHUMAN_MODEL_PATH. See the example README.
                 """)
         }
 
-        guard let paths = ModelPaths.resolvingDefaults(refLatent: refLatentPath) else {
-            fatalError("""
-                Weight files missing under \(ModelPaths.defaultCacheDirectory.path).
-                The SDK expects these four files there:
-                  - dmd2_run9.safetensors
-                  - wav2vec2.safetensors
-                  - vae_encoder.safetensors
-                  - turbo_vaed_ane_384.mlpackage
-                See the README for download instructions.
-                """)
-        }
-
-        print("→ Loading weights from \(ModelPaths.defaultCacheDirectory.path)")
+        print("→ Loading model from \(modelPath.path)")
         let loadStart = Date()
 
-        let result = try Bithuman.create(paths: paths)
+        let result = try Bithuman.create(modelPath: modelPath)
         let bithuman = result.bithuman
 
         print("✓ Loaded in \(String(format: "%.1f", -loadStart.timeIntervalSinceNow))s")

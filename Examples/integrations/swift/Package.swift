@@ -18,13 +18,13 @@ let package = Package(
         // Pin to the latest published tag. The SDK is distributed as
         // source via GitHub; subsequent releases add CVPixelBuffer
         // zero-copy output and an AsyncThrowingStream run() API.
-        .package(url: "https://github.com/bithuman-product/bithuman-sdk-swift.git", from: "0.3.0"),
+        .package(url: "https://github.com/bithuman-product/bithuman-expression-swift.git", from: "0.3.0"),
     ],
     targets: [
         .executableTarget(
             name: "BithumanSwiftExample",
             dependencies: [
-                .product(name: "BithumanAvatar", package: "bithuman-sdk-swift"),
+                .product(name: "BithumanAvatar", package: "bithuman-expression-swift"),
             ],
             swiftSettings: [
                 // BithumanAvatar pins Swift 5 language mode (some
