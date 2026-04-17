@@ -18,7 +18,7 @@ let package = Package(
         // Pin to the latest published tag. The SDK is distributed as
         // source via GitHub; subsequent releases add CVPixelBuffer
         // zero-copy output and an AsyncThrowingStream run() API.
-        .package(url: "https://github.com/bithuman-product/bithuman-expression-swift.git", from: "0.3.0"),
+        .package(url: "https://github.com/bithuman-product/bithuman-expression-swift.git", from: "0.4.0"),
     ],
     targets: [
         .executableTarget(
