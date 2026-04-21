@@ -78,8 +78,12 @@ expression.imx + speech.wav ──► quickstart.py ──► out.mp4  (25 FPS, 
     ```
   </Step>
 
-  <Step title="Download a packed Expression .imx">
-    Grab one from your bitHuman dashboard, or pack your own from raw weights with `bithuman pack` — run `bithuman pack --help` after `pip install bithuman` for the full flag reference.
+  <Step title="Get the Expression bundle">
+    Download `expression.imx` from your [bitHuman dashboard](https://www.bithuman.ai). **One bundle, any face** — the `.imx` carries the animator, speech encoder, face encoder, and renderer; the face you want to animate is just a portrait image you pass at runtime via `identity=`.
+
+    <Tip>
+      `bithuman pack` (CLI) is a separate, advanced workflow for **building an Expression bundle from raw weights**. If you're an application developer consuming Expression — not training it — you don't need it. Just grab the bundle and pass portraits.
+    </Tip>
   </Step>
 
   <Step title="Run the CLI demo">
@@ -89,11 +93,11 @@ expression.imx + speech.wav ──► quickstart.py ──► out.mp4  (25 FPS, 
 
     `--audio` defaults to a bundled sample if omitted. Model load: ~10 s. First frame: &lt; 1.3 s. Rendering: ~0.5× real time.
 
-    <Check>Expect **`✓ Wrote demo.mp4 — 393 frames @ 25 FPS`** and a lip-synced video of the default face talking for 15 s.</Check>
+    <Check>Expect **`✓ Wrote demo.mp4 — 393 frames @ 25 FPS`** and a lip-synced video of the bundle's baked-in face talking for 15 s.</Check>
   </Step>
 
-  <Step title="Try a different face (optional)">
-    Pass a portrait image or URL — the SDK encodes it on load (~300 ms):
+  <Step title="Pick a face">
+    Pass any portrait as `--identity` — local file or URL. The SDK encodes it on load (~300 ms on M5+):
 
     ```bash
     .venv/bin/bithuman demo --model expression.imx --identity alice.jpg
@@ -107,7 +111,7 @@ expression.imx + speech.wav ──► quickstart.py ──► out.mp4  (25 FPS, 
         --identity "https://tmoobjxlwcwvxvjeppzq.supabase.co/storage/v1/object/public/bithuman/A74NWD9723/image_20251122_000244_372799.jpg"
     ```
 
-    Portraits are cached under `~/.cache/bithuman/identities/` after the first download.
+    Portraits are cached under `~/.cache/bithuman/identities/` after the first download. Omit `--identity` entirely to use the bundle's default face.
   </Step>
 
   <Step title="Go deeper — clone the full example">
