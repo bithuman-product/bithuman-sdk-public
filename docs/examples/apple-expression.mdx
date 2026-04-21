@@ -60,8 +60,6 @@ expression.imx + speech.wav ──► quickstart.py ──► out.mp4  (25 FPS, 
 
 ## Quick Start
 
-Three commands, zero arguments required — `bithuman demo` auto-downloads a pre-packed demo model (~3.7 GB, cached) and uses a bundled sample audio clip if you don't supply your own:
-
 <Steps>
   <Step title="Install">
     ```bash
@@ -80,12 +78,16 @@ Three commands, zero arguments required — `bithuman demo` auto-downloads a pre
     ```
   </Step>
 
-  <Step title="Run it — the easiest possible path">
+  <Step title="Download a packed Expression .imx">
+    Grab one from your bitHuman dashboard, or pack your own from raw weights with `bithuman pack` (see [Packing at different resolutions](https://github.com/bithuman-product/bithuman-python-sdk#packing-at-different-resolutions) in the SDK README).
+  </Step>
+
+  <Step title="Run the CLI demo">
     ```bash
-    .venv/bin/bithuman demo
+    .venv/bin/bithuman demo --model expression.imx --audio speech.wav
     ```
 
-    First run downloads the demo `.imx` (~3.7 GB, cached under `~/.cache/bithuman/`). Subsequent runs are instant. Model load: ~10 s. First frame: &lt; 1.3 s. Rendering: ~0.5× real time.
+    `--audio` defaults to a bundled sample if omitted. Model load: ~10 s. First frame: &lt; 1.3 s. Rendering: ~0.5× real time.
 
     <Check>Expect **`✓ Wrote demo.mp4 — 393 frames @ 25 FPS`** and a lip-synced video of the default face talking for 15 s.</Check>
   </Step>
@@ -94,26 +96,18 @@ Three commands, zero arguments required — `bithuman demo` auto-downloads a pre
     Pass a portrait image or URL — the SDK encodes it on load (~300 ms):
 
     ```bash
-    .venv/bin/bithuman demo --identity alice.jpg
+    .venv/bin/bithuman demo --model expression.imx --identity alice.jpg
     ```
 
     Or pull from the [agent gallery](#agent-gallery) below:
 
     ```bash
     .venv/bin/bithuman demo \
+        --model expression.imx \
         --identity "https://tmoobjxlwcwvxvjeppzq.supabase.co/storage/v1/object/public/bithuman/A74NWD9723/image_20251122_000244_372799.jpg"
     ```
 
     Portraits are cached under `~/.cache/bithuman/identities/` after the first download.
-  </Step>
-
-  <Step title="Use your own audio + custom model">
-    ```bash
-    .venv/bin/bithuman demo \
-        --model /path/to/your-model.imx \
-        --audio my-speech.wav \
-        --output my-avatar.mp4
-    ```
   </Step>
 
   <Step title="Go deeper — clone the full example">
@@ -122,7 +116,7 @@ Three commands, zero arguments required — `bithuman demo` auto-downloads a pre
     ```bash
     git clone https://github.com/bithuman-product/bithuman-examples.git
     cd bithuman-examples/apple-expression
-    .venv/bin/python quickstart.py --model demo.imx --audio speech.wav
+    .venv/bin/python quickstart.py --model expression.imx --audio speech.wav
     ```
   </Step>
 </Steps>
