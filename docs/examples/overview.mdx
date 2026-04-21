@@ -20,20 +20,22 @@ Programmatic agent management -- no SDK or local runtime needed.
 
 ## Avatar Integration
 
-Four combinations of model type and deployment mode.
+Five combinations of model type and deployment target.
 
 | Example | Model | Deployment | Source |
 |---------|-------|------------|--------|
 | **Essence + Cloud** | Essence (CPU) | bitHuman Cloud | [essence-cloud/](https://github.com/bithuman-product/bithuman-examples/tree/main/essence-cloud) |
 | **[Essence + Self-Hosted](/examples/audio-clip)** | Essence (CPU) | Your machine | [essence-selfhosted/](https://github.com/bithuman-product/bithuman-examples/tree/main/essence-selfhosted) |
 | **Expression + Cloud** | Expression (GPU) | bitHuman Cloud | [expression-cloud/](https://github.com/bithuman-product/bithuman-examples/tree/main/expression-cloud) |
-| **Expression + Self-Hosted** | Expression (GPU) | Your machine | [expression-selfhosted/](https://github.com/bithuman-product/bithuman-examples/tree/main/expression-selfhosted) |
+| **Expression + Self-Hosted GPU** | Expression (GPU) | Your Linux + NVIDIA box | [expression-selfhosted/](https://github.com/bithuman-product/bithuman-examples/tree/main/expression-selfhosted) |
+| **[Expression on macOS (on-device)](/examples/apple-expression)** | Expression (Swift runtime) | Your Mac (M3+) | [apple-expression/](https://github.com/bithuman-product/bithuman-examples/tree/main/apple-expression) |
 
 ## Full-Stack & Integration Examples
 
 | Example | What It Does | Source |
 |---------|-------------|--------|
 | **[Apple Local Agent](/examples/apple-local)** | 100% offline on macOS (Siri + Ollama) | [integrations/macos-offline/](https://github.com/bithuman-product/bithuman-examples/tree/main/integrations/macos-offline) |
+| **[bitHuman Halo](/examples/halo-macos)** | Free signed macOS desktop app — floating AI avatar, local STT + LLM + TTS | [bithuman-halo-macos](https://github.com/bithuman-product/bithuman-halo-macos) |
 | **[Raspberry Pi](/examples/raspberry-pi)** | Edge deployment on Raspberry Pi | — |
 | **Web UI** | Browser-based Gradio interface | [integrations/web-ui/](https://github.com/bithuman-product/bithuman-examples/tree/main/integrations/web-ui) |
 | **Java Client** | WebSocket streaming from Java | [integrations/java/](https://github.com/bithuman-product/bithuman-examples/tree/main/integrations/java) |

@@ -121,6 +121,8 @@
               "examples/microphone",
               "examples/ai-conversation",
               "examples/apple-local",
+              "examples/apple-expression",
+              "examples/halo-macos",
               "examples/raspberry-pi",
               "examples/self-hosted-plugin"
             ]

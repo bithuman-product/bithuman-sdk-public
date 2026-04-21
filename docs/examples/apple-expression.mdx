@@ -1,0 +1,188 @@
+---
+title: "Expression Avatar on macOS (Apple Silicon, On-Device)"
+sidebarTitle: "Expression on macOS"
+description: "Run the bitHuman Expression model on-device on Apple Silicon (M3+) via the bundled Swift runtime. Any portrait, 25 FPS lip-sync, no GPU, no server. Step-by-step Python SDK guide."
+keywords:
+  - bitHuman Expression
+  - on-device avatar
+  - Apple Silicon M3
+  - lip sync macOS
+  - Swift runtime
+  - bithuman-expression-daemon
+  - avatar SDK
+  - real-time avatar Python
+icon: "apple"
+---
+
+Run a custom-face **Expression** avatar entirely on your Mac — no GPU, no cloud, no Docker. The Python SDK transparently dispatches to a bundled Swift subprocess that drives the animator, face encoder, and face renderer on Apple's Neural Engine + GPU.
+
+<Info>
+  **Requires an M3 or later Mac.** The animator needs M3-class GPU memory bandwidth to sustain 25 FPS. M1/M2 raises `ExpressionModelNotSupported` with install guidance.
+</Info>
+
+## What you build
+
+A Python script that takes one `.imx` avatar bundle plus any WAV file and writes a 25 FPS lip-synced MP4. Full source is in the **[`apple-expression/`](https://github.com/bithuman-product/bithuman-examples/tree/main/apple-expression)** example on GitHub.
+
+```
+expression.imx + speech.wav ──► quickstart.py ──► out.mp4  (25 FPS, lip-synced)
+```
+
+## Requirements
+
+| | |
+|---|---|
+| macOS | 14 or later |
+| Chip | Apple Silicon, **M3 or later** (M1/M2 unsupported) |
+| RAM | 16 GB |
+| Disk | ~5 GB free (model weights) |
+| Python | 3.9 – 3.14 |
+| Tools | `ffmpeg` (`brew install ffmpeg`) |
+
+## Quick Start
+
+<Steps>
+  <Step title="Install the SDK">
+    ```bash
+    python -m venv .venv && source .venv/bin/activate
+    pip install --upgrade bithuman
+    ```
+
+    On macOS arm64 this pulls in `bithuman-expression-daemon` automatically — the Swift subprocess the runtime spawns when you load an Expression `.imx`.
+  </Step>
+
+  <Step title="Set your API secret">
+    ```bash
+    export BITHUMAN_API_SECRET="your_secret_from_bithuman.ai"
+    ```
+
+    Get a key from [bithuman.ai](https://www.bithuman.ai) — Expression charges 2 credits / minute of rendered video.
+  </Step>
+
+  <Step title="Get an Expression .imx">
+    One `.imx` bundle holds the animator, speech encoder, face encoder, face renderer, and a baked-in default face — ~3.5 GB of shared weights.
+
+    Build one with `bithuman pack` (see the [Python SDK README](https://github.com/bithuman-product/bithuman-python-sdk#pack)) or download a pre-packed model from your dashboard.
+
+    <Note>
+      The **same** `.imx` serves every avatar you ship. The face is parameterized separately via `identity=` — you don't re-pack a bundle per agent.
+    </Note>
+  </Step>
+
+  <Step title="Clone the example + run">
+    ```bash
+    git clone https://github.com/bithuman-product/bithuman-examples.git
+    cd bithuman-examples/apple-expression
+    pip install -r requirements.txt
+
+    python quickstart.py \
+        --model /path/to/expression.imx \
+        --audio speech.wav \
+        --output out.mp4
+    ```
+
+    Model load: ~10 s. Rendering: ~0.5× real time. First frame: &lt; 1.3 s.
+  </Step>
+
+  <Step title="Swap the face (optional)">
+    Pass a portrait image — the SDK encodes it on load (~300 ms, one-time):
+
+    ```bash
+    python quickstart.py \
+        --model expression.imx \
+        --audio speech.wav \
+        --identity alice.jpg \
+        --output alice.mp4
+    ```
+
+    The same `.imx` now drives Alice. Re-run with `--identity bob.png` and the bundle drives Bob.
+  </Step>
+</Steps>
+
+## How it works
+
+```
+                 ┌── 24 kHz slice ─────────────► paired with frames ──► TimedChunk
+   PCM audio ────┤
+                 └── 16 kHz ──► speech encoder ──► animator ──► face renderer ──► CGImage (25 FPS)
+```
+
+Everything above the dashed line runs in the **Swift subprocess** (`bithuman-expression-daemon`) — MLX on the GPU, CoreML on the Neural Engine. Python only shuffles frames + audio over a framed stdio pipe, so there's nothing to configure: `pip install bithuman` gives you the whole chain.
+
+The actor serializes one model evaluation at a time, enforces the 40 ms per-frame budget, and the audio-clocked contract means frames emit *as audio is consumed* — you own the display timer.
+
+## Minimal SDK snippet
+
+```python
+import asyncio, os
+from bithuman import AsyncBithuman
+
+async def main():
+    runtime = await AsyncBithuman.create(
+        model_path="expression.imx",
+        api_secret=os.environ["BITHUMAN_API_SECRET"],
+        identity="alice.jpg",   # optional; omit to use the bundle's default face
+    )
+    await runtime.push_audio(pcm_float32, 16_000)
+    await runtime.flush()
+    async for frame in runtime.run():
+        if frame.has_image:
+            display(frame.bgr_image)
+        if frame.end_of_speech:
+            break
+    await runtime.shutdown()
+
+asyncio.run(main())
+```
+
+## Changing the face mid-session
+
+Halo's "drag-drop a new portrait" flow uses `set_identity()` — no model reload:
+
+```python
+await runtime.interrupt()                    # drop any in-flight audio
+await runtime.set_identity("bob.jpg")        # ~300 ms for a jpg, instant for a .npy
+# push more audio — the new face animates immediately
+```
+
+| `identity=` value | Cost at load / swap |
+|---|---|
+| `None` (default) | 0 — uses bundle's baked-in face |
+| `"alice.jpg"` / `.png` | ~300 ms (encoder pass) |
+| `"alice.npy"` (cached) | ~instant |
+
+Cache a portrait once by saving the encoded `.npy` to disk and reusing it across sessions.
+
+## Troubleshooting
+
+| Symptom | Cause + fix |
+|---|---|
+| `ExpressionModelNotSupported` on an M1/M2 Mac | Animator requires M3+ memory bandwidth. Use an M3 or later, or the [self-hosted GPU deployment](/deployment/self-hosted-gpu) on Linux + NVIDIA. |
+| `ExpressionModelNotSupported` on Intel / Linux / Windows | No local path — use the [self-hosted GPU deployment](/deployment/self-hosted-gpu). |
+| Error mentioning `pre-encoded identity spatial dim N ≠ pipeline dim M` | The cached `.npy` was encoded for a different renderer resolution than the one in your `.imx`. Re-encode from the source portrait. |
+| First-frame latency > 1.3 s | One-time warm-up is ≤ 1.3 s (full receptive field) or ≤ 450 ms (partial window). Anything longer usually means another MLX workload is contending for the GPU. |
+| Daemon logs aren't in stdout | The runtime redirects daemon logs to stderr to keep the IPC pipe clean. Capture the child's stderr (see [best practices §10](https://github.com/bithuman-product/bithuman-python-sdk/blob/main/docs/best-practices.md#10-audit-daemon-stderr-in-production)). |
+
+## Performance contract
+
+- **Per-frame budget ≤ 40 ms** (25 FPS enforced by the actor)
+- **Bounded memory** — working set caps at ~4 GB during a burst; `shutdown()` releases
+- **First-frame latency ≤ 1.3 s**
+- **One model evaluation at a time** — Halo's `setLLMGenerating(true/false)` hook exists to gate idle animation against concurrent LLM generation
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Full SDK reference" icon="book" href="https://github.com/bithuman-product/bithuman-python-sdk/blob/main/docs/architecture.md">
+    Architecture, wire protocol, and design contracts across the three repos.
+  </Card>
+  <Card title="bitHuman Halo (consumer app)" icon="sparkles" href="/examples/halo-macos">
+    The reference desktop app built on this exact pipeline.
+  </Card>
+  <Card title="Self-hosted GPU (Linux + NVIDIA)" icon="gpu-card" href="/deployment/self-hosted-gpu">
+    Same Expression animator, CUDA backend — for hosts without Apple Silicon.
+  </Card>
+  <Card title="AI conversation example" icon="comments" href="/examples/ai-conversation">
+    Wire this pipeline into LiveKit + an LLM + TTS for a full voice agent.
+  </Card>
+</CardGroup>

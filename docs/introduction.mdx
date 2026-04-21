@@ -1,6 +1,14 @@
 ---
 title: "bitHuman — Real-Time Avatar Animation API"
-description: "Turn any face into a lifelike talking avatar. Audio in, animated video out — at 25 FPS. Python SDK, REST API, LiveKit plugin, and self-hosted GPU containers."
+description: "Turn any face into a lifelike talking avatar. Audio in, animated video out — at 25 FPS. Python SDK, Swift SDK (on-device macOS M3+), REST API, LiveKit plugin, and self-hosted GPU containers."
+keywords:
+  - bitHuman
+  - avatar animation API
+  - real-time lip sync
+  - talking avatar SDK
+  - AI digital human
+  - on-device avatar
+  - Apple Silicon M3 avatar
 ---
 
 <img src="/images/bithuman-banner.jpg" alt="bitHuman Avatars" className="block dark:hidden" style={{ borderRadius: '12px', width: '100%' }} />
@@ -8,10 +16,11 @@ description: "Turn any face into a lifelike talking avatar. Audio in, animated v
 
 bitHuman creates digital avatars that lip-sync to audio in real-time. Feed in audio — get back an animated face at 25 FPS. Use it to build AI companions, customer support avatars, virtual tutors, game NPCs, and anything that needs a visual character that speaks.
 
-**Three ways to run:**
+**Four ways to run:**
 - **Cloud** — no GPU, no model files. Just an API secret.
 - **Self-Hosted CPU** — download an `.imx` model, run on any machine.
-- **Self-Hosted GPU** — any face image, 1.3B parameter model, 250+ FPS.
+- **Self-Hosted GPU (Linux + NVIDIA)** — any face image, 1.3B parameter model, 250+ FPS.
+- **[On-Device macOS](/examples/apple-expression)** — Expression avatar running natively on Apple Silicon (M3+) via the bundled Swift runtime. No GPU, no cloud, no Docker. The same pipeline also powers [bitHuman Halo](/examples/halo-macos), our free desktop companion app.
 
 ## Quick Start
 

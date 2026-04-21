@@ -2,15 +2,18 @@
 
 > Real-time avatar animation API. Turn any face image or pre-built .imx
 > model into a lifelike talking avatar with audio-driven lip sync.
-> Python SDK, REST API, LiveKit plugin, and Docker containers.
-> Three deployment modes: cloud (no GPU), self-hosted CPU, self-hosted GPU.
+> Python SDK, Swift SDK (on-device macOS), REST API, LiveKit plugin, and Docker containers.
+> Four deployment modes: cloud (no GPU), self-hosted CPU, self-hosted GPU,
+> on-device macOS (Apple Silicon M3+ via bundled Swift runtime).
 
 bitHuman creates digital avatars that lip-sync to audio in real-time at
 25 FPS. Use it for AI companions, customer support bots, virtual tutors,
 digital receptionists, game NPCs, and any application needing a visual
 character that speaks. The platform provides:
 
-- **Python SDK** (`pip install bithuman`) — local CPU avatar rendering
+- **Python SDK** (`pip install bithuman`) — local CPU avatar rendering; on macOS arm64 M3+ it also dispatches to the bundled Swift runtime for on-device Expression avatars
+- **Swift SDK** (`BithumanAvatar` via SwiftPM) — native on-device Expression avatars for direct Swift consumers on Apple Silicon
+- **bitHuman Halo** — signed macOS desktop app (download, no build required) with a floating lip-synced AI avatar running local STT + LLM + TTS + avatar
 - **LiveKit Plugin** (`pip install livekit-plugins-bithuman`) — real-time WebRTC avatar sessions
 - **REST API** (api.bithuman.ai) — agent generation, management, dynamics, file upload
 - **GPU Docker Container** — self-hosted GPU inference with any face image
@@ -57,6 +60,8 @@ character that speaks. The platform provides:
 - [Self-Hosted Plugin](https://docs.bithuman.ai/examples/self-hosted-plugin): LiveKit agent with local .imx model and gesture support.
 - [Raspberry Pi](https://docs.bithuman.ai/examples/raspberry-pi): Edge deployment on Pi 4B with systemd auto-start.
 - [Apple Local](https://docs.bithuman.ai/examples/apple-local): 100% local speech processing on macOS (M2+).
+- [Expression on macOS](https://docs.bithuman.ai/examples/apple-expression): Run the on-device Expression avatar on Apple Silicon M3+ via the bundled Swift runtime. Any portrait face, 25 FPS lip-sync, no GPU, no cloud. Python SDK step-by-step, vanilla example repo.
+- [Halo Desktop App](https://docs.bithuman.ai/examples/halo-macos): bitHuman Halo — free signed macOS app with a floating lip-synced AI avatar. Local STT + LLM + TTS + avatar, audio never leaves your Mac.
 
 ## Optional
 
