@@ -38,36 +38,34 @@ expression.imx  +  portrait.jpg  +  speech.wav   ──►   demo.mp4  (25 FPS, 
     The `bithuman` wheel for macOS arm64 ships `bithuman-expression-daemon` pre-built — no extra setup.
   </Step>
 
-  <Step title="Get an API secret + download the weights">
-    Both come from your [bitHuman dashboard](https://www.bithuman.ai):
-
-    - **API Keys** → copy your `BITHUMAN_API_SECRET` (Expression costs 2 credits / minute of rendered video).
-    - **Models** → download **`expression.imx`** (one file, ~4 GB — carries the full pipeline: animator, speech encoder, face encoder, renderer).
+  <Step title="Get an API secret">
+    From [bithuman.ai](https://www.bithuman.ai) → **Developer** → **API Keys**. Expression costs 2 credits / minute of rendered video.
 
     ```bash
     export BITHUMAN_API_SECRET=sk_live_...
     ```
-
-    <Tip>
-      There's **one** weights file. No per-face models. The face you want to animate is just a JPG/PNG you pass as `--identity` at runtime.
-    </Tip>
   </Step>
 
   <Step title="Run it">
-    Pick any portrait (your own selfie, a photo, or one from the [gallery](#agent-gallery) below) and a WAV of the speech you want the face to deliver:
+    Zero-argument path — the CLI auto-downloads the ~3.7 GB demo `.imx` bundle on first run (cached to `~/.cache/bithuman/models/`) and renders a 15 s sample clip:
 
     ```bash
-    .venv/bin/bithuman demo \
-        --model expression.imx \
-        --identity portrait.jpg \
-        --audio speech.wav
+    .venv/bin/bithuman demo
+    ```
+
+    Or pass your own portrait + audio:
+
+    ```bash
+    .venv/bin/bithuman demo --identity portrait.jpg --audio speech.wav
     ```
 
     <Check>
       Expect **`✓ Wrote demo.mp4 — N frames @ 25 FPS`**. Model load: ~10 s. First frame: &lt; 1.3 s. Rendering: ~0.5× real time on M3, ~1× on M5.
     </Check>
 
-    Omit `--identity` to use the bundle's baked-in default face. Omit `--audio` to use a bundled sample clip.
+    <Tip>
+      **One `.imx` bundle, any face.** The bundle carries the full pipeline (animator, speech encoder, face encoder, renderer). The face you animate is just a JPG/PNG you pass as `--identity`. For custom-trained bundles, download from your [bitHuman dashboard](https://www.bithuman.ai) or pack one via `bithuman pack` (advanced).
+    </Tip>
   </Step>
 </Steps>
 

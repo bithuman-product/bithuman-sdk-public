@@ -23,7 +23,8 @@ character that speaks. The platform provides:
 
 Set `BITHUMAN_API_SECRET` from [https://www.bithuman.ai](https://www.bithuman.ai) → Developer → API Keys before running any command.
 
-- `bithuman demo --model expression.imx --identity portrait.jpg --audio speech.wav` — renders a 25 FPS lip-synced MP4 from any portrait + WAV; auto-dispatches to the Swift runtime on macOS M3+ or the in-process Essence runtime elsewhere.
+- `bithuman demo` — zero-argument hello world. Auto-downloads the ~3.7 GB demo `.imx` bundle from `https://pub-55f7db09b40d46e8a22a70ff6d49aeff.r2.dev/demo/expression-demo.imx` (cached to `~/.cache/bithuman/models/`), plus a bundled sample WAV, and writes `demo.mp4`. No dashboard click required.
+- `bithuman demo --model expression.imx --identity portrait.jpg --audio speech.wav` — custom model + portrait + audio. Auto-dispatches to the Swift runtime on macOS M3+ or the in-process Essence runtime elsewhere.
 - `bithuman generate --prompt "a friendly concierge"` — create an agent from a prompt + optional image / video / audio. Wraps the REST `/v1/agent/generate` + status-poll flow.
 - `bithuman pack …` — (model-author workflow only) pack a new Expression `.imx` from raw weights. Application developers don't need this.
 - `bithuman --help` — full verb list; `bithuman <verb> --help` for per-command flags.
