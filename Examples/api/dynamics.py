@@ -50,7 +50,14 @@ def get_dynamics(agent_id: str):
     info = data["data"]
     print(f"Agent:   {info['agent_id']}")
     print(f"Status:  {info['status']}")
-    print(f"Model:   {info.get('url') or 'Not generated'}")
+
+    # Note: `url` is the .imx snapshot the gestures were generated *against*,
+    # not necessarily the agent's current canonical model. For the current
+    # model_url see `management.py --agent-id …` (GET /v1/agent/{code}).
+    if info.get("url"):
+        print(f"Dynamics base .imx (snapshot at generation time):\n  {info['url']}")
+    else:
+        print("Dynamics base .imx: not generated")
 
     gestures = info.get("gestures", {})
     if gestures:
