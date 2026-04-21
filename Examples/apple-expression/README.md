@@ -1,77 +1,69 @@
 # bitHuman Expression on macOS — minimal SDK demo
 
-**Input:** one WAV file + one packed `.imx` Expression model.
-**Output:** a 25 FPS lip-synced MP4 rendered entirely on-device.
+Render a 25 FPS lip-synced MP4 on-device using the bundled Swift runtime. No LLM, STT, TTS, Docker, or LiveKit — just the SDK.
 
-No LLM, no STT/TTS, no LiveKit. Just the bitHuman Python SDK calling into the bundled Swift runtime on Apple Silicon.
+Full docs: [docs.bithuman.ai/examples/apple-expression](https://docs.bithuman.ai/examples/apple-expression).
 
 ## Requirements
 
-- macOS 14+
-- **Apple Silicon, M3 or later** (M1/M2 unsupported — the Expression animator needs M3-class GPU memory bandwidth)
+- macOS 14+ on Apple Silicon **M3 or later** (M1/M2 raise `ExpressionModelNotSupported`)
 - 16 GB RAM, ~5 GB free disk
 - Python 3.9–3.14
-- `ffmpeg` on your PATH (`brew install ffmpeg`)
+- `ffmpeg` on PATH (`brew install ffmpeg`)
 
 ## Install
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-`pip install bithuman` on macOS arm64 automatically ships `bithuman-expression-daemon` — the Swift subprocess that runs the animator, face encoder, and face renderer. Nothing else to install.
-
-## Run
-
-```bash
+pip install --upgrade bithuman opencv-python-headless
 export BITHUMAN_API_SECRET="your_secret_from_bithuman.ai"
-
-python quickstart.py \
-    --model /path/to/expression.imx \
-    --audio speech.wav \
-    --output out.mp4
 ```
 
-Takes a few seconds to load the model, then ~0.5× real time to render.
+The macOS arm64 wheel ships `bithuman-expression-daemon` (the Swift subprocess the runtime spawns for Expression `.imx` files). Nothing else to install.
 
-## Use a custom face
-
-Pass a portrait image and the SDK encodes it on load (~300 ms one-time):
+## Run — zero-arg path
 
 ```bash
-python quickstart.py \
-    --model expression.imx \
-    --audio speech.wav \
-    --identity alice.jpg \
-    --output alice.mp4
+bithuman demo
 ```
 
-Or pass a pre-encoded `.npy` reference latent for instant load (useful if the same portrait is reused across many sessions).
+First run downloads a demo `.imx` (~3.7 GB, cached under `~/.cache/bithuman/`) and uses a bundled sample clip. Outputs `demo.mp4` (~15 s, 393 frames).
 
-## What you should see
+Pass a portrait to change the face — encoded on load (~300 ms) and cached:
 
+```bash
+bithuman demo --identity alice.jpg
+bithuman demo --identity "https://.../portrait.jpg" --output alice.mp4
 ```
-[ready] 384x384, identity=override
-[pushed] 15.00s of audio @ 16000 Hz
-[done] alice.mp4 — 375 frames (15.00s video, 14.96s audio)
+
+See the [agent gallery](https://docs.bithuman.ai/examples/apple-expression#agent-gallery) for ready-made identity URLs.
+
+## Run — custom model + audio
+
+```bash
+bithuman demo --model your-model.imx --audio your-speech.wav --output out.mp4
 ```
 
-## Where to get an `.imx`
+Or drive the SDK directly via `quickstart.py`:
 
-Build one from raw weights with the `bithuman pack` CLI (shipped with the Python SDK), or download a pre-packed model from [your bitHuman dashboard](https://bithuman.ai/).
+```bash
+pip install -r requirements.txt
+python quickstart.py --model your-model.imx --audio speech.wav --output out.mp4
+python quickstart.py --model your-model.imx --audio speech.wav --identity alice.jpg --output alice.mp4
+```
 
-## What this example demonstrates
+Pre-encoded `.npy` identities load instantly — useful if the same portrait is reused across sessions.
 
-- `AsyncBithuman.create(model_path=..., identity=...)` — one call to load the bundle and (optionally) override the avatar face
+## What this demonstrates
+
+- `AsyncBithuman.create(model_path=..., identity=...)` — load bundle, optionally override the face
 - `push_audio()` + `flush()` — audio-clocked streaming contract
 - `runtime.run()` — pull paired `(frame, audio_chunk)` events until `end_of_speech`
 
-Swap `--audio` for a live microphone stream, or pair with a TTS to build a talking agent. The SDK surface is identical — only the audio source changes.
+Swap `--audio` for a live mic stream or pair with a TTS for a talking agent — the SDK surface is identical.
 
 ## Related
 
-- [Expression on macOS docs](https://docs.bithuman.ai/examples/apple-expression)
 - [Python SDK on PyPI](https://pypi.org/project/bithuman/)
-- [bitHuman Halo — end-user desktop app built on this SDK](https://docs.bithuman.ai/examples/halo-macos)
+- [bitHuman Halo — consumer macOS app built on this pipeline](https://docs.bithuman.ai/examples/halo-macos)

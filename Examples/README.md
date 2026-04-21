@@ -6,7 +6,7 @@ Full documentation at **[docs.bithuman.ai](https://docs.bithuman.ai)**.
 
 ## Platform API
 
-Programmatic agent management -- no SDK or local runtime needed.
+Programmatic agent management — no SDK or local runtime needed.
 
 | Example | Description |
 |---------|-------------|
@@ -14,17 +14,16 @@ Programmatic agent management -- no SDK or local runtime needed.
 
 ## Avatar Integration
 
-Four combinations of model type and deployment mode.
+**Essence** avatars are pre-built `.imx` bundles that run on CPU. **Expression** avatars accept any face image and render via a 1.3B-parameter model — on a Linux + NVIDIA GPU box, on bitHuman Cloud, or entirely on-device on Apple Silicon (M3+).
 
-| Example | Model | Deployment | GPU Required | What You Need |
-|---------|-------|------------|:------------:|---------------|
-| [essence-cloud/](essence-cloud/) | Essence (CPU) | bitHuman Cloud | No | API secret + agent ID |
-| [essence-selfhosted/](essence-selfhosted/) | Essence (CPU) | Your machine | No | API secret + `.imx` model file |
-| [expression-cloud/](expression-cloud/) | Expression (GPU) | bitHuman Cloud | No | API secret + face image |
-| [expression-selfhosted/](expression-selfhosted/) | Expression (GPU) | Your machine | Yes (8GB+) | API secret + NVIDIA GPU |
-| [expression-selfhosted-livekit-cloud/](expression-selfhosted-livekit-cloud/) | Expression (GPU) | Your machine + LiveKit Cloud | Yes (8GB+) | API secret + NVIDIA GPU + LiveKit Cloud |
-
-**Essence** avatars use pre-built `.imx` model files. **Expression** avatars accept any face image and render with a GPU-powered 1.3B parameter model.
+| Example | Model | Deployment | Host Requirement |
+|---------|-------|------------|------------------|
+| [essence-cloud/](essence-cloud/) | Essence | bitHuman Cloud | API secret + agent ID |
+| [essence-selfhosted/](essence-selfhosted/) | Essence | Your machine | API secret + `.imx` file |
+| [expression-cloud/](expression-cloud/) | Expression | bitHuman Cloud | API secret + face image |
+| [expression-selfhosted/](expression-selfhosted/) | Expression | Your Linux + NVIDIA box | NVIDIA GPU 8 GB+ VRAM |
+| [expression-selfhosted-livekit-cloud/](expression-selfhosted-livekit-cloud/) | Expression | Self-hosted GPU + LiveKit Cloud | Above + LiveKit Cloud project |
+| [apple-expression/](apple-expression/) | Expression | On-device macOS | Apple Silicon M3+ |
 
 ## Language & Framework Integrations
 
@@ -39,22 +38,18 @@ Four combinations of model type and deployment mode.
 
 ```bash
 git clone https://github.com/bithuman-product/bithuman-examples.git
-cd examples
-
-# Pick an example directory and follow its README
-cd api/                        # REST API scripts
-cd essence-cloud/              # Easiest -- cloud avatar, no models needed
-cd essence-selfhosted/         # Local .imx model
-cd expression-cloud/           # GPU avatar via cloud
-cd expression-selfhosted/      # GPU avatar on your hardware
+cd bithuman-examples/<example>     # see table above
 ```
+
+Each example has its own README with prerequisites and a runnable path.
+
+**New to bitHuman?** Start with [`essence-cloud/`](essence-cloud/) — no model download, no GPU.
 
 ## Resources
 
-- [bitHuman Documentation](https://docs.bithuman.ai)
-- [bitHuman Platform](https://www.bithuman.ai)
-- [bitHuman Runtime (PyPI)](https://pypi.org/project/bithuman/)
-- [API Keys](https://www.bithuman.ai/#developer)
+- [Documentation](https://docs.bithuman.ai)
+- [Platform](https://www.bithuman.ai) · [API Keys](https://www.bithuman.ai/#developer)
+- [Python SDK (PyPI)](https://pypi.org/project/bithuman/)
 
 ## License
 
