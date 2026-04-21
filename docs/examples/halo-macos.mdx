@@ -17,7 +17,7 @@ icon: "sparkles"
 **bitHuman Halo** is a free, Developer-ID-signed macOS desktop app that runs a full conversational avatar *entirely on your Mac*. Speech recognition, language model, text-to-speech, and 25 FPS lip-sync all execute on-device — nothing leaves your machine.
 
 <Info>
-  Halo is **consumer zero** of the [Expression Swift SDK](https://github.com/bithuman-product/bithuman-expression-swift). Every API the SDK exposes lands in Halo first, so what you see here is a working reference for what you can build on top.
+  Halo is **consumer zero** of the bitHuman Expression Swift SDK. Every API the SDK exposes lands in Halo first, so what you see here is a working reference for what you can build on top. The same pipeline is available to Python developers via `pip install bithuman` ([apple-expression example](/examples/apple-expression)).
 </Info>
 
 ## What it does
@@ -41,11 +41,9 @@ icon: "sparkles"
   </Step>
 
   <Step title="Download the DMG">
-    Grab the latest signed + notarized build from the [Halo release page](https://github.com/bithuman-product/bithuman-halo-macos/releases).
+    **[Download bitHuman Halo →](https://pub-55f7db09b40d46e8a22a70ff6d49aeff.r2.dev/releases/v0.1.11/bitHuman-0.1.11.dmg)** (12 MB, Developer ID signed + notarized by Apple)
 
-    ```
-    Developer ID signed + notarized by Apple — Gatekeeper will open it without warnings.
-    ```
+    Gatekeeper will open the app without warnings. Auto-updates flow through Sparkle 2 thereafter — the app checks for updates in the background and installs them on the next launch.
   </Step>
 
   <Step title="Install + launch">
@@ -104,34 +102,18 @@ Click **Account & Privacy…** from Halo's menu-bar icon, then **Sign in with em
 
 No bitHuman account yet? The sign-in page offers sign-up; Halo auto-provisions a free account.
 
-## Build from source
+## Build your own
 
-Halo is open-source. If you want to modify it, build it yourself, or use it as a reference for integrating the Swift SDK, clone the [halo-macos repo](https://github.com/bithuman-product/bithuman-halo-macos):
+Halo is a reference application. The animation pipeline that powers Halo is available for you to build on directly:
 
-```bash
-git clone https://github.com/bithuman-product/bithuman-halo-macos.git
-cd bithuman-halo-macos
-make check          # verify macOS, arch, RAM
-make build          # build Debug via xcodebuild
-make run            # build + launch unbundled
-make app            # build Release + wrap in bitHuman.app
-make dmg            # build + sign + notarize a distributable DMG
-```
-
-MLX Swift's Metal shaders don't compile under `swift build` — the Makefile routes everything through `xcodebuild` so Xcode.app can compile the shaders.
-
-## Inside the code
-
-- **`BithumanAvatar`** — the public Swift SDK, imported via SwiftPM
-- `@_spi(HaloInternal)` back door — Halo manages its four weight files loose on disk via an R2 download flow rather than through the single-file `.imx` container third parties use
-- **`AvatarStreamController`** — Halo's pipeline adapter: calls `Bithuman.create(modelPath:identity:)`, pushes microphone audio (downsampled via `AVAudioConverter`), routes frames to the floating window, handles drag-drop face swaps via `bithuman.setIdentity(_:)`
-- **`setLLMGenerating(true/false)`** hook — gates idle DiT against concurrent Qwen3 generation so MLX doesn't double-dispatch
+- **Python** — `pip install bithuman` + our [apple-expression example](/examples/apple-expression) — 20 lines from a WAV file to a lip-synced MP4
+- **Swift** — the `BithumanAvatar` Swift package integrates into any AppKit/SwiftUI app. [Contact us](https://bithuman.ai) for access to the Swift SDK.
 
 ## Troubleshooting
 
 | Symptom | Cause + fix |
 |---|---|
-| Gatekeeper warns about the app | You downloaded an unsigned build — grab the release DMG from the [release page](https://github.com/bithuman-product/bithuman-halo-macos/releases) instead |
+| Gatekeeper warns about the app | You downloaded an unsigned build — re-download from the [signed DMG link above](#install) |
 | App launches but avatar never renders | Weights still downloading — watch the boot status pills. First launch pulls ~3.7 GB |
 | "This Mac isn't supported" on an M1 / M2 | Expression animator needs M3+ memory bandwidth. Halo checks this at launch; there's no workaround |
 | Voice pipeline stalls after ~minutes of silence | Restart the app — microphone buffer has pathological states on some third-party audio devices |
@@ -156,13 +138,13 @@ Full privacy policy: **[bithuman.ai/halo/privacy](https://bithuman.ai/halo/priva
   <Card title="Build your own avatar app" icon="code" href="/examples/apple-expression">
     Same Expression pipeline, called directly from Python. Vanilla example on GitHub.
   </Card>
-  <Card title="SDK architecture" icon="book" href="https://github.com/bithuman-product/bithuman-expression-swift/blob/main/docs/ARCHITECTURE.md">
-    Full design of the Swift runtime + Python dispatch.
+  <Card title="Python SDK on PyPI" icon="python" href="https://pypi.org/project/bithuman/">
+    `pip install bithuman` — one API, runs on-device on macOS M3+ or in-process on any CPU.
   </Card>
-  <Card title="Source code (Halo)" icon="github" href="https://github.com/bithuman-product/bithuman-halo-macos">
-    Reference app — read `AvatarStreamController.swift` to see the public SDK surface in use.
+  <Card title="Examples repo" icon="github" href="https://github.com/bithuman-product/bithuman-examples">
+    Working examples for every deployment mode — cloud, self-hosted GPU, Apple Silicon, Raspberry Pi.
   </Card>
-  <Card title="Source code (Swift SDK)" icon="swift" href="https://github.com/bithuman-product/bithuman-expression-swift">
-    Direct-Swift consumers import this library; Halo pins a minor range.
+  <Card title="Contact us" icon="envelope" href="https://bithuman.ai">
+    Questions, partnerships, or Swift SDK access — reach out through bithuman.ai.
   </Card>
 </CardGroup>
