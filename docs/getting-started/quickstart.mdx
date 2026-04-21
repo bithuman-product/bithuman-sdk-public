@@ -41,13 +41,14 @@ You need a `.wav` audio file to drive the avatar. A sample `speech.wav` is inclu
 
 ```bash
 export BITHUMAN_API_SECRET=your_api_secret
-bithuman generate avatar.imx --audio speech.wav --output demo.mp4 --key "$BITHUMAN_API_SECRET"
+bithuman generate avatar.imx --audio speech.wav --output demo.mp4
 ```
 
 Open `demo.mp4` to see your avatar talking.
 
 <Note>
-On PyPI ≤ 1.10.5, pass `--key` explicitly as shown. From 1.10.6 onward `bithuman generate` also reads `$BITHUMAN_API_SECRET` automatically.
+  Don't have a WAV yet? Grab the bundled sample in one line:
+  `curl -O https://raw.githubusercontent.com/bithuman-product/bithuman-examples/main/essence-selfhosted/speech.wav`
 </Note>
 
 ### Option B — Python
