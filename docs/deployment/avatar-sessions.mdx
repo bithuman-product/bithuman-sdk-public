@@ -329,206 +329,24 @@ For detailed GPU container setup, see [Self-Hosted GPU Container](/deployment/se
 
 ---
 
-## Adding Gestures (Dynamics)
+## What's Next
 
-Make your avatar perform gestures like waving, nodding, or laughing in response to conversation keywords.
+Once your avatar session is running, explore these features:
 
-<Warning>
-Gestures are currently supported for **Essence avatars only**. Expression avatars do not have a gesture handler.
-</Warning>
-
-<Warning>
-Dynamics require a cloud-generated agent with gestures enabled. Create one at [www.bithuman.ai](https://www.bithuman.ai).
-</Warning>
-
-### Step 1: Check Available Gestures
-
-```python
-import requests
-
-agent_id = "A78WKV4515"
-headers = {"api-secret": os.getenv("BITHUMAN_API_SECRET")}
-
-resp = requests.get(
-    f"https://api.bithuman.ai/v1/dynamics/{agent_id}",
-    headers=headers,
-)
-gestures = resp.json()["data"].get("gestures", {})
-print(list(gestures.keys()))
-# Example: ["mini_wave_hello", "talk_head_nod_subtle", "laugh_react"]
-```
-
-### Step 2: Trigger Gestures from Keywords
-
-<Tabs>
-  <Tab title="Self-Hosted (VideoControl)">
-    ```python
-    from livekit.agents import AgentSession, UserInputTranscribedEvent
-    from bithuman.api import VideoControl
-
-    KEYWORD_ACTION_MAP = {
-        "hello": "mini_wave_hello",
-        "hi": "mini_wave_hello",
-        "funny": "laugh_react",
-        "laugh": "laugh_react",
-        "yes": "talk_head_nod_subtle",
-    }
-
-    # Inside your entrypoint, after session.start():
-    @session.on("user_input_transcribed")
-    def on_transcribed(event: UserInputTranscribedEvent):
-        if not event.is_final:
-            return
-        text = event.transcript.lower()
-        for keyword, action in KEYWORD_ACTION_MAP.items():
-            if keyword in text:
-                asyncio.create_task(
-                    avatar.runtime.push(VideoControl(action=action))
-                )
-                break
-    ```
-  </Tab>
-  <Tab title="Cloud (RPC)">
-    ```python
-    from livekit import rtc
-    import json
-    from datetime import datetime
-
-    KEYWORD_ACTION_MAP = {
-        "hello": "mini_wave_hello",
-        "funny": "laugh_react",
-    }
-
-    async def trigger_gesture(participant: rtc.LocalParticipant, target: str, action: str):
-        await participant.perform_rpc(
-            destination_identity=target,
-            method="trigger_dynamics",
-            payload=json.dumps({
-                "action": action,
-                "identity": participant.identity,
-                "timestamp": datetime.utcnow().isoformat(),
-            }),
-        )
-
-    # Inside your entrypoint, after session.start():
-    @session.on("user_input_transcribed")
-    def on_transcribed(event: UserInputTranscribedEvent):
-        if not event.is_final:
-            return
-        text = event.transcript.lower()
-        for keyword, action in KEYWORD_ACTION_MAP.items():
-            if keyword in text:
-                for identity in ctx.room.remote_participants.keys():
-                    asyncio.create_task(
-                        trigger_gesture(ctx.room.local_participant, identity, action)
-                    )
-                break
-    ```
-  </Tab>
-</Tabs>
-
----
-
-## Controlling the Avatar via REST API
-
-Once an avatar is running in a room, you can control it from any backend using the REST API — no LiveKit connection needed.
-
-### Make the Avatar Speak
-
-```bash
-curl -X POST "https://api.bithuman.ai/v1/agent/A78WKV4515/speak" \
-  -H "api-secret: $BITHUMAN_API_SECRET" \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Hello! Welcome to our demo."}'
-```
-
-### Add Context (Silent Knowledge)
-
-```bash
-curl -X POST "https://api.bithuman.ai/v1/agent/A78WKV4515/add-context" \
-  -H "api-secret: $BITHUMAN_API_SECRET" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "context": "The customer just purchased a premium plan.",
-    "type": "add_context"
-  }'
-```
-
-The avatar won't say this aloud, but it will use the information in future responses.
-
-<Tip>
-These REST API calls work from any language or platform — use them to integrate avatars into existing apps without touching the agent code.
-</Tip>
-
----
-
-## Using the SDK Without LiveKit
-
-If you don't need real-time rooms (e.g., generating video files or building a custom UI), use the Python SDK directly:
-
-```python
-import asyncio
-import cv2
-from bithuman import AsyncBithuman
-from bithuman.audio import load_audio, float32_to_int16
-
-async def main():
-    # Initialize the runtime
-    runtime = await AsyncBithuman.create(
-        model_path="avatar.imx",
-        api_secret="your_api_secret",
-    )
-    await runtime.start()
-
-    # Load an audio file and push it
-    audio, sr = load_audio("speech.wav")
-    audio_int16 = float32_to_int16(audio)
-    await runtime.push_audio(audio_int16.tobytes(), sr)
-    await runtime.flush()
-
-    # Get animated video frames
-    async for frame in runtime.run():
-        if frame.has_image:
-            cv2.imshow("Avatar", frame.bgr_image)
-            cv2.waitKey(1)
-
-        if frame.end_of_speech:
-            break
-
-asyncio.run(main())
-```
-
-This gives you raw numpy frames — display them however you want.
-
----
-
-## Complete Docker Example
-
-For the fastest path to a working demo, use the Docker example that packages everything together:
-
-```bash
-# Clone the examples repo
-git clone https://github.com/bithuman-product/bithuman-examples.git
-cd bithuman-examples/essence-selfhosted
-
-# Configure
-cat > .env << 'EOF'
-BITHUMAN_API_SECRET=your_api_secret
-OPENAI_API_KEY=sk-...
-LIVEKIT_URL=wss://your-project.livekit.cloud
-LIVEKIT_API_KEY=APIxxxxxxxx
-LIVEKIT_API_SECRET=xxxxxxxx
-EOF
-
-# Add your avatar model
-mkdir -p models
-cp ~/Downloads/avatar.imx models/
-
-# Launch
-docker compose up
-```
-
-Open [http://localhost:4202](http://localhost:4202) to talk to your avatar.
+<CardGroup cols={2}>
+  <Card title="Gestures & Dynamics" icon="person-running" href="/api-reference/dynamics">
+    Add wave, nod, and laugh animations (Essence only)
+  </Card>
+  <Card title="Control via REST API" icon="message" href="/api-reference/agent-context">
+    Make avatars speak or inject context from any backend
+  </Card>
+  <Card title="Python SDK (No LiveKit)" icon="python" href="/getting-started/quickstart">
+    Generate video frames directly without real-time rooms
+  </Card>
+  <Card title="Docker Examples" icon="docker" href="https://github.com/bithuman-product/bithuman-examples">
+    Pre-built Docker stacks for every deployment mode
+  </Card>
+</CardGroup>
 
 ---
 

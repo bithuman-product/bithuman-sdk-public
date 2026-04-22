@@ -92,7 +92,7 @@ flowchart LR
     stt --> llm[LLM<br/>Qwen3-4B-4bit]
     llm --> tts[TTS<br/>Kokoro-82M]
     tts --> spk([speaker])
-    tts --> anim[Lip-sync animator<br/>Expression 1.3B]
+    tts --> anim[Lip-sync animator<br/>bitHuman Expression]
     anim --> disp([avatar display<br/>25 FPS])
 
     style mic fill:#fff3e0,stroke:#e65100,color:#000
@@ -122,12 +122,12 @@ No network calls during a conversation. Your microphone stream, conversation, an
 
 Halo is free and fully usable without an account. Signing in lets us link your Halo usage to your existing bitHuman.ai account — handy if you want to see all your activity in one dashboard or move your settings across Macs in the future.
 
-Click **Account & Privacy…** from Halo's menu-bar icon, then **Sign in with email or Google**. A browser tab opens, Clerk handles sign-in (magic-link email, Google, Apple, GitHub, and more), and you're bounced back to Halo via a `halo://` URL — no keys to paste, no passwords to manage.
+Click **Account & Privacy…** from Halo's menu-bar icon, then **Sign in with email or Google**. A browser tab opens for sign-in (email, Google, Apple, GitHub, and more), and you're bounced back to Halo via a `halo://` URL — no keys to paste, no passwords to manage.
 
 ```mermaid
 flowchart LR
     A[Halo menu bar<br/>Account & Privacy…] --> B[Browser tab opens]
-    B --> C[Clerk sign-in<br/>email / Google / Apple / GitHub]
+    B --> C[Sign in<br/>email / Google / Apple / GitHub]
     C --> D[halo://auth/callback]
     D --> E[Halo signed in<br/>linked to bithuman.ai account]
 ```

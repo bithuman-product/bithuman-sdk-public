@@ -175,80 +175,11 @@ avatar = bithuman.AvatarSession(
 
 ## Adding Gestures (Dynamics)
 
-Make the avatar wave, nod, or laugh in response to conversation keywords.
+Make the avatar wave, nod, or laugh in response to conversation keywords. Gestures are supported for **Essence avatars only**.
 
-<Warning>
-Gestures are currently supported for **Essence avatars only**. Expression avatars do not have a gesture handler.
-</Warning>
-
-### Step 1: Get Available Gestures
-
-```python
-import requests
-import os
-
-agent_id = os.getenv("BITHUMAN_AGENT_ID")
-headers = {"api-secret": os.getenv("BITHUMAN_API_SECRET")}
-
-response = requests.get(
-    f"https://api.bithuman.ai/v1/dynamics/{agent_id}",
-    headers=headers,
-)
-gestures = response.json()["data"].get("gestures", {})
-print(list(gestures.keys()))
-# Example: ["mini_wave_hello", "talk_head_nod_subtle", "laugh_react"]
-```
-
-### Step 2: Trigger on Keywords
-
-```python
-from livekit.agents import UserInputTranscribedEvent
-from livekit import rtc
-import json
-from datetime import datetime
-
-KEYWORD_ACTION_MAP = {
-    "laugh": "laugh_react",
-    "funny": "laugh_react",
-    "hello": "mini_wave_hello",
-    "hi": "mini_wave_hello",
-}
-
-async def send_dynamics_trigger(
-    local_participant: rtc.LocalParticipant,
-    destination_identity: str,
-    action: str,
-) -> None:
-    await local_participant.perform_rpc(
-        destination_identity=destination_identity,
-        method="trigger_dynamics",
-        payload=json.dumps({
-            "action": action,
-            "identity": local_participant.identity,
-            "timestamp": datetime.utcnow().isoformat(),
-        }),
-    )
-
-# Add this after session.start() in your entrypoint:
-@session.on("user_input_transcribed")
-def on_user_input_transcribed(event: UserInputTranscribedEvent):
-    if not event.is_final:
-        return
-    transcript = event.transcript.lower()
-    for keyword, action in KEYWORD_ACTION_MAP.items():
-        if keyword in transcript:
-            for identity in ctx.room.remote_participants.keys():
-                asyncio.create_task(
-                    send_dynamics_trigger(
-                        ctx.room.local_participant, identity, action
-                    )
-                )
-            break
-```
-
-<Note>
-Gesture actions vary by agent. Always check the Dynamics API response first to see what's available for your specific agent.
-</Note>
+<Card title="Dynamics API Reference" icon="person-running" href="/api-reference/dynamics">
+  Complete guide to generating, listing, and triggering gesture animations
+</Card>
 
 ---
 
