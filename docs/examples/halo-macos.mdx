@@ -10,7 +10,7 @@ keywords:
   - Apple Silicon avatar
   - lip-sync desktop app
   - on-device LLM macOS
-  - Parakeet Qwen Kokoro
+  - on-device AI companion
 icon: "sparkles"
 ---
 
@@ -81,19 +81,19 @@ Need proof that face-swap is frictionless? Drop a cartoon portrait and the same 
 Everything you'd expect from a voice assistant — plus the lip-synced avatar — runs natively on your Mac:
 
 - **Listens** — detects when you start and stop talking, and transcribes your speech on the Apple Neural Engine
-- **Thinks** — a 4-billion-parameter bitHuman language model runs on the GPU via Apple's MLX framework
+- **Thinks** — an on-device language model generates responses entirely on your Mac
 - **Speaks** — synthesizes a natural-sounding voice from the reply text
 - **Animates** — drives the avatar's lips frame-by-frame in lockstep with the audio, at 25 FPS
 
 ```mermaid
 flowchart LR
-    mic([microphone]) --> vad[VAD<br/>Silero]
-    vad --> stt[STT<br/>Parakeet-TDT]
-    stt --> llm[LLM<br/>Qwen3-4B-4bit]
-    llm --> tts[TTS<br/>Kokoro-82M]
+    mic([microphone]) --> vad[Voice detection]
+    vad --> stt[Speech recognition]
+    stt --> llm[Language model]
+    llm --> tts[Text-to-speech]
     tts --> spk([speaker])
-    tts --> anim[Lip-sync animator<br/>bitHuman Expression]
-    anim --> disp([avatar display<br/>25 FPS])
+    tts --> anim[bitHuman lip-sync]
+    anim --> disp([avatar display])
 
     style mic fill:#fff3e0,stroke:#e65100,color:#000
     style spk fill:#fff3e0,stroke:#e65100,color:#000
@@ -107,14 +107,12 @@ No network calls during a conversation. Your microphone stream, conversation, an
 
 | Stage | Implementation |
 |---|---|
-| Voice activity detection | Silero VAD via Core ML |
-| Speech recognition | Parakeet-TDT v2 on Apple Neural Engine |
-| Language model | Qwen3-4B-4bit via MLX Swift on Metal |
-| Text-to-speech | Kokoro-82M via Core ML |
-| Audio feature encoder | wav2vec2 via MLX Swift |
-| Lip-sync animator | ~1.3 B-parameter diffusion transformer (2-step DMD2) via MLX Swift |
-| Face renderer | Turbo-VAED on Apple Neural Engine |
-| Display | 25 FPS via CALayer |
+| Voice activity detection | On-device via Core ML |
+| Speech recognition | On-device via Apple Neural Engine |
+| Language model | On-device via Metal GPU |
+| Text-to-speech | On-device via Core ML |
+| Lip-sync animation | bitHuman Expression model on Metal GPU |
+| Display | 25 FPS |
 
 </Accordion>
 
