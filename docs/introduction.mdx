@@ -1,6 +1,6 @@
 ---
 title: "bitHuman — Real-Time Avatar Animation API"
-description: "Turn any face into a lifelike talking avatar. Audio in, animated video out — at 25 FPS. Python SDK, Swift SDK (on-device macOS M3+), REST API, LiveKit plugin, and self-hosted GPU containers."
+description: "Turn any face into a lifelike talking avatar. Audio in, animated video out — at 25 FPS. Two models (Essence + Expression), three runtime surfaces (cloud API, self-hosted, on-device)."
 keywords:
   - bitHuman
   - avatar animation API
@@ -14,60 +14,125 @@ keywords:
 <img src="/images/bithuman-banner.jpg" alt="bitHuman Avatars" className="block dark:hidden" style={{ borderRadius: '12px', width: '100%' }} />
 <img src="/images/bitHuman_banner_black.jpg" alt="bitHuman Avatars" className="hidden dark:block" style={{ borderRadius: '12px', width: '100%' }} />
 
-bitHuman creates digital avatars that lip-sync to audio in real-time. Feed in audio — get back an animated face at 25 FPS. Use it to build AI companions, customer support avatars, virtual tutors, game NPCs, and anything that needs a visual character that speaks.
+bitHuman creates digital avatars that lip-sync to audio in real time. Feed audio in, get an animated face out at 25 FPS. Use it to build AI companions, customer-support avatars, virtual tutors, game NPCs, and anything that needs a visual character that speaks.
 
-**Four ways to run:**
-- **Cloud** — no GPU, no model files. Just an API secret.
-- **Self-Hosted CPU** — download an `.imx` model, run on any machine.
-- **Self-Hosted GPU (Linux + NVIDIA)** — any face image, real-time lip-sync from the Expression model on your own GPU.
-- **[On-Device Apple Silicon (Swift SDK)](/swift-sdk/overview)** — `bitHumanKit` Swift Package for Mac/iPad/iPhone. Drop-in voice + lip-synced avatar; runs locally. See the [Swift SDK quickstart](/swift-sdk/quickstart) for the 10-minute integration.
+## Pick your path
 
-## Quick Start
+bitHuman ships **two models** and **three runtime surfaces**. Your choice depends on what you're shipping (web, server, or native app) and which avatar style fits.
 
-<Note>
-Building a **Mac/iPad/iPhone app**? Skip straight to the
-[**Swift SDK quickstart →**](/swift-sdk/quickstart). The snippets
-below are for the **Python SDK / REST API / Docker** path.
-</Note>
+### Two models
 
+| Model | What it is | Avatar source | Compute | Best for |
+|---|---|---|---|---|
+| **[Essence](/getting-started/models#essence)** | CPU-only pre-rendered animations with real-time lip-sync | `.imx` model file built from a photo or video on [bithuman.ai](https://www.bithuman.ai/#explore) | CPU (any laptop, Raspberry Pi, edge box) | Kiosks, 24/7 displays, full body + animal mode, custom gestures |
+| **[Expression](/getting-started/models#expression)** | AI-generated facial animation from a single image | Any face image — no avatar generation step | NVIDIA GPU **or** Apple Silicon M3+ (on-device) | Dynamic conversations, custom faces, native consumer apps |
+
+### Three runtime surfaces
+
+| Surface | What it is | Models supported | Best for |
+|---|---|---|---|
+| **[bitHuman Cloud](/deployment/livekit-cloud-plugin)** | Managed runtime on `api.bithuman.ai`. Use via the LiveKit plugin (`pip install livekit-plugins-bithuman`) or the [REST API](/api-reference/overview) directly. | Essence, Expression | Web apps, fastest setup, no infra. |
+| **[Self-hosted server](/deployment/avatar-sessions)** | Run on your own hardware. Python SDK (`pip install bithuman`) for Essence on CPU, or [Docker container](/deployment/self-hosted-gpu) for Expression on Linux + NVIDIA. | Essence (CPU), Expression (GPU) | On-prem privacy, edge devices, high volume. |
+| **[On-device Apple Silicon](/swift-sdk/overview)** | `bitHumanKit` Swift Package + `bithuman-cli` Homebrew tool. All inference (STT, LLM, TTS, lip-sync) runs locally; only a 1-req/min billing heartbeat goes out. | Expression (M3+ Mac, M4+ iPad Pro, A18 Pro+ iPhone) | Native consumer / pro-sumer apps where everything must run locally. |
+
+The full matrix and decision tree: **[How it works →](/getting-started/how-it-works)** · **[Essence vs Expression →](/getting-started/models)**.
+
+## 5-minute quickstart
+
+Pick the surface that matches what you're building:
 
 <CodeGroup>
 
-```bash Docker (Recommended)
+```bash Cloud (Docker stack)
 git clone https://github.com/bithuman-product/bithuman-examples.git
 cd bithuman-examples/essence-cloud
 
-# Add your API keys to .env
 cp .env.example .env
-# Edit .env: set BITHUMAN_API_SECRET, BITHUMAN_AGENT_ID, and OPENAI_API_KEY
+# Edit .env: set BITHUMAN_API_SECRET, BITHUMAN_AGENT_ID, OPENAI_API_KEY
 
 docker compose up
 # Open http://localhost:4202
 ```
 
-```python Python SDK
+```python Self-hosted Python (Essence, CPU)
+# pip install bithuman
+import asyncio, os
 from bithuman import AsyncBithuman
+from bithuman.audio import load_audio, float32_to_int16
 
-# Create runtime
-runtime = await AsyncBithuman.create(
-    model_path="avatar.imx",
-    api_secret="your_api_secret"
-)
-await runtime.start()
+async def main():
+    runtime = await AsyncBithuman.create(
+        model_path="avatar.imx",
+        api_secret=os.environ["BITHUMAN_API_SECRET"],
+    )
+    await runtime.start()
 
-# Push audio and get animated frames
-await runtime.push_audio(audio_bytes, sample_rate=16000)
-await runtime.flush()
+    pcm, sr = load_audio("speech.wav")
+    pcm = float32_to_int16(pcm)
+    chunk = sr // 25
+    for i in range(0, len(pcm), chunk):
+        await runtime.push_audio(pcm[i : i + chunk].tobytes(), sr)
+    await runtime.flush()
 
-async for frame in runtime.run():
-    frame.bgr_image       # numpy array (H, W, 3)
-    frame.audio_chunk     # synchronized audio output
-    frame.end_of_speech   # True when utterance ends
+    async for frame in runtime.run():
+        if frame.has_image:
+            image = frame.bgr_image      # numpy (H, W, 3) uint8
+        if frame.end_of_speech:
+            break
+    await runtime.stop()
+
+asyncio.run(main())
+```
+
+```bash Self-hosted GPU (Expression, NVIDIA)
+docker run --gpus all -p 8089:8089 \
+    -e BITHUMAN_API_SECRET=your_api_secret \
+    docker.io/sgubithuman/expression-avatar:latest
+
+# Then point a LiveKit agent at http://localhost:8089/launch
+# See /deployment/self-hosted-gpu for the full wiring.
+```
+
+```swift Swift SDK (Mac/iPad/iPhone)
+import bitHumanKit
+
+var config = VoiceChatConfig()
+config.systemPrompt = "You are a calm assistant. One sentence per turn."
+config.voice = .preset("Aiden")
+
+// Optional: attach the avatar — requires BITHUMAN_API_KEY.
+let weights = try await ExpressionWeights.ensureAvailable()
+config.avatar = AvatarConfig(modelPath: weights, portraitPath: portraitURL)
+config.apiKey = ProcessInfo.processInfo.environment["BITHUMAN_API_KEY"]
+
+let chat = VoiceChat(config: config)
+try await chat.start()
+// Full 10-minute integration: /swift-sdk/quickstart
+```
+
+```sh CLI (Mac, no code)
+brew tap bithuman-product/bithuman
+brew install bithuman-cli
+bithuman-cli video        # voice + lip-synced floating avatar window
+bithuman-cli text         # type to chat
+bithuman-cli              # voice mode (default)
+# Full reference: /swift-sdk/cli
+```
+
+```bash REST API (any language)
+# Make a hosted Essence agent speak — no SDK required.
+curl -X POST https://api.bithuman.ai/v1/agent/A78WKV4515/speak \
+  -H "api-secret: $BITHUMAN_API_SECRET" \
+  -H "content-type: application/json" \
+  -d '{"text": "Hello from the REST API."}'
+# Full endpoint reference: /api-reference/overview
 ```
 
 </CodeGroup>
 
-## What Can You Build?
+Each tab maps to a working example in [bithuman-examples](https://github.com/bithuman-product/bithuman-examples).
+
+## What can you build?
 
 <CardGroup cols={3}>
   <Card title="Customer Support" icon="headset">
@@ -92,24 +157,30 @@ async for frame in runtime.run():
 
 [See all use cases with architecture patterns →](/getting-started/use-cases)
 
-## Developer Guides
+## Developer guides
 
 <CardGroup cols={3}>
-  <Card title="Quick Start" icon="rocket" href="/getting-started/quickstart">
-    Get an avatar running in 5 minutes
+  <Card title="Quickstart" icon="rocket" href="/getting-started/quickstart">
+    Python SDK in 5 minutes
   </Card>
-  <Card title="API Reference" icon="code" href="/api-reference/overview">
-    REST API for agent generation and management
+  <Card title="Swift SDK" icon="apple" href="/swift-sdk/overview">
+    On-device for Mac/iPad/iPhone
+  </Card>
+  <Card title="REST API" icon="code" href="/api-reference/overview">
+    Agent generation, speak, dynamics
+  </Card>
+  <Card title="Avatar Sessions" icon="book-open" href="/deployment/avatar-sessions">
+    LiveKit Cloud, CPU, GPU — every mode
   </Card>
   <Card title="Examples" icon="book-open" href="/examples/overview">
-    10+ working examples from basic to advanced
+    Working examples for every surface
   </Card>
   <Card title="Chat Widget" icon="comments" href="/integrations/embed#chat-widget">
     Floating chat with text, voice, and video modes
   </Card>
 </CardGroup>
 
-## Core SDK API
+## Core SDK API (Python)
 
 | Method | Description |
 |--------|-------------|
@@ -136,16 +207,18 @@ async for frame in runtime.run():
 
 Base URL: `https://api.bithuman.ai` — Auth: `api-secret` header from [Developer → API Keys](https://www.bithuman.ai/#developer) — [Full reference →](/api-reference/overview)
 
-## Platform Support
+## Platform support
 
 | Platform | Status | Notes |
 |----------|--------|-------|
-| **Linux (x86_64)** | Full Support | Production ready |
-| **Linux (ARM64)** | Full Support | Edge deployments |
-| **macOS (Apple Silicon)** | Full Support | Expression (on-device) requires M3+; Essence runs on any Apple Silicon |
-| **Windows (x86_64)** | Full Support | Native wheels for Python 3.9–3.14, or WSL |
+| **Linux (x86_64)** | Full Support | Production-ready; Essence CPU + Expression GPU container |
+| **Linux (ARM64)** | Full Support | Edge deployments (Essence CPU) |
+| **macOS (Apple Silicon)** | Full Support | Essence on any Apple Silicon; Expression on-device requires M3+ |
+| **iPadOS / iOS** | Full Support | Expression on-device — iPad Pro M4+, iPhone 16 Pro+ via Swift SDK |
+| **Windows (x86_64)** | Full Support | Essence native wheels for Python 3.9–3.14, or WSL |
+| **NVIDIA GPU container** | Full Support | Linux + Docker — Expression with dynamic face from any image |
 
-## AI Agent Integration
+## AI agent integration
 
 bitHuman provides `llms.txt` and an OpenAPI specification for AI coding agent discoverability:
 

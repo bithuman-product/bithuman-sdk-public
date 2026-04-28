@@ -14,11 +14,12 @@ An **AvatarSession** is how you bring a bitHuman avatar into a LiveKit room. Thi
 
 ## Choose Your Approach
 
-| Approach | Best For | Model Files | GPU Required | Internet Required |
-|----------|----------|-------------|--------------|-------------------|
-| [Cloud Plugin](#cloud-plugin) | Getting started, web apps | No | No | Yes |
-| [Self-Hosted CPU](#self-hosted-cpu) | Privacy, edge devices | Yes (.imx) | No | Only for auth |
-| [Self-Hosted GPU](#self-hosted-gpu) | Dynamic faces, custom images | No (uses images) | Yes | Only for auth |
+| Approach | Model | Best For | Model Files | Compute | Internet |
+|----------|-------|----------|-------------|---------|----------|
+| [Cloud Plugin](#cloud-plugin) | Essence or Expression | Getting started, web apps | No | bitHuman cloud | Per turn |
+| [Self-Hosted CPU](#self-hosted-cpu) | Essence | Privacy, edge devices, kiosks | Yes (`.imx`) | Your CPU | Auth only |
+| [Self-Hosted GPU](#self-hosted-gpu) | Expression | Dynamic faces, custom images | No (uses images) | Your NVIDIA GPU | Auth only |
+| [On-Device Apple Silicon](#on-device-apple-silicon) | Expression | Native consumer apps, offline-first | No (universal weights) | User's M3+ Mac / M4+ iPad / A18 Pro+ iPhone | Heartbeat only |
 
 ---
 
@@ -329,6 +330,53 @@ For detailed GPU container setup, see [Self-Hosted GPU Container](/deployment/se
 
 ---
 
+## On-Device Apple Silicon
+
+Run the **Expression** model entirely on the end-user's Apple Silicon device — no LiveKit, no AvatarSession, no server. The Swift SDK bundles speech recognition, an on-device LLM, TTS, and the lip-sync engine. The only network traffic is a 1-request-per-minute billing heartbeat to `api.bithuman.ai`.
+
+### Vanilla integration (audio + avatar)
+
+```swift
+import bitHumanKit
+
+// 1. Download / verify the universal weights bundle (~1.6 GB on first launch).
+let weights = try await ExpressionWeights.ensureAvailable()
+let portrait = AgentCatalog.thumbnailURL(for: AgentCatalog.defaultAgent)!
+
+// 2. Configure. The avatar pipeline is metered (2 cr/min); audio-only mode is free.
+var config = VoiceChatConfig()
+config.systemPrompt = "You are a calm assistant. One sentence per turn."
+config.voice = .preset("Aiden")
+config.avatar = AvatarConfig(modelPath: weights, portraitPath: portrait)
+config.apiKey = ProcessInfo.processInfo.environment["BITHUMAN_API_KEY"]
+
+// 3. Boot. Authenticates via heartbeat synchronously — bad keys fail fast.
+let chat = VoiceChat(config: config)
+try await chat.start()
+```
+
+### Hardware floor
+
+| Platform | Minimum |
+|---|---|
+| **macOS** | M3+ Apple Silicon, macOS 26 (Tahoe) |
+| **iPad** | iPad Pro M4+, 16 GB unified memory, iPadOS 26 |
+| **iPhone** | iPhone 16 Pro+ (A18 Pro), iOS 26 |
+
+`HardwareCheck.evaluate()` gates this at runtime — under-spec devices see a polite refusal screen.
+
+### Try without writing code
+
+```bash
+brew tap bithuman-product/bithuman
+brew install bithuman-cli
+bithuman-cli video        # voice + lip-synced floating avatar window
+```
+
+Full guide: **[Swift SDK overview →](/swift-sdk/overview)**, **[10-minute quickstart →](/swift-sdk/quickstart)**, **[bithuman-cli reference →](/swift-sdk/cli)**.
+
+---
+
 ## What's Next
 
 Once your avatar session is running, explore these features:
@@ -401,11 +449,11 @@ Once your avatar session is running, explore these features:
 
 Understanding how sessions behave helps you build reliable integrations.
 
-| Behavior | Essence (CPU) | Expression (GPU) |
-|----------|--------------|-------------------|
-| **Idle timeout** | None — sessions run indefinitely | 10 minutes of inactivity |
-| **Gestures** | Supported | Not supported |
-| **Use case** | Kiosks, always-on displays | Interactive conversations |
+| Behavior | Essence (CPU) | Expression (GPU server) | Expression (on-device) |
+|----------|--------------|-------------------------|------------------------|
+| **Idle timeout** | None — sessions run indefinitely | 10 minutes of inactivity | None — runs while app is open |
+| **Gestures** | Supported | Not supported | Not supported |
+| **Use case** | Kiosks, always-on displays | Interactive conversations | Native consumer apps |
 
 <Info>
 Essence sessions are designed for 24/7 deployments like museum kiosks and lobby displays. They run until the client disconnects — there is no idle timeout. Expression sessions automatically close after 10 minutes of inactivity to free GPU resources.
@@ -423,6 +471,7 @@ Avatar sessions consume credits based on the deployment mode and session duratio
 | **Cloud** | Expression | 4 cr/min | GPU rendering on bitHuman servers |
 | **Self-Hosted** | Essence | 1 cr/min | CPU rendering on your hardware |
 | **Self-Hosted** | Expression | 2 cr/min | GPU rendering on your hardware |
+| **On-Device** | Expression (Swift SDK) | 2 cr/min | Active avatar minutes only — audio-only mode is unmetered |
 
 <Info>
 Check your remaining credits at [www.bithuman.ai](https://www.bithuman.ai/#library) — your credit balance is shown in the top navigation bar. Credits are consumed only for active sessions — idle containers cost nothing.

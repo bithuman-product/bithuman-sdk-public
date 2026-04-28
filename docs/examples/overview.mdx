@@ -1,42 +1,63 @@
 ---
 title: "bitHuman Code Examples: Audio, Microphone, AI Chat & More"
-description: "10+ working Python examples from basic audio playback to full AI conversation agents. Docker and CLI options for every deployment mode."
+description: "Working examples for every pathway — Cloud REST, Cloud Plugin (LiveKit), Self-hosted Python (CPU), Self-hosted GPU (NVIDIA), On-device Apple Silicon, and CLI."
 icon: "book-open"
 ---
 
 <img src="/images/example-agent-images.jpg" alt="Example Agent Variety" style={{ borderRadius: '8px', width: '100%' }} />
 
+Every example below is open source in [bithuman-product/bithuman-examples](https://github.com/bithuman-product/bithuman-examples). The Swift / Apple Silicon examples live in [bithuman-product/bithuman-apps](https://github.com/bithuman-product/bithuman-apps).
+
 ---
 
-## Platform API
+## bitHuman Cloud (managed)
 
-Programmatic agent management -- no SDK or local runtime needed.
+No local runtime — call the REST API or use the LiveKit plugin.
 
-| Example | What It Does | Source |
-|---------|-------------|--------|
-| **Agent Management** | Validate credentials, get/update agents | [api/](https://github.com/bithuman-product/bithuman-examples/tree/main/api) |
-| **Agent Generation** | Create agents from prompt, poll status | [api/](https://github.com/bithuman-product/bithuman-examples/tree/main/api) |
-| **Dynamics** | Generate gestures, list available gestures | [api/](https://github.com/bithuman-product/bithuman-examples/tree/main/api) |
+| Example | Model | What it does | Source |
+|---------|-------|--------------|--------|
+| **Agent Management** | — | Validate credentials, get/update agents | [api/](https://github.com/bithuman-product/bithuman-examples/tree/main/api) |
+| **Agent Generation** | — | Create agents from prompt, poll status | [api/](https://github.com/bithuman-product/bithuman-examples/tree/main/api) |
+| **Dynamics** | Essence | Generate gestures, list available gestures | [api/](https://github.com/bithuman-product/bithuman-examples/tree/main/api) |
+| **Essence + Cloud Plugin** | Essence (CPU) | LiveKit avatar with hosted Essence agent | [essence-cloud/](https://github.com/bithuman-product/bithuman-examples/tree/main/essence-cloud) |
+| **Expression + Cloud Plugin** | Expression (GPU) | LiveKit avatar with hosted Expression agent or any face image | [expression-cloud/](https://github.com/bithuman-product/bithuman-examples/tree/main/expression-cloud) |
 
-## Avatar Integration
+REST API reference: **[/api-reference/overview](/api-reference/overview)** · LiveKit plugin guide: **[/deployment/livekit-cloud-plugin](/deployment/livekit-cloud-plugin)**.
 
-Five combinations of model type and deployment target.
+## Self-hosted server
 
-| Example | Model | Deployment | Source |
-|---------|-------|------------|--------|
-| **Essence + Cloud** | Essence (CPU) | bitHuman Cloud | [essence-cloud/](https://github.com/bithuman-product/bithuman-examples/tree/main/essence-cloud) |
-| **[Essence + Self-Hosted](/examples/audio-clip)** | Essence (CPU) | Your machine | [essence-selfhosted/](https://github.com/bithuman-product/bithuman-examples/tree/main/essence-selfhosted) |
-| **Expression + Cloud** | Expression (GPU) | bitHuman Cloud | [expression-cloud/](https://github.com/bithuman-product/bithuman-examples/tree/main/expression-cloud) |
-| **Expression + Self-Hosted GPU** | Expression (GPU) | Your Linux + NVIDIA box | [expression-selfhosted/](https://github.com/bithuman-product/bithuman-examples/tree/main/expression-selfhosted) |
-| **[Expression on macOS (on-device)](/examples/apple-expression)** | Expression (Swift runtime) | Your Mac (M3+, M5+ recommended) | [apple-expression/](https://github.com/bithuman-product/bithuman-examples/tree/main/apple-expression) |
+Run the runtime on your own hardware.
 
-## Full-Stack & Integration Examples
+| Example | Model | What it does | Source |
+|---------|-------|--------------|--------|
+| **[Essence + Self-Hosted](/examples/audio-clip)** | Essence (CPU) | Python SDK — push audio, render avatar locally | [essence-selfhosted/](https://github.com/bithuman-product/bithuman-examples/tree/main/essence-selfhosted) |
+| **[Audio Clip](/examples/audio-clip)** | Essence (CPU) | Play a `.wav` through an avatar with OpenCV display | [essence-selfhosted/](https://github.com/bithuman-product/bithuman-examples/tree/main/essence-selfhosted) |
+| **[Live Microphone](/examples/microphone)** | Essence (CPU) | Real-time mic input → avatar | [essence-selfhosted/](https://github.com/bithuman-product/bithuman-examples/tree/main/essence-selfhosted) |
+| **[AI Conversation](/examples/ai-conversation)** | Essence (CPU) | OpenAI voice chat → avatar | [essence-selfhosted/](https://github.com/bithuman-product/bithuman-examples/tree/main/essence-selfhosted) |
+| **[Raspberry Pi](/examples/raspberry-pi)** | Essence (CPU) | Edge deployment on Raspberry Pi | — |
+| **Expression + Self-Hosted GPU** | Expression (GPU) | Linux + NVIDIA Docker, dynamic face from any image | [expression-selfhosted/](https://github.com/bithuman-product/bithuman-examples/tree/main/expression-selfhosted) |
 
-| Example | What It Does | Source |
-|---------|-------------|--------|
-| **[Apple Local Agent](/examples/apple-local)** | 100% offline on macOS (Siri + Ollama) | [integrations/macos-offline/](https://github.com/bithuman-product/bithuman-examples/tree/main/integrations/macos-offline) |
-| **[bitHuman Halo](/examples/halo-macos)** | Free signed macOS desktop app — floating AI avatar, local STT + LLM + TTS | [Install guide](/examples/halo-macos) |
-| **[Raspberry Pi](/examples/raspberry-pi)** | Edge deployment on Raspberry Pi | — |
+Python SDK quickstart: **[/getting-started/quickstart](/getting-started/quickstart)** · GPU container: **[/deployment/self-hosted-gpu](/deployment/self-hosted-gpu)**.
+
+## On-device Apple Silicon
+
+Everything runs on the user's Mac, iPad, or iPhone — only the billing heartbeat goes out.
+
+| Example | Surface | What it does | Source |
+|---------|---------|--------------|--------|
+| **[Expression on macOS (on-device)](/examples/apple-expression)** | Swift SDK | Floating avatar window, drag-drop face swap, Sparkle DMG | [bithuman-apps/Mac](https://github.com/bithuman-product/bithuman-apps/tree/main/Mac) |
+| **iPad reference app** | Swift SDK | Stage Manager 320×320 panel, Picture-in-Picture, PhotosPicker portrait swap | [bithuman-apps/iPad](https://github.com/bithuman-product/bithuman-apps/tree/main/iPad) |
+| **iPhone reference app** | Swift SDK | Full-screen avatar, tap-to-collapse 120 pt PiP | [bithuman-apps/iPhone](https://github.com/bithuman-product/bithuman-apps/tree/main/iPhone) |
+| **[Apple Local Agent](/examples/apple-local)** | Python | 100% offline on macOS (Siri + Ollama, Essence) | [integrations/macos-offline/](https://github.com/bithuman-product/bithuman-examples/tree/main/integrations/macos-offline) |
+| **[bitHuman Halo](/examples/halo-macos)** | Signed DMG | Free macOS desktop app — floating avatar, local STT + LLM + TTS | [Install guide](/examples/halo-macos) |
+| **bithuman-cli** | CLI (Homebrew) | `brew install bithuman-cli` — voice / video / text modes | [Sources/BithumanCLI](https://github.com/bithuman-product/bithuman-kit/tree/main/Sources/BithumanCLI) |
+
+Swift SDK overview: **[/swift-sdk/overview](/swift-sdk/overview)** · Quickstart: **[/swift-sdk/quickstart](/swift-sdk/quickstart)** · CLI reference: **[/swift-sdk/cli](/swift-sdk/cli)**.
+
+## Web & framework integrations
+
+| Example | What it does | Source |
+|---------|--------------|--------|
 | **Web UI** | Browser-based Gradio interface | [integrations/web-ui/](https://github.com/bithuman-product/bithuman-examples/tree/main/integrations/web-ui) |
 | **Java Client** | WebSocket streaming from Java | [integrations/java/](https://github.com/bithuman-product/bithuman-examples/tree/main/integrations/java) |
 | **Next.js UI** | Drop-in LiveKit web interface | [integrations/nextjs-ui/](https://github.com/bithuman-product/bithuman-examples/tree/main/integrations/nextjs-ui) |
@@ -49,4 +70,4 @@ Five combinations of model type and deployment target.
 
 ---
 
-**New to bitHuman?** Start with [Essence + Cloud](https://github.com/bithuman-product/bithuman-examples/tree/main/essence-cloud) -- the simplest setup with no models to download.
+**New to bitHuman?** Start with [Essence + Cloud](https://github.com/bithuman-product/bithuman-examples/tree/main/essence-cloud) — the simplest setup with no models to download. Building a Mac/iPad/iPhone app instead? Jump to the [Swift SDK quickstart](/swift-sdk/quickstart).
