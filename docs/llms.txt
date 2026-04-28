@@ -1,81 +1,217 @@
-# bitHuman
+# bitHumanKit
 
-> Real-time avatar animation API. Turn any face image or pre-built .imx
-> model into a lifelike talking avatar with audio-driven lip sync.
-> Python SDK, Swift SDK (on-device macOS), REST API, LiveKit plugin, and Docker containers.
-> Four deployment modes: cloud (no GPU), self-hosted CPU, self-hosted GPU,
-> on-device macOS (Apple Silicon M3+ via bundled Swift runtime).
+> Swift Package for on-device voice + lip-synced avatar chat on
+> Apple Silicon. Drop into a Mac/iPad/iPhone app and ship a local
+> conversational AI experience. No network calls, no API keys.
+> Source: https://github.com/bithuman-product/bithuman-kit
+> Made by bitHuman: https://www.bithuman.ai
 
-bitHuman creates digital avatars that lip-sync to audio in real-time at
-25 FPS. Use it for AI companions, customer support bots, virtual tutors,
-digital receptionists, game NPCs, and any application needing a visual
-character that speaks. The platform provides:
+This file is for AI coding agents (Claude Code, Cursor, Codex,
+GitHub Copilot Chat). It's the single canonical bundle to ingest
+when reasoning about how to integrate or extend bitHumanKit. The
+companion file `llms-full.txt` has the full public API surface +
+worked examples for deeper context.
 
-- **Python SDK** (`pip install bithuman`) — local CPU avatar rendering; on macOS arm64 M3+ it also dispatches to the bundled Swift runtime for on-device Expression avatars
-- **Swift SDK** (`.package(url: "https://github.com/bithuman-product/bithuman-expression-swift.git", from: "0.6.0")`) — native on-device Expression avatars for direct Swift consumers on Apple Silicon
-- **bitHuman Halo** — signed macOS desktop app ([download](https://www.bithuman.ai/halo), no build required) with a floating lip-synced AI avatar running local STT + LLM + TTS + avatar
-- **LiveKit Plugin** (`pip install livekit-plugins-bithuman`) — real-time WebRTC avatar sessions
-- **REST API** (api.bithuman.ai) — agent generation, management, dynamics, file upload
-- **GPU Docker Container** — self-hosted GPU inference with any face image
-- **Embed** — iframe-based website embedding with token auth
+## What bitHumanKit gives you
 
-## CLI (after `pip install bithuman`)
+A `VoiceChat` actor that owns a live conversation: microphone,
+on-device speech recognition, an on-device language model,
+on-device voice synthesis, and — optionally — a real-time
+lip-synced animated face at 25 FPS.
 
-Set `BITHUMAN_API_SECRET` from [https://www.bithuman.ai](https://www.bithuman.ai) → Developer → API Keys before running any command.
+Everything is `import bitHumanKit` and Swift Concurrency–native.
+SwiftUI views for the avatar, agent picker, voice picker, prompt
+editor, and a 25 FPS frame pump are all included and `public`.
 
-- `bithuman demo` — zero-argument hello world. Auto-downloads the ~3.7 GB demo `.imx` bundle from `https://pub-55f7db09b40d46e8a22a70ff6d49aeff.r2.dev/demo/expression-demo.imx` (cached to `~/.cache/bithuman/models/`), plus a bundled sample WAV, and writes `demo.mp4`. No dashboard click required.
-- `bithuman demo --model expression.imx --identity portrait.jpg --audio speech.wav` — custom model + portrait + audio. Auto-dispatches to the Swift runtime on macOS M3+ or the in-process Essence runtime elsewhere.
-- `bithuman generate --prompt "a friendly concierge"` — create an agent from a prompt + optional image / video / audio. Wraps the REST `/v1/agent/generate` + status-poll flow.
-- `bithuman pack …` — (model-author workflow only) pack a new Expression `.imx` from raw weights. Application developers don't need this.
-- `bithuman --help` — full verb list; `bithuman <verb> --help` for per-command flags.
+## Install
 
-## Getting Started
+```swift
+.package(url: "https://github.com/bithuman-product/bithuman-kit.git",
+         from: "0.8.0")
+```
 
-- [Quick Start](https://docs.bithuman.ai/getting-started/quickstart): Install SDK, create first avatar in 5 minutes. Python async API with push_audio/run pattern.
-- [How It Works](https://docs.bithuman.ai/getting-started/how-it-works): Architecture overview, key concepts (Runtime, AvatarSession, LiveKit Room, .imx model), three deployment modes compared.
-- [Use Cases](https://docs.bithuman.ai/getting-started/use-cases): Customer support, virtual tutor, digital receptionist, AI companion, game NPC, accessibility — with architecture patterns for each.
+Targets: `bitHumanKit` (library, cross-platform).
+Platform requirements: macOS 26+, iPadOS 26+, iOS 26+. Apple Silicon
+only.
 
-## API Reference
+## Minimum integration (5 minutes)
 
-- [API Overview](https://docs.bithuman.ai/api-reference/overview): Base URL (https://api.bithuman.ai), authentication (api-secret header), error format.
-- [Agent Generation](https://docs.bithuman.ai/api-reference/agent-generation): POST /v1/agent/generate (create avatar from prompt + image/video/audio), GET /v1/agent/status/{id} (poll until ready/failed).
-- [Agent Management](https://docs.bithuman.ai/api-reference/agent-management): POST /v1/validate (verify API secret), GET /v1/agent/{code} (retrieve agent), POST /v1/agent/{code} (update prompt).
-- [Agent Context](https://docs.bithuman.ai/api-reference/agent-context): POST /v1/agent/{code}/speak (make avatar say text), POST /v1/agent/{code}/add-context (inject silent knowledge).
-- [File Upload](https://docs.bithuman.ai/api-reference/file-upload): POST /v1/files/upload (upload images, videos, audio by URL or base64).
-- [Credit Balance](https://docs.bithuman.ai/api-reference/credit-summaries): GET /v2/credit-summaries (check credit balance, plan details, estimated minutes remaining).
-- [Embed Tokens](https://docs.bithuman.ai/api-reference/embed-tokens): POST /v1/embed-tokens/request (generate JWT token for website avatar embedding).
-- [Dynamics & Gestures](https://docs.bithuman.ai/api-reference/dynamics): POST /v1/dynamics/generate (create gesture animations), GET /v1/dynamics/{agent_id} (list available gestures).
-- [Rate Limits](https://docs.bithuman.ai/api-reference/rate-limits): Request limits, concurrency limits, and retry guidance.
-- [Error Reference](https://docs.bithuman.ai/api-reference/errors): Complete list of error codes, HTTP statuses, and resolution steps.
+```swift
+import bitHumanKit
 
-## Deployment
+var config = VoiceChatConfig()
+config.localeIdentifier = "en-US"
+config.systemPrompt = "You are a calm assistant. One sentence per turn."
+config.voice = .preset("Aiden")  // or .clone(referenceAudio:transcript:)
 
-- [Avatar Sessions Guide](https://docs.bithuman.ai/deployment/avatar-sessions): Complete guide to all three modes — cloud plugin (AvatarSession with avatar_id), self-hosted CPU (model_path to .imx), self-hosted GPU (api_url to container). Includes gestures, REST control, SDK-only usage, Docker Compose example, billing.
-- [Cloud Plugin](https://docs.bithuman.ai/deployment/livekit-cloud-plugin): LiveKit plugin setup, Essence vs Expression models, gesture triggering, configuration parameters.
-- [Self-Hosted GPU](https://docs.bithuman.ai/deployment/self-hosted-gpu): Expression avatar Docker container. HTTP API reference (POST /launch, GET /health, GET /ready, GET /tasks, POST /tasks/{id}/stop, GET /test-frame, POST /benchmark). Performance tiers, troubleshooting.
+let chat = VoiceChat(config: config)
+try await chat.start()
+// Conversation is now live: bot listens, transcribes, replies via TTS.
+// Press the spacebar / call chat.stop() to end.
+```
 
-## Integrations
+## Adding the avatar
 
-- [Website Embed](https://docs.bithuman.ai/integrations/embed): Iframe embed with JWT token auth. Backend generates token, frontend renders avatar. Chat Widget (bithuman-chat-widget-v5.js) for floating text/voice/video chat interface.
-- [Webhooks](https://docs.bithuman.ai/integrations/webhooks): room.join and chat.push events. HMAC SHA-256 signature verification. Flask and Express handler examples.
-- [Event Types](https://docs.bithuman.ai/integrations/events): Webhook event payload schemas for room.join and chat.push.
-- [Flutter](https://docs.bithuman.ai/integrations/flutter): Full-stack Flutter + Python backend with LiveKit, token server, platform permissions.
+```swift
+let weights = try await ExpressionWeights.ensureAvailable { phase in
+    // Optional progress callback. `phase` is .verifying / .downloading /
+    // .verifyingDownloaded / .ready. UI hooks: download progress + ETA.
+}
+config.avatar = AvatarConfig(modelPath: weights, portraitPath: portraitURL)
+// ...then chat.start() as above.
 
-## Examples
+let coordinator = AvatarCoordinator(chat: chat)
+coordinator.bindToOrchestrator()
 
-- [Examples Overview](https://docs.bithuman.ai/examples/overview): Index of all working examples organized by category.
-- [Audio Clip](https://docs.bithuman.ai/examples/audio-clip): Simplest example — play audio file through avatar. Python, 20 lines.
-- [Microphone](https://docs.bithuman.ai/examples/microphone): Real-time mic input with voice activity detection.
-- [AI Conversation](https://docs.bithuman.ai/examples/ai-conversation): Full ChatGPT-style voice chat with LiveKit and OpenAI.
-- [Self-Hosted Plugin](https://docs.bithuman.ai/examples/self-hosted-plugin): LiveKit agent with local .imx model and gesture support.
-- [Raspberry Pi](https://docs.bithuman.ai/examples/raspberry-pi): Edge deployment on Pi 4B with systemd auto-start.
-- [Apple Local](https://docs.bithuman.ai/examples/apple-local): 100% local speech processing on macOS (M2+).
-- [Expression on macOS](https://docs.bithuman.ai/examples/apple-expression): Run the on-device Expression avatar on Apple Silicon M3+ via the bundled Swift runtime. Any portrait face, 25 FPS lip-sync, no GPU, no cloud. Python SDK step-by-step, vanilla example repo.
-- [Halo Desktop App](https://docs.bithuman.ai/examples/halo-macos): bitHuman Halo — free signed macOS app with a floating lip-synced AI avatar. Local STT + LLM + TTS + avatar, audio never leaves your Mac.
+// SwiftUI host:
+//   AvatarRendererView (UIView on iOS, NSView on macOS — both conform to AvatarFrameSink)
+//   FramePump drives it at 25 FPS
+//   AvatarRootView (macOS) or compose your own with the public views (iOS)
+```
 
-## Optional
+The first call to `ExpressionWeights.ensureAvailable()` downloads
+the universal weights bundle (~1.6 GB) to a local cache directory.
+Subsequent launches are instant — sha256 verified.
 
-- [Prompt Engineering](https://docs.bithuman.ai/getting-started/prompts): CO-STAR framework for avatar personality. E-commerce, education, healthcare examples.
-- [Media Guide](https://docs.bithuman.ai/getting-started/media-guide): Image (10MB, front-facing), video (30s, minimal movement), audio (1min, clear) upload specs.
-- [Animal Mode](https://docs.bithuman.ai/getting-started/animal-mode): Create animal character avatars. 12 pre-built animals. Manual face marking process.
-- [Changelog](https://docs.bithuman.ai/changelog): Release notes and version history.
+## Public API surface (canonical types)
+
+Engine + chat:
+- `VoiceChat` — top-level actor; one instance per conversation.
+- `VoiceChatConfig` — locale, system prompt, voice, optional avatar.
+- `AvatarConfig` — `modelPath: URL` + `portraitPath: URL`.
+- `VoiceSelection` — `.preset(String)` or `.clone(referenceAudio: URL, transcript: String)`.
+- `TextChat` — text-only variant; same config; no audio graph.
+
+UI:
+- `AvatarCoordinator` — `@MainActor ObservableObject`. Reactive UI
+  state (`isReady`, `idlePrewarmReady`, `idlePrewarmProgress`,
+  `prewarmPortraitURL`, `muteAgentDuringPrewarm`,
+  `orchestratorState`, `currentAgentCode`, `currentVoicePreset`,
+  `currentSystemPrompt`). Commands: `swapPortrait(url:)`,
+  `applyAgent(_:)`, `setVoicePreset(_:)`, `setSystemPrompt(_:)`,
+  `previewVoice(_:)`, `show*Picker()`.
+- `FramePump` — 25 FPS producer-consumer. `init(bithuman:chat:window:coordinator:)`.
+- `AvatarFrameSink` (protocol) — `func render(_ frame: CGImage)`.
+- `AvatarRendererView` — UIView/NSView. Both conform to `AvatarFrameSink`.
+- `AvatarRootView` (macOS) — drop-in SwiftUI tree; floating circle.
+- `LoadingParticleField` — splash with optional progress arc + portrait underlay.
+- `BootSplashView`, `DownloadProgressView`, `StateRing`, `StateLabel` — composable splash + status pieces.
+- `AgentPickerView`, `VoicePickerView`, `PromptEditorView` — pickers.
+
+Catalog:
+- `AgentCatalog` — `Agent.all`, 8 bundled personas (Diego default).
+- `AgentCatalog.thumbnailURL(for:)` — bundled portrait JPGs.
+- `PortraitGallery` — 5 portrait presets.
+- `VoiceCatalog` — preset metadata.
+- `PromptTemplate` — 6 starter system prompts.
+
+Hardware gate:
+- `HardwareCheck.evaluate() -> DeviceCapability` — call at app
+  launch on iOS. Returns `.supported` or `.unsupported(reason:)`.
+- `UnsupportedDeviceView(reason: String)` — refusal screen.
+
+Weights:
+- `ExpressionWeights.ensureAvailable(progress:) async throws -> URL`
+  — downloads + verifies the universal weights artifact.
+
+LLM-style helpers:
+- `composeLLMInstructions(_ prompt: String) -> String` — appends a
+  TTS-friendly suffix (no emoji, no markdown, no symbols, no
+  read-aloud URLs) to whatever prompt you pass. The library applies
+  this internally; the helper is exposed for callers that need to
+  preview the exact text the LLM sees.
+
+Brand:
+- `BrandColors.coral` etc. — palette for matching SwiftUI surfaces.
+
+## Common code patterns
+
+Agent swap (face + voice + prompt at once, the recommended path):
+
+```swift
+let agent = AgentCatalog.all.first { $0.code == "A29QAR4629" }!  // Diego
+coordinator.applyAgent(agent)
+// Coordinator handles the full swap: face encoding, voice change,
+// system prompt update. The pre-chat warm-up splash auto-fires;
+// previous agent's audio cuts off; new agent stays silent until
+// the warm-up completes.
+```
+
+Custom portrait (drag-drop / PhotosPicker / file URL):
+
+```swift
+coordinator.swapPortrait(url: localFileURL)
+// Swap is async; UI shows a spinner overlay while the engine
+// processes the new portrait; falls back to idle motion when done.
+```
+
+Hot-swap voice without changing face:
+
+```swift
+coordinator.setVoicePreset("af_heart")
+```
+
+Hot-swap system prompt without changing face/voice:
+
+```swift
+coordinator.setSystemPrompt("You are a tax-coding tutor. Use plain words.")
+// TTS-friendly suffix is appended automatically — don't double-bake.
+```
+
+Barge-in (user starts speaking while bot is mid-sentence): handled
+automatically. To wire UI hooks:
+
+```swift
+chat.onBargeIn = { [weak pump] in pump?.buffer.flushSpeech() }
+```
+
+## Errors → fixes
+
+| Error | Cause | Fix |
+|---|---|---|
+| `WeightsError.checksumMismatch` | Cached weights file corrupt | Delete the local cache; rerun. |
+| `Bithuman.Error.unsupportedHardware` | Pre-M3 Mac, ≤16 GB iPad, sub-A18-Pro iPhone | Show `UnsupportedDeviceView`; gate via `HardwareCheck.evaluate()` first. |
+| Mic permission denied | First launch, user said no | `chat.start()` throws; show retry UI; `AVAudioSession.requestRecordPermission`. |
+| Jetsam mid-conversation (iOS) | Missing `increased-memory-limit` entitlement | Add entitlement; request Apple approval (1–3 day turnaround). |
+| Splash never fades | Engine warm-up stalled (rare) | `coordinator.framePump?.resetIdleCache()` to retry. |
+
+## Build / test / dev
+
+```sh
+swift build                    # cross-platform library + executables
+swift test                     # 23 unit tests, no models needed
+./validate-ios.sh              # confirms iOS Simulator compatibility
+```
+
+## Hardware floor
+
+- macOS: M3+ Apple Silicon, macOS 26 (Tahoe).
+- iPadOS: iPad Pro M4+, ≥ 16 GB unified memory, iPadOS 26.
+- iOS: iPhone 16 Pro+ (A18 Pro), iOS 26.
+
+`HardwareCheck.evaluate()` gates at runtime; surface the resulting
+`UnsupportedDeviceView` instead of letting the engine load on
+under-spec hardware.
+
+## Memory budget
+
+| Phase | iPad M4/M5 | iPhone 16 Pro (projected) |
+|---|---:|---:|
+| Idle | ~3.5 GB | ~3 GB |
+| Active speech turn | ~5.5 GB peak | ~4–4.5 GB peak |
+| Engine boot (one-shot) | ~3 GB transient | ~2.5 GB transient |
+
+## Licence
+
+Apache-2.0 source code. Expression engine weights ship under
+bitHuman's separate weight licence — see the licence file bundled
+inside the downloaded weights artifact.
+
+## Where to ask
+
+- GitHub Issues: https://github.com/bithuman-product/bithuman-kit/issues
+- Email: hello@bithuman.ai
+- Docs: https://docs.bithuman.ai
+
+For the full API surface + extended worked examples, see
+`llms-full.txt` in this repo.

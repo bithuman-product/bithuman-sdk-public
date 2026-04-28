@@ -1,0 +1,68 @@
+---
+title: "Swift SDK overview"
+description: "On-device voice + lip-synced avatar SDK for Mac, iPad, iPhone — Apple Silicon only."
+---
+
+`bitHumanKit` is a Swift Package that drops a real-time voice
+agent — with optional lip-synced avatar — into your Mac, iPad,
+or iPhone app. All inference runs on the device's GPU and
+Neural Engine. The avatar engine is metered through a 1-request-per-minute
+heartbeat to `api.bithuman.ai`; audio-only mode runs unmetered.
+
+<CardGroup cols={2}>
+<Card title="macOS" icon="apple" href="/swift-sdk/macos">
+  Embed in a Mac app — DMG, App Store, or Homebrew distribution.
+</Card>
+<Card title="iOS / iPadOS" icon="mobile" href="/swift-sdk/ios">
+  Ship to TestFlight + App Store. Hardware-gated at runtime.
+</Card>
+<Card title="bithuman-cli" icon="terminal" href="/swift-sdk/cli">
+  `brew install bithuman-cli` and talk to your Mac in 30 seconds.
+</Card>
+<Card title="Reference apps" icon="github" href="https://github.com/bithuman-product/bithuman-apps">
+  Mac DMG, iPad App Store, iPhone App Store — annotated source.
+</Card>
+</CardGroup>
+
+## Install
+
+```swift
+.package(url: "https://github.com/bithuman-product/bithuman-kit.git",
+         from: "0.8.0")
+```
+
+## What you get
+
+- **Voice agent** — on-device speech recognition (Apple's `SpeechAnalyzer`),
+  on-device language model, on-device voice synthesis with optional
+  voice cloning.
+- **Lip-synced avatar** — 384×384 @ 25 FPS, eight bundled agent
+  personas, drag-drop face swap.
+- **SwiftUI components** — `AvatarRendererView`, `AvatarCoordinator`,
+  pickers for agents/voices/prompts, splash with progress.
+- **Cross-platform** — same Swift code runs on Mac, iPad, iPhone.
+
+## Hardware floor
+
+| Platform | Minimum |
+|---|---|
+| **macOS** | M3+ Apple Silicon, macOS 26 (Tahoe) |
+| **iPad** | iPad Pro M4+, 16 GB unified memory, iPadOS 26 |
+| **iPhone** | iPhone 16 Pro+ (A18 Pro), iOS 26 |
+
+`HardwareCheck.evaluate()` gates this at runtime — under-spec
+devices see a polite refusal screen instead of a half-loaded engine.
+
+## Get an API key
+
+The avatar pipeline charges 2 credits per active minute. Audio-only
+mode is unmetered.
+
+1. Sign in at <https://www.bithuman.ai> → Developer → API Keys.
+2. Set `VoiceChatConfig.apiKey` or export `BITHUMAN_API_KEY`.
+3. The SDK authenticates synchronously on `chat.start()` —
+   bad keys fail fast.
+
+## API reference
+
+Full DocC API reference: <https://bithuman-product.github.io/bithuman-kit/documentation/bithumankit/>

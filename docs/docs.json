@@ -59,6 +59,16 @@
             ]
           },
           {
+            "group": "Swift SDK",
+            "pages": [
+              "swift-sdk/overview",
+              "swift-sdk/quickstart",
+              "swift-sdk/macos",
+              "swift-sdk/ios",
+              "swift-sdk/cli"
+            ]
+          },
+          {
             "group": "Deployment",
             "pages": [
               "deployment/avatar-sessions",

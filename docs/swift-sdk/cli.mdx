@@ -1,0 +1,187 @@
+---
+title: "bithuman-cli"
+description: "Homebrew-installable command-line app that lets you talk to your Mac in three modes."
+---
+
+
+A Homebrew-installable command-line app that lets you talk to your
+Mac in three modes: text, voice, or video. Useful for:
+
+- **Trying bitHuman in 30 seconds** without writing any code.
+- **Testing your hardware** before integrating the SDK.
+- **Demoing the technology** to colleagues or stakeholders.
+- **Learning the SDK** — the CLI is itself a working example, with
+  source at [bithuman-kit/Sources/BithumanCLI/](https://github.com/bithuman-product/bithuman-kit/tree/main/Sources/BithumanCLI).
+
+## Install
+
+```sh
+brew tap bithuman-product/bithuman
+brew install bithuman-cli
+```
+
+Requires macOS 26 (Tahoe) or later, Apple Silicon (M3+), ~3 GB
+free disk for voice mode or ~7 GB for video mode (LLM + TTS +
+expression engine weights cache locally on first run).
+
+If you previously installed the legacy `bitchat` formula:
+
+```sh
+brew uninstall bitchat
+brew untap bithuman-product/bitchat
+```
+
+…then run the install commands above.
+
+## Three modes
+
+| Mode | Command | What you get | First-run download |
+|---|---|---|---:|
+| **Text** | `bithuman-cli text` | Typed REPL in the terminal. Pipe-friendly. | ~2 GB |
+| **Voice** *(default)* | `bithuman-cli` | Spoken conversation through your Mac's mic + speaker. Voice cloning supported. | ~3 GB |
+| **Video** | `bithuman-cli video` | Voice + a small floating animated face that lip-syncs at 25 FPS. 8 bundled agents. Drag-drop face swap. | ~4 GB |
+
+```sh
+# Quickest possible test
+bithuman-cli text
+> hello
+Hi there. What's on your mind today?
+
+# Voice mode (the default)
+bithuman-cli
+🎙  Listening. Talk any time.
+
+# Video mode with the default agent
+bithuman-cli video
+
+# Video mode with a custom portrait
+bithuman-cli video --image ~/Pictures/me.jpg
+
+# Voice mode with a cloned voice (10–20 s of clean reference audio)
+bithuman-cli --voice ~/myvoice.wav
+
+# Custom system prompt
+bithuman-cli --prompt "You are a calm tutor explaining ideas in plain words."
+```
+
+## Flags
+
+| Flag | What it does | Modes |
+|---|---|---|
+| `--locale <bcp47>` | ASR locale + TTS language hint (default: en-US). | all |
+| `--voice <preset\|path>` | Voice preset name (case-insensitive) or path to a 10–20 s mono audio file. Path = the voice is cloned. | voice + video |
+| `--image <preset\|path>` | (video only) Bundled portrait preset (`Alice`, `Marco`, `Captain`, `Nia`, `Riley`) or path to a JPG/PNG/HEIC. Face is auto-cropped via Vision. | video |
+| `--prompt <text\|@path>` | Override the LLM system prompt. Inline text or `@/path/to/file.txt`. | all |
+| `-h`, `--help` | Show full help. | all |
+
+## Bundled agents (video mode)
+
+Each agent is a face + voice + system prompt bundled together.
+The CLI uses Diego by default; right-click the floating window
+to swap.
+
+| Agent | Category | Voice |
+|---|---|---|
+| Diego *(default)* | Coach | `am_michael` |
+| Nova | Entertainment | `af_alloy` |
+| Einstein | Mentor | `am_adam` |
+| Riya | Coach | `af_heart` |
+| Lena | Coach | `af_kore` |
+| Rae | Entertainment | `am_echo` |
+| Dr. Maya | Business | `bf_emma` |
+| Mason | Business | `bm_george` |
+
+## Voice cloning (voice mode)
+
+Bring your own reference clip:
+
+```sh
+bithuman-cli --voice ~/myvoice.wav
+```
+
+Requirements:
+- 10–20 seconds of clean mono speech, any sample rate.
+- A transcript: either supply it as a sibling `.txt` file
+  (`~/myvoice.txt`) or let the CLI auto-transcribe via Apple's
+  on-device Speech framework (cached after first run).
+
+Cloning is voice-mode only. Video mode uses preset voices
+(Kokoro) for performance reasons — the GPU is busy driving the
+avatar's lip-sync.
+
+## What it looks like
+
+In video mode you'll see a small floating circular window in
+the top-right of your screen. Right-click for the menu:
+
+- **Choose agent…** — gallery of the 8 bundled agents
+- **Customize → Change image…** — swap the portrait
+- **Customize → Change voice…** — voice gallery (Kokoro presets)
+- **Customize → Change prompt…** — system prompt editor with
+  6 starter templates
+- **Quit bitHuman**
+
+Drag any image file from Finder onto the window for an instant
+face swap.
+
+Press the spacebar in the terminal to interrupt the bot
+mid-sentence.
+
+## Why ship a CLI?
+
+The CLI exists for three reasons:
+
+1. **The fastest possible "see what this is".** No SDK
+   integration, no Xcode, no signing. Just a `brew install`.
+2. **A working reference for the SDK.** Every bitHumanKit feature
+   (voice cloning, agents, drag-drop face swap, video mode)
+   is exercised by the CLI. The source is the canonical
+   integration example.
+3. **A diagnostic tool for hardware compatibility.** If
+   `bithuman-cli video` runs cleanly on a developer's machine,
+   their app will too.
+
+## Source
+
+CLI source ships in the SDK repo:
+[bithuman-kit/Sources/BithumanCLI/](https://github.com/bithuman-product/bithuman-kit/tree/main/Sources/BithumanCLI/main.swift).
+~400 lines of Swift; the actual heavy lifting is in
+`bitHumanKit`. Build locally:
+
+```sh
+git clone https://github.com/bithuman-product/bithuman-kit.git
+cd bithuman-kit
+./build.sh Release
+./bithuman-cli video
+```
+
+## Distribution
+
+Distributed via the public Homebrew tap at
+[bithuman-product/homebrew-bithuman](https://github.com/bithuman-product/homebrew-bithuman).
+Releases are notarised by Apple and stapled before tap upload.
+
+Manual DMG download (when you don't want Homebrew): each release
+on the tap repo also includes a notarised zip artifact.
+
+## Troubleshooting
+
+The CLI inherits all the SDK's behaviour, so the
+[SDK Troubleshooting page](troubleshooting.md) covers most issues.
+The CLI-specific gotchas:
+
+- **`brew install` 404** after the bitchat → bithuman rename:
+  `brew untap bithuman-product/bitchat` first, then re-tap.
+- **First-launch hang** for ~2 minutes downloading models.
+  Add `BITHUMAN_VERBOSE=1` to see progress.
+- **Audio device refusal** on external USB / Bluetooth mics.
+  Test with the built-in mic first; some peripherals report
+  unusual channel layouts the SDK's voice-processing IO
+  doesn't accept.
+
+## Next
+
+- [Quickstart](quickstart.md) — integrate the SDK into your own app
+- [macOS Swift SDK](sdk/macos.md) — same engine, native code
+- [Reference apps](https://github.com/bithuman-product/bithuman-apps) —
+  Mac DMG, iPad, iPhone source

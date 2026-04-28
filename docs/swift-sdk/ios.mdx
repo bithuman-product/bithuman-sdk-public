@@ -1,0 +1,195 @@
+---
+title: "Swift SDK on iOS / iPadOS"
+description: "Ship bitHumanKit to TestFlight + App Store — entitlements, hardware gating, distribution."
+---
+
+
+Run real-time voice + lip-synced avatar inside an iPhone or iPad
+app. Same Swift Package as macOS; iOS-specific entitlements +
+hardware gate apply.
+
+## Prerequisites
+
+- Xcode 26+ (development on Mac)
+- Apple Developer account in good standing
+- iOS 26+ / iPadOS 26+ target device
+- Apple-approved entitlements (see below)
+- A `BITHUMAN_API_KEY` (avatar mode is metered at 2 credits/min;
+  audio-only mode is free). Get one at <https://www.bithuman.ai>
+  → Developer → API Keys.
+
+### Hardware floor
+
+The SDK refuses devices below the floor at app launch (showing
+`UnsupportedDeviceView`) rather than letting the engine load and
+fail mid-session.
+
+| Device family | Supported | Notes |
+|---|:---:|---|
+| iPad Pro M4 / M5 (16 GB) | ✓ | Reference iPad |
+| iPad Air M2 / M3 | ✗ | Thermal throttle |
+| iPad Pro M1 / M2 | ✗ | Bandwidth-limited |
+| iPhone 16 Pro / 17 Pro (A18 Pro+) | ✓ | Reference iPhone |
+| iPhone 16 / 16 Plus (non-Pro A18) | ✗ | Thermal throttle |
+| iPhone 15 Pro and earlier | ✗ | Insufficient compute |
+
+## Add the package
+
+In Xcode: **File → Add Package Dependencies →**
+
+```
+https://github.com/bithuman-product/bithuman-kit.git
+```
+
+`from: "0.8.0"`. Library product is `bitHumanKit`.
+
+## Entitlements (required)
+
+iOS apps using bitHumanKit **must** request two memory entitlements
+from Apple. Both need approval (1–3 business day turnaround).
+
+In your `*.entitlements` file:
+
+```xml
+<key>com.apple.developer.kernel.increased-memory-limit</key>
+<true/>
+<key>com.apple.developer.kernel.extended-virtual-addressing</key>
+<true/>
+```
+
+To request approval: developer.apple.com → **Account → Membership
+→ Request Additional Capabilities**. Apple replies via email; the
+provisioning profile updates automatically once approved.
+
+Without these the app will be jetsamed mid-conversation around the
+3 GB default ceiling.
+
+## `Info.plist` keys
+
+```xml
+<key>NSMicrophoneUsageDescription</key>
+<string>Talk to your on-device assistant.</string>
+<key>NSSpeechRecognitionUsageDescription</key>
+<string>Recognise what you say so the assistant can respond.</string>
+
+<!-- iPhone-only apps: lock to portrait -->
+<key>UISupportedInterfaceOrientations</key>
+<array>
+    <string>UIInterfaceOrientationPortrait</string>
+</array>
+```
+
+If your app uses PhotosPicker for portrait swap, also:
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Pick a portrait for your bitHuman avatar.</string>
+```
+
+## Hardware-gated app launch
+
+Wrap your scene's root view in the gate so under-spec devices see a
+polite refusal:
+
+```swift
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            switch HardwareCheck.evaluate() {
+            case .supported:
+                ContentView()
+            case .unsupported(let reason):
+                UnsupportedDeviceView(reason: reason)
+            }
+        }
+    }
+}
+```
+
+`HardwareCheck.evaluate()` reads the device's
+`sysctlbyname("hw.machine")` and returns a typed
+`DeviceCapability`. macOS branches return `.supported`
+unconditionally — the engine itself gates Mac hardware.
+
+## Boot the avatar
+
+The integration is identical to macOS, but you'll typically host
+the `AvatarRendererView` (UIView on iOS) inside a custom SwiftUI
+tree rather than the bundled `AvatarRootView` (which is macOS-only).
+
+Reference patterns:
+- **iPad widget-style window** — see
+  [bithuman-apps/iPad](https://github.com/bithuman-product/bithuman-apps/tree/main/iPad).
+  Stage Manager 320×320 floating panel, 250 pt avatar circle,
+  Picture-in-Picture, PhotosPicker portrait swap.
+- **iPhone full-screen with PiP collapse** — see
+  [bithuman-apps/iPhone](https://github.com/bithuman-product/bithuman-apps/tree/main/iPhone).
+  Full-screen avatar, tap-to-collapse 120 pt PiP, single-sheet
+  TabView for customisation.
+
+Both apps' Sources are concise (~200 lines each) and annotated.
+
+## TestFlight checklist
+
+Before submitting:
+
+- [ ] Run on a physical reference device (iPhone 16 Pro or iPad Pro M4+).
+      Confirm the engine sustains 25 FPS during a 60 s conversation.
+- [ ] Run on an under-spec device (iPhone 15 Pro or iPad Air).
+      Confirm `UnsupportedDeviceView` appears at launch.
+- [ ] Verify both memory entitlements are **granted** by Apple
+      (provisioning profile updates after approval).
+- [ ] Verify mic + speech permissions flow correctly on first
+      `chat.start()`.
+- [ ] Memory profile in Instruments — `phys_footprint` will read
+      large during turns (4–6 GB) but most of that is compressed
+      MALLOC pool. The signal to watch is iOS's reported
+      "available" memory — should stay well above zero.
+- [ ] App Store Compatibility list explicitly states iPhone 16 Pro
+      and later (App Store can't filter by chip directly).
+
+## Picture-in-Picture (iPad / iPhone)
+
+The reference apps wire `AvatarPiPController` to fan FramePump
+output into both the on-screen renderer and an
+`AVSampleBufferDisplayLayer` driven by `AVPictureInPictureController`.
+Add to `Info.plist`:
+
+```xml
+<key>UIBackgroundModes</key>
+<array>
+    <string>audio</string>
+</array>
+```
+
+See [`AvatarPiPController` in the iPad reference app](https://github.com/bithuman-product/bithuman-apps/tree/main/iPad/Sources)
+for the canonical wiring.
+
+## Distribution
+
+- **App Store** — standard archive flow via Xcode. The reference
+  apps' bundle IDs are `ai.bithuman.app.ipad` and
+  `ai.bithuman.app.ios`.
+- **TestFlight** — same. `Apps/Bithuman{Pad,Phone}/Scripts/build-*-app.sh`
+  in the SDK repo show a fully-automated upload via
+  App Store Connect API.
+- **Enterprise** — supported via the standard enterprise
+  distribution. The hardware gate is the same; the entitlements
+  are the same.
+
+## Common errors → fixes
+
+| Error | Cause | Fix |
+|---|---|---|
+| App jetsamed mid-conversation | Missing entitlement | Request approval. |
+| `Bithuman.Error.unsupportedHardware` (iOS) | A18 (non-Pro) or older | Surface `UnsupportedDeviceView`; don't override the gate. |
+| Black avatar circle | View hierarchy recreating renderer | Hold the renderer in `@StateObject`; return same instance from `makeUIView`. |
+| Mic permission infinite-loop | Privacy strings missing | Add `NSMicrophoneUsageDescription` + `NSSpeechRecognitionUsageDescription`. |
+
+## Next
+
+- [Quickstart](../quickstart.md) — 10-minute integration
+- [Cookbook](../cookbook/) — agent swap, custom voice, PhotosPicker
+- [API reference](https://bithuman-product.github.io/bithuman-kit/) — DocC
+- [Reference apps](https://github.com/bithuman-product/bithuman-apps) — iPad + iPhone source

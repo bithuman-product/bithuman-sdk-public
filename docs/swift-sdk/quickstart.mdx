@@ -1,0 +1,329 @@
+---
+title: "Swift SDK quickstart"
+description: "Ship a working on-device voice agent in your Mac/iPad/iPhone app in under 10 minutes."
+---
+
+
+Ship a working on-device voice agent in your Mac/iPad/iPhone app in
+under 10 minutes. The on-device runtime makes no network calls
+(other than the first-launch weights download); all inference
+runs locally.
+
+## Prerequisites
+
+- **Xcode 26+** — older Xcodes don't recognise some Swift 6
+  concurrency syntax bitHumanKit uses.
+- **An Apple Silicon Mac (M3+) for development** — the SDK builds
+  for both `swift build` and Xcode targets, but compilation
+  requires Apple Silicon.
+- **An Apple Developer account** if you're targeting iOS / iPadOS
+  on real devices (free is fine for sideloaded builds; paid is
+  required for App Store + the memory entitlements).
+- **A target device that meets the
+  [hardware floor](index.md#hardware-floor)** — under-spec devices
+  are refused at runtime via `HardwareCheck.evaluate()`.
+
+### If you've never used Swift Package Manager
+
+You have two on-ramps:
+
+1. **You already have an Xcode project / app.** Skip to
+   [Step 1: Add the package](#1-add-the-package). You'll add
+   bitHumanKit as a Swift Package dependency through Xcode's UI.
+2. **You're starting from scratch.** Open Xcode → **File → New →
+   Project** → pick "App" (macOS, iOS, or iPadOS) → name it →
+   create. Once the project is open, follow Step 1 below.
+
+If you're integrating into an existing project that uses a
+top-level `Package.swift` instead of an Xcode project (e.g. a
+command-line tool), the Step 1 snippet below shows what to add to
+your `dependencies` and `targets` arrays.
+
+## 1. Add the package
+
+**In an Xcode project**: **File → Add Package Dependencies →**
+paste the URL → click "Add Package":
+
+```
+https://github.com/bithuman-product/bithuman-kit.git
+```
+
+When Xcode asks which products to add, pick `bitHumanKit` and
+attach it to your app's target.
+
+**In a `Package.swift`** (SPM-only project):
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/bithuman-product/bithuman-kit.git",
+             from: "0.8.0")
+],
+targets: [
+    .target(
+        name: "MyApp",
+        dependencies: [
+            .product(name: "bitHumanKit", package: "bithuman-kit")
+        ]
+    )
+]
+```
+
+## 2. Permissions and entitlements
+
+### All platforms — `Info.plist` privacy strings
+
+```xml
+<key>NSMicrophoneUsageDescription</key>
+<string>Talk to your on-device assistant.</string>
+<key>NSSpeechRecognitionUsageDescription</key>
+<string>Recognise what you say so the assistant can respond.</string>
+```
+
+Without these, `chat.start()` fails silently when iOS / macOS
+prompts the user — the OS denies the request and remembers the
+denial for the rest of the session.
+
+### macOS-only — sandboxed apps
+
+If your Mac app is sandboxed (default for App Store distribution),
+also add to your `.entitlements`:
+
+```xml
+<key>com.apple.security.device.audio-input</key>
+<true/>
+```
+
+Direct DMG / Homebrew distribution doesn't need the entitlement —
+just the Info.plist keys above.
+
+### iOS-only — memory entitlements (REQUIRED)
+
+> ⚠️ **Without these your app will be terminated by iOS
+> mid-conversation** when memory exceeds the default ~3 GB
+> ceiling (~30 s into a live turn). Request approval BEFORE you
+> start development — Apple takes 1–3 business days.
+
+```xml
+<key>com.apple.developer.kernel.increased-memory-limit</key>
+<true/>
+<key>com.apple.developer.kernel.extended-virtual-addressing</key>
+<true/>
+```
+
+Request approval at developer.apple.com → **Account → Membership
+→ Request Additional Capabilities**. The provisioning profile
+updates automatically once Apple replies via email.
+
+## 3. Boot a voice chat (audio-only)
+
+```swift
+import SwiftUI
+import bitHumanKit
+
+@main
+struct MyApp: App {
+    @StateObject private var lifecycle = MyLifecycle()
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView(lifecycle: lifecycle)
+                .task { await lifecycle.start() }
+        }
+    }
+}
+
+@MainActor
+final class MyLifecycle: ObservableObject {
+    @Published var status = "booting…"
+    private var chat: VoiceChat?
+
+    func start() async {
+        var config = VoiceChatConfig()
+        config.localeIdentifier = "en-US"
+        config.systemPrompt = "You are a helpful assistant. One sentence per turn."
+        config.voice = .preset("Aiden")
+
+        do {
+            let chat = VoiceChat(config: config)
+            try await chat.start()
+            self.chat = chat
+            status = "live — talk to me"
+        } catch {
+            status = "error: \(error.localizedDescription)"
+        }
+    }
+}
+
+struct ContentView: View {
+    @ObservedObject var lifecycle: MyLifecycle
+    var body: some View {
+        Text(lifecycle.status).font(.title)
+    }
+}
+```
+
+**Run it.** Say "hello." The bot transcribes, thinks, replies via
+TTS through the speakers. That's the entire integration for an
+audio-only voice agent.
+
+## 4. Add the lip-synced avatar (video mode)
+
+> 💳 **Avatar mode is metered.** The pipeline charges 2 credits
+> per active minute against your bitHuman developer account, via
+> a 1-request-per-minute heartbeat to `api.bithuman.ai`. **Get an
+> API key first**: <https://www.bithuman.ai> → Developer → API Keys.
+> Then either set `VoiceChatConfig.apiKey` or export
+> `BITHUMAN_API_KEY` before `chat.start()`. Audio-only mode
+> (Step 3 above) doesn't require a key and isn't metered.
+
+The avatar pipeline downloads ~1.6 GB of weights on first launch
+(sha256 verified + cached for next time). On a slow network this
+takes a few minutes — wire up a progress callback or your app
+will look frozen.
+
+```swift
+@MainActor
+final class AvatarLifecycle: ObservableObject {
+    @Published var phase: BootPhase = .idle
+    @Published private(set) var coordinator: AvatarCoordinator?
+    @Published private(set) var renderer: AvatarRendererView?
+    private var chat: VoiceChat?
+    private var pump: FramePump?
+
+    enum BootPhase: Equatable {
+        case idle
+        case downloading(Double)   // 0…1
+        case warming
+        case live
+        case error(String)
+    }
+
+    func start() async {
+        do {
+            // 1. Download/verify the universal weights bundle.
+            //    Surface progress to the UI — first launch can take
+            //    minutes on a slow network and silent hang is a
+            //    reliable way to lose users.
+            phase = .downloading(0)
+            let weights = try await ExpressionWeights.ensureAvailable { event in
+                Task { @MainActor in
+                    if case .downloading(let f, _, _, _, _) = event {
+                        self.phase = .downloading(f)
+                    }
+                }
+            }
+            phase = .warming
+
+            // 2. Pick a bundled agent for the first run. Swap later
+            //    via coordinator.applyAgent(_:) or the AgentPickerView.
+            let agent = AgentCatalog.defaultAgent
+            let portrait = AgentCatalog.thumbnailURL(for: agent)!
+
+            // 3. Configure + boot. The apiKey here is required for
+            //    the avatar pipeline; it's resolved from
+            //    BITHUMAN_API_KEY automatically if you leave the
+            //    field empty, but explicit-in-config is clearer.
+            var config = VoiceChatConfig()
+            config.systemPrompt = agent.systemPrompt
+            config.avatar = AvatarConfig(modelPath: weights, portraitPath: portrait)
+            config.apiKey = ProcessInfo.processInfo.environment["BITHUMAN_API_KEY"]
+            let chat = VoiceChat(config: config)
+            try await chat.start()  // throws .missingAPIKey / .authenticationFailed
+            await chat.setVoicePreset(agent.voicePreset)
+
+            // 4. Bind the coordinator + render stack.
+            guard let bh = chat.bithuman else {
+                phase = .error("avatar engine failed to initialise")
+                return
+            }
+            let coord = AvatarCoordinator(chat: chat)
+            coord.bindToOrchestrator()
+            coord.prewarmPortraitURL = portrait
+            coord.currentAgentCode = agent.code
+
+            let renderer = AvatarRendererView(
+                frame: .zero, idleFrame: chat.initialIdleFrame, clipMode: .circle)
+            let pump = FramePump(
+                bithuman: bh, chat: chat, window: renderer, coordinator: coord)
+            coord.framePump = pump
+            chat.onBargeIn = { [weak pump] in pump?.buffer.flushSpeech() }
+
+            // 5. Hold strong refs so SwiftUI doesn't deinit them on
+            //    re-render — this is the most common first-try bug.
+            self.chat = chat
+            self.pump = pump
+            self.renderer = renderer
+            self.coordinator = coord
+            self.phase = .live
+        } catch {
+            phase = .error(error.localizedDescription)
+        }
+    }
+}
+```
+
+Host the renderer in your SwiftUI tree. The representables below
+are explicit struct types because `NSViewRepresentable` /
+`UIViewRepresentable` are protocols — they don't take a closure.
+Returning the **same** instance from `makeXxxView` and
+`updateXxxView` is essential; SwiftUI may rebuild the parent view
+many times per second, but the renderer must persist or the
+avatar disappears.
+
+```swift
+#if canImport(AppKit)
+import AppKit
+struct AvatarHost: NSViewRepresentable {
+    let view: AvatarRendererView
+    func makeNSView(context: Context) -> AvatarRendererView { view }
+    func updateNSView(_ nsView: AvatarRendererView, context: Context) {}
+}
+#elseif canImport(UIKit)
+import UIKit
+struct AvatarHost: UIViewRepresentable {
+    let view: AvatarRendererView
+    func makeUIView(context: Context) -> AvatarRendererView { view }
+    func updateUIView(_ uiView: AvatarRendererView, context: Context) {}
+}
+#endif
+
+// In your SwiftUI tree:
+if let renderer = lifecycle.renderer {
+    AvatarHost(view: renderer)
+        .frame(width: 280, height: 280)
+        .clipShape(Circle())
+}
+```
+
+## 5. Add the hardware gate (iOS)
+
+```swift
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            switch HardwareCheck.evaluate() {
+            case .supported:
+                ContentView()
+            case .unsupported(let reason):
+                UnsupportedDeviceView(reason: reason)
+            }
+        }
+    }
+}
+```
+
+## What just happened
+
+You've integrated a real-time conversational AI that runs entirely
+on the device. Speech recognition, language model, voice synthesis,
+animated face — none of it touches the network.
+
+## Next
+
+- **[Cookbook](cookbook/)** — agent swap, voice cloning, custom
+  prompts, PiP for iPad, drag-drop face replacement.
+- **[Building with AI agents](agentic.md)** — letting Claude Code
+  or Cursor pair-program with the SDK.
+- **[Troubleshooting](troubleshooting.md)** — every error pattern
+  with the fix.

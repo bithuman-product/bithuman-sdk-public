@@ -1,0 +1,208 @@
+---
+title: "Swift SDK on macOS"
+description: "Embed bitHumanKit in a Mac app — install, configure, distribute."
+---
+
+
+Run real-time voice + lip-synced avatar inside a Mac app. All
+inference runs on the device's GPU and Neural Engine; the only
+network use is the first-launch weights download and (for the
+avatar engine) a 1-request-per-minute billing heartbeat.
+
+## Prerequisites
+
+- macOS 26 (Tahoe) or later
+- Apple Silicon Mac (M3 or newer)
+- Xcode 26+
+- ~3 GB free disk for first-launch model downloads
+- A `BITHUMAN_API_KEY` if you'll use the avatar engine (audio-only
+  mode is unmetered and doesn't need a key — see [Get an API key](#get-an-api-key))
+
+## Add the package
+
+In Xcode: **File → Add Package Dependencies →**
+
+```
+https://github.com/bithuman-product/bithuman-kit.git
+```
+
+Or in `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/bithuman-product/bithuman-kit.git",
+             from: "0.8.0")
+],
+targets: [
+    .target(
+        name: "MyApp",
+        dependencies: [
+            .product(name: "bitHumanKit", package: "bithuman-kit")
+        ]
+    )
+]
+```
+
+The library product is `bitHumanKit`. `import bitHumanKit` and
+you're in.
+
+## Boot a voice agent
+
+```swift
+import SwiftUI
+import bitHumanKit
+
+@main
+struct VoiceAgentApp: App {
+    @StateObject private var lifecycle = Lifecycle()
+    var body: some Scene {
+        WindowGroup {
+            ContentView(lifecycle: lifecycle)
+                .task { await lifecycle.start() }
+        }
+    }
+}
+
+@MainActor
+final class Lifecycle: ObservableObject {
+    @Published var status = "booting…"
+    private var chat: VoiceChat?
+
+    func start() async {
+        var config = VoiceChatConfig()
+        config.localeIdentifier = "en-US"
+        config.systemPrompt = "You are a calm assistant. One sentence per turn."
+        config.voice = .preset("Aiden")
+        do {
+            let chat = VoiceChat(config: config)
+            try await chat.start()
+            self.chat = chat
+            status = "live — talk to me"
+        } catch {
+            status = "error: \(error.localizedDescription)"
+        }
+    }
+}
+```
+
+That's the whole audio-only integration. The first launch
+downloads the LLM and TTS weights to
+`~/.cache/huggingface/hub/`; subsequent launches are instant.
+
+## Get an API key
+
+The avatar pipeline is metered (2 credits/min) and requires a
+bitHuman developer key. Audio-only mode is free and unmetered —
+this section only matters if you plan to use the avatar.
+
+1. Sign in at <https://www.bithuman.ai> → Developer → API Keys.
+2. Either set `config.apiKey` directly OR export
+   `BITHUMAN_API_KEY` in the launching environment. The SDK
+   resolves them in that order.
+3. The first heartbeat happens at `chat.start()` — bad keys throw
+   `VoiceChatError.authenticationFailed` immediately, before any
+   user-visible work. 5-minute offline grace once authenticated.
+
+## Add the lip-synced avatar
+
+```swift
+let weights = try await ExpressionWeights.ensureAvailable()
+let portrait = AgentCatalog.thumbnailURL(for: AgentCatalog.defaultAgent)!
+
+config.avatar = AvatarConfig(modelPath: weights, portraitPath: portrait)
+config.apiKey = ProcessInfo.processInfo.environment["BITHUMAN_API_KEY"]
+let chat = VoiceChat(config: config)
+try await chat.start()  // throws .missingAPIKey / .authenticationFailed
+
+let coordinator = AvatarCoordinator(chat: chat)
+coordinator.bindToOrchestrator()
+coordinator.prewarmPortraitURL = portrait
+
+guard let bh = chat.bithuman else { return }
+let renderer = AvatarRendererView(
+    frame: .zero, idleFrame: chat.initialIdleFrame, clipMode: .circle)
+let pump = FramePump(
+    bithuman: bh, chat: chat, window: renderer, coordinator: coordinator)
+coordinator.framePump = pump
+chat.onBargeIn = { [weak pump] in pump?.buffer.flushSpeech() }
+```
+
+Host the `renderer` in your SwiftUI tree:
+
+```swift
+struct AvatarHost: NSViewRepresentable {
+    let view: AvatarRendererView
+    func makeNSView(context: Context) -> AvatarRendererView { view }
+    func updateNSView(_ nsView: AvatarRendererView, context: Context) {}
+}
+```
+
+The first call to `ExpressionWeights.ensureAvailable()` downloads
+the universal weights bundle (~1.6 GB) to
+`~/.cache/bithuman/expression/`. SHA-256 verified; cached.
+
+## Permissions
+
+Mac apps need:
+
+- **Microphone** — System Settings prompts on first `chat.start()`.
+- **Speech Recognition** — Same.
+
+Add to your app's `Info.plist`:
+
+```xml
+<key>NSMicrophoneUsageDescription</key>
+<string>Talk to your on-device assistant.</string>
+<key>NSSpeechRecognitionUsageDescription</key>
+<string>Recognise what you say so the assistant can respond.</string>
+```
+
+Sandboxed apps additionally need the audio-input entitlement:
+
+```xml
+<key>com.apple.security.device.audio-input</key>
+<true/>
+```
+
+## Distribution
+
+Mac apps consuming bitHumanKit ship via the standard channels:
+
+- **Direct DMG** with Sparkle auto-update (the bitHuman Mac
+  reference app uses this; see
+  [bithuman-apps/Mac](https://github.com/bithuman-product/bithuman-apps/tree/main/Mac)).
+- **Mac App Store** — same app, archived through Xcode.
+- **Homebrew Cask** — for CLI / dev tools (see
+  [bithuman-cli](../cli.md) for the canonical example).
+
+## Reference apps
+
+- **[bithuman-mac](https://github.com/bithuman-product/bithuman-apps/tree/main/Mac)** —
+  full Mac app with floating avatar window, agent picker, voice
+  gallery, drag-drop face swap, Sparkle DMG packaging. Annotated
+  source designed to be cloned and adapted.
+- **[bithuman-cli](../cli.md)** — same SDK, CLI shell. Three modes
+  (text / voice / video). Source at
+  [bithuman-product/bithuman-kit](https://github.com/bithuman-product/bithuman-kit/tree/main/Sources/BithumanCLI).
+
+## Troubleshooting
+
+See the dedicated [Troubleshooting](../troubleshooting.md) page.
+The most common Mac-specific issues:
+
+- **App freezes on first launch** — first run downloads ~3 GB of
+  models. Add a progress UI hook via
+  `ExpressionWeights.ensureAvailable(progress:)`.
+- **Microphone permission denied silently** — your app isn't
+  sandboxed AND doesn't include the entitlement. Either sandbox
+  + entitle, or add `NSMicrophoneUsageDescription` to Info.plist.
+- **`unsupportedHardware` thrown on M2** — the engine refuses
+  pre-M3 silicon. There's no override; the silicon doesn't have
+  the bandwidth.
+
+## Next
+
+- [iOS / iPadOS deployment](ios.md)
+- [Cookbook](../cookbook/) — copy-paste recipes
+- [API reference](https://bithuman-product.github.io/bithuman-kit/) — DocC, every public type
+- [bithuman-cli](../cli.md) — what you can do without writing code
