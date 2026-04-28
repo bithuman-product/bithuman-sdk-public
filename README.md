@@ -1,8 +1,8 @@
-# bitHumanKit (binary)
+# bitHumanKit
 
-Public binary Swift Package for [bitHumanKit](https://docs.bithuman.ai/swift-sdk/overview) — bitHuman's on-device voice + lip-synced avatar SDK for Apple Silicon.
+Public Swift Package for [bitHumanKit](https://docs.bithuman.ai/swift-sdk/overview) — bitHuman's on-device voice + lip-synced avatar SDK for Apple Silicon.
 
-The source is private. This package consumes the pre-compiled `.xcframework` published to the source repo's GitHub Releases.
+This package wraps the pre-compiled `bitHumanKit.xcframework` (attached to this repo's [Releases](https://github.com/bithuman-product/bithuman-kit-public/releases)) via a SwiftPM `binaryTarget`. The source is private. Every third-party dep (MLX, HuggingFace, Tokenizers, …) is statically linked into the framework binary, so consumers add this single package and have **zero** transitive Swift Package dependencies.
 
 ## Install
 
@@ -24,8 +24,6 @@ Then:
 import bitHumanKit
 ```
 
-No transitive Swift Package dependencies — every third-party dep (MLX, HuggingFace, Tokenizers, …) is statically linked into the framework binary.
-
 ## Hardware floor
 
 Runtime-gated via `HardwareCheck.evaluate()`:
@@ -38,21 +36,32 @@ Runtime-gated via `HardwareCheck.evaluate()`:
 
 ## Documentation
 
-- 10-min quickstart: <https://docs.bithuman.ai/swift-sdk/quickstart>
-- Full guide: <https://docs.bithuman.ai/swift-sdk/overview>
-- DocC API reference: <https://bithuman-product.github.io/bithuman-kit/>
-- Reference apps: <https://github.com/bithuman-product/bithuman-apps>
+All public documentation lives at **[docs.bithuman.ai](https://docs.bithuman.ai/swift-sdk/overview)**:
+
+- [10-min quickstart](https://docs.bithuman.ai/swift-sdk/quickstart)
+- [macOS deployment guide](https://docs.bithuman.ai/swift-sdk/macos)
+- [iOS / iPadOS deployment guide](https://docs.bithuman.ai/swift-sdk/ios)
+- [bithuman-cli](https://docs.bithuman.ai/swift-sdk/cli) (no-code Mac tool)
+- [Troubleshooting](https://docs.bithuman.ai/swift-sdk/troubleshooting)
+- [Pricing & credits](https://docs.bithuman.ai/getting-started/pricing)
+- [Authentication](https://docs.bithuman.ai/getting-started/authentication)
+
+Reference apps (full annotated source for Mac, iPad, iPhone): [bithuman-product/bithuman-apps](https://github.com/bithuman-product/bithuman-apps).
 
 ## Get an API key
 
 The avatar pipeline is metered (2 credits/min). Audio-only mode is unmetered.
 
-Sign in at <https://www.bithuman.ai> → Developer → API Keys, then either set `VoiceChatConfig.apiKey` or export `BITHUMAN_API_KEY` before `chat.start()`.
+Sign in at <https://www.bithuman.ai> → Developer → API Keys, then either set `VoiceChatConfig.apiKey` or export `BITHUMAN_API_KEY` before `chat.start()`. See [docs.bithuman.ai/getting-started/authentication](https://docs.bithuman.ai/getting-started/authentication) for the full flow.
 
 ## Versioning
 
-Tags here mirror tags in the source repo. Each release of this package corresponds to a `v<X.Y.Z>-binary` release of the source repo.
+Tags follow SemVer. Each tag points at a release that publishes a matching `bitHumanKit.xcframework.zip` artifact on the [Releases](https://github.com/bithuman-product/bithuman-kit-public/releases) page.
+
+## Issues & feedback
+
+File issues at <https://github.com/bithuman-product/bithuman-kit-public/issues>.
 
 ## License
 
-Binary distribution. Use of this SDK is governed by the [bitHuman Terms of Service](https://www.bithuman.ai/terms). Model weights are proprietary and downloaded at runtime from authenticated endpoints.
+Binary distribution. Use is governed by the [bitHuman Terms of Service](https://www.bithuman.ai/terms). Model weights are proprietary and downloaded at runtime from authenticated endpoints.
