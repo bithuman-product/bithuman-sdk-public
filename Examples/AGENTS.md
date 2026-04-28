@@ -1,6 +1,6 @@
 # bitHuman Examples — repo guide
 
-A collection of runnable examples that wire the [bithuman](https://pypi.org/project/bithuman/) Python SDK, the [bitHumanKit](https://github.com/bithuman-product/bithuman-kit) Swift SDK, and the Platform REST API into end-to-end stacks. One canonical example per (model × surface) combination — minimal business logic, so the avatar integration stays readable.
+A collection of runnable examples that wire the [bithuman](https://pypi.org/project/bithuman/) Python SDK, the [bitHumanKit](https://github.com/bithuman-product/bithuman-kit-public) Swift SDK, and the Platform REST API into end-to-end stacks. One canonical example per (model × surface) combination — minimal business logic, so the avatar integration stays readable.
 
 ## What is bitHuman?
 
@@ -41,7 +41,7 @@ bithuman-docs/                        Mintlify source for docs.bithuman.ai
 
 - Product / API / deployment: [docs.bithuman.ai](https://docs.bithuman.ai) (source in [`bithuman-docs/`](bithuman-docs/))
 - Python SDK surface: [pypi.org/project/bithuman](https://pypi.org/project/bithuman/) (the SDK source repo is private; internal links from PyPI point at docs.bithuman.ai)
-- Swift SDK: [github.com/bithuman-product/bithuman-kit](https://github.com/bithuman-product/bithuman-kit) — public source. DocC at [bithuman-product.github.io/bithuman-kit/](https://bithuman-product.github.io/bithuman-kit/).
+- Swift SDK: [github.com/bithuman-product/bithuman-kit-public](https://github.com/bithuman-product/bithuman-kit-public) — binary Swift Package (XCFramework). Source is private; the public package wraps the released framework via `binaryTarget`.
 - Swift reference apps (Mac, iPad, iPhone): [github.com/bithuman-product/bithuman-apps](https://github.com/bithuman-product/bithuman-apps)
 - bithuman-cli (Homebrew): `brew tap bithuman-product/bithuman && brew install bithuman-cli`
 - REST API: [`docs.bithuman.ai/api-reference/openapi.yaml`](https://docs.bithuman.ai/api-reference/openapi.yaml)
