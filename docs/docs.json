@@ -156,8 +156,17 @@
   },
   "seo": {
     "metatags": {
-      "canonical": "https://docs.bithuman.ai"
-    }
+      "canonical": "https://docs.bithuman.ai",
+      "og:site_name": "bitHuman Docs",
+      "og:type": "website",
+      "og:image": "https://docs.bithuman.ai/images/bithuman-banner.jpg",
+      "twitter:card": "summary_large_image",
+      "twitter:site": "@bithuman_ai",
+      "twitter:image": "https://docs.bithuman.ai/images/bithuman-banner.jpg",
+      "description": "bitHuman real-time avatar animation API documentation. Two models (Essence, Expression). Three surfaces (Cloud REST/LiveKit, self-hosted Python+Docker, on-device Apple Silicon Swift SDK + bithuman-cli).",
+      "keywords": "bitHuman, avatar API, real-time lip sync, talking avatar, AI digital human, Apple Silicon avatar, on-device avatar, LiveKit avatar plugin, NVIDIA avatar Docker, Essence Expression model, bitHumanKit, bithuman-cli"
+    },
+    "indexing": "navigable"
   },
   "footer": {
     "socials": {

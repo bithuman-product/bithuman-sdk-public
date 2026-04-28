@@ -1,15 +1,20 @@
 # bitHuman — Complete Documentation
 
-> Real-time avatar animation API. Turn any face image or pre-built .imx
-> model into a lifelike talking avatar with audio-driven lip sync.
-> Python SDK, REST API, LiveKit plugin, and Docker containers.
+> Real-time avatar animation API. Audio in, animated face out at 25 FPS.
+> Two avatar models — Essence (CPU, .imx) and Expression (GPU / Apple
+> Silicon M3+). Three runtime surfaces — bitHuman Cloud (managed),
+> self-hosted server (Python CPU + Docker GPU), and on-device Apple
+> Silicon (Swift SDK + bithuman-cli).
 
 Base URL: https://api.bithuman.ai
-Authentication: api-secret header on every request
+Authentication: api-secret header on every request (or BITHUMAN_API_KEY for the Swift SDK)
 Python SDK: pip install bithuman
 LiveKit Plugin: pip install livekit-plugins-bithuman
 GPU Container: docker.io/sgubithuman/expression-avatar:latest
+Swift Package: https://github.com/bithuman-product/bithuman-kit (from "0.8.1")
+CLI: brew tap bithuman-product/bithuman && brew install bithuman-cli
 Examples: https://github.com/bithuman-product/bithuman-examples
+Swift reference apps: https://github.com/bithuman-product/bithuman-apps
 Dashboard: https://www.bithuman.ai
 
 ---
@@ -19,12 +24,16 @@ Dashboard: https://www.bithuman.ai
 ## bitHuman — Real-Time Avatar Animation API
 URL: https://docs.bithuman.ai/introduction
 
-bitHuman creates digital avatars that lip-sync to audio in real-time. Feed in audio — get back an animated face at 25 FPS. Use it to build AI companions, customer support avatars, virtual tutors, game NPCs, and anything that needs a visual character that speaks.
+bitHuman creates digital avatars that lip-sync to audio in real time. Feed audio in, get an animated face out at 25 FPS. Use it to build AI companions, customer-support avatars, virtual tutors, game NPCs, and anything that needs a visual character that speaks.
 
-**Three ways to run:**
-- **Cloud** — no GPU, no model files. Just an API secret.
-- **Self-Hosted CPU** — download an `.imx` model, run on any machine.
-- **Self-Hosted GPU** — any face image, 1.3B parameter model, 250+ FPS.
+**Two models:**
+- **Essence** — CPU, pre-rendered `.imx`, gestures, 24/7 timeout-free.
+- **Expression** — AI-generated face from any image; GPU or Apple Silicon M3+.
+
+**Three runtime surfaces:**
+- **bitHuman Cloud** — REST API or LiveKit plugin, managed by us.
+- **Self-hosted server** — Python SDK (Essence/CPU) or Docker container (Expression/GPU).
+- **On-device Apple Silicon** — `bitHumanKit` Swift Package + `bithuman-cli`, Mac/iPad/iPhone.
 
 ## Quick Start
 
