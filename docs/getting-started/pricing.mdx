@@ -1,0 +1,100 @@
+---
+title: "Pricing & credits"
+description: "How bitHuman bills — credits per active minute by model and surface, free tier, and how to check your balance."
+icon: "credit-card"
+---
+
+bitHuman bills in **credits** consumed per **active minute** of avatar runtime. Audio-only mode (Swift SDK without an attached avatar) is unmetered. Plans top up credits monthly; overage is pay-as-you-go.
+
+## At a glance
+
+| Surface | Model | Cost | Notes |
+|---|---|---|---|
+| **bitHuman Cloud** | Essence | 2 cr/min | CPU rendering on bitHuman's servers |
+| **bitHuman Cloud** | Expression | 4 cr/min | GPU rendering on bitHuman's servers |
+| **Self-hosted (Python SDK)** | Essence | 1 cr/min | CPU on your hardware |
+| **Self-hosted (GPU container)** | Expression | 2 cr/min | NVIDIA GPU on your hardware |
+| **On-device (Swift SDK)** | Expression | 2 cr/min | Active avatar minutes only |
+| **On-device (Swift SDK), audio-only** | — | **Free** | No avatar, no metering |
+| **Agent generation** | — | 250 cr (one-time) | Per `.imx` model built from your photo / video |
+
+A "credit minute" is wall-clock time the engine is actively producing frames (or, on-device, the wall-clock time between `chat.start()` and `chat.stop()` with avatar attached). Idle / paused / disconnected time isn't billed.
+
+## Free tier
+
+- **99 credits / month** at signup, no credit card required.
+- Generates ~50 minutes of cloud Essence or ~25 minutes of cloud Expression.
+- Resets monthly. Unused credits don't roll over.
+
+## Plans
+
+| Plan | Price | Credits / month | Concurrent sessions |
+|---|---|---|---|
+| **Free** | $0 | 99 | 2 |
+| **Creator** | $20 | 1,200 | 5 |
+| **Pro** | $99 | 7,500 | 10 |
+| **Enterprise** | Contact | Custom | Custom |
+
+Current pricing is shown in your [bitHuman dashboard](https://www.bithuman.ai/#library) — the credit balance is on the top navigation bar.
+
+## How metering works
+
+### Server-side surfaces (Cloud, self-hosted Python, self-hosted GPU)
+
+The Python SDK and Docker container exchange a `BITHUMAN_API_SECRET` for a short-lived runtime token, then heartbeat back to `api.bithuman.ai` once per minute while the engine is generating frames. Each heartbeat increments your usage counter.
+
+### On-device surface (Swift SDK)
+
+The Swift SDK calls `https://api.bithuman.ai/v1/runtime-tokens/request` once on `chat.start()` (sync — bad keys fail fast with `VoiceChatError.authenticationFailed`), then heartbeats once per minute while the avatar is attached. Audio-only mode (no `AvatarConfig`) doesn't authenticate or heartbeat at all — it's fully offline and free.
+
+If the device loses connectivity mid-session, the SDK has a **5-minute offline grace period** before it surfaces a billing error and pauses the avatar.
+
+## Check your balance
+
+```bash
+curl -X GET https://api.bithuman.ai/v2/credit-summaries \
+  -H "api-secret: $BITHUMAN_API_SECRET"
+```
+
+Response:
+```json
+{
+  "balance": 1842,
+  "plan": "creator",
+  "renews_at": "2026-05-15T00:00:00Z",
+  "estimated_minutes": {
+    "essence_cloud": 921,
+    "expression_cloud": 460,
+    "expression_on_device": 921
+  }
+}
+```
+
+See [`/api-reference/credit-summaries`](/api-reference/overview) for the full schema.
+
+## What's NOT billed
+
+- **Source code, SDK installs, documentation** — free.
+- **Audio-only Swift SDK use** — voice chat with no avatar attached is unmetered and runs entirely offline.
+- **Idle time** — the engine has to be actively producing frames. Stopped or paused sessions don't accrue.
+- **Failed auth** — bad keys fail fast and don't burn credits.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Does the on-device Swift SDK work without an internet connection?">
+    Audio-only mode is fully offline. Avatar mode authenticates once on `chat.start()` and heartbeats once per minute — with a 5-minute offline grace window after the last successful heartbeat. After that, the avatar pauses until connectivity returns.
+  </Accordion>
+
+  <Accordion title="What if I run out of credits mid-session?">
+    The current heartbeat finishes, then subsequent heartbeats fail. The Python / Docker engines stop emitting frames; the Swift SDK surfaces a `VoiceChatError.authenticationFailed` and the avatar pauses. Top up credits to resume.
+  </Accordion>
+
+  <Accordion title="Are model weights billable?">
+    No. Weight downloads (the universal Expression bundle for the Swift SDK; per-agent `.imx` files for the Python SDK) are free. Only active runtime minutes count.
+  </Accordion>
+
+  <Accordion title="Can I have multiple concurrent sessions?">
+    Yes, up to your plan's concurrent-session limit. Each session bills independently while it's actively generating frames.
+  </Accordion>
+</AccordionGroup>

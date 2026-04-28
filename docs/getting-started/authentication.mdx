@@ -1,0 +1,145 @@
+---
+title: "Authentication"
+description: "Get an API secret or API key, set it for the right SDK, and verify it works — Python, REST, LiveKit, Swift."
+icon: "key"
+---
+
+bitHuman uses a single shared credential per account that authenticates every SDK and the REST API. There are two equivalent ways to refer to it depending on which SDK you're using:
+
+- **`BITHUMAN_API_SECRET`** — used by Python SDK, REST API, and LiveKit plugin (everything server-side).
+- **`BITHUMAN_API_KEY`** — used by the Swift SDK on Apple Silicon. Same value, different env var name to match Apple-platform conventions.
+
+The credential never leaves your control. Heartbeats use it to mint short-lived runtime tokens that expire in minutes; no long-lived credentials end up in any avatar process.
+
+## 1. Get a key
+
+<Steps>
+  <Step title="Sign in">
+    Sign in at [bithuman.ai](https://www.bithuman.ai) (free tier — no credit card).
+  </Step>
+  <Step title="Open Developer → API Keys">
+    Go to [https://www.bithuman.ai/#developer](https://www.bithuman.ai/#developer).
+  </Step>
+  <Step title="Create a key">
+    Click **Create new key**, name it (e.g. "production-mac"), and copy the value. **You won't be able to view it again** — store it somewhere durable.
+  </Step>
+  <Step title="Verify">
+    Run a quick `curl` to confirm:
+
+    ```bash
+    curl -X POST https://api.bithuman.ai/v1/validate \
+      -H "api-secret: YOUR_KEY"
+    ```
+
+    A 200 with `{"valid": true, ...}` means you're good.
+  </Step>
+</Steps>
+
+## 2. Set it for your SDK
+
+### Python SDK
+
+```bash
+export BITHUMAN_API_SECRET="your_key"
+```
+
+Or pass via the `api_secret` parameter:
+
+```python
+runtime = await AsyncBithuman.create(
+    model_path="avatar.imx",
+    api_secret="your_key",
+)
+```
+
+### LiveKit Plugin (`livekit-plugins-bithuman`)
+
+Same env var as the Python SDK:
+
+```bash
+export BITHUMAN_API_SECRET="your_key"
+```
+
+### REST API
+
+Pass the `api-secret` header on every request:
+
+```bash
+curl -X POST https://api.bithuman.ai/v1/agent/A78WKV4515/speak \
+  -H "api-secret: $BITHUMAN_API_SECRET" \
+  -H "content-type: application/json" \
+  -d '{"text": "Hello"}'
+```
+
+### Swift SDK (`bitHumanKit`)
+
+Either env var or config:
+
+```swift
+// Option 1: env var (recommended for development)
+config.apiKey = ProcessInfo.processInfo.environment["BITHUMAN_API_KEY"]
+
+// Option 2: explicit (for production where you fetch from Keychain)
+config.apiKey = await fetchFromBackend()
+```
+
+For Xcode development, set `BITHUMAN_API_KEY` via **Product → Scheme → Edit Scheme → Run → Arguments → Environment Variables**. **Never hardcode the key in source.**
+
+For production:
+- **DMG distribution** — bundle the key into your `.app`'s Info.plist via a build script that runs `sed` on a placeholder. Source stays clean; only the compiled artifact has the key. See the [Mac reference app's `build-mac-app.sh`](https://github.com/bithuman-product/bithuman-apps/tree/main/Mac/Scripts) for the canonical pattern.
+- **App Store** — fetch from your own backend via Keychain on first launch. Don't bundle.
+
+### bithuman-cli (Homebrew)
+
+```bash
+brew install bithuman-cli
+export BITHUMAN_API_KEY="your_key"
+bithuman-cli video
+```
+
+## 3. Audio-only Swift mode is unmetered
+
+If you only want on-device voice chat (no lip-synced avatar), **skip the API key entirely**:
+
+```swift
+var config = VoiceChatConfig()
+config.systemPrompt = "You are a helpful assistant."
+config.voice = .preset("Aiden")
+// no config.avatar = ...
+
+let chat = VoiceChat(config: config)
+try await chat.start()  // does not authenticate
+```
+
+This mode runs fully offline (after first-launch weight downloads), bills nothing, and doesn't require a key. See [pricing](/getting-started/pricing) for what's free vs metered.
+
+## How the auth flow works
+
+1. Your code provides the API secret to the SDK / REST request.
+2. The SDK exchanges it for a short-lived **runtime token** at `https://api.bithuman.ai/v1/runtime-tokens/request`.
+3. That token authenticates the actual avatar engine (heartbeat + frame production).
+4. Tokens auto-renew every minute via the heartbeat.
+5. Bad keys fail at step 2 — fast — before any user-visible work.
+
+The `BITHUMAN_API_SECRET` itself is never sent to the avatar process or any third party. It only ever travels to `api.bithuman.ai` over TLS to mint tokens.
+
+## Common errors
+
+| Error | Cause | Fix |
+|---|---|---|
+| `Authentication failed` (Python) | Wrong / missing `BITHUMAN_API_SECRET` | Verify with the `curl /v1/validate` recipe above. |
+| `VoiceChatError.missingAPIKey` (Swift) | Avatar mode without `apiKey` set | Set `config.apiKey` or export `BITHUMAN_API_KEY`. |
+| `VoiceChatError.authenticationFailed` (Swift) | Avatar mode with bad key | Confirm the key is valid; check it hasn't been rotated. |
+| 401 from REST API | Missing `api-secret` header | Add header on every request. |
+| Heartbeat goes silent after 5 minutes | Network dropped on-device | Reconnect; the SDK pauses the avatar after the 5-min grace window and resumes when heartbeats succeed. |
+
+## Rotating keys
+
+Keys can be rotated from the [Developer dashboard](https://www.bithuman.ai/#developer). Rotation invalidates the old key immediately. Live sessions using the old key will fail their next heartbeat (within ~60 s) and pause; restart with the new key to resume. There's no overlap window — rotate during a maintenance window if you have running production sessions.
+
+## Next
+
+- [Pricing & credits](/getting-started/pricing) — what each authenticated minute costs
+- [Quickstart](/getting-started/quickstart) — Python SDK in 5 minutes
+- [Swift SDK quickstart](/swift-sdk/quickstart) — on-device in 10 minutes
+- [REST API overview](/api-reference/overview) — every endpoint with examples
