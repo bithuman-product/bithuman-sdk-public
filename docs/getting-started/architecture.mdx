@@ -1,0 +1,141 @@
+---
+title: "Architecture & development model"
+description: "How bitHuman ships — the production model behind every SDK, framework, and example. Useful for understanding what runs where, what's open vs proprietary, and how releases flow."
+icon: "diagram-project"
+---
+
+This page is the source of truth for **how bitHuman is built and shipped**. If you want to understand the moving parts before integrating, or you're an AI coding agent trying to map the ecosystem, start here.
+
+## Two models, three runtime surfaces
+
+Every bitHuman integration sits in one cell of this matrix:
+
+| | bitHuman Cloud (managed) | Self-hosted server | On-device Apple Silicon |
+|---|---|---|---|
+| **Essence** (CPU, `.imx`) | LiveKit plugin + REST API | [Python SDK](/getting-started/quickstart) on CPU | — |
+| **Expression** (GPU / M3+) | LiveKit plugin + REST API | [Docker container](/deployment/self-hosted-gpu) on Linux+NVIDIA | [Swift SDK](/swift-sdk/overview) + bithuman-cli |
+
+Models are explained on [/getting-started/models](/getting-started/models). Surfaces are explained on [/getting-started/how-it-works](/getting-started/how-it-works).
+
+## What's open, what's proprietary
+
+| Surface | Visibility | License |
+|---|---|---|
+| **Examples** ([bithuman-examples](https://github.com/bithuman-product/bithuman-examples)) | Public | MIT |
+| **Reference apps** ([bithuman-apps](https://github.com/bithuman-product/bithuman-apps)) | Public | Apache-2.0 |
+| **Homebrew tap** ([homebrew-bithuman](https://github.com/bithuman-product/homebrew-bithuman)) | Public | Apache-2.0 |
+| **Public binary Swift Package** ([bithuman-kit-public](https://github.com/bithuman-product/bithuman-kit-public)) | Public — wraps the released `.xcframework` | bitHuman ToS |
+| **Forked deps** ([swift-huggingface](https://github.com/bithuman-product/swift-huggingface), [mlx-audio-swift](https://github.com/bithuman-product/mlx-audio-swift)) | Public | Apache-2.0 (upstream license preserved) |
+| **Docs site source** ([bithuman-examples/bithuman-docs](https://github.com/bithuman-product/bithuman-examples/tree/main/bithuman-docs)) | Public | — |
+| **Swift SDK source** (`bitHumanKit`) | **Private** | Proprietary |
+| **Python SDK source** (`bithuman` on PyPI) | **Private** | Proprietary |
+| **Cloud runtime** (`api.bithuman.ai`) | **Closed** | Proprietary |
+| **Model weights** (downloaded at runtime) | **Closed** | Proprietary, gated by API key |
+
+The IP that matters — model weights, the `.imx` build pipeline, the cloud Expression GPU service, billing/heartbeat backend — is server-side and access-gated. The Swift glue and Python SDK code is private but compiled into the public binary distribution.
+
+## Swift SDK distribution flow
+
+The Swift SDK is the only surface where source privacy required engineering work. Here's how it ships:
+
+```
+bithuman-kit (private, source)
+    │
+    │  Scripts/build-binary-xcframework.sh
+    │    • per-target -enable-library-evolution (only on bitHumanKit)
+    │    • internal import for every third-party dep
+    │    • static merge of all dep object code into one libbitHumanKit.a
+    │    • assemble bitHumanKit.framework × {macOS, iOS, iOS-sim} arm64 slices
+    │    • xcodebuild -create-xcframework merge → bitHumanKit.xcframework.zip
+    ▼
+bithuman-kit-public (public, binaryTarget)
+    │
+    │  Package.swift declares:
+    │    .binaryTarget(name: "bitHumanKit",
+    │                  url: "https://.../bithuman-kit-public/releases/...",
+    │                  checksum: "...")
+    │
+    │  Tags 0.8.1, 0.8.2 each correspond to a release with the
+    │  matching .xcframework.zip artifact attached.
+    ▼
+Consumer app (Mac/iPad/iPhone)
+    │
+    │  .package(url: "bithuman-kit-public.git", from: "0.8.1")
+    │  import bitHumanKit
+    │
+    │  Zero transitive Swift Package dependencies — every dep
+    │  (MLX, HuggingFace, Tokenizers, …) is statically linked
+    │  into the framework binary. Just add the package and go.
+    ▼
+At runtime
+    │
+    │  Audio-only mode: no network, fully offline, unmetered.
+    │  Avatar mode: 1-request-per-minute heartbeat to api.bithuman.ai
+    │    for billing (5-min offline grace window).
+    ▼
+[Voice + lip-synced avatar @ 25 FPS, on the user's Apple Silicon device]
+```
+
+## Model weights
+
+Both Essence (`.imx`) and Expression (universal weights bundle for the Swift SDK; per-agent bundles for Python) live in **proprietary cloud storage**. They're downloaded at runtime from authenticated endpoints and cached locally:
+
+| Surface | Cache location | First-launch download |
+|---|---|---|
+| Python SDK / LiveKit plugin (Essence) | `~/.cache/bithuman/models/` | ~500 MB per `.imx` |
+| Python SDK / LiveKit plugin (Expression) | `~/.cache/huggingface/hub/` | varies by agent |
+| Swift SDK (Expression on-device) | `~/.cache/bithuman/expression/` | ~1.6 GB universal bundle |
+| bithuman-cli (video mode) | Same as Swift SDK | ~7 GB (LLM + TTS + Expression) |
+
+Weight downloads are SHA-256 verified and cached. Subsequent launches are instant.
+
+## Build & release pipeline
+
+| Component | Repo | How releases happen |
+|---|---|---|
+| **Python SDK** | private | PyPI publish on tag |
+| **Swift SDK binary** | bithuman-kit-public | `Scripts/build-binary-xcframework.sh` on the source repo's `binary-dist-v<X.Y.Z>` branch → manual `gh release create` on the public repo with the xcframework.zip + computed SHA256 |
+| **bithuman-cli** | homebrew-bithuman | Notarised `.tar.gz` per release; formula bumps `url` + `sha256` |
+| **Docker GPU container** | private | `docker push docker.io/sgubithuman/expression-avatar` |
+| **Docs** | bithuman-examples | Every push to `main` triggers Mintlify auto-deploy to docs.bithuman.ai |
+| **Reference apps** | bithuman-apps | TestFlight / App Store via Xcode archive (iPad, iPhone) and Sparkle DMG (Mac) |
+
+## Authentication & billing
+
+The same credential drives every surface, with two equivalent env-var names matching platform conventions:
+
+```
+BITHUMAN_API_SECRET    # Python SDK, REST API, LiveKit plugin
+BITHUMAN_API_KEY       # Swift SDK (Apple-platform convention)
+```
+
+The SDK never holds the long-lived secret in process memory: on `chat.start()` (Swift) or runtime initialisation (Python/Docker), it exchanges the secret for a short-lived **runtime token** at `https://api.bithuman.ai/v1/runtime-tokens/request`. Tokens auto-renew on a 1-request-per-minute heartbeat. Failed heartbeats trigger a 5-minute offline grace window before the avatar pauses.
+
+Full flow + per-SDK setup: [/getting-started/authentication](/getting-started/authentication). Pricing: [/getting-started/pricing](/getting-started/pricing).
+
+## Why this shape?
+
+A few design constraints drove the architecture:
+
+- **Source privacy for the Swift SDK.** The heartbeat / billing / engine glue compiles into the binary; the public package just wraps it. Consumers `import bitHumanKit` and never see the source.
+- **Zero transitive deps for SwiftPM consumers.** `internal import` on every third-party module + static merge means a consumer's `Package.swift` only needs `bithuman-kit-public` — no `mlx-swift`, no `swift-transformers`, no `swift-huggingface`. Cuts integration friction dramatically.
+- **Same credential for every surface.** `BITHUMAN_API_KEY` and `BITHUMAN_API_SECRET` are the same value; only the env-var name differs by platform convention.
+- **Audio-only Swift mode is unmetered.** The Swift SDK without an attached avatar runs fully offline and bills nothing — encourages experimentation.
+- **Model weights stay cloud-gated.** The proprietary IP is the model, not the glue. Code can be open-ish; weights stay locked.
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Pick a surface" icon="route" href="/getting-started/how-it-works">
+    Decision tree across cloud / self-hosted / on-device
+  </Card>
+  <Card title="Quickstart (Python)" icon="rocket" href="/getting-started/quickstart">
+    `pip install bithuman` in 5 minutes
+  </Card>
+  <Card title="Quickstart (Swift)" icon="apple" href="/swift-sdk/quickstart">
+    `bitHumanKit` Swift Package in 10 minutes
+  </Card>
+  <Card title="REST API" icon="code" href="/api-reference/overview">
+    `curl https://api.bithuman.ai/v1/...` — any language
+  </Card>
+</CardGroup>

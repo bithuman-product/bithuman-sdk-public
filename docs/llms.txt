@@ -66,6 +66,7 @@ Set `BITHUMAN_API_SECRET` from [https://www.bithuman.ai](https://www.bithuman.ai
 
 - [Quick Start](https://docs.bithuman.ai/getting-started/quickstart): Install SDK, create first avatar in 5 minutes. Python async API with push_audio/run pattern.
 - [How It Works](https://docs.bithuman.ai/getting-started/how-it-works): Architecture overview, key concepts (Runtime, AvatarSession, LiveKit Room, .imx model), three deployment modes compared.
+- [Architecture & Development Model](https://docs.bithuman.ai/getting-started/architecture): What's open vs proprietary, Swift binary distribution flow, build & release pipeline, model weight cache locations, design rationale.
 - [Authentication](https://docs.bithuman.ai/getting-started/authentication): How to get an API secret/key, set it for each SDK (Python/REST/LiveKit/Swift), runtime token flow, key rotation, audio-only Swift mode (unmetered, no key needed).
 - [Pricing & Credits](https://docs.bithuman.ai/getting-started/pricing): Credits per active minute by model and surface, free tier (99 cr/month), check balance via /v2/credit-summaries, what's NOT billed, FAQ on offline grace period.
 - [Use Cases](https://docs.bithuman.ai/getting-started/use-cases): Customer support, virtual tutor, digital receptionist, AI companion, game NPC, accessibility — with architecture patterns for each.
