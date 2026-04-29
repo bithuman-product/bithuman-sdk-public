@@ -22,19 +22,32 @@ services:
   # They are cached in the 'bithuman-models' Docker volume.
   expression-avatar:
     image: docker.io/sgubithuman/expression-avatar:latest
-    restart: always
+    restart: unless-stopped
+    init: true   # PID 1 reaps zombie processes; complements dumb-init in image
     dns:
       - 8.8.8.8
       - 1.1.1.1
     deploy:
       resources:
+        # Cap host RAM so a runaway container can't OOM the host.
+        limits:
+          memory: ${EXPRESSION_MEM_LIMIT:-20G}
         reservations:
+          memory: ${EXPRESSION_MEM_RESERVATION:-12G}
           devices:
             - driver: nvidia
               device_ids: ["${CUDA_VISIBLE_DEVICES:-0}"]
               capabilities: [gpu]
+    shm_size: ${EXPRESSION_SHM_SIZE:-2g}           # Shared memory for torch DataLoader / IPC
     environment:
       - BITHUMAN_API_SECRET=${BITHUMAN_API_SECRET}
+      # Concurrency — tune to your GPU. Defaults: 8 sessions, 10-min idle timeout.
+      - MAX_SESSIONS=${MAX_SESSIONS:-8}
+      - SESSION_IDLE_TIMEOUT=${SESSION_IDLE_TIMEOUT:-600}
+      - AUTO_PREWARM=${AUTO_PREWARM:-true}
+      # Task history retention (prevents unbounded growth on long-running containers).
+      - TASK_RETENTION_SECONDS=${TASK_RETENTION_SECONDS:-3600}
+      - MAX_TASK_HISTORY=${MAX_TASK_HISTORY:-1000}
     ports:
       - "${GPU_PORT:-8089}:8089"   # Expose for debugging (curl localhost:8089/health)
     volumes:
@@ -47,6 +60,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 300s   # First run: ~5 GB download + ~48s compilation
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
 
   agent:
     build:
