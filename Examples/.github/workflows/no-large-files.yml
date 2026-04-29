@@ -1,0 +1,53 @@
+name: No large files
+
+# Reject pushes / PRs that add a file >10 MB without git-lfs. Big
+# binary blobs (model weights, videos, PDFs) belong in object
+# storage, not git history — once committed they're stuck there
+# forever and bloat every clone.
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  size-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reject blobs over 10 MB
+        env:
+          MAX_BYTES: '10485760'
+          BASE_REF: ${{ github.base_ref || github.event.before }}
+        run: |
+          set -euo pipefail
+          if [ -n "${BASE_REF:-}" ] && [ "${BASE_REF}" != "0000000000000000000000000000000000000000" ]; then
+            RANGE="origin/${BASE_REF#refs/heads/}...HEAD"
+            git fetch --depth=50 origin "${BASE_REF#refs/heads/}" 2>/dev/null || RANGE="HEAD"
+          else
+            RANGE="HEAD"
+          fi
+          OFFENDERS=$(
+            if [ "$RANGE" = "HEAD" ]; then
+              git ls-tree -r --long HEAD
+            else
+              git diff --diff-filter=AM --name-only "$RANGE" \
+                | while read -r p; do
+                    [ -n "$p" ] && git ls-tree --long HEAD -- "$p" 2>/dev/null
+                  done
+            fi \
+            | awk -v MAX="$MAX_BYTES" '$4+0 > MAX { printf "%.1fMB  %s\n", $4/1048576, $5 }'
+          )
+          if [ -n "$OFFENDERS" ]; then
+            echo "::error::Files exceeding 10 MB were added. Use git-lfs or external object storage instead."
+            echo ""
+            echo "$OFFENDERS"
+            exit 1
+          fi
+          echo "OK — no oversized blobs in this change."
