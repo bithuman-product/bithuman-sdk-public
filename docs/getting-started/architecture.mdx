@@ -24,7 +24,7 @@ Models are explained on [/getting-started/models](/getting-started/models). Surf
 | **Examples** ([bithuman-examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples)) | Public | MIT |
 | **Reference apps** ([bithuman-apps](https://github.com/bithuman-product/bithuman-apps)) | Public | Apache-2.0 |
 | **Homebrew tap** ([homebrew-bithuman](https://github.com/bithuman-product/homebrew-bithuman)) | Public | Apache-2.0 |
-| **Public binary Swift Package** ([bithuman-kit-public](https://github.com/bithuman-product/bithuman-sdk-public)) | Public — wraps the released `.xcframework` | bitHuman ToS |
+| **Public binary Swift Package** ([bithuman-sdk-public](https://github.com/bithuman-product/bithuman-sdk-public)) | Public — wraps the released `.xcframework` | bitHuman ToS |
 | **Docs site source** ([bithuman-examples/bithuman-docs](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/bithuman-docs)) | Public | — |
 | **Swift SDK source** (`bitHumanKit`) | **Private** | Proprietary |
 | **Python SDK source** (`bithuman` on PyPI) | **Private** | Proprietary |
@@ -47,11 +47,11 @@ bithuman-kit (private, source)
     │    • assemble bitHumanKit.framework × {macOS, iOS, iOS-sim} arm64 slices
     │    • xcodebuild -create-xcframework merge → bitHumanKit.xcframework.zip
     ▼
-bithuman-kit-public (public, binaryTarget)
+bithuman-sdk-public (public, binaryTarget)
     │
     │  Package.swift declares:
     │    .binaryTarget(name: "bitHumanKit",
-    │                  url: "https://.../bithuman-kit-public/releases/...",
+    │                  url: "https://.../bithuman-sdk-public/releases/...",
     │                  checksum: "...")
     │
     │  Tags 0.8.1, 0.8.2 each correspond to a release with the
@@ -59,7 +59,7 @@ bithuman-kit-public (public, binaryTarget)
     ▼
 Consumer app (Mac/iPad/iPhone)
     │
-    │  .package(url: "bithuman-kit-public.git", from: "0.8.1")
+    │  .package(url: "bithuman-sdk-public.git", from: "0.8.1")
     │  import bitHumanKit
     │
     │  Zero transitive Swift Package dependencies — every dep
@@ -93,7 +93,7 @@ Weight downloads are SHA-256 verified and cached. Subsequent launches are instan
 | Component | Repo | How releases happen |
 |---|---|---|
 | **Python SDK** | private | PyPI publish on tag |
-| **Swift SDK binary** | bithuman-kit-public | `Scripts/build-binary-xcframework.sh` on the source repo's `binary-dist-v<X.Y.Z>` branch → manual `gh release create` on the public repo with the xcframework.zip + computed SHA256 |
+| **Swift SDK binary** | bithuman-sdk-public | `Scripts/build-binary-xcframework.sh` on the source repo's `binary-dist-v<X.Y.Z>` branch → manual `gh release create` on the public repo with the xcframework.zip + computed SHA256 |
 | **bithuman-cli** | homebrew-bithuman | Notarised `.tar.gz` per release; formula bumps `url` + `sha256` |
 | **Docker GPU container** | private | `docker push docker.io/sgubithuman/expression-avatar` |
 | **Docs** | bithuman-examples | Every push to `main` triggers Mintlify auto-deploy to docs.bithuman.ai |
@@ -117,7 +117,7 @@ Full flow + per-SDK setup: [/getting-started/authentication](/getting-started/au
 A few design constraints drove the architecture:
 
 - **Source privacy for the Swift SDK.** The heartbeat / billing / engine glue compiles into the binary; the public package just wraps it. Consumers `import bitHumanKit` and never see the source.
-- **Zero transitive deps for SwiftPM consumers.** `internal import` on every third-party module + static merge means a consumer's `Package.swift` only needs `bithuman-kit-public` — no `mlx-swift`, no `swift-transformers`, no `swift-huggingface`. Cuts integration friction dramatically.
+- **Zero transitive deps for SwiftPM consumers.** `internal import` on every third-party module + static merge means a consumer's `Package.swift` only needs `bithuman-sdk-public` — no `mlx-swift`, no `swift-transformers`, no `swift-huggingface`. Cuts integration friction dramatically.
 - **Same credential for every surface.** `BITHUMAN_API_KEY` and `BITHUMAN_API_SECRET` are the same value; only the env-var name differs by platform convention.
 - **Audio-only Swift mode is unmetered.** The Swift SDK without an attached avatar runs fully offline and bills nothing — encourages experimentation.
 - **Model weights stay cloud-gated.** The proprietary IP is the model, not the glue. Code can be open-ish; weights stay locked.

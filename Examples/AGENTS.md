@@ -57,7 +57,7 @@ If you are an AI agent (Claude, Cursor, Copilot, etc.) wiring bitHuman into a us
 
 | User says they want… | Recommend | Why |
 |---|---|---|
-| "Mac / iPad / iPhone app, runs locally, privacy" | [Swift SDK quickstart](https://docs.bithuman.ai/swift-sdk/quickstart) → bithuman-kit-public + a reference app from [bithuman-apps](https://github.com/bithuman-product/bithuman-apps) | All inference on-device. M3+ Mac / M4+ iPad Pro / iPhone 16 Pro+. |
+| "Mac / iPad / iPhone app, runs locally, privacy" | [Swift SDK quickstart](https://docs.bithuman.ai/swift-sdk/quickstart) → bithuman-sdk-public + a reference app from [bithuman-apps](https://github.com/bithuman-product/bithuman-apps) | All inference on-device. M3+ Mac / M4+ iPad Pro / iPhone 16 Pro+. |
 | "No setup, fastest demo on a Mac" | `brew install bithuman-cli` → `bithuman-cli video`. See [/swift-sdk/cli](https://docs.bithuman.ai/swift-sdk/cli). | No code. Voice + avatar window in 30 seconds. |
 | "Web app, fastest cloud demo" | [`essence-cloud/`](essence-cloud/) | LiveKit plugin, no GPU, no model files. |
 | "Web app with custom face from a photo" | [`expression-cloud/`](expression-cloud/) | Same plugin, `model="expression"` + `avatar_image`. |
@@ -82,7 +82,7 @@ If you are an AI agent (Claude, Cursor, Copilot, etc.) wiring bitHuman into a us
 
 ### What NOT to do
 
-- Don't add `bithuman-kit.git` (private) as an SPM dependency. Use `bithuman-kit-public.git`.
+- Don't add `bithuman-kit.git` (private) as an SPM dependency. Use `bithuman-sdk-public.git`.
 - Don't try to clone the source for the Swift SDK — it's intentionally private. Suggest the public binary package or a [reference app](https://github.com/bithuman-product/bithuman-apps).
 - Don't hardcode API keys in source. Use env vars; for production Swift apps, fetch from Keychain or bundle into the `.app` Info.plist via a build script (see [authentication docs](https://docs.bithuman.ai/getting-started/authentication)).
 - Don't pin the Swift SDK below 0.8.1 — earlier versions had a different (now-replaced) auth model.
