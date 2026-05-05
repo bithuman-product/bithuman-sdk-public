@@ -27,7 +27,7 @@ If you find a bug or have a suggestion for improvement:
 
 ```bash
 # Clone your fork
-git clone https://github.com/bithuman-product/bithuman-examples.git
+git clone https://github.com/bithuman-product/bithuman-sdk-public.git
 cd bithuman-livekit-ui-example
 
 # Install dependencies

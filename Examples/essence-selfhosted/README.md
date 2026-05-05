@@ -28,7 +28,7 @@ python generation.py --prompt "You are a friendly assistant" --download --output
 
 ```bash
 # 1. Clone and enter the directory
-git clone https://github.com/bithuman-product/bithuman-examples.git
+git clone https://github.com/bithuman-product/bithuman-sdk-public.git
 cd bithuman-examples/essence-selfhosted
 
 # 2. Place your .imx model(s)

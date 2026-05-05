@@ -15,7 +15,7 @@ Everything else — GPU requirements, image size, startup time, performance, `/h
 ## Setup
 
 ```bash
-git clone https://github.com/bithuman-product/bithuman-examples.git
+git clone https://github.com/bithuman-product/bithuman-sdk-public.git
 cd bithuman-examples/expression-selfhosted-livekit-cloud
 
 cp .env.example .env

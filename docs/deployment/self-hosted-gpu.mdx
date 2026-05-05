@@ -83,10 +83,10 @@ Once healthy, the container is ready to accept avatar sessions via `/launch`.
 
 ## Docker Compose Setup
 
-Use the [full example](https://github.com/bithuman-product/bithuman-examples/tree/main/expression-selfhosted) for a complete setup with LiveKit, an AI agent, and a web frontend:
+Use the [full example](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/expression-selfhosted) for a complete setup with LiveKit, an AI agent, and a web frontend:
 
 ```bash
-git clone https://github.com/bithuman-product/bithuman-examples.git
+git clone https://github.com/bithuman-product/bithuman-sdk-public.git
 cd bithuman-examples/expression-selfhosted
 
 # Configure environment
@@ -430,7 +430,7 @@ services:
         max-file: "5"
 ```
 
-The full reference compose at [`bithuman-examples/expression-selfhosted`](https://github.com/bithuman-product/bithuman-examples/tree/main/expression-selfhosted) ships with all of these defaults.
+The full reference compose at [`bithuman-examples/expression-selfhosted`](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/expression-selfhosted) ships with all of these defaults.
 
 ---
 
@@ -487,7 +487,7 @@ docker run --gpus all -p 8089:8089 --restart always \
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="Docker Example" icon="docker" href="https://github.com/bithuman-product/bithuman-examples/tree/main/expression-selfhosted">
+  <Card title="Docker Example" icon="docker" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/expression-selfhosted">
     Full GPU setup with LiveKit server, AI agent, and web frontend
   </Card>
   <Card title="LiveKit Agents" icon="book" href="https://docs.livekit.io/agents">

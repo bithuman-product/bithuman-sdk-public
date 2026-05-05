@@ -29,7 +29,7 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "bitHumanKit",
-            url: "https://github.com/bithuman-product/bithuman-kit-public/releases/download/v0.8.1/bitHumanKit.xcframework.zip",
+            url: "https://github.com/bithuman-product/bithuman-sdk-public/releases/download/v0.8.1/bitHumanKit.xcframework.zip",
             checksum: "5c536e37919b693591dff234db8627c01952ae24ae58651aeacbd875bd78e9db"
         ),
     ]

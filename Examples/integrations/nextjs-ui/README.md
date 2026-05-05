@@ -36,7 +36,7 @@ A modern, responsive web interface for connecting to bitHuman's AI agents via Li
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/bithuman-product/bithuman-examples.git
+   git clone https://github.com/bithuman-product/bithuman-sdk-public.git
    cd integrations/nextjs-ui
    ```
 
@@ -213,7 +213,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 - [bitHuman Website](https://bithuman.ai/)
 - [LiveKit Documentation](https://docs.livekit.io/)
 - [Next.js Documentation](https://nextjs.org/docs)
-- [Report Issues](https://github.com/bithuman-product/bithuman-examples/issues)
+- [Report Issues](https://github.com/bithuman-product/bithuman-sdk-public/issues)
 
 ---
 

@@ -7,10 +7,10 @@
   "homepage": "https://bithuman.ai",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bithuman-product/bithuman-examples.git"
+    "url": "https://github.com/bithuman-product/bithuman-sdk-public.git"
   },
   "bugs": {
-    "url": "https://github.com/bithuman-product/bithuman-examples/issues"
+    "url": "https://github.com/bithuman-product/bithuman-sdk-public/issues"
   },
   "keywords": [
     "bithuman",

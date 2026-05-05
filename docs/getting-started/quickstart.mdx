@@ -40,13 +40,13 @@ The SDK includes `opencv-python-headless` automatically. Do **not** install `ope
 </Note>
 
 <Tip>
-**Source, changelog, and issue tracker** for the `bithuman` PyPI package live at [bithuman-python-sdk-public](https://github.com/bithuman-product/bithuman-python-sdk-public). The runtime source is private (signing material is baked in), but the public repo mirrors the README + changelog and is where to file bugs or feature requests.
+**Source, changelog, and issue tracker** for the `bithuman` PyPI package live at [bithuman-python-sdk-public](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/python). The runtime source is private (signing material is baked in), but the public repo mirrors the README + changelog and is where to file bugs or feature requests.
 </Tip>
 
 ## 3. Run Your First Avatar
 
 You need a `.wav` audio file to drive the avatar. A sample `speech.wav` is included in each
-[example directory](https://github.com/bithuman-product/bithuman-examples), or generate your own with any TTS service.
+[example directory](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples), or generate your own with any TTS service.
 
 ### Option A — CLI (fastest, no coding)
 
@@ -59,7 +59,7 @@ Open `demo.mp4` to see your avatar talking.
 
 <Note>
   Don't have a WAV yet? Grab the bundled sample in one line:
-  `curl -O https://raw.githubusercontent.com/bithuman-product/bithuman-examples/main/essence-selfhosted/speech.wav`
+  `curl -O https://raw.githubusercontent.com/bithuman-product/bithuman-sdk-public/main/Examples/essence-selfhosted/speech.wav`
 </Note>
 
 ### Option B — Python
@@ -97,7 +97,7 @@ asyncio.run(main())
 
 Want to display the frames live? See [Audio Clip](/examples/audio-clip) for the OpenCV + speaker playback pattern.
 
-[Full working example on GitHub](https://github.com/bithuman-product/bithuman-examples/tree/main/essence-selfhosted)
+[Full working example on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/essence-selfhosted)
 
 ---
 
@@ -175,7 +175,7 @@ Want to display the frames live? See [Audio Clip](/examples/audio-clip) for the 
   </Card>
 </CardGroup>
 
-Or jump straight to the [Docker App](https://github.com/bithuman-product/bithuman-examples/tree/main/essence-selfhosted) for a complete end-to-end setup.
+Or jump straight to the [Docker App](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/essence-selfhosted) for a complete end-to-end setup.
 
 ### Guides
 

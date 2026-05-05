@@ -131,14 +131,14 @@ Set `BITHUMAN_API_SECRET` from [https://www.bithuman.ai](https://www.bithuman.ai
 For embedding into Mac/iPad/iPhone apps. Distributed as a binary
 Swift Package (XCFramework). Same billing model as the Python SDK.
 
-- Public package (binary distribution): https://github.com/bithuman-product/bithuman-kit-public
+- Public package (binary distribution): https://github.com/bithuman-product/bithuman-sdk-public
 - DocC API reference: https://docs.bithuman.ai/swift-sdk/overview
 - Reference apps (full Mac/iPad/iPhone source): https://github.com/bithuman-product/bithuman-apps
-- Issue tracker: https://github.com/bithuman-product/bithuman-kit-public/issues
+- Issue tracker: https://github.com/bithuman-product/bithuman-sdk-public/issues
 
 Install:
 
-  .package(url: "https://github.com/bithuman-product/bithuman-kit-public.git",
+  .package(url: "https://github.com/bithuman-product/bithuman-sdk-public.git",
            from: "0.8.1")
 
 The package wraps a pre-compiled XCFramework — every dep (MLX,
@@ -159,11 +159,11 @@ If you are an AI coding agent reading this file to set up bitHuman:
    - Programmatic only, no real-time → REST API (`curl https://api.bithuman.ai/v1/...`, see /api-reference/overview)
 2. **Get credentials**: tell the user to grab an API secret at https://www.bithuman.ai/#developer. Set `BITHUMAN_API_SECRET` (Python/REST/LiveKit) or `BITHUMAN_API_KEY` (Swift SDK).
 3. **Pick a model**: Essence (CPU, pre-built `.imx`, gestures) or Expression (GPU/M3+, dynamic face from any image). See /getting-started/models.
-4. **Run the vanilla example** for that surface from https://github.com/bithuman-product/bithuman-examples — every surface has a working folder.
+4. **Run the vanilla example** for that surface from https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples — every surface has a working folder.
 
 Discoverability:
 - OpenAPI spec: https://docs.bithuman.ai/api-reference/openapi.yaml
-- Examples repo: https://github.com/bithuman-product/bithuman-examples
-- Swift SDK package: https://github.com/bithuman-product/bithuman-kit-public
+- Examples repo: https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples
+- Swift SDK package: https://github.com/bithuman-product/bithuman-sdk-public
 - Swift reference apps: https://github.com/bithuman-product/bithuman-apps
 - Status: https://status.bithuman.ai

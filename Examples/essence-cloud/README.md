@@ -14,7 +14,7 @@ No local GPU, no `.imx` model files. Just an API secret and an agent ID.
 
 ```bash
 # 1. Clone and enter the directory
-git clone https://github.com/bithuman-product/bithuman-examples.git
+git clone https://github.com/bithuman-product/bithuman-sdk-public.git
 cd bithuman-examples/essence-cloud
 
 # 2. Create your .env file
