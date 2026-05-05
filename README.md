@@ -2,20 +2,20 @@
 
 Public Swift Package for [bitHumanKit](https://docs.bithuman.ai/swift-sdk/overview) — bitHuman's on-device voice + lip-synced avatar SDK for Apple Silicon.
 
-This package wraps the pre-compiled `bitHumanKit.xcframework` (attached to this repo's [Releases](https://github.com/bithuman-product/bithuman-kit-public/releases)) via a SwiftPM `binaryTarget`. The source is private. Every third-party dep (MLX, HuggingFace, Tokenizers, …) is statically linked into the framework binary, so consumers add this single package and have **zero** transitive Swift Package dependencies.
+This package wraps the pre-compiled `bitHumanKit.xcframework` (attached to this repo's [Releases](https://github.com/bithuman-product/bithuman-sdk-public/releases)) via a SwiftPM `binaryTarget`. The source is private. Every third-party dep (MLX, HuggingFace, Tokenizers, …) is statically linked into the framework binary, so consumers add this single package and have **zero** transitive Swift Package dependencies.
 
 ## Install
 
 In Xcode: **File → Add Package Dependencies →**
 
 ```
-https://github.com/bithuman-product/bithuman-kit-public.git
+https://github.com/bithuman-product/bithuman-sdk-public.git
 ```
 
 Or in `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/bithuman-product/bithuman-kit-public.git", from: "0.8.1")
+.package(url: "https://github.com/bithuman-product/bithuman-sdk-public.git", from: "0.8.1")
 ```
 
 Then:
@@ -56,11 +56,11 @@ Sign in at <https://www.bithuman.ai> → Developer → API Keys, then either set
 
 ## Versioning
 
-Tags follow SemVer. Each tag points at a release that publishes a matching `bitHumanKit.xcframework.zip` artifact on the [Releases](https://github.com/bithuman-product/bithuman-kit-public/releases) page.
+Tags follow SemVer. Each tag points at a release that publishes a matching `bitHumanKit.xcframework.zip` artifact on the [Releases](https://github.com/bithuman-product/bithuman-sdk-public/releases) page.
 
 ## Issues & feedback
 
-File issues at <https://github.com/bithuman-product/bithuman-kit-public/issues>.
+File issues at <https://github.com/bithuman-product/bithuman-sdk-public/issues>.
 
 ## License
 

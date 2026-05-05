@@ -31,7 +31,7 @@
       "anchors": [
         {
           "anchor": "GitHub",
-          "href": "https://github.com/bithuman-product/bithuman-examples",
+          "href": "https://github.com/bithuman-product/bithuman-sdk-public",
           "icon": "github"
         },
         {
@@ -174,7 +174,7 @@
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/bithuman-product/bithuman-examples",
+      "github": "https://github.com/bithuman-product/bithuman-sdk-public",
       "discord": "https://discord.gg/ES953n7bPA"
     }
   },
