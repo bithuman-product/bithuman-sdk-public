@@ -27,7 +27,7 @@ integrations/
   macos-offline/                      Fully offline macOS (Ollama + Apple Speech)
   nextjs-ui/                          Drop-in Next.js LiveKit frontend
   web-ui/                             Gradio + FastRTC browser UI
-bithuman-docs/                        Mintlify source for docs.bithuman.ai
+../docs/                              Mintlify source for docs.bithuman.ai (sibling of Examples/)
 ```
 
 ## Conventions
@@ -39,10 +39,10 @@ bithuman-docs/                        Mintlify source for docs.bithuman.ai
 
 ## Authoritative docs
 
-- Product / API / deployment: [docs.bithuman.ai](https://docs.bithuman.ai) (source in [`bithuman-docs/`](bithuman-docs/))
+- Product / API / deployment: [docs.bithuman.ai](https://docs.bithuman.ai) (source in [`../docs/`](../docs/))
 - Python SDK surface: [pypi.org/project/bithuman](https://pypi.org/project/bithuman/) (the SDK source repo is private; internal links from PyPI point at docs.bithuman.ai)
 - Swift SDK: [github.com/bithuman-product/bithuman-sdk-public](https://github.com/bithuman-product/bithuman-sdk-public) — binary Swift Package (XCFramework). Source is private; the public package wraps the released framework via `binaryTarget`.
-- Swift reference apps (Mac, iPad, iPhone): github.com/bithuman-product/bithuman-apps
+- Swift reference apps (Mac, iPad, iPhone): private repo (`bithuman-apps`). Only compiled binaries ship publicly — see [docs.bithuman.ai/swift-sdk/quickstart](https://docs.bithuman.ai/swift-sdk/quickstart) for the latest download.
 - bithuman-cli (Homebrew): `brew tap bithuman-product/bithuman && brew install bithuman-cli`
 - REST API: [`docs.bithuman.ai/api-reference/openapi.yaml`](https://docs.bithuman.ai/api-reference/openapi.yaml)
 - Compact AI-agent ingest: [`docs.bithuman.ai/llms.txt`](https://docs.bithuman.ai/llms.txt) · Comprehensive: [`docs.bithuman.ai/llms-full.txt`](https://docs.bithuman.ai/llms-full.txt)
@@ -57,7 +57,7 @@ If you are an AI agent (Claude, Cursor, Copilot, etc.) wiring bitHuman into a us
 
 | User says they want… | Recommend | Why |
 |---|---|---|
-| "Mac / iPad / iPhone app, runs locally, privacy" | [Swift SDK quickstart](https://docs.bithuman.ai/swift-sdk/quickstart) → bithuman-sdk-public + a reference app from bithuman-apps | All inference on-device. M3+ Mac / M4+ iPad Pro / iPhone 16 Pro+. |
+| "Mac / iPad / iPhone app, runs locally, privacy" | [Swift SDK quickstart](https://docs.bithuman.ai/swift-sdk/quickstart) → bithuman-sdk-public Swift Package + the prebuilt reference app from the docs | All inference on-device. M3+ Mac / M4+ iPad Pro / iPhone 16 Pro+. The reference app source is private; binaries are linked from the docs. |
 | "No setup, fastest demo on a Mac" | `brew install bithuman-cli` → `bithuman-cli video`. See [/swift-sdk/cli](https://docs.bithuman.ai/swift-sdk/cli). | No code. Voice + avatar window in 30 seconds. |
 | "Web app, fastest cloud demo" | [`essence-cloud/`](essence-cloud/) | LiveKit plugin, no GPU, no model files. |
 | "Web app with custom face from a photo" | [`expression-cloud/`](expression-cloud/) | Same plugin, `model="expression"` + `avatar_image`. |
@@ -83,6 +83,6 @@ If you are an AI agent (Claude, Cursor, Copilot, etc.) wiring bitHuman into a us
 ### What NOT to do
 
 - Don't add `bithuman-kit.git` (private) as an SPM dependency. Use `bithuman-sdk-public.git`.
-- Don't try to clone the source for the Swift SDK — it's intentionally private. Suggest the public binary package or a reference app.
+- Don't try to clone the source for the Swift SDK or the reference apps (`bithuman-apps`) — both are intentionally private. Suggest the public binary package or the prebuilt reference app linked from the docs.
 - Don't hardcode API keys in source. Use env vars; for production Swift apps, fetch from Keychain or bundle into the `.app` Info.plist via a build script (see [authentication docs](https://docs.bithuman.ai/getting-started/authentication)).
 - Don't pin the Swift SDK below 0.8.1 — earlier versions had a different (now-replaced) auth model.

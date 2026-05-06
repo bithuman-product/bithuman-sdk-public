@@ -16,7 +16,7 @@ Everything else — GPU requirements, image size, startup time, performance, `/h
 
 ```bash
 git clone https://github.com/bithuman-product/bithuman-sdk-public.git
-cd bithuman-examples/expression-selfhosted-livekit-cloud
+cd bithuman-sdk-public/Examples/expression-selfhosted-livekit-cloud
 
 cp .env.example .env
 # Edit .env: set BITHUMAN_API_SECRET, OPENAI_API_KEY, and LiveKit Cloud creds.
@@ -46,6 +46,17 @@ Only these are new vs. `expression-selfhosted`:
 
 All other vars (`BITHUMAN_API_SECRET`, `OPENAI_API_KEY`, `BITHUMAN_AVATAR_IMAGE`, `CUDA_VISIBLE_DEVICES`, `AGENT_PROMPT`, `OPENAI_VOICE`, `GPU_PORT`) work the same as in `../expression-selfhosted/.env.example`.
 
+## Terminal-only quickstart (no LiveKit)
+
+Once the GPU container is running on port 8089, `quickstart.py` drives it directly through the SDK — useful for benchmarking or for piping audio in from your own code without the LiveKit/frontend layers.
+
+```bash
+pip install -r requirements.txt
+python quickstart.py --avatar-image face.jpg --audio-file speech.wav
+```
+
+Press `Q` to quit. Override `--gpu-url` if the container is on another host or port.
+
 ## Troubleshooting specific to this variant
 
 **Agent can't connect to LiveKit Cloud?**
@@ -60,6 +71,9 @@ For GPU/image/model issues, see the [expression-selfhosted troubleshooting](../e
 | File | Description |
 |------|-------------|
 | `docker-compose.yml` | 3-service stack (GPU + agent + frontend) |
+| `agent.py` | LiveKit agent that dispatches to the local GPU container |
+| `quickstart.py` | Terminal-only demo — drives the GPU container directly via the SDK |
 | `.env.example` | Env template including LiveKit Cloud vars |
+| `speech.wav` | Sample audio bundled for testing |
 
-For a terminal-only demo without LiveKit, hit the GPU container's HTTP API directly — see [`../expression-selfhosted/README.md`](../expression-selfhosted/README.md#curl-demo).
+For a curl-only path that hits the GPU container's HTTP API without Python, see [Quick Start (GPU Container Only)](../expression-selfhosted/README.md#quick-start-gpu-container-only) in the sibling example.
