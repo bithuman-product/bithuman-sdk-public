@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: SDK runtime questions & bugs
+    url: mailto:support@bithuman.ai
+    about: The bitHumanKit source is private. For lipsync, audio, model loading, or API behavior, email support@bithuman.ai — your report reaches the engineers faster than a public issue here.
+  - name: API keys, billing, credits
+    url: mailto:support@bithuman.ai
+    about: Account and billing questions — please email support, not GitHub.
+  - name: Documentation
+    url: https://docs.bithuman.ai
+    about: Full SDK docs, quickstarts, and deployment guides.
+  - name: Security disclosure
+    url: https://github.com/bithuman-product/bithuman-sdk-public/blob/main/SECURITY.md
+    about: Found a security issue? Please email security@bithuman.ai instead of filing a public issue.
