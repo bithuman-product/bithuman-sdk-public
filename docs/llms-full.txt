@@ -5125,7 +5125,7 @@ Full privacy — speech never leaves your Mac.
   
   
     ```bash
-    pip install https://github.com/bithuman-product/bithuman-examples/releases/download/v0.1/bithuman_voice-1.3.2-py3-none-any.whl
+    pip install bithuman_voice-1.3.2-py3-none-any.whl  # private wheel — request access via Discord or bithuman.ai support
     ```
   
   
@@ -5204,7 +5204,7 @@ For 100% local operation with no internet required, use the complete Docker setu
 git clone https://github.com/bithuman-product/bithuman-sdk-public.git
 cd examples/integrations/macos-offline
 
-pip install https://github.com/bithuman-product/bithuman-examples/releases/download/v0.1/bithuman_voice-1.3.2-py3-none-any.whl
+pip install bithuman_voice-1.3.2-py3-none-any.whl  # private wheel — request access via Discord or bithuman.ai support
 bithuman-voice serve --port 8000
 
 ollama run llama3.2:1b
