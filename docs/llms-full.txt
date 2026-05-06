@@ -14,7 +14,6 @@ GPU Container: docker.io/sgubithuman/expression-avatar:latest
 Swift Package: https://github.com/bithuman-product/bithuman-sdk-public (from "0.8.1")
 CLI: brew tap bithuman-product/bithuman && brew install bithuman-cli
 Examples: https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples
-Swift reference apps: https://github.com/bithuman-product/bithuman-apps
 Dashboard: https://www.bithuman.ai
 
 ---

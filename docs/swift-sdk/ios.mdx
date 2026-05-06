@@ -141,14 +141,12 @@ the `AvatarRendererView` (UIView on iOS) inside a custom SwiftUI
 tree rather than the bundled `AvatarRootView` (which is macOS-only).
 
 Reference patterns:
-- **iPad widget-style window** — see
-  [bithuman-apps/iPad](https://github.com/bithuman-product/bithuman-apps/tree/main/iPad).
-  Stage Manager 320×320 floating panel, 250 pt avatar circle,
-  Picture-in-Picture, PhotosPicker portrait swap.
-- **iPhone full-screen with PiP collapse** — see
-  [bithuman-apps/iPhone](https://github.com/bithuman-product/bithuman-apps/tree/main/iPhone).
-  Full-screen avatar, tap-to-collapse 120 pt PiP, single-sheet
-  TabView for customisation.
+- **iPad widget-style window** — Stage Manager 320×320 floating panel,
+  250 pt avatar circle, Picture-in-Picture, PhotosPicker portrait swap.
+  (Full source available via the bitHuman partner programme.)
+- **iPhone full-screen with PiP collapse** — full-screen avatar,
+  tap-to-collapse 120 pt PiP, single-sheet TabView for customisation.
+  (Full source available via the bitHuman partner programme.)
 
 Both apps' Sources are concise (~200 lines each) and annotated.
 
@@ -185,7 +183,7 @@ Add to `Info.plist`:
 </array>
 ```
 
-See [`AvatarPiPController` in the iPad reference app](https://github.com/bithuman-product/bithuman-apps/tree/main/iPad/Sources)
+See `AvatarPiPController` in the iPad reference app
 for the canonical wiring.
 
 ## Distribution
@@ -214,4 +212,4 @@ for the canonical wiring.
 - [Quickstart](/swift-sdk/quickstart) — 10-minute integration
 - [Cookbook](/swift-sdk/quickstart) — agent swap, custom voice, PhotosPicker
 - [API reference](https://docs.bithuman.ai/swift-sdk/overview) — DocC
-- [Reference apps](https://github.com/bithuman-product/bithuman-apps) — iPad + iPhone source
+- Reference apps (iPad + iPhone) — distributed via the App Store

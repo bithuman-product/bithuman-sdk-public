@@ -133,7 +133,6 @@ Swift Package (XCFramework). Same billing model as the Python SDK.
 
 - Public package (binary distribution): https://github.com/bithuman-product/bithuman-sdk-public
 - DocC API reference: https://docs.bithuman.ai/swift-sdk/overview
-- Reference apps (full Mac/iPad/iPhone source): https://github.com/bithuman-product/bithuman-apps
 - Issue tracker: https://github.com/bithuman-product/bithuman-sdk-public/issues
 
 Install:
@@ -165,5 +164,4 @@ Discoverability:
 - OpenAPI spec: https://docs.bithuman.ai/api-reference/openapi.yaml
 - Examples repo: https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples
 - Swift SDK package: https://github.com/bithuman-product/bithuman-sdk-public
-- Swift reference apps: https://github.com/bithuman-product/bithuman-apps
 - Status: https://status.bithuman.ai
