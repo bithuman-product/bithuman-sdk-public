@@ -46,7 +46,7 @@ All public documentation lives at **[docs.bithuman.ai](https://docs.bithuman.ai/
 - [Pricing & credits](https://docs.bithuman.ai/getting-started/pricing)
 - [Authentication](https://docs.bithuman.ai/getting-started/authentication)
 
-Reference apps (full annotated source for Mac, iPad, iPhone): [bithuman-product/bithuman-apps](https://github.com/bithuman-product/bithuman-apps).
+Reference apps (full annotated source for Mac, iPad, iPhone): bithuman-product/bithuman-apps.
 
 ## Get an API key
 

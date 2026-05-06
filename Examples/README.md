@@ -29,7 +29,7 @@ Native on-device voice + lip-synced avatar for **Mac, iPad, iPhone**. Ships as a
 | | What |
 |---|---|
 | **[`bithuman-product/bithuman-sdk-public`](https://github.com/bithuman-product/bithuman-sdk-public)** | Public SwiftPM binary package. `import bitHumanKit`. Hardware floor: M3+ Mac / M4+ iPad Pro / iPhone 16 Pro+. |
-| **[`bithuman-product/bithuman-apps`](https://github.com/bithuman-product/bithuman-apps)** | Annotated Mac / iPad / iPhone reference apps that consume the SDK. Clone, run one command, get a working avatar. |
+| **`bithuman-product/bithuman-apps`** | Annotated Mac / iPad / iPhone reference apps that consume the SDK. Clone, run one command, get a working avatar. |
 | **`bithuman-cli`** ([Homebrew tap](https://github.com/bithuman-product/homebrew-bithuman)) | No-code Mac tool. `brew install bithuman-cli` → `bithuman-cli video`. |
 
 Quickstart: [docs.bithuman.ai/swift-sdk/quickstart](https://docs.bithuman.ai/swift-sdk/quickstart).
