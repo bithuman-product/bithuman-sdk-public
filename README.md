@@ -1,12 +1,53 @@
-# bitHumanKit
+# bitHuman SDK
 
-Public Swift Package for [bitHumanKit](https://docs.bithuman.ai/swift-sdk/overview) — bitHuman's on-device voice + lip-synced avatar SDK for Apple Silicon.
+Real-time avatar animation — audio in, lip-synced video out at 25 FPS. Two models (Essence + Expression), three runtime surfaces (cloud, self-hosted, on-device).
 
-This package wraps the pre-compiled `bitHumanKit.xcframework` (attached to this repo's [Releases](https://github.com/bithuman-product/bithuman-sdk-public/releases)) via a SwiftPM `binaryTarget`. The source is private. Every third-party dep (MLX, HuggingFace, Tokenizers, …) is statically linked into the framework binary, so consumers add this single package and have **zero** transitive Swift Package dependencies.
+[![Docs](https://img.shields.io/badge/docs-docs.bithuman.ai-blue)](https://docs.bithuman.ai)
+[![PyPI](https://badge.fury.io/py/bithuman.svg)](https://pypi.org/project/bithuman/)
+[![Discord](https://img.shields.io/discord/1234567890?label=Discord)](https://discord.gg/ES953n7bPA)
+
+## Quick links
+
+| What you need | Where to go |
+|---|---|
+| Python SDK (`pip install bithuman`) | [`python/README.md`](python/README.md) |
+| Swift SDK (SwiftPM binary package) | [`Package.swift`](Package.swift) / [Swift docs](https://docs.bithuman.ai/swift-sdk/overview) |
+| Working examples (Docker, LiveKit, APIs) | [`Examples/`](Examples/) |
+| Full documentation | [docs.bithuman.ai](https://docs.bithuman.ai) |
+| REST API reference | [api-reference](https://docs.bithuman.ai/api-reference/overview) |
+| Get an API key | [www.bithuman.ai → Developer](https://www.bithuman.ai/#developer) |
+
+## Repository layout
+
+```
+├── Package.swift          # Swift SDK binary target (SwiftPM)
+├── python/                # Python SDK public surface (README, changelog, license)
+├── Examples/              # Runnable examples for all platforms
+│   ├── essence-cloud/         Cloud Essence via LiveKit plugin
+│   ├── essence-selfhosted/    Local Essence on CPU
+│   ├── expression-cloud/      Cloud Expression via LiveKit plugin
+│   ├── expression-selfhosted/ Self-hosted Expression on NVIDIA GPU
+│   ├── apple-expression/      On-device Expression (macOS M3+)
+│   ├── api/                   REST API scripts
+│   └── integrations/          Java, Next.js, Gradio, offline macOS
+├── docs/                  # docs.bithuman.ai source (Mintlify)
+├── CONTRIBUTING.md
+└── SECURITY.md
+```
 
 ## Install
 
-In Xcode: **File → Add Package Dependencies →**
+### Python
+
+```bash
+pip install bithuman --upgrade
+```
+
+Pre-built wheels for Python 3.9–3.14 on Linux x86_64 + ARM64, macOS Intel + Apple Silicon, Windows x86_64.
+
+### Swift (Xcode / SwiftPM)
+
+**File → Add Package Dependencies →**
 
 ```
 https://github.com/bithuman-product/bithuman-sdk-public.git
@@ -18,50 +59,65 @@ Or in `Package.swift`:
 .package(url: "https://github.com/bithuman-product/bithuman-sdk-public.git", from: "0.8.1")
 ```
 
-Then:
+Hardware floor: M3+ Mac (macOS 26), M4+ iPad Pro (iPadOS 26), iPhone 16 Pro+ (iOS 26).
 
-```swift
-import bitHumanKit
+### CLI (Mac, no code)
+
+```bash
+brew tap bithuman-product/bithuman
+brew install bithuman-cli
+bithuman-cli video
 ```
 
-## Hardware floor
+## Quick start
 
-Runtime-gated via `HardwareCheck.evaluate()`:
+```python
+import asyncio, os
+from bithuman import AsyncBithuman
+from bithuman.audio import load_audio, float32_to_int16
 
-| Platform | Minimum |
-|---|---|
-| macOS | M3+ Apple Silicon, macOS 26 (Tahoe) |
-| iPad | iPad Pro M4+, 16 GB unified memory, iPadOS 26 |
-| iPhone | iPhone 16 Pro+ (A18 Pro), iOS 26 |
+async def main():
+    runtime = await AsyncBithuman.create(
+        model_path="avatar.imx",
+        api_secret=os.environ["BITHUMAN_API_SECRET"],
+    )
+    await runtime.start()
+
+    pcm, sr = load_audio("speech.wav")
+    pcm = float32_to_int16(pcm)
+    chunk = sr // 25
+    for i in range(0, len(pcm), chunk):
+        await runtime.push_audio(pcm[i : i + chunk].tobytes(), sr)
+    await runtime.flush()
+
+    async for frame in runtime.run():
+        if frame.has_image:
+            image = frame.bgr_image      # numpy (H, W, 3) uint8
+        if frame.end_of_speech:
+            break
+    await runtime.stop()
+
+asyncio.run(main())
+```
+
+More examples: [`Examples/`](Examples/) — each directory has its own README with a one-command run path.
 
 ## Documentation
 
-All public documentation lives at **[docs.bithuman.ai](https://docs.bithuman.ai/swift-sdk/overview)**:
-
-- [10-min quickstart](https://docs.bithuman.ai/swift-sdk/quickstart)
-- [macOS deployment guide](https://docs.bithuman.ai/swift-sdk/macos)
-- [iOS / iPadOS deployment guide](https://docs.bithuman.ai/swift-sdk/ios)
-- [bithuman-cli](https://docs.bithuman.ai/swift-sdk/cli) (no-code Mac tool)
-- [Troubleshooting](https://docs.bithuman.ai/swift-sdk/troubleshooting)
+- [Getting started](https://docs.bithuman.ai/getting-started/quickstart) (Python)
+- [Swift SDK](https://docs.bithuman.ai/swift-sdk/overview) (Mac / iPad / iPhone)
+- [REST API](https://docs.bithuman.ai/api-reference/overview)
 - [Pricing & credits](https://docs.bithuman.ai/getting-started/pricing)
 - [Authentication](https://docs.bithuman.ai/getting-started/authentication)
 
-Reference apps (full annotated source for Mac, iPad, iPhone): bitHuman reference apps (private).
-
-## Get an API key
-
-The avatar pipeline is metered (2 credits/min). Audio-only mode is unmetered.
-
-Sign in at <https://www.bithuman.ai> → Developer → API Keys, then either set `VoiceChatConfig.apiKey` or export `BITHUMAN_API_KEY` before `chat.start()`. See [docs.bithuman.ai/getting-started/authentication](https://docs.bithuman.ai/getting-started/authentication) for the full flow.
-
-## Versioning
-
-Tags follow SemVer. Each tag points at a release that publishes a matching `bitHumanKit.xcframework.zip` artifact on the [Releases](https://github.com/bithuman-product/bithuman-sdk-public/releases) page.
-
 ## Issues & feedback
 
-File issues at <https://github.com/bithuman-product/bithuman-sdk-public/issues>.
+- **Bug reports / feature requests** → [GitHub Issues](https://github.com/bithuman-product/bithuman-sdk-public/issues)
+- **Security vulnerabilities** → see [SECURITY.md](SECURITY.md)
+- **Community** → [Discord](https://discord.gg/ES953n7bPA)
 
 ## License
 
-Binary distribution. Use is governed by the [bitHuman Terms of Service](https://www.bithuman.ai/terms). Model weights are proprietary and downloaded at runtime from authenticated endpoints.
+- Example code in this repo: MIT
+- Swift SDK (`bitHumanKit.xcframework`): binary distribution, governed by [bitHuman Terms of Service](https://www.bithuman.ai/terms)
+- Python SDK (`bithuman` wheel): commercial license, see [bithuman.ai](https://bithuman.ai)

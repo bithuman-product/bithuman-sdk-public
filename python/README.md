@@ -1,6 +1,6 @@
 # bitHuman Avatar Runtime
 
-![bitHuman Banner](https://docs.bithuman.ai/docs/assets/images/bithuman-banner.jpg)
+![bitHuman Banner](https://docs.bithuman.ai/images/bithuman-banner.jpg)
 
 **Real-time avatar engine for visual AI agents, digital humans, and creative characters.**
 
@@ -88,7 +88,7 @@ async def main():
 asyncio.run(main())
 ```
 
-`Bithuman` (no `Async`) is the threaded sync equivalent — same surface, no `await`. Usage examples live in the [bithuman-examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples) repo.
+`Bithuman` (no `Async`) is the threaded sync equivalent — same surface, no `await`. Usage examples live in the [Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples) directory.
 
 ## Quick start — Expression on macOS M3+ (on-device, optional)
 
@@ -198,7 +198,7 @@ avatar = LocalAvatarRunner(
 await avatar.start()
 ```
 
-For end-to-end Docker Compose stacks (LiveKit + OpenAI + bitHuman) see the [`bithuman-examples`](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples) repo.
+For end-to-end Docker Compose stacks (LiveKit + OpenAI + bitHuman) see the [`Examples/`](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples) directory.
 
 ## Troubleshooting
 
@@ -212,7 +212,7 @@ pip uninstall -y opencv-python && pip install opencv-python-headless
 ## Links
 
 - [Docs](https://docs.bithuman.ai) · [PyPI](https://pypi.org/project/bithuman/)
-- [bithuman-examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples) — end-to-end stacks (Docker Compose, LiveKit agents, web UIs)
+- [Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples) — end-to-end stacks (Docker Compose, LiveKit agents, web UIs)
 - [bitHuman Halo](https://bithuman.ai/halo) — free macOS desktop app built on this SDK
 - [bithuman.ai](https://bithuman.ai) · [API Keys](https://www.bithuman.ai/#developer)
 
@@ -231,6 +231,6 @@ This repo is the public surface for the package:
 - **Issues / feature requests** — file them here.
 - **Changelog** — [`CHANGELOG.md`](./CHANGELOG.md) tracks every PyPI release.
 - **Discussions / docs** — [docs.bithuman.ai](https://docs.bithuman.ai).
-- **Working examples** — [bithuman-examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples).
+- **Working examples** — [Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples).
 
 If you hit a bug or want to propose an API change, please open an issue with a minimal repro and the output of `pip show bithuman` + `python --version`.

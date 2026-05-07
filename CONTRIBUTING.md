@@ -27,7 +27,7 @@ For these, please use [Bug report](.github/ISSUE_TEMPLATE/bug_report.md) and inc
 
 ### Don't file an issue here for…
 
-- **SDK runtime behavior** (lipsync drift, audio glitches, model loading, hardware gating, API design). The implementation is private. Please email **support@bithuman.ai** or post in our [community forum](https://www.bithuman.ai/community) instead — your report still reaches the engineers, just through the right channel.
+- **SDK runtime behavior** (lipsync drift, audio glitches, model loading, hardware gating, API design). The implementation is private. Please email **support@bithuman.ai** or post in our [Discord](https://discord.gg/ES953n7bPA) instead — your report still reaches the engineers, just through the right channel.
 - **API key, billing, or credit issues** — email **support@bithuman.ai**.
 - **Security vulnerabilities** — see [SECURITY.md](SECURITY.md). Please don't open a public issue.
 
@@ -47,11 +47,12 @@ PRs that try to modify `Package.swift` versions or release artifacts will usuall
 git clone https://github.com/bithuman-product/bithuman-sdk-public.git
 cd bithuman-sdk-public
 
-# Examples
-cd Examples/<example-you-want> && open Package.swift
+# Examples (Python)
+cd Examples/<example-you-want>
+# Follow the README in that directory
 
-# Docs (Mintlify)
-cd docs && npx mintlify dev
+# Docs (Mintlify — requires Node 18+)
+cd docs && npx mintlify@latest dev
 ```
 
 Keep changes focused — one example or one doc page per PR is easiest to review. Match the surrounding tone (the docs lean conversational, not corporate). If you're adding a new example, please include a short `README.md` in its directory explaining what it demonstrates and what hardware it needs.
