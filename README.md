@@ -21,8 +21,9 @@ Get an API key at [www.bithuman.ai → Developer](https://www.bithuman.ai/#devel
 ## Repository layout
 
 ```
-├── Package.swift              Swift SDK binary target (SwiftPM)
-├── python/                    Python SDK public surface (README, changelog)
+├── python/                    Python SDK (README, changelog, license)
+├── swift/                     Swift SDK (README, changelog, license)
+├── Package.swift              SwiftPM manifest (must be at root)
 ├── Examples/
 │   ├── quickstart/                Try bitHuman in under 2 minutes
 │   ├── python/                    Python SDK (6 examples: cloud + local)

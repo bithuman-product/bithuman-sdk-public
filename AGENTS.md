@@ -218,12 +218,16 @@ bithuman-sdk-public/
 ├── .cursorrules              Cursor AI rules
 ├── .github/
 │   └── copilot-instructions.md  GitHub Copilot instructions
-├── Package.swift             Swift SDK binary target (SwiftPM)
+├── Package.swift             SwiftPM manifest (must be at root)
 ├── README.md                 Human-facing readme
 ├── CONTRIBUTING.md           How to contribute
 ├── SECURITY.md               Security policy
-├── python/
-│   ├── README.md             Python SDK docs (detailed)
+├── python/                   Python SDK public surface
+│   ├── README.md             PyPI package docs
+│   ├── CHANGELOG.md          Release history
+│   └── LICENSE.md
+├── swift/                    Swift SDK public surface
+│   ├── README.md             Swift SDK docs
 │   ├── CHANGELOG.md          Release history
 │   └── LICENSE.md
 ├── Examples/
