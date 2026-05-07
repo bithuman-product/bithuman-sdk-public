@@ -215,7 +215,7 @@ async def main():
 asyncio.run(main())
 ```
 
-[Full working example on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/essence-selfhosted)
+[Full working example on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence)
 
 ---
 
@@ -293,7 +293,7 @@ asyncio.run(main())
   
 
 
-Or jump straight to the [Docker App](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/essence-selfhosted) for a complete end-to-end setup.
+Or jump straight to the [Docker App](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) for a complete end-to-end setup.
 
 ### Guides
 
@@ -2137,7 +2137,7 @@ Once healthy, the container is ready to accept avatar sessions via `/launch`.
 
 ## Docker Compose Setup
 
-Use the [full example](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/expression-selfhosted) for a complete setup with LiveKit, an AI agent, and a web frontend:
+Use the [full example](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-gpu) for a complete setup with LiveKit, an AI agent, and a web frontend:
 
 ```bash
 git clone https://github.com/bithuman-product/bithuman-sdk-public.git
@@ -4740,19 +4740,19 @@ Four combinations of model type and deployment mode.
 
 | Example | Model | Deployment | Source |
 |---------|-------|------------|--------|
-| **Essence + Cloud** | Essence (CPU) | bitHuman Cloud | [essence-cloud/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/essence-cloud) |
-| **[Essence + Self-Hosted](/examples/audio-clip)** | Essence (CPU) | Your machine | [essence-selfhosted/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/essence-selfhosted) |
-| **Expression + Cloud** | Expression (GPU) | bitHuman Cloud | [expression-cloud/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/expression-cloud) |
-| **Expression + Self-Hosted** | Expression (GPU) | Your machine | [expression-selfhosted/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/expression-selfhosted) |
+| **Essence + Cloud** | Essence (CPU) | bitHuman Cloud | [essence-cloud/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-essence) |
+| **[Essence + Self-Hosted](/examples/audio-clip)** | Essence (CPU) | Your machine | [essence-selfhosted/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) |
+| **Expression + Cloud** | Expression (GPU) | bitHuman Cloud | [expression-cloud/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-expression) |
+| **Expression + Self-Hosted** | Expression (GPU) | Your machine | [expression-selfhosted/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-gpu) |
 
 ## Full-Stack & Integration Examples
 
 | Example | What It Does | Source |
 |---------|-------------|--------|
-| **[Apple Local Agent](/examples/apple-local)** | 100% offline on macOS (Siri + Ollama) | [integrations/macos-offline/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/macos-offline) |
+| **[Apple Local Agent](/examples/apple-local)** | 100% offline on macOS (Siri + Ollama) | [integrations/offline-mac/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/offline-mac) |
 | **[Raspberry Pi](/examples/raspberry-pi)** | Edge deployment on Raspberry Pi | — |
-| **Web UI** | Browser-based Gradio interface | [integrations/web-ui/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/web-ui) |
-| **Java Client** | WebSocket streaming from Java | [integrations/java/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/java) |
+| **Web UI** | Browser-based Gradio interface | [integrations/gradio-web/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/gradio-web) |
+| **Java Client** | WebSocket streaming from Java | [integrations/java-websocket/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/java-websocket) |
 | **Next.js UI** | Drop-in LiveKit web interface | [integrations/nextjs-ui/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/nextjs-ui) |
 
 ---
@@ -4762,7 +4762,7 @@ Four combinations of model type and deployment mode.
 
 ---
 
-**New to bitHuman?** Start with [Essence + Cloud](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/essence-cloud) -- the simplest setup with no models to download.
+**New to bitHuman?** Start with [Essence + Cloud](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-essence) -- the simplest setup with no models to download.
 
 
 ## Example: Play Audio Through a Talking Avatar (Python)
@@ -4789,7 +4789,7 @@ A simple first example that works reliably.
     ```bash
     python examples/avatar-with-audio-clip.py
     ```
-    [View source code on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/essence-selfhosted)
+    [View source code on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence)
   
   
     - **Press `1`** — Play audio with avatar
@@ -4896,7 +4896,7 @@ Speak and see your avatar respond instantly.
     ```bash
     python examples/avatar-with-microphone.py
     ```
-    [View source code on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/essence-selfhosted)
+    [View source code on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence)
   
   
     - **Speak into microphone** — Avatar animates in real-time
@@ -5027,7 +5027,7 @@ Complete chatbot with avatar that users can talk to on the web.
     ```
   
   
-    [View source code on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/essence-selfhosted)
+    [View source code on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence)
 
     
 
@@ -5150,7 +5150,7 @@ Full privacy — speech never leaves your Mac.
     ```
   
   
-    [View source code on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/macos-offline)
+    [View source code on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/offline-mac)
 
     
 
@@ -5190,7 +5190,7 @@ Full privacy — speech never leaves your Mac.
 
 For 100% local operation with no internet required, use the complete Docker setup:
 
-[Complete macOS Offline Example](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/macos-offline)
+[Complete macOS Offline Example](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/offline-mac)
 
 **What you get:**
 - **Apple Speech Recognition** — Local STT
@@ -5202,7 +5202,7 @@ For 100% local operation with no internet required, use the complete Docker setu
 
 ```bash
 git clone https://github.com/bithuman-product/bithuman-sdk-public.git
-cd examples/integrations/macos-offline
+cd examples/integrations/offline-mac
 
 pip install bithuman_voice-1.3.2-py3-none-any.whl  # private wheel — request access via Discord or bithuman.ai support
 bithuman-voice serve --port 8000
@@ -5289,7 +5289,7 @@ URL: https://docs.bithuman.ai/examples/raspberry-pi
     ```
   
   
-    [View source code on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/essence-selfhosted)
+    [View source code on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence)
 
     
 
