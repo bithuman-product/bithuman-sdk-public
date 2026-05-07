@@ -29,18 +29,18 @@ export BITHUMAN_API_SECRET="paste_your_key_here"
 # Install the SDK
 pip install -r requirements.txt
 
-# Download a sample avatar model from bithuman.ai:
-#   Go to https://www.bithuman.ai/#explore
-#   Click the ... menu on any agent → Download
-#   Save the .imx file to this directory
+# Run it — auto-downloads a sample avatar model (112 MB, one-time) if you don't specify one
+python local-avatar.py
 
-# Run it (replace avatar.imx with your downloaded file name)
-python local-avatar.py --model avatar.imx --audio speech.wav
+# Or use your own model:
+python local-avatar.py --model your-avatar.imx --audio speech.wav
 ```
 
 A window will open showing the avatar lip-syncing to the audio. Press `q` to quit.
 
-> **First run is slow (up to 30 seconds).** The first time you load a `.imx` file, the SDK may convert it from legacy format to the optimized v2 format. This is a one-time cost — subsequent runs start in under 2 seconds.
+> **First run is slow (up to 60 seconds).** The first time: the sample model downloads (112 MB), then the SDK may convert it from legacy format to v2. Both are one-time costs — subsequent runs start in under 2 seconds.
+
+> **Want to use your own avatar?** Download a `.imx` file from [bithuman.ai → Explore](https://www.bithuman.ai/#explore) (click the **...** menu on any agent → **Download**) and pass it with `--model your-file.imx`.
 
 > **Sample audio included.** This directory ships a `speech.wav` file you can use for testing. No need to find your own audio.
 
