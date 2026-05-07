@@ -4,8 +4,8 @@ WORKDIR /app
 
 RUN apk add --no-cache git
 
-RUN git clone --depth 1 https://github.com/bithuman-product/examples.git /tmp/repo && \
-    cp -r /tmp/repo/integrations/nextjs-ui/. . && \
+RUN git clone --depth 1 https://github.com/bithuman-product/bithuman-sdk-public.git /tmp/repo && \
+    cp -r /tmp/repo/Examples/integrations/nextjs-ui/. . && \
     rm -rf /tmp/repo
 
 RUN npm cache clean --force && \
