@@ -41,7 +41,17 @@ def download_sample_model() -> str:
     print(f"  Saving: {model_path}")
 
     import urllib.request
-    urllib.request.urlretrieve(SAMPLE_MODEL_URL, model_path)
+
+    def _progress(block_num, block_size, total_size):
+        downloaded = block_num * block_size
+        if total_size > 0:
+            pct = min(100, downloaded * 100 // total_size)
+            mb = downloaded / (1024 * 1024)
+            total_mb = total_size / (1024 * 1024)
+            print(f"\r  [{pct:3d}%] {mb:.0f} / {total_mb:.0f} MB", end="", flush=True)
+
+    urllib.request.urlretrieve(SAMPLE_MODEL_URL, model_path, reporthook=_progress)
+    print()  # newline after progress
     print(f"  Done!")
     return str(model_path)
 

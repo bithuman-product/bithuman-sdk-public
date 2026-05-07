@@ -13,15 +13,24 @@ curl -s -X GET "$BASE/v2/credit-summaries" \
   -H "Content-Type: application/json" \
   -H "api-secret: $API_SECRET" | python3 -c "
 import sys, json
-data = json.load(sys.stdin)
-if 'error' in data:
-    print(f'Error: {data[\"error\"]}')
-    sys.exit(1)
-credits = data.get('credits', data.get('data', {}).get('credits', 'unknown'))
-plan = data.get('plan', data.get('data', {}).get('plan', 'unknown'))
-print(f'Credits remaining: {credits}')
-print(f'Plan:             {plan}')
+resp = json.load(sys.stdin)
+data = resp.get('data', resp)
+
+balance = data.get('balance', 'unknown')
+plan_credits = data.get('plan_credits', 'unknown')
+topup_credits = data.get('topup_credits', 0)
+is_enterprise = data.get('is_enterprise', False)
+minutes = data.get('minutes_estimate', {})
+
+print(f'Balance:        {balance} credits')
+print(f'Plan credits:   {plan_credits}/month')
+print(f'Top-up credits: {topup_credits}')
+print(f'Enterprise:     {is_enterprise}')
+if minutes:
+    print(f'Estimated minutes remaining:')
+    for model, mins in minutes.items():
+        print(f'  {model}: {mins:.0f} min')
 print()
-print('Pricing: 1 cr/min (Essence self-hosted), 2 cr/min (cloud or Expression self-hosted), 4 cr/min (Expression cloud)')
-print('Top up:  https://www.bithuman.ai → Settings → Billing')
+print('Pricing: 1 cr/min (Essence self-hosted), 2 cr/min (cloud or Expression), 4 cr/min (Expression cloud)')
+print('Top up:  https://www.bithuman.ai -> Settings -> Billing')
 "

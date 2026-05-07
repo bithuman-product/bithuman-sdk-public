@@ -22,8 +22,10 @@ This page covers the **Python SDK** path (Essence on CPU, self-hosted). If you'r
 
     <img src="/images/example-api-secret.jpg" alt="API Keys" style={{ borderRadius: '8px' }} />
   </Step>
-  <Step title="Download an avatar model">
-    Download an avatar model (`.imx` file) from the [Explore](https://www.bithuman.ai/#explore) page — click the **⋮** menu on any agent and select **Download**.
+  <Step title="Get an avatar model">
+    **Option A (automatic):** The [quickstart example](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/quickstart) auto-downloads a sample model on first run — no manual step needed.
+
+    **Option B (manual):** Download an avatar model (`.imx` file) from the [Explore](https://www.bithuman.ai/#explore) page — click the **⋮** menu on any agent and select **Download**.
 
     <img src="/images/example-download-button.jpg" alt="Download Model" style={{ borderRadius: '8px' }} />
   </Step>
@@ -145,10 +147,12 @@ Want to display the frames live? See [Audio Clip](/examples/audio-clip) for the 
     4. Verify audio sample rate matches the file (typically 16000 or 44100)
   </Accordion>
 
-  <Accordion title="Slow startup (~20 seconds)">
-    This is normal for the first session — the `.imx` model takes time to load and initialize. Subsequent sessions in the same process start instantly.
+  <Accordion title="Slow first startup (30-60 seconds)">
+    The very first run is slow for two reasons:
+    1. **Legacy format conversion** — older `.imx` files (v1 format) are automatically converted to the optimized v2 format. This takes ~30 seconds and only happens once per model file.
+    2. **Model loading** — the first time a model is loaded into memory takes ~5-10 seconds.
 
-    To reduce perceived latency, keep the runtime alive between sessions instead of recreating it.
+    Subsequent runs in the same process start in under 2 seconds. To reduce perceived latency in production, keep the runtime alive between sessions instead of recreating it.
   </Accordion>
 
   <Accordion title="FileNotFoundError: avatar.imx not found">

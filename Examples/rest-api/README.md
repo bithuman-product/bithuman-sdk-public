@@ -87,7 +87,8 @@ cd curl/
 curl -s -X POST https://api.bithuman.ai/v1/validate \
   -H "Content-Type: application/json" \
   -H "api-secret: $BITHUMAN_API_SECRET"
-# {"valid": true, "credits": 99}
+# {"valid": true}
+# To check credits, use GET /v2/credit-summaries (see curl/check-credits.sh)
 ```
 
 ### Get agent info

@@ -16,7 +16,7 @@ export BITHUMAN_API_SECRET="paste_your_key_here"
 
 | Example | What it does | Extra setup needed |
 |---------|-------------|--------------------|
-| **[local-avatar.py](local-avatar.py)** | Load an avatar model file, play audio through it, see the animated face | Download a `.imx` model file (see below) |
+| **[local-avatar.py](local-avatar.py)** | Load an avatar model, play audio through it, see the animated face | None — auto-downloads a sample model on first run |
 | **[cloud-avatar.py](cloud-avatar.py)** | Run a cloud-hosted avatar with AI conversation | LiveKit server + OpenAI API key |
 
 **Recommended: start with `local-avatar.py`** — it has fewer dependencies.
@@ -43,6 +43,8 @@ A window will open showing the avatar lip-syncing to the audio. Press `q` to qui
 > **Want to use your own avatar?** Download a `.imx` file from [bithuman.ai → Explore](https://www.bithuman.ai/#explore) (click the **...** menu on any agent → **Download**) and pass it with `--model your-file.imx`.
 
 > **Sample audio included.** This directory ships a `speech.wav` file you can use for testing. No need to find your own audio.
+
+> **macOS warning about AVFAudioReceiver / libavdevice?** This is a harmless conflict between OpenCV and PyAV shipping their own FFmpeg libraries. It prints once at import and doesn't affect functionality. If it bothers you: `pip install opencv-python-headless` (which `bithuman` already depends on) and avoid installing the full `opencv-python` package.
 
 ### Option B: Cloud avatar (more setup, but no model download needed)
 
