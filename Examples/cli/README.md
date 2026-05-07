@@ -26,10 +26,15 @@ pip install bithuman
 |---------|-------------|
 | `bithuman generate <model.imx> --audio speech.wav --output demo.mp4` | Render a lip-synced MP4 from an .imx model and audio file |
 | `bithuman stream <model.imx> --port 8765` | Start a WebSocket streaming server for real-time lip sync |
-| `bithuman demo <model.imx>` | Launch an interactive demo window |
-| `bithuman convert <input> --output <output.imx>` | Convert between model formats |
+| `bithuman speak <audio.wav>` | Send audio to a running `stream` server |
+| `bithuman demo [--model <imx>] [--audio <file>]` | Launch an interactive demo (auto-downloads model if omitted) |
+| `bithuman convert <input> --output <output.imx>` | Convert legacy TAR .imx to v2 format (smaller, faster) |
+| `bithuman pack ...` | Pack Expression weights into an .imx bundle (model authors only) |
 | `bithuman validate` | Validate your API credentials |
 | `bithuman info <model.imx>` | Show metadata for an .imx model file |
+| `bithuman --help` | Full list of all commands and flags |
+
+> **Note:** `bithuman demo` with no arguments auto-downloads a demo model (~3.7 GB, cached) on first run. Great for a zero-setup hello world: `pip install bithuman && bithuman demo`.
 
 ### Examples
 
@@ -63,7 +68,7 @@ A native Mac application for interactive voice, text, and video conversations wi
 ### Install via Homebrew
 
 ```bash
-brew tap bithuman-product/tap
+brew tap bithuman-product/bithuman
 brew install bithuman-cli
 ```
 

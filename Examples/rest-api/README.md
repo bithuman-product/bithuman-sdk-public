@@ -15,11 +15,14 @@ HTTP API for managing agents, generating avatars, controlling live sessions, and
 | `POST` | `/v1/agent/{code}` | Update agent settings (system prompt) |
 | `POST` | `/v1/agent/generate` | Start agent generation (~4 min) |
 | `GET` | `/v1/agent/status/{code}` | Poll agent generation status and progress |
-| `POST` | `/v1/agent/{code}/speak` | Make a live agent speak a message |
-| `POST` | `/v1/agent/{code}/add-context` | Inject background context into a live session |
+| `POST` | `/v1/agent/{code}/speak` | Make a live agent speak a message (requires active session*) |
+| `POST` | `/v1/agent/{code}/add-context` | Inject background context into a live session (requires active session*) |
 | `POST` | `/v1/dynamics/generate` | Generate gesture dynamics for an agent |
 | `GET` | `/v1/dynamics/{code}` | Get dynamics status and available gestures |
 | `POST` | `/v1/files/upload` | Upload a file (image, video, audio) by URL or base64 |
+| `GET` | `/v2/credit-summaries` | Check credit balance and plan details |
+
+> *\*Active session required:* The `/speak` and `/add-context` endpoints only work when someone is connected to the agent (via the web viewer, a LiveKit room, or the dashboard). If no session is active, you'll get "No active rooms found."
 
 ## Authentication
 

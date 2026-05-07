@@ -127,7 +127,7 @@ def main():
         print("Next steps:")
         print("  - Generate an agent:  python generation.py --prompt 'You are a helpful assistant' --download")
         print("  - Manage agents:      python management.py --agent-id YOUR_AGENT_ID")
-        print("  - Run an example:     cd ../essence-cloud && docker compose up")
+        print("  - Run an example:     cd ../../python/cloud-essence && docker compose up")
     else:
         print("Some tests failed. Check the errors above.")
         sys.exit(1)

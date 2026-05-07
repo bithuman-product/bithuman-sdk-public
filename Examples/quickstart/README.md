@@ -40,7 +40,9 @@ python local-avatar.py --model avatar.imx --audio speech.wav
 
 A window will open showing the avatar lip-syncing to the audio. Press `q` to quit.
 
-> **Don't have a .wav file?** The full examples in [python/local-essence/](../python/local-essence/) include a sample `speech.wav` you can copy.
+> **First run is slow (up to 30 seconds).** The first time you load a `.imx` file, the SDK may convert it from legacy format to the optimized v2 format. This is a one-time cost — subsequent runs start in under 2 seconds.
+
+> **Sample audio included.** This directory ships a `speech.wav` file you can use for testing. No need to find your own audio.
 
 ### Option B: Cloud avatar (more setup, but no model download needed)
 
@@ -71,5 +73,6 @@ Once your first demo works, pick the path that matches what you're building:
 |------|---------|
 | [local-avatar.py](local-avatar.py) | Minimal Python script — loads a model, pushes audio, displays frames |
 | [cloud-avatar.py](cloud-avatar.py) | LiveKit cloud agent with OpenAI voice chat |
+| [speech.wav](speech.wav) | Sample 13-second audio clip for testing |
 | [.env.example](.env.example) | Template for environment variables (copy to `.env` and fill in) |
 | [requirements.txt](requirements.txt) | Python dependencies for both scripts |
