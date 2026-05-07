@@ -21,7 +21,9 @@ import cv2
 from bithuman import AsyncBithuman
 from bithuman.audio import float32_to_int16, load_audio
 
-# Public sample model (112 MB, "Coach Mason" avatar from bithuman.ai)
+# Public sample model (112 MB, "Coach Mason" avatar from bithuman.ai).
+# This URL points to a curated agent in the public Supabase bucket.
+# Changing it requires a coordinated repo + Supabase update.
 SAMPLE_MODEL_URL = "https://tmoobjxlwcwvxvjeppzq.supabase.co/storage/v1/object/public/bithuman/A71DAR6308/coach_mason_resilience_guide_20251122_143604_311004.imx"
 SAMPLE_MODEL_NAME = "sample-avatar.imx"
 
@@ -42,16 +44,25 @@ def download_sample_model() -> str:
 
     import urllib.request
 
+    is_tty = sys.stdout.isatty()
+    last_pct = -1
+
     def _progress(block_num, block_size, total_size):
+        nonlocal last_pct
         downloaded = block_num * block_size
         if total_size > 0:
             pct = min(100, downloaded * 100 // total_size)
             mb = downloaded / (1024 * 1024)
             total_mb = total_size / (1024 * 1024)
-            print(f"\r  [{pct:3d}%] {mb:.0f} / {total_mb:.0f} MB", end="", flush=True)
+            if is_tty:
+                print(f"\r  [{pct:3d}%] {mb:.0f} / {total_mb:.0f} MB", end="", flush=True)
+            elif pct >= last_pct + 25:  # print at 0%, 25%, 50%, 75%, 100% for CI/logs
+                print(f"  [{pct}%] {mb:.0f} / {total_mb:.0f} MB")
+                last_pct = pct
 
     urllib.request.urlretrieve(SAMPLE_MODEL_URL, model_path, reporthook=_progress)
-    print()  # newline after progress
+    if is_tty:
+        print()  # newline after progress
     print(f"  Done!")
     return str(model_path)
 
