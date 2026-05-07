@@ -1,0 +1,164 @@
+# bitHuman SDK -- Cursor AI Rules
+
+## Project Context
+
+This is the public SDK repository for bitHuman, a real-time avatar animation platform. Audio in, lip-synced video out at 25 FPS. The repo contains:
+
+- Swift SDK binary distribution (SwiftPM binaryTarget)
+- Python SDK metadata and docs (wheels published to PyPI)
+- Runnable examples for Python, Swift, CLI, REST API, and integrations
+- Documentation source for docs.bithuman.ai (Mintlify)
+
+The Swift SDK source and Python SDK compiled internals are private. This repo is the public integration surface.
+
+## Code Style
+
+- All code, comments, and docs in English.
+- Python: async-first. Use `AsyncBithuman` over sync `Bithuman` unless the user specifically needs synchronous code.
+- Python: type hints encouraged. Use `os.environ` for secrets.
+- Swift: Swift 6.0+. Platforms: macOS 26.0+, iOS 26.0+. Import `bitHumanKit`.
+- Never hardcode API keys. Always use environment variables.
+- Use `BITHUMAN_API_SECRET` for Python/REST/CLI. Use `BITHUMAN_API_KEY` for Swift.
+- Use `agent_code` (e.g. `A91XMB7113`) as the agent identifier. `figure_id` is deprecated.
+
+## Key APIs and Patterns
+
+### Python SDK (`pip install bithuman`)
+
+```python
+# Core pattern: create runtime, push audio, iterate frames
+import asyncio, os
+from bithuman import AsyncBithuman
+from bithuman.audio import load_audio, float32_to_int16
+
+runtime = await AsyncBithuman.create(
+    model_path="avatar.imx",
+    api_secret=os.environ["BITHUMAN_API_SECRET"],
+)
+await runtime.start()
+
+# Push audio
+pcm, sr = load_audio("speech.wav")
+pcm = float32_to_int16(pcm)
+chunk = sr // 25
+for i in range(0, len(pcm), chunk):
+    await runtime.push_audio(pcm[i : i + chunk].tobytes(), sr)
+await runtime.flush()
+
+# Get frames
+async for frame in runtime.run():
+    if frame.has_image:
+        image = frame.bgr_image       # np.ndarray (H,W,3) uint8 BGR
+        audio = frame.audio_chunk     # synchronized audio
+    if frame.end_of_speech:
+        break
+
+await runtime.stop()
+```
+
+### Key Python methods
+
+- `AsyncBithuman.create(model_path, api_secret)` -- create runtime
+- `runtime.start()` / `runtime.stop()` -- lifecycle
+- `runtime.push_audio(pcm_bytes, sample_rate)` -- push int16 PCM
+- `runtime.flush()` -- signal end of audio segment
+- `runtime.interrupt()` -- cancel current playback
+- `runtime.run()` -- async iterator of VideoFrame
+- `runtime.push(VideoControl(action="wave"))` -- trigger gesture (Essence only)
+- `runtime.set_identity("face.jpg")` -- swap face (Expression only, ~300ms)
+
+### LiveKit plugin
+
+```python
+# pip install livekit-plugins-bithuman
+# or: pip install bithuman[agent]
+from bithuman import AvatarSession
+from bithuman.utils.agent import LocalAvatarRunner, LocalVideoPlayer, LocalAudioIO
+```
+
+### Swift SDK
+
+```swift
+// SwiftPM: https://github.com/bithuman-product/bithuman-sdk-public.git from: "0.8.1"
+import bitHumanKit
+// Key types: BitHuman, VoiceAgent, AvatarView, HardwareCheck
+```
+
+### REST API
+
+Base URL: `https://api.bithuman.ai`
+Auth header: `api-secret: YOUR_SECRET`
+
+Key endpoints:
+- `POST /v1/agent/generate` -- create agent from prompt + assets
+- `GET /v1/agent/status/{agent_id}` -- poll generation (5s interval)
+- `GET /v1/agent/{code}` -- get agent details
+- `POST /v1/agent/{code}/speak` -- make avatar say text
+- `POST /v1/agent/{code}/add-context` -- inject silent knowledge
+- `GET /v2/credit-summaries` -- check credit balance
+
+### CLI
+
+```bash
+bithuman demo                                    # zero-arg hello world
+bithuman generate avatar.imx --audio speech.wav  # render MP4
+bithuman stream avatar.imx                       # local server on :3001
+```
+
+## Where to Find Examples
+
+| Platform | Directory |
+|---|---|
+| Python cloud (Essence) | `Examples/python/cloud-essence/` |
+| Python cloud (Expression) | `Examples/python/cloud-expression/` |
+| Python local (Essence, CPU) | `Examples/python/local-essence/` |
+| Python local (Expression, GPU) | `Examples/python/local-expression-gpu/` |
+| Python local (Expression, Mac) | `Examples/python/local-expression-mac/` |
+| Swift macOS voice agent | `Examples/swift/macos-voice/` |
+| Swift macOS avatar | `Examples/swift/macos-avatar/` |
+| Swift iOS avatar | `Examples/swift/ios-avatar/` |
+| Swift Essence playback | `Examples/swift/essence-playback/` |
+| CLI scripts | `Examples/cli/` |
+| REST API (curl) | `Examples/rest-api/curl/` |
+| REST API (Python) | `Examples/rest-api/python/` |
+| Next.js frontend | `Examples/integrations/nextjs-ui/` |
+| Java WebSocket | `Examples/integrations/java-websocket/` |
+| Gradio web UI | `Examples/integrations/gradio-web/` |
+| Offline Mac stack | `Examples/integrations/offline-mac/` |
+
+## Two Models
+
+| | Essence | Expression |
+|---|---|---|
+| Compute | CPU only | NVIDIA GPU or Apple Silicon M3+ |
+| Avatar source | Pre-built `.imx` file | Any face image at runtime |
+| Gestures | Yes | No |
+| Identity swap | No | Yes (`set_identity()`) |
+| Best for | Kiosks, edge, 24/7 | Custom faces, native apps |
+
+## Pricing
+
+| Model | Self-hosted | Cloud |
+|---|---|---|
+| Essence | 1 cr/min | 2 cr/min |
+| Expression | 2 cr/min | 4 cr/min |
+| Agent generation | 250 cr one-time | -- |
+| Free tier | 99 cr/month | -- |
+
+## Key References
+
+- Docs: https://docs.bithuman.ai
+- OpenAPI spec: `docs/api-reference/openapi.yaml`
+- LLM-optimized docs: https://docs.bithuman.ai/llms.txt
+- Python SDK detailed README: `python/README.md`
+- Swift SDK package: `Package.swift`
+
+## Mistakes to Avoid
+
+- Do not reference private repos (`bithuman-kit`, `bithuman-product/platform`).
+- Do not hardcode API secrets. Use environment variables.
+- Do not use `figure_id` (deprecated). Use `agent_code`.
+- Do not pin Swift SDK below 0.8.1.
+- Do not try to run Expression models on CPU -- they need GPU or M3+.
+- Do not poll `/v1/agent/status/` faster than every 5 seconds.
+- Do not import from `bithuman.internal` or undocumented modules.

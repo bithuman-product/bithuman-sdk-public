@@ -16,7 +16,7 @@ set `BITHUMAN_API_SECRET` (Python/REST/LiveKit) or `BITHUMAN_API_KEY`
 
 ## Pricing (credits per minute)
 - Essence (self-hosted CPU): 1 cr/min
-- Essence (cloud): 2 cr/min  
+- Essence (cloud): 2 cr/min
 - Expression (self-hosted GPU or Apple Silicon): 2 cr/min
 - Expression (cloud): 4 cr/min
 - Agent generation: 250 credits (one-time)
@@ -99,6 +99,46 @@ Set `BITHUMAN_API_SECRET` from [https://www.bithuman.ai](https://www.bithuman.ai
 
 ## Examples
 
+All working examples live in the repository at
+https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples
+organized by language and runtime.
+
+### Examples/python/ — Python SDK examples
+
+- `Examples/python/cloud-essence` — Essence avatar via bitHuman Cloud. Minimal Python, push audio to a cloud-managed session.
+- `Examples/python/cloud-expression` — Expression avatar via bitHuman Cloud. Dynamic face, no local GPU needed.
+- `Examples/python/local-essence` — Self-hosted Essence avatar on CPU. Uses a local `.imx` model file.
+- `Examples/python/local-expression-gpu` — Self-hosted Expression avatar on an NVIDIA GPU Linux box via Docker container.
+- `Examples/python/local-expression-mac` — Self-hosted Expression avatar on Apple Silicon Mac (M3+). No Docker, runs natively via the bundled Swift runtime.
+- `Examples/python/local-expression-gpu-livekit-cloud` — Expression avatar on local GPU with LiveKit Cloud for WebRTC transport. Combines self-hosted inference with managed signaling.
+
+### Examples/swift/ — Swift SDK examples (Apple Silicon native)
+
+- `Examples/swift/macos-voice` — Audio-only voice agent on macOS. Local STT + LLM + TTS, no avatar rendering. Unmetered, works offline.
+- `Examples/swift/macos-avatar` — Full lip-synced avatar on macOS with the bitHumanKit Swift Package. Local inference, 25 FPS.
+- `Examples/swift/ios-avatar` — Lip-synced avatar on iOS (A18 Pro+ iPhone) / iPadOS (M4+ iPad Pro). Includes entitlements and TestFlight notes.
+- `Examples/swift/essence-playback` — Essence model playback in Swift. Plays pre-built `.imx` animations on Apple platforms.
+
+### Examples/cli/ — Shell scripts, no code
+
+- `Examples/cli/render-video.sh` — Render an avatar video from an audio file. Uses `bithuman demo` under the hood.
+- `Examples/cli/live-stream.sh` — Start a live-streaming avatar session from the terminal.
+- `Examples/cli/mac-app.sh` — Launch bitHuman Halo or bithuman-cli in voice/video mode on macOS.
+
+### Examples/rest-api/ — REST API examples (curl and Python)
+
+- `Examples/rest-api/curl/` — Shell scripts calling the bitHuman REST API directly with curl. Covers agent generation, file upload, credit balance, embed tokens, and agent control (speak, add-context).
+- `Examples/rest-api/python/` — Python scripts using `requests` to call the REST API. Same coverage as the curl examples but in Python.
+
+### Examples/integrations/ — Framework and platform integrations
+
+- `Examples/integrations/nextjs-ui` — Next.js frontend with LiveKit-based avatar. Full-stack web app example.
+- `Examples/integrations/java-websocket` — Java WebSocket client for real-time avatar streaming.
+- `Examples/integrations/gradio-web` — Gradio web UI for quick prototyping and demos.
+- `Examples/integrations/offline-mac` — Fully offline macOS app — no network, no billing, audio-only mode.
+
+### Documentation pages for examples
+
 - [Examples Overview](https://docs.bithuman.ai/examples/overview): Index of all working examples organized by category.
 - [Audio Clip](https://docs.bithuman.ai/examples/audio-clip): Simplest example — play audio file through avatar. Python, 20 lines.
 - [Microphone](https://docs.bithuman.ai/examples/microphone): Real-time mic input with voice activity detection.
@@ -109,7 +149,7 @@ Set `BITHUMAN_API_SECRET` from [https://www.bithuman.ai](https://www.bithuman.ai
 - [Expression on macOS](https://docs.bithuman.ai/examples/apple-expression): Run the on-device Expression avatar on Apple Silicon M3+ via the bundled Swift runtime. Any portrait face, 25 FPS lip-sync, no GPU, no cloud. Python SDK step-by-step, vanilla example repo.
 - [Halo Desktop App](https://docs.bithuman.ai/examples/halo-macos): bitHuman Halo — free signed macOS app with a floating lip-synced AI avatar. Local STT + LLM + TTS + avatar, audio never leaves your Mac.
 
-## Swift SDK (Apple Silicon, on-device)
+## Swift SDK (bitHumanKit) — Apple Silicon native
 
 - [Swift SDK Overview](https://docs.bithuman.ai/swift-sdk/overview): bitHumanKit Swift Package — voice + lip-synced avatar for Mac/iPad/iPhone. Hardware floor, install, API key resolution.
 - [Swift SDK Quickstart](https://docs.bithuman.ai/swift-sdk/quickstart): 10-minute integration. Audio-only voice agent in Step 3, lip-synced avatar in Step 4, hardware gate in Step 5.
@@ -152,13 +192,28 @@ Avatar mode requires BITHUMAN_API_KEY; audio-only mode is unmetered.
 If you are an AI coding agent reading this file to set up bitHuman:
 
 1. **Pick a surface** based on what the user is shipping:
-   - Mac/iPad/iPhone app → Swift SDK (`bitHumanKit`, see /swift-sdk/quickstart)
-   - Web app or backend → bitHuman Cloud LiveKit Plugin (`pip install livekit-plugins-bithuman`, see /deployment/livekit-cloud-plugin)
-   - On-prem privacy / edge box → Self-hosted Python SDK (`pip install bithuman`, Essence) or Self-hosted GPU container (Expression)
-   - Programmatic only, no real-time → REST API (`curl https://api.bithuman.ai/v1/...`, see /api-reference/overview)
+   - Mac/iPad/iPhone app → Swift SDK (`bitHumanKit`, see /swift-sdk/quickstart). Working examples at `Examples/swift/macos-avatar`, `Examples/swift/ios-avatar`, `Examples/swift/macos-voice`.
+   - Web app or backend → bitHuman Cloud LiveKit Plugin (`pip install livekit-plugins-bithuman`, see /deployment/livekit-cloud-plugin). Working examples at `Examples/python/cloud-essence`, `Examples/python/cloud-expression`.
+   - On-prem privacy / edge box → Self-hosted Python SDK (`pip install bithuman`, Essence) or Self-hosted GPU container (Expression). Working examples at `Examples/python/local-essence`, `Examples/python/local-expression-gpu`.
+   - macOS local Expression → `Examples/python/local-expression-mac` (Apple Silicon M3+, no Docker).
+   - Programmatic only, no real-time → REST API (`curl https://api.bithuman.ai/v1/...`, see /api-reference/overview). Working curl scripts at `Examples/rest-api/curl/`, Python scripts at `Examples/rest-api/python/`.
+   - Quick demo, no code → CLI shell scripts at `Examples/cli/` (render-video.sh, live-stream.sh, mac-app.sh).
+   - Next.js / Java / Gradio / offline Mac → see `Examples/integrations/`.
 2. **Get credentials**: tell the user to grab an API secret at https://www.bithuman.ai/#developer. Set `BITHUMAN_API_SECRET` (Python/REST/LiveKit) or `BITHUMAN_API_KEY` (Swift SDK).
 3. **Pick a model**: Essence (CPU, pre-built `.imx`, gestures) or Expression (GPU/M3+, dynamic face from any image). See /getting-started/models.
-4. **Run the vanilla example** for that surface from https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples — every surface has a working folder.
+4. **Run the vanilla example** for that surface from https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples — every surface has a working folder under `python/`, `swift/`, `cli/`, `rest-api/`, or `integrations/`.
+
+Examples repo structure:
+```
+Examples/
+  python/          — cloud-essence, cloud-expression, local-essence,
+                     local-expression-gpu, local-expression-mac,
+                     local-expression-gpu-livekit-cloud
+  swift/           — macos-voice, macos-avatar, ios-avatar, essence-playback
+  cli/             — render-video.sh, live-stream.sh, mac-app.sh
+  rest-api/        — curl/ scripts, python/ scripts
+  integrations/    — nextjs-ui, java-websocket, gradio-web, offline-mac
+```
 
 Discoverability:
 - OpenAPI spec: https://docs.bithuman.ai/api-reference/openapi.yaml
