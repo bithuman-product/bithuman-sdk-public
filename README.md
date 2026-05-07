@@ -4,7 +4,7 @@ Real-time avatar animation — audio in, lip-synced video out at 25 FPS. Two mod
 
 [![Docs](https://img.shields.io/badge/docs-docs.bithuman.ai-blue)](https://docs.bithuman.ai)
 [![PyPI](https://badge.fury.io/py/bithuman.svg)](https://pypi.org/project/bithuman/)
-[![Discord](https://img.shields.io/discord/1234567890?label=Discord)](https://discord.gg/ES953n7bPA)
+[![Discord](https://img.shields.io/badge/Discord-community-5865F2)](https://discord.gg/ES953n7bPA)
 
 ## Quick links
 
