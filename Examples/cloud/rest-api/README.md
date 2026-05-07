@@ -58,7 +58,7 @@ python generation.py --prompt "A news anchor" --image https://example.com/face.j
 python generation.py --prompt "A tutor" --video https://example.com/clip.mp4 --audio https://example.com/voice.wav --download
 
 # Save .imx to a specific path
-python generation.py --prompt "A tutor" --download --output ../essence-selfhosted/models/avatar.imx
+python generation.py --prompt "A tutor" --download --output ../../self-hosted/essence-cpu/models/avatar.imx
 ```
 
 ### Download .imx for an existing agent

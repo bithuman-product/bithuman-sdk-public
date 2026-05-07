@@ -47,9 +47,9 @@ icon: "microchip"
   <Step title="Run agent">
     ```bash
     git clone https://github.com/bithuman-product/bithuman-sdk-public.git
-    cd bithuman-sdk-public/Examples/essence-selfhosted
+    cd bithuman-sdk-public/Examples/self-hosted/essence-cpu
     ```
-    [View source code on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/essence-selfhosted)
+    [View source code on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/self-hosted/essence-cpu)
 
     <CodeGroup>
 
@@ -106,7 +106,7 @@ WorkingDirectory=/home/pi
 Environment=LOADING_MODE=SYNC
 Environment=BITHUMAN_API_SECRET=your_secret
 Environment=BITHUMAN_MODEL_PATH=/home/pi/model.imx
-ExecStart=/home/pi/bithuman-env/bin/python examples/essence-selfhosted/agent.py start
+ExecStart=/home/pi/bithuman-env/bin/python examples/self-hosted/essence-cpu/agent.py start
 Restart=always
 RestartSec=10
 

@@ -21,7 +21,7 @@ The SDK ships one API — `AsyncBithuman.create(model_path=…)` — driving two
 | Footprint | 1–2 CPU cores, &lt;200 MB RAM | ~4 GB RAM working set |
 | Best for | Voice agents, kiosks, edge devices, everywhere | Custom-face avatars on Mac M3+ |
 
-Loading an Expression `.imx` on an unsupported host raises a typed `ExpressionModelNotSupported` — not a crash. For cloud or self-hosted-GPU Expression dispatch (Linux + NVIDIA, or bitHuman's cloud workers), use the [LiveKit plugin](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/expression-cloud) (`bithuman.AvatarSession`), not `AsyncBithuman`.
+Loading an Expression `.imx` on an unsupported host raises a typed `ExpressionModelNotSupported` — not a crash. For cloud or self-hosted-GPU Expression dispatch (Linux + NVIDIA, or bitHuman's cloud workers), use the [LiveKit plugin](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/cloud/expression-livekit) (`bithuman.AvatarSession`), not `AsyncBithuman`.
 
 Architecture deep dive + production patterns at [docs.bithuman.ai](https://docs.bithuman.ai).
 
@@ -53,7 +53,7 @@ bithuman generate avatar.imx --audio speech.wav --output demo.mp4
 Don't have a WAV to test with? Grab the 13-second sample bundled in the examples repo:
 
 ```bash
-curl -O https://raw.githubusercontent.com/bithuman-product/bithuman-sdk-public/main/Examples/essence-selfhosted/speech.wav
+curl -O https://raw.githubusercontent.com/bithuman-product/bithuman-sdk-public/main/Examples/self-hosted/essence-cpu/speech.wav
 ```
 
 ### Python
@@ -212,7 +212,7 @@ pip uninstall -y opencv-python && pip install opencv-python-headless
 ## Links
 
 - [Docs](https://docs.bithuman.ai) · [PyPI](https://pypi.org/project/bithuman/)
-- [Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples) — end-to-end stacks (Docker Compose, LiveKit agents, web UIs)
+- [Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples) directory — end-to-end stacks (Docker Compose, LiveKit agents, web UIs)
 - [bitHuman Halo](https://bithuman.ai/halo) — free macOS desktop app built on this SDK
 - [bithuman.ai](https://bithuman.ai) · [API Keys](https://www.bithuman.ai/#developer)
 
@@ -231,6 +231,6 @@ This repo is the public surface for the package:
 - **Issues / feature requests** — file them here.
 - **Changelog** — [`CHANGELOG.md`](./CHANGELOG.md) tracks every PyPI release.
 - **Discussions / docs** — [docs.bithuman.ai](https://docs.bithuman.ai).
-- **Working examples** — [Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples).
+- **Working examples** — [Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples) directory.
 
 If you hit a bug or want to propose an API change, please open an issue with a minimal repro and the output of `pip show bithuman` + `python --version`.

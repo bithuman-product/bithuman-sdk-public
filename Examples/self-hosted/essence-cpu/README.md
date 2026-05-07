@@ -1,30 +1,43 @@
-# Expression + Cloud
+# Essence + Self-Hosted
 
-Run a bitHuman Expression (GPU) avatar using bitHuman's cloud infrastructure.
-No local GPU needed. Provide any face image and the cloud renders a high-fidelity talking avatar.
+Run a bitHuman Essence (CPU) avatar locally using `.imx` model files.
+No GPU needed. Audio stays on your machine -- only authentication calls the cloud.
 
 ## Prerequisites
 
 - Python 3.9+ (or Docker)
 - bitHuman API secret ([www.bithuman.ai](https://www.bithuman.ai/#developer) → Developer → API Keys)
-- A face image (JPEG/PNG -- any photo with a clear face)
-- OpenAI API key (for `agent.py`)
+- `.imx` model file (see below)
+- OpenAI API key (for `conversation.py` and `agent.py`)
+
+## Get an .imx Model
+
+Option A -- **Download from the console**: Browse [www.bithuman.ai](https://www.bithuman.ai) > Explore
+
+Option B -- **Generate via API**: Use the [rest-api/](../../cloud/rest-api/) scripts to create a new agent and download its model:
+```bash
+cd ../../cloud/rest-api
+pip install -r requirements.txt
+export BITHUMAN_API_SECRET=your_secret
+
+# Generate a new agent and download the .imx file (~4 min)
+python generation.py --prompt "You are a friendly assistant" --download --output ../../self-hosted/essence-cpu/models/avatar.imx
+```
 
 ## Quick Start (Full Stack)
 
 ```bash
 # 1. Clone and enter the directory
 git clone https://github.com/bithuman-product/bithuman-sdk-public.git
-cd bithuman-sdk-public/Examples/expression-cloud
+cd bithuman-sdk-public/Examples/self-hosted/essence-cpu
 
-# 2. Create your .env file
+# 2. Place your .imx model(s)
+mkdir -p models
+cp /path/to/avatar.imx models/
+
+# 3. Create your .env file
 cp .env.example .env
 # Edit .env: set BITHUMAN_API_SECRET and OPENAI_API_KEY
-
-# 3. (Optional) Use your own face image
-mkdir -p avatars
-cp /path/to/face.jpg avatars/
-# Then in .env set: BITHUMAN_AVATAR_IMAGE=/app/avatars/face.jpg
 
 # 4. Start everything
 docker compose up
@@ -32,21 +45,47 @@ docker compose up
 
 Open **http://localhost:4202** in your browser. Click to start talking.
 
-First frame arrives in 4-6 seconds. The cloud handles all GPU rendering.
+First frame takes ~20 seconds (model loading), then runs at real-time 25 FPS.
 
-## No-Docker paths
+## Terminal Quickstart (no Docker)
 
-Cloud Expression dispatches through the LiveKit plugin (`bithuman.AvatarSession` with `model="expression"`), not standalone `AsyncBithuman`. There are two terminal-only options that don't need this stack:
+```bash
+pip install -r requirements.txt
+cp .env.example .env
+# Edit .env with your API secret
+```
 
-- **On-device on Apple Silicon (M3+)**: [`../apple-expression/`](../apple-expression/) — runs the Expression `.imx` bundle locally through the bundled Swift daemon. No Docker, no cloud.
-- **Against a self-hosted container on a Linux + NVIDIA box**: [`../expression-selfhosted/`](../expression-selfhosted/) — exposes the container's HTTP API on port 8089.
+### Play an audio file through the avatar
+
+A sample `speech.wav` is included in this directory. Or use your own:
+
+```bash
+python quickstart.py --model models/avatar.imx --audio-file speech.wav
+```
+
+Press `Q` to quit.
+
+### Real-time microphone input
+
+```bash
+python microphone.py --model models/avatar.imx
+python microphone.py --model models/avatar.imx --echo   # hear yourself back
+```
+
+### AI conversation (OpenAI Realtime)
+
+```bash
+python conversation.py --model models/avatar.imx
+```
+
+Speak into your mic, hear the AI respond, watch the avatar lip-sync.
 
 ## Architecture
 
 The Docker Compose stack runs 4 services:
 
 ```
-Browser ──WebRTC──> LiveKit ──dispatch──> Agent ──cloud API──> bitHuman GPU
+Browser ──WebRTC──> LiveKit ──dispatch──> Agent ──local SDK──> .imx model (CPU)
                       |                     |
                    port 17880          AI conversation
                                        (OpenAI)
@@ -55,7 +94,7 @@ Browser ──WebRTC──> LiveKit ──dispatch──> Agent ──cloud API�
 | Service | Description | Port |
 |---------|-------------|------|
 | **livekit** | WebRTC media server | 17880 |
-| **agent** | AI conversation + avatar orchestration | (internal) |
+| **agent** | AI conversation + local .imx rendering | (internal) |
 | **frontend** | Web UI | 4202 |
 | **redis** | LiveKit state | (internal) |
 
@@ -67,16 +106,13 @@ All configuration is via `.env`. See `.env.example` for all options.
 |----------|----------|-------------|
 | `BITHUMAN_API_SECRET` | Yes | API secret from bithuman.ai |
 | `OPENAI_API_KEY` | Yes | For AI conversation |
-| `BITHUMAN_AVATAR_IMAGE` | Yes* | Face image URL or container path |
-| `BITHUMAN_AGENT_ID` | Yes* | Or use a pre-configured agent ID |
+| `BITHUMAN_MODEL_PATH` | CLI only | Path to `.imx` file (for terminal scripts) |
 | `OPENAI_VOICE` | No | TTS voice, default `coral` |
 | `AGENT_PROMPT` | No | AI persona / system prompt (see [Customization](#customization)) |
 
-\* Provide either `BITHUMAN_AVATAR_IMAGE` or `BITHUMAN_AGENT_ID`.
-
 ## Customization
 
-Edit `.env` to change the avatar's personality, voice, or face:
+Edit `.env` to change the avatar's personality or voice:
 
 ```bash
 # AI persona -- controls how the avatar responds
@@ -84,12 +120,9 @@ AGENT_PROMPT="You are a friendly tech support agent. Help users troubleshoot iss
 
 # Voice -- OpenAI TTS voice (options: alloy, ash, ballad, coral, echo, fable, onyx, nova, sage, shimmer, verse)
 OPENAI_VOICE=sage
-
-# Face -- any JPEG/PNG with a clear face
-BITHUMAN_AVATAR_IMAGE=https://example.com/your-face.jpg
-# Or use a local file:
-# BITHUMAN_AVATAR_IMAGE=/app/avatars/face.jpg
 ```
+
+To use a different avatar, place a new `.imx` file in `./models/`. The agent auto-discovers the first `.imx` file in that directory.
 
 After changing `.env`, restart the agent:
 ```bash
@@ -144,21 +177,12 @@ sudo ufw allow 50700:50720/udp   # LiveKit WebRTC media (UDP)
 
 Then access `http://YOUR_VPS_IP:4202` from any browser.
 
-## Essence vs Expression
-
-| | Essence (CPU) | Expression (GPU) |
-|---|---|---|
-| **Model** | Pre-built `.imx` avatars | Any face image |
-| **Quality** | Good, full-body | High-fidelity face |
-| **First frame** | 2-4s | 4-6s |
-| **GPU** | Not needed | Cloud handles it |
-
 ## How It Works
 
-1. The SDK sends your face image to bitHuman's cloud GPU
-2. The Expression model (1.3B parameter DiT) generates real-time lip-sync video
-3. Video frames stream back to your machine
-4. First frame arrives in 4-6 seconds, then runs at 25+ FPS
+1. The bitHuman SDK loads the `.imx` model file (pre-built avatar, ~500 MB)
+2. Audio is processed locally on your CPU -- no GPU needed
+3. The SDK produces video frames (BGR numpy arrays) and synchronized audio
+4. Only authentication requires an internet connection
 
 ## Verify It Works
 
@@ -175,32 +199,28 @@ curl -s http://localhost:4202 | head -5
 
 ## Troubleshooting
 
-**Invalid face image?**
-```
-Error: Could not detect a face in the image
-```
-Use a clear photo with one face visible. Avoid profile shots or heavy occlusion.
+**No .imx model files?**
+Place at least one `.imx` file in the `./models/` directory. Download from [www.bithuman.ai](https://www.bithuman.ai) > Explore, or generate via `../../cloud/rest-api/generation.py`.
 
-**Blank avatar / no video?**
-Check that `BITHUMAN_AVATAR_IMAGE` is a valid URL or container path in `.env`. The URL must be publicly accessible.
+**Model path wrong?**
+The Docker stack mounts `./models/` to `/imx-models` inside the container. The agent auto-discovers `.imx` files in that directory.
 
-**Invalid API secret?**
-```
-Error: 401 Unauthorized
-```
-Check `BITHUMAN_API_SECRET` in `.env`. Copy the full secret from [Developer Dashboard](https://www.bithuman.ai/#developer).
+**Slow first start?**
+First frame takes ~20 seconds while the model loads. Subsequent sessions in the same container start instantly.
 
-**Port 4202 already in use?**
+**Agent crashes?**
 ```bash
-# Find what's using the port
-lsof -i :4202
-# Or change the port in docker-compose.yml
+docker compose logs agent
 ```
+- Check that `OPENAI_API_KEY` is set in `.env`
+- Check that `.imx` files are in `./models/`
 
 ## Files
 
 | File | Description |
 |------|-------------|
-| `agent.py` | LiveKit agent that dispatches to cloud Expression (face image or agent ID) |
-| `docker-compose.yml` | Full stack (LiveKit + agent + frontend + Redis) |
-| `speech.wav` | Sample audio bundled for testing |
+| `quickstart.py` | Simplest example: play audio, display avatar |
+| `microphone.py` | Real-time mic input with silence detection |
+| `conversation.py` | Full AI voice chat (OpenAI Realtime, no LiveKit) |
+| `agent.py` | LiveKit agent for the Docker-based web app |
+| `speech.wav` | Sample audio file for quickstart (13s, 16kHz) |

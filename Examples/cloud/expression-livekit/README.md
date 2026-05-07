@@ -1,13 +1,13 @@
-# Essence + Cloud
+# Expression + Cloud
 
-Run a bitHuman Essence (CPU) avatar using bitHuman's cloud infrastructure.
-No local GPU, no `.imx` model files. Just an API secret and an agent ID.
+Run a bitHuman Expression (GPU) avatar using bitHuman's cloud infrastructure.
+No local GPU needed. Provide any face image and the cloud renders a high-fidelity talking avatar.
 
 ## Prerequisites
 
 - Python 3.9+ (or Docker)
 - bitHuman API secret ([www.bithuman.ai](https://www.bithuman.ai/#developer) → Developer → API Keys)
-- An agent ID (create one at [www.bithuman.ai](https://www.bithuman.ai) or via `../api/generation.py`)
+- A face image (JPEG/PNG -- any photo with a clear face)
 - OpenAI API key (for `agent.py`)
 
 ## Quick Start (Full Stack)
@@ -15,25 +15,31 @@ No local GPU, no `.imx` model files. Just an API secret and an agent ID.
 ```bash
 # 1. Clone and enter the directory
 git clone https://github.com/bithuman-product/bithuman-sdk-public.git
-cd bithuman-sdk-public/Examples/essence-cloud
+cd bithuman-sdk-public/Examples/cloud/expression-livekit
 
 # 2. Create your .env file
 cp .env.example .env
-# Edit .env: set BITHUMAN_API_SECRET, BITHUMAN_AGENT_ID, and OPENAI_API_KEY
+# Edit .env: set BITHUMAN_API_SECRET and OPENAI_API_KEY
 
-# 3. Start everything
+# 3. (Optional) Use your own face image
+mkdir -p avatars
+cp /path/to/face.jpg avatars/
+# Then in .env set: BITHUMAN_AVATAR_IMAGE=/app/avatars/face.jpg
+
+# 4. Start everything
 docker compose up
 ```
 
 Open **http://localhost:4202** in your browser. Click to start talking.
 
-First frame arrives in 2-4 seconds. No model files to manage -- the cloud handles all rendering.
+First frame arrives in 4-6 seconds. The cloud handles all GPU rendering.
 
-## No-Docker path
+## No-Docker paths
 
-Cloud Essence avatars dispatch through the LiveKit plugin (`bithuman.AvatarSession`), not standalone `AsyncBithuman` — there's no terminal quickstart for this stack. Run the Docker Compose stack above and open http://localhost:4202, or use `agent.py` directly if you already have a LiveKit project.
+Cloud Expression dispatches through the LiveKit plugin (`bithuman.AvatarSession` with `model="expression"`), not standalone `AsyncBithuman`. There are two terminal-only options that don't need this stack:
 
-For a terminal-only, standalone demo, see [`../essence-selfhosted/`](../essence-selfhosted/) (local `.imx`, no Docker, no LiveKit).
+- **On-device on Apple Silicon (M3+)**: [`../../self-hosted/expression-apple/`](../../self-hosted/expression-apple/) — runs the Expression `.imx` bundle locally through the bundled Swift daemon. No Docker, no cloud.
+- **Against a self-hosted container on a Linux + NVIDIA box**: [`../../self-hosted/expression-gpu/`](../../self-hosted/expression-gpu/) — exposes the container's HTTP API on port 8089.
 
 ## Architecture
 
@@ -60,14 +66,17 @@ All configuration is via `.env`. See `.env.example` for all options.
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `BITHUMAN_API_SECRET` | Yes | API secret from bithuman.ai |
-| `BITHUMAN_AGENT_ID` | Yes | Agent code (e.g. `A78WKV4515`) |
 | `OPENAI_API_KEY` | Yes | For AI conversation |
+| `BITHUMAN_AVATAR_IMAGE` | Yes* | Face image URL or container path |
+| `BITHUMAN_AGENT_ID` | Yes* | Or use a pre-configured agent ID |
 | `OPENAI_VOICE` | No | TTS voice, default `coral` |
 | `AGENT_PROMPT` | No | AI persona / system prompt (see [Customization](#customization)) |
 
+\* Provide either `BITHUMAN_AVATAR_IMAGE` or `BITHUMAN_AGENT_ID`.
+
 ## Customization
 
-Edit `.env` to change the avatar's personality or voice:
+Edit `.env` to change the avatar's personality, voice, or face:
 
 ```bash
 # AI persona -- controls how the avatar responds
@@ -75,6 +84,11 @@ AGENT_PROMPT="You are a friendly tech support agent. Help users troubleshoot iss
 
 # Voice -- OpenAI TTS voice (options: alloy, ash, ballad, coral, echo, fable, onyx, nova, sage, shimmer, verse)
 OPENAI_VOICE=sage
+
+# Face -- any JPEG/PNG with a clear face
+BITHUMAN_AVATAR_IMAGE=https://example.com/your-face.jpg
+# Or use a local file:
+# BITHUMAN_AVATAR_IMAGE=/app/avatars/face.jpg
 ```
 
 After changing `.env`, restart the agent:
@@ -130,14 +144,21 @@ sudo ufw allow 50700:50720/udp   # LiveKit WebRTC media (UDP)
 
 Then access `http://YOUR_VPS_IP:4202` from any browser.
 
+## Essence vs Expression
+
+| | Essence (CPU) | Expression (GPU) |
+|---|---|---|
+| **Model** | Pre-built `.imx` avatars | Any face image |
+| **Quality** | Good, full-body | High-fidelity face |
+| **First frame** | 2-4s | 4-6s |
+| **GPU** | Not needed | Cloud handles it |
+
 ## How It Works
 
-1. The SDK connects to bitHuman's cloud with your `avatar_id`
-2. Audio is sent to the cloud, which renders the avatar
-3. Video frames stream back to your machine for display
-4. First frame arrives in 2-4 seconds
-
-No model files to manage. The cloud handles all rendering.
+1. The SDK sends your face image to bitHuman's cloud GPU
+2. The Expression model (1.3B parameter DiT) generates real-time lip-sync video
+3. Video frames stream back to your machine
+4. First frame arrives in 4-6 seconds, then runs at 25+ FPS
 
 ## Verify It Works
 
@@ -154,11 +175,14 @@ curl -s http://localhost:4202 | head -5
 
 ## Troubleshooting
 
-**Agent ID not set?**
+**Invalid face image?**
 ```
-Error: BITHUMAN_AGENT_ID is required
+Error: Could not detect a face in the image
 ```
-Set `BITHUMAN_AGENT_ID` in `.env`. Get your agent ID from [www.bithuman.ai](https://www.bithuman.ai).
+Use a clear photo with one face visible. Avoid profile shots or heavy occlusion.
+
+**Blank avatar / no video?**
+Check that `BITHUMAN_AVATAR_IMAGE` is a valid URL or container path in `.env`. The URL must be publicly accessible.
 
 **Invalid API secret?**
 ```
@@ -173,13 +197,10 @@ lsof -i :4202
 # Or change the port in docker-compose.yml
 ```
 
-**No audio / avatar doesn't talk?**
-Check that `OPENAI_API_KEY` is set and valid in `.env`.
-
 ## Files
 
 | File | Description |
 |------|-------------|
-| `agent.py` | LiveKit agent that dispatches to cloud Essence |
+| `agent.py` | LiveKit agent that dispatches to cloud Expression (face image or agent ID) |
 | `docker-compose.yml` | Full stack (LiveKit + agent + frontend + Redis) |
 | `speech.wav` | Sample audio bundled for testing |

@@ -1,0 +1,3 @@
+bithuman>=1.7.0
+livekit-agents[openai,silero]>=1.4
+livekit-plugins-bithuman>=1.4

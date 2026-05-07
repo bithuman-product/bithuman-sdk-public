@@ -16,7 +16,7 @@ Everything else — GPU requirements, image size, startup time, performance, `/h
 
 ```bash
 git clone https://github.com/bithuman-product/bithuman-sdk-public.git
-cd bithuman-sdk-public/Examples/expression-selfhosted-livekit-cloud
+cd bithuman-sdk-public/Examples/self-hosted/expression-gpu-livekit-cloud
 
 cp .env.example .env
 # Edit .env: set BITHUMAN_API_SECRET, OPENAI_API_KEY, and LiveKit Cloud creds.

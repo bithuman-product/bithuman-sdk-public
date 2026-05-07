@@ -1,84 +1,93 @@
 # bitHuman Examples
 
-Build and deploy AI avatars with real-time lip sync. Two avatar models, three runtime surfaces — pick the row in the table that matches what you're shipping.
+Real-time avatar animation — audio in, lip-synced video out at 25 FPS. Pick your path below based on what you're building.
 
 Full documentation at **[docs.bithuman.ai](https://docs.bithuman.ai)**.
 
+## Start here
+
+> **New to bitHuman?** Run one of the [quickstart/](quickstart/) examples in under 2 minutes, then pick a full stack below.
+
+## Choose your path
+
+| I want to... | Go to | What you need |
+|---|---|---|
+| Try it in 2 minutes | [quickstart/](quickstart/) | API key only |
+| Add a talking avatar to my web app | [cloud/essence-livekit/](cloud/essence-livekit/) | API key + agent ID |
+| Use any face image as avatar (cloud) | [cloud/expression-livekit/](cloud/expression-livekit/) | API key + face image |
+| Call the REST API from any language | [cloud/rest-api/](cloud/rest-api/) | API key |
+| Run Essence on my own server (CPU) | [self-hosted/essence-cpu/](self-hosted/essence-cpu/) | API key + `.imx` file |
+| Run Expression on NVIDIA GPU | [self-hosted/expression-gpu/](self-hosted/expression-gpu/) | NVIDIA GPU 8 GB+ VRAM |
+| Run Expression on Mac M3+ (Python) | [self-hosted/expression-apple/](self-hosted/expression-apple/) | Apple Silicon M3+ |
+| Build a native Mac/iPad/iPhone app | [swift/](swift/) | Apple Silicon M3+/M4+ |
+| Run 100% offline on a Mac | [integrations/offline-mac/](integrations/offline-mac/) | Apple Silicon M2+ |
+| Just render a video file | [quickstart/generate-video.sh](quickstart/generate-video.sh) | API key + `.imx` file |
+
 ## Two models
 
-- **Essence** — CPU-only, pre-built `.imx` model from your photo or video. Supports gestures, animal mode, full body. No idle timeout.
-- **Expression** — AI-generated facial animation from any face image. Runs on NVIDIA GPU server-side **or** on-device Apple Silicon M3+.
+| | **Essence** | **Expression** |
+|---|---|---|
+| **What** | Pre-rendered avatar from photo/video | AI-generated facial animation from any face image |
+| **Compute** | CPU only (any platform) | NVIDIA GPU **or** Apple Silicon M3+ |
+| **Avatar source** | `.imx` model file from [bithuman.ai](https://www.bithuman.ai/#explore) | Any face image (JPG/PNG) |
+| **Features** | Gestures, animal mode, full body, no idle timeout | Dynamic face swap, identity change mid-session |
+| **Best for** | Kiosks, edge devices, voice agents, 24/7 displays | Custom faces, native apps, dynamic characters |
 
 See [docs.bithuman.ai/getting-started/models](https://docs.bithuman.ai/getting-started/models) for the full comparison.
 
-## Avatar integration examples
+## Directory layout
 
-| Example | Model | Surface | Host requirement |
-|---|---|---|---|
-| [essence-cloud/](essence-cloud/) | Essence | bitHuman Cloud (LiveKit plugin) | API secret + agent ID |
-| [essence-selfhosted/](essence-selfhosted/) | Essence | Your machine (Python SDK) | API secret + `.imx` file |
-| [expression-cloud/](expression-cloud/) | Expression | bitHuman Cloud (LiveKit plugin) | API secret + face image |
-| [expression-selfhosted/](expression-selfhosted/) | Expression | Your Linux + NVIDIA GPU box | NVIDIA GPU 8 GB+ VRAM |
-| [expression-selfhosted-livekit-cloud/](expression-selfhosted-livekit-cloud/) | Expression | Self-hosted GPU + LiveKit Cloud | Above + LiveKit Cloud project |
-| [apple-expression/](apple-expression/) | Expression | On-device macOS (Python SDK) | Apple Silicon M3+ |
-
-## Apple Silicon Swift SDK
-
-Native on-device voice + lip-synced avatar for **Mac, iPad, iPhone**. Ships as a SwiftPM binary package — no transitive Swift Package dependencies.
-
-| | What |
-|---|---|
-| **[`bithuman-product/bithuman-sdk-public`](https://github.com/bithuman-product/bithuman-sdk-public)** | Public SwiftPM binary package. `import bitHumanKit`. Hardware floor: M3+ Mac / M4+ iPad Pro / iPhone 16 Pro+. |
-| **`bitHuman reference apps (private)`** | Annotated Mac / iPad / iPhone reference apps that consume the SDK. Source is private; prebuilt binaries are linked from [docs.bithuman.ai/swift-sdk/quickstart](https://docs.bithuman.ai/swift-sdk/quickstart). |
-| **`bithuman-cli`** ([Homebrew tap](https://github.com/bithuman-product/homebrew-bithuman)) | No-code Mac tool. `brew install bithuman-cli` → `bithuman-cli video`. |
-
-Quickstart: [docs.bithuman.ai/swift-sdk/quickstart](https://docs.bithuman.ai/swift-sdk/quickstart).
-
-## Platform API (REST)
-
-Programmatic agent management — no SDK or local runtime needed.
-
-| Example | Description |
-|---|---|
-| [api/](api/) | Create agents, poll status, update prompts, generate dynamics, upload files |
-
-Reference: [docs.bithuman.ai/api-reference/overview](https://docs.bithuman.ai/api-reference/overview).
-
-## Language & framework integrations
-
-| Example | Description |
-|---|---|
-| [integrations/java/](integrations/java/) | Java WebSocket client for streaming avatar frames |
-| [integrations/nextjs-ui/](integrations/nextjs-ui/) | Drop-in Next.js web interface for LiveKit rooms |
-| [integrations/web-ui/](integrations/web-ui/) | Gradio browser UI with FastRTC |
-| [integrations/macos-offline/](integrations/macos-offline/) | 100% offline macOS with Ollama + Apple Speech (Essence + local voice stack) |
+```
+Examples/
+├── quickstart/              Try bitHuman in under 2 minutes
+│
+├── cloud/                   bitHuman hosts the avatar (no GPU needed)
+│   ├── essence-livekit/         Essence via LiveKit plugin + Docker
+│   ├── expression-livekit/      Expression via LiveKit plugin + Docker
+│   └── rest-api/                HTTP-only: generate, speak, manage agents
+│
+├── self-hosted/             You host the avatar (full control)
+│   ├── essence-cpu/             Essence on any machine (Linux/Mac/Win/RPi)
+│   ├── expression-gpu/          Expression on Linux + NVIDIA GPU
+│   ├── expression-gpu-livekit-cloud/  Same but WebRTC via LiveKit Cloud
+│   └── expression-apple/        Expression on macOS M3+ (Python SDK)
+│
+├── swift/                   Native Apple apps (Mac/iPad/iPhone)
+│
+└── integrations/            Connect bitHuman to your stack
+    ├── nextjs-ui/               Drop-in Next.js LiveKit frontend
+    ├── java-websocket/          Java WebSocket client
+    ├── gradio-web/              Gradio + FastRTC browser UI
+    └── offline-mac/             100% offline: Ollama + Apple Speech
+```
 
 ## Quick start
 
 ```bash
 git clone https://github.com/bithuman-product/bithuman-sdk-public.git
-cd bithuman-sdk-public/Examples/<example>     # see table above
+cd bithuman-sdk-public/Examples/quickstart
 ```
 
-Each example has its own README with prerequisites and a runnable path.
+Each example has its own README with prerequisites and a one-command run path.
 
-**New to bitHuman?** Start with [`essence-cloud/`](essence-cloud/) — no model download, no GPU. **Building a Mac/iPad/iPhone app?** Jump to [docs.bithuman.ai/swift-sdk/quickstart](https://docs.bithuman.ai/swift-sdk/quickstart).
+## Get an API key
+
+Sign in at [www.bithuman.ai](https://www.bithuman.ai) → Developer → API Keys. Set `BITHUMAN_API_SECRET` for Python/REST/LiveKit, or `BITHUMAN_API_KEY` for the Swift SDK.
+
+Free tier: 99 credits/month (~50 minutes of cloud Essence). See [pricing](https://docs.bithuman.ai/getting-started/pricing).
 
 ## Documentation
 
-- **Site**: [docs.bithuman.ai](https://docs.bithuman.ai)
-- **Quickstart**: [docs.bithuman.ai/getting-started/quickstart](https://docs.bithuman.ai/getting-started/quickstart) (Python) · [docs.bithuman.ai/swift-sdk/quickstart](https://docs.bithuman.ai/swift-sdk/quickstart) (Swift)
-- **Authentication**: [docs.bithuman.ai/getting-started/authentication](https://docs.bithuman.ai/getting-started/authentication)
-- **Pricing & credits**: [docs.bithuman.ai/getting-started/pricing](https://docs.bithuman.ai/getting-started/pricing)
-- **AI-agent ingest**: [docs.bithuman.ai/llms.txt](https://docs.bithuman.ai/llms.txt) · [llms-full.txt](https://docs.bithuman.ai/llms-full.txt) · [openapi.yaml](https://docs.bithuman.ai/api-reference/openapi.yaml)
+- [Getting started](https://docs.bithuman.ai/getting-started/quickstart) (Python) / [Swift SDK](https://docs.bithuman.ai/swift-sdk/quickstart) (Apple)
+- [REST API reference](https://docs.bithuman.ai/api-reference/overview)
+- [Authentication](https://docs.bithuman.ai/getting-started/authentication) / [Pricing](https://docs.bithuman.ai/getting-started/pricing)
+- [llms.txt](https://docs.bithuman.ai/llms.txt) / [llms-full.txt](https://docs.bithuman.ai/llms-full.txt) / [openapi.yaml](https://docs.bithuman.ai/api-reference/openapi.yaml)
 
-## Other resources
+## Resources
 
-- [Platform dashboard](https://www.bithuman.ai) · [Get an API key](https://www.bithuman.ai/#developer)
-- [Python SDK on PyPI](https://pypi.org/project/bithuman/)
-- [Discord community](https://discord.gg/ES953n7bPA)
-- [Status](https://status.bithuman.ai)
+- [Platform dashboard](https://www.bithuman.ai) / [API keys](https://www.bithuman.ai/#developer)
+- [Python SDK (PyPI)](https://pypi.org/project/bithuman/) / [Discord](https://discord.gg/ES953n7bPA) / [Status](https://status.bithuman.ai)
 
 ## License
 
-MIT for the example code in this repo. The bitHuman SDK and model weights are governed by the [bitHuman Terms of Service](https://www.bithuman.ai/terms).
+MIT for example code. The bitHuman SDK and model weights are governed by the [bitHuman Terms of Service](https://www.bithuman.ai/terms).

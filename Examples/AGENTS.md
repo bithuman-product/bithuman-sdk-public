@@ -1,6 +1,6 @@
 # bitHuman Examples — repo guide
 
-A collection of runnable examples that wire the [bithuman](https://pypi.org/project/bithuman/) Python SDK, the [bitHumanKit](https://github.com/bithuman-product/bithuman-sdk-public) Swift SDK, and the Platform REST API into end-to-end stacks. One canonical example per (model × surface) combination — minimal business logic, so the avatar integration stays readable.
+A collection of runnable examples that wire the [bithuman](https://pypi.org/project/bithuman/) Python SDK, the [bitHumanKit](https://github.com/bithuman-product/bithuman-sdk-public) Swift SDK, and the Platform REST API into end-to-end stacks. One canonical example per (model x surface) combination — minimal business logic, so the avatar integration stays readable.
 
 ## What is bitHuman?
 
@@ -15,19 +15,23 @@ Real-time avatar animation. Drives face images or pre-built `.imx` bundles into 
 ## Layout
 
 ```
-api/                                  Platform REST API scripts
-essence-cloud/                        Essence (CPU) via bitHuman Cloud
-essence-selfhosted/                   Essence (CPU) with local .imx file
-expression-cloud/                     Expression (GPU) via bitHuman Cloud
-expression-selfhosted/                Expression (GPU) on your Linux + NVIDIA box
-expression-selfhosted-livekit-cloud/  ↑ same, but WebRTC via LiveKit Cloud
-apple-expression/                     Expression on-device on Apple Silicon (M3+)
+quickstart/                           Try bitHuman in under 2 minutes
+cloud/
+  essence-livekit/                    Essence (CPU) via bitHuman Cloud + LiveKit
+  expression-livekit/                 Expression (GPU) via bitHuman Cloud + LiveKit
+  rest-api/                           Platform REST API scripts (any language)
+self-hosted/
+  essence-cpu/                        Essence (CPU) with local .imx file
+  expression-gpu/                     Expression on your Linux + NVIDIA box
+  expression-gpu-livekit-cloud/       Same, but WebRTC via LiveKit Cloud
+  expression-apple/                   Expression on-device on Apple Silicon (M3+)
+swift/                                Native Apple apps (Mac/iPad/iPhone) — links to docs
 integrations/
-  java/                               Java WebSocket client
-  macos-offline/                      Fully offline macOS (Ollama + Apple Speech)
+  java-websocket/                     Java WebSocket client
+  offline-mac/                        Fully offline macOS (Ollama + Apple Speech)
   nextjs-ui/                          Drop-in Next.js LiveKit frontend
-  web-ui/                             Gradio + FastRTC browser UI
-../docs/                              Mintlify source for docs.bithuman.ai (sibling of Examples/)
+  gradio-web/                         Gradio + FastRTC browser UI
+../docs/                              Mintlify source for docs.bithuman.ai
 ```
 
 ## Conventions
@@ -55,16 +59,16 @@ If you are an AI agent (Claude, Cursor, Copilot, etc.) wiring bitHuman into a us
 
 ### Decision tree (which example folder to copy)
 
-| User says they want… | Recommend | Why |
+| User says they want... | Recommend | Why |
 |---|---|---|
-| "Mac / iPad / iPhone app, runs locally, privacy" | [Swift SDK quickstart](https://docs.bithuman.ai/swift-sdk/quickstart) → bithuman-sdk-public Swift Package + the prebuilt reference app from the docs | All inference on-device. M3+ Mac / M4+ iPad Pro / iPhone 16 Pro+. The reference app source is private; binaries are linked from the docs. |
+| "Mac / iPad / iPhone app, runs locally, privacy" | [Swift SDK quickstart](https://docs.bithuman.ai/swift-sdk/quickstart) | All inference on-device. M3+ Mac / M4+ iPad Pro / iPhone 16 Pro+. |
 | "No setup, fastest demo on a Mac" | `brew install bithuman-cli` → `bithuman-cli video`. See [/swift-sdk/cli](https://docs.bithuman.ai/swift-sdk/cli). | No code. Voice + avatar window in 30 seconds. |
-| "Web app, fastest cloud demo" | [`essence-cloud/`](essence-cloud/) | LiveKit plugin, no GPU, no model files. |
-| "Web app with custom face from a photo" | [`expression-cloud/`](expression-cloud/) | Same plugin, `model="expression"` + `avatar_image`. |
-| "Kiosk / 24/7 display / edge box" | [`essence-selfhosted/`](essence-selfhosted/) | CPU only, no idle timeout, gestures supported. |
-| "On-prem with NVIDIA GPU, custom faces" | [`expression-selfhosted/`](expression-selfhosted/) | Docker container, dynamic face from any image. |
-| "Just calling the REST API from any language" | [`api/`](api/) + [/api-reference/overview](https://docs.bithuman.ai/api-reference/overview) | `curl https://api.bithuman.ai/v1/...`. |
-| "100% offline Mac (no cloud agent)" | [`integrations/macos-offline/`](integrations/macos-offline/) | Essence + Ollama + Apple Speech. M2+ enough. |
+| "Web app, fastest cloud demo" | [`cloud/essence-livekit/`](cloud/essence-livekit/) | LiveKit plugin, no GPU, no model files. |
+| "Web app with custom face from a photo" | [`cloud/expression-livekit/`](cloud/expression-livekit/) | Same plugin, `model="expression"` + `avatar_image`. |
+| "Kiosk / 24/7 display / edge box" | [`self-hosted/essence-cpu/`](self-hosted/essence-cpu/) | CPU only, no idle timeout, gestures supported. |
+| "On-prem with NVIDIA GPU, custom faces" | [`self-hosted/expression-gpu/`](self-hosted/expression-gpu/) | Docker container, dynamic face from any image. |
+| "Just calling the REST API from any language" | [`cloud/rest-api/`](cloud/rest-api/) + [/api-reference/overview](https://docs.bithuman.ai/api-reference/overview) | `curl https://api.bithuman.ai/v1/...`. |
+| "100% offline Mac (no cloud agent)" | [`integrations/offline-mac/`](integrations/offline-mac/) | Essence + Ollama + Apple Speech. M2+ enough. |
 
 ### Onboarding script (use this verbatim with the user)
 
