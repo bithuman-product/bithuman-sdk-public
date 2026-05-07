@@ -1,4 +1,6 @@
-# bitHuman Avatar Runtime
+# bitHuman Avatar Runtime — Python SDK landing page
+
+> **What this directory is.** The per-language landing page (README + [CHANGELOG](CHANGELOG.md) + [LICENSE](LICENSE.md)) for the [`bithuman` package on PyPI](https://pypi.org/project/bithuman/). **The SDK runtime source is private** — signing material is baked into the published wheels. To install: `pip install bithuman`. To browse runnable examples: [`Examples/python/`](../Examples/python/). To file a bug or request a feature: [bithuman-sdk-public/issues](https://github.com/bithuman-product/bithuman-sdk-public/issues).
 
 ![bitHuman Banner](https://docs.bithuman.ai/images/bithuman-banner.jpg)
 
