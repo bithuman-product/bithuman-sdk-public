@@ -446,7 +446,7 @@ ffmpeg -framerate 25 -i frames/frame_%06d.jpg -c:v libx264 -pix_fmt yuv420p outp
 ## Project Structure
 
 ```
-integrations/java/
+integrations/java-websocket/
 ├── bithuman_streaming_server.py                       # Python server (wraps bitHuman SDK)
 ├── pom.xml                                            # Maven build config
 ├── README.md                                          # This file

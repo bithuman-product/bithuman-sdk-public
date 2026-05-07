@@ -1,16 +1,16 @@
 # Expression + Self-Hosted + LiveKit Cloud
 
-Same stack as [`expression-selfhosted/`](../expression-selfhosted/), but WebRTC is hosted by **LiveKit Cloud** instead of a local LiveKit + Redis pair. The browser connects directly over HTTPS — no SSH port forwarding, works from any machine.
+Same stack as [`expression-gpu/`](../expression-gpu/), but WebRTC is hosted by **LiveKit Cloud** instead of a local LiveKit + Redis pair. The browser connects directly over HTTPS — no SSH port forwarding, works from any machine.
 
-## What's different from `expression-selfhosted/`
+## What's different from `expression-gpu/`
 
-| | `expression-selfhosted` | This variant |
+| | `expression-gpu` | This variant |
 |---|---|---|
 | Services | 5 (GPU, agent, frontend, LiveKit, Redis) | 3 (GPU, agent, frontend) |
 | WebRTC transport | Local LiveKit on ports 17880 / 17881 / 50700-50720 | LiveKit Cloud over `wss://` |
 | Remote access | SSH tunnel 3 ports | SSH tunnel 1 port (4202) |
 
-Everything else — GPU requirements, image size, startup time, performance, `/health` / `/launch` HTTP API — is identical. See [expression-selfhosted/README.md](../expression-selfhosted/README.md) for prerequisites, GPU verification, architecture details, and troubleshooting.
+Everything else — GPU requirements, image size, startup time, performance, `/health` / `/launch` HTTP API — is identical. See [expression-gpu/README.md](../expression-gpu/README.md) for prerequisites, GPU verification, architecture details, and troubleshooting.
 
 ## Setup
 
@@ -36,7 +36,7 @@ ssh -L 4202:localhost:4202 user@VPS_IP
 
 ## Extra environment variables
 
-Only these are new vs. `expression-selfhosted`:
+Only these are new vs. `expression-gpu`:
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -44,7 +44,7 @@ Only these are new vs. `expression-selfhosted`:
 | `LIVEKIT_API_KEY` | Yes | LiveKit Cloud API key |
 | `LIVEKIT_API_SECRET` | Yes | LiveKit Cloud API secret |
 
-All other vars (`BITHUMAN_API_SECRET`, `OPENAI_API_KEY`, `BITHUMAN_AVATAR_IMAGE`, `CUDA_VISIBLE_DEVICES`, `AGENT_PROMPT`, `OPENAI_VOICE`, `GPU_PORT`) work the same as in `../expression-selfhosted/.env.example`.
+All other vars (`BITHUMAN_API_SECRET`, `OPENAI_API_KEY`, `BITHUMAN_AVATAR_IMAGE`, `CUDA_VISIBLE_DEVICES`, `AGENT_PROMPT`, `OPENAI_VOICE`, `GPU_PORT`) work the same as in `../expression-gpu/.env.example`.
 
 ## Terminal-only quickstart (no LiveKit)
 
@@ -64,7 +64,7 @@ Press `Q` to quit. Override `--gpu-url` if the container is on another host or p
 - Verify `LIVEKIT_API_KEY` / `LIVEKIT_API_SECRET` match the project
 - VPS must have outbound HTTPS (port 443) access
 
-For GPU/image/model issues, see the [expression-selfhosted troubleshooting](../expression-selfhosted/README.md#troubleshooting).
+For GPU/image/model issues, see the [expression-gpu troubleshooting](../expression-gpu/README.md#troubleshooting).
 
 ## Files
 
@@ -76,4 +76,4 @@ For GPU/image/model issues, see the [expression-selfhosted troubleshooting](../e
 | `.env.example` | Env template including LiveKit Cloud vars |
 | `speech.wav` | Sample audio bundled for testing |
 
-For a curl-only path that hits the GPU container's HTTP API without Python, see [Quick Start (GPU Container Only)](../expression-selfhosted/README.md#quick-start-gpu-container-only) in the sibling example.
+For a curl-only path that hits the GPU container's HTTP API without Python, see [Quick Start (GPU Container Only)](../expression-gpu/README.md#quick-start-gpu-container-only) in the sibling example.
