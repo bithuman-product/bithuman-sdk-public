@@ -1,92 +1,86 @@
 # bitHuman Examples
 
-Real-time avatar animation — audio in, lip-synced video out at 25 FPS. Pick your path below based on what you're building.
+Real-time avatar animation — audio in, lip-synced video out at 25 FPS. Pick your SDK/tool below.
 
 Full documentation at **[docs.bithuman.ai](https://docs.bithuman.ai)**.
 
-## Start here
-
-> **New to bitHuman?** Run one of the [quickstart/](quickstart/) examples in under 2 minutes, then pick a full stack below.
-
 ## Choose your path
 
-| I want to... | Go to | What you need |
-|---|---|---|
-| Try it in 2 minutes | [quickstart/](quickstart/) | API key only |
-| Add a talking avatar to my web app | [cloud/essence-livekit/](cloud/essence-livekit/) | API key + agent ID |
-| Use any face image as avatar (cloud) | [cloud/expression-livekit/](cloud/expression-livekit/) | API key + face image |
-| Call the REST API from any language | [cloud/rest-api/](cloud/rest-api/) | API key |
-| Run Essence on my own server (CPU) | [self-hosted/essence-cpu/](self-hosted/essence-cpu/) | API key + `.imx` file |
-| Run Expression on NVIDIA GPU | [self-hosted/expression-gpu/](self-hosted/expression-gpu/) | NVIDIA GPU 8 GB+ VRAM |
-| Run Expression on Mac M3+ (Python) | [self-hosted/expression-apple/](self-hosted/expression-apple/) | Apple Silicon M3+ |
-| Build a native Mac/iPad/iPhone app | [swift/](swift/) | Apple Silicon M3+/M4+ |
-| Run 100% offline on a Mac | [integrations/offline-mac/](integrations/offline-mac/) | Apple Silicon M2+ |
-| Just render a video file | [quickstart/generate-video.sh](quickstart/generate-video.sh) | API key + `.imx` file |
-
-## Two models
-
-| | **Essence** | **Expression** |
-|---|---|---|
-| **What** | Pre-rendered avatar from photo/video | AI-generated facial animation from any face image |
-| **Compute** | CPU only (any platform) | NVIDIA GPU **or** Apple Silicon M3+ |
-| **Avatar source** | `.imx` model file from [bithuman.ai](https://www.bithuman.ai/#explore) | Any face image (JPG/PNG) |
-| **Features** | Gestures, animal mode, full body, no idle timeout | Dynamic face swap, identity change mid-session |
-| **Best for** | Kiosks, edge devices, voice agents, 24/7 displays | Custom faces, native apps, dynamic characters |
-
-See [docs.bithuman.ai/getting-started/models](https://docs.bithuman.ai/getting-started/models) for the full comparison.
+| I want to... | Go to |
+|---|---|
+| Try it in 2 minutes (any path) | [quickstart/](quickstart/) |
+| Build with Python (local or cloud) | [python/](python/) |
+| Build a native Mac/iPad/iPhone app | [swift/](swift/) |
+| Use the CLI (no code) | [cli/](cli/) |
+| Call the HTTP API from any language | [rest-api/](rest-api/) |
+| Connect to an existing stack | [integrations/](integrations/) |
 
 ## Directory layout
 
 ```
 Examples/
-├── quickstart/              Try bitHuman in under 2 minutes
+├── quickstart/                  Try bitHuman in under 2 minutes
 │
-├── cloud/                   bitHuman hosts the avatar (no GPU needed)
-│   ├── essence-livekit/         Essence via LiveKit plugin + Docker
-│   ├── expression-livekit/      Expression via LiveKit plugin + Docker
-│   └── rest-api/                HTTP-only: generate, speak, manage agents
+├── python/                      Python SDK examples (progressive)
+│   ├── cloud-essence/               Cloud Essence via LiveKit plugin
+│   ├── cloud-expression/            Cloud Expression via LiveKit plugin
+│   ├── local-essence/               Essence on any machine (CPU)
+│   ├── local-expression-gpu/        Expression on NVIDIA GPU (Docker)
+│   ├── local-expression-mac/        Expression on macOS M3+ (Python)
+│   └── local-expression-gpu-livekit-cloud/  GPU + LiveKit Cloud WebRTC
 │
-├── self-hosted/             You host the avatar (full control)
-│   ├── essence-cpu/             Essence on any machine (Linux/Mac/Win/RPi)
-│   ├── expression-gpu/          Expression on Linux + NVIDIA GPU
-│   ├── expression-gpu-livekit-cloud/  Same but WebRTC via LiveKit Cloud
-│   └── expression-apple/        Expression on macOS M3+ (Python SDK)
+├── swift/                       Swift SDK for Apple platforms
+│   ├── macos-voice/                 macOS voice agent (audio only)
+│   ├── macos-avatar/                macOS voice + lip-synced avatar
+│   ├── ios-avatar/                  iOS/iPadOS with hardware gate
+│   └── essence-playback/            Essence .imx on Apple Silicon
 │
-├── swift/                   Native Apple apps (Mac/iPad/iPhone)
+├── cli/                         Command-line tools (no code)
+│   ├── render-video.sh              Render .imx + audio → MP4
+│   ├── live-stream.sh               Start local streaming server
+│   └── mac-app.sh                   bithuman-cli Homebrew Mac app
 │
-└── integrations/            Connect bitHuman to your stack
-    ├── nextjs-ui/               Drop-in Next.js LiveKit frontend
-    ├── java-websocket/          Java WebSocket client
-    ├── gradio-web/              Gradio + FastRTC browser UI
-    └── offline-mac/             100% offline: Ollama + Apple Speech
+├── rest-api/                    HTTP API (any language)
+│   ├── curl/                        Individual curl scripts per endpoint
+│   └── python/                      Full Python scripts
+│
+└── integrations/                Framework bridges
+    ├── nextjs-ui/                   Next.js LiveKit frontend
+    ├── java-websocket/              Java WebSocket client
+    ├── gradio-web/                  Gradio + FastRTC browser UI
+    └── offline-mac/                 100% offline macOS stack
 ```
 
-## Quick start
+## Two models
 
-```bash
-git clone https://github.com/bithuman-product/bithuman-sdk-public.git
-cd bithuman-sdk-public/Examples/quickstart
-```
+| | **Essence** | **Expression** |
+|---|---|---|
+| **What** | Pre-rendered avatar from photo/video | AI-generated animation from any face image |
+| **Compute** | CPU only (any platform) | NVIDIA GPU **or** Apple Silicon M3+ |
+| **Avatar source** | `.imx` file from [bithuman.ai](https://www.bithuman.ai/#explore) | Any face image (JPG/PNG) |
+| **Best for** | Kiosks, edge devices, 24/7 displays | Custom faces, native apps, dynamic characters |
 
-Each example has its own README with prerequisites and a one-command run path.
+Full comparison: [docs.bithuman.ai/getting-started/models](https://docs.bithuman.ai/getting-started/models)
 
 ## Get an API key
 
-Sign in at [www.bithuman.ai](https://www.bithuman.ai) → Developer → API Keys. Set `BITHUMAN_API_SECRET` for Python/REST/LiveKit, or `BITHUMAN_API_KEY` for the Swift SDK.
+Sign in at [www.bithuman.ai](https://www.bithuman.ai) → Developer → API Keys.
 
-Free tier: 99 credits/month (~50 minutes of cloud Essence). See [pricing](https://docs.bithuman.ai/getting-started/pricing).
+- Python / REST / CLI: set `BITHUMAN_API_SECRET`
+- Swift SDK: set `BITHUMAN_API_KEY`
+
+Free tier: 99 credits/month (~50 min cloud Essence). See [pricing](https://docs.bithuman.ai/getting-started/pricing).
 
 ## Documentation
 
 - [Getting started](https://docs.bithuman.ai/getting-started/quickstart) (Python) / [Swift SDK](https://docs.bithuman.ai/swift-sdk/quickstart) (Apple)
-- [REST API reference](https://docs.bithuman.ai/api-reference/overview)
-- [Authentication](https://docs.bithuman.ai/getting-started/authentication) / [Pricing](https://docs.bithuman.ai/getting-started/pricing)
-- [llms.txt](https://docs.bithuman.ai/llms.txt) / [llms-full.txt](https://docs.bithuman.ai/llms-full.txt) / [openapi.yaml](https://docs.bithuman.ai/api-reference/openapi.yaml)
+- [REST API](https://docs.bithuman.ai/api-reference/overview) / [OpenAPI spec](https://docs.bithuman.ai/api-reference/openapi.yaml)
+- [Pricing](https://docs.bithuman.ai/getting-started/pricing) / [Authentication](https://docs.bithuman.ai/getting-started/authentication)
 
 ## Resources
 
 - [Platform dashboard](https://www.bithuman.ai) / [API keys](https://www.bithuman.ai/#developer)
-- [Python SDK (PyPI)](https://pypi.org/project/bithuman/) / [Discord](https://discord.gg/ES953n7bPA) / [Status](https://status.bithuman.ai)
+- [Python SDK (PyPI)](https://pypi.org/project/bithuman/) / [Discord](https://discord.gg/ES953n7bPA)
 
 ## License
 

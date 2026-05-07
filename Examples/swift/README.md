@@ -4,6 +4,17 @@ The Swift SDK (`bitHumanKit`) runs all inference on-device: STT, LLM, TTS, and l
 
 bitHumanKit is distributed as a SwiftPM binary package with zero transitive Swift dependencies.
 
+## Examples
+
+| Example | Platform | Model | API key? | What it shows |
+|---------|----------|-------|----------|---------------|
+| [macos-voice/](macos-voice/) | macOS | -- (audio only) | No | Minimal voice agent: `VoiceChat` + `VoiceChatConfig`. No avatar, no billing. |
+| [macos-avatar/](macos-avatar/) | macOS | Expression | Yes (2 cr/min) | Voice agent with lip-synced avatar: `ExpressionWeights`, `AvatarConfig`, `AvatarCoordinator`, `FramePump`, `AvatarRendererView` via `NSViewRepresentable`. |
+| [ios-avatar/](ios-avatar/) | iOS / iPadOS | Expression | Yes (2 cr/min) | Same avatar pipeline on iPhone/iPad: `HardwareCheck.evaluate()` gate, `UIViewRepresentable`, memory entitlements. |
+| [essence-playback/](essence-playback/) | macOS / iPad | Essence | Yes (1 cr/min) | Essence `.imx` model: `Bithuman.createRuntime(modelPath:)`, `EssenceRuntime.pushAudio()`, `frames()` AsyncStream. |
+
+Each example is a standalone SPM project. Clone, open in Xcode (or `swift run` from the terminal), and go.
+
 ## Supported models
 
 - **Expression** -- AI-generated facial animation from any face image, powered by the on-device Swift daemon.
@@ -58,7 +69,7 @@ Annotated Mac, iPad, and iPhone reference apps that consume the SDK are availabl
 
 ## Python SDK on Apple Silicon
 
-For developers who prefer Python, the `bithuman` PyPI package includes a macOS arm64 wheel with the bundled Swift daemon. See the [expression-apple](../self-hosted/expression-apple/) example for a minimal Python-based Expression demo on Mac -- no Xcode required.
+For developers who prefer Python, the `bithuman` PyPI package includes a macOS arm64 wheel with the bundled Swift daemon. See the [local-expression-mac](../python/local-expression-mac/) example for a minimal Python-based Expression demo on Mac -- no Xcode required.
 
 ## Documentation
 

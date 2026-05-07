@@ -14,14 +14,14 @@ No GPU needed. Audio stays on your machine -- only authentication calls the clou
 
 Option A -- **Download from the console**: Browse [www.bithuman.ai](https://www.bithuman.ai) > Explore
 
-Option B -- **Generate via API**: Use the [rest-api/](../../cloud/rest-api/) scripts to create a new agent and download its model:
+Option B -- **Generate via API**: Use the [rest-api/](../../rest-api/python/) scripts to create a new agent and download its model:
 ```bash
-cd ../../cloud/rest-api
+cd ../../rest-api/python
 pip install -r requirements.txt
 export BITHUMAN_API_SECRET=your_secret
 
 # Generate a new agent and download the .imx file (~4 min)
-python generation.py --prompt "You are a friendly assistant" --download --output ../../self-hosted/essence-cpu/models/avatar.imx
+python generation.py --prompt "You are a friendly assistant" --download --output ../../python/local-essence/models/avatar.imx
 ```
 
 ## Quick Start (Full Stack)
@@ -29,7 +29,7 @@ python generation.py --prompt "You are a friendly assistant" --download --output
 ```bash
 # 1. Clone and enter the directory
 git clone https://github.com/bithuman-product/bithuman-sdk-public.git
-cd bithuman-sdk-public/Examples/self-hosted/essence-cpu
+cd bithuman-sdk-public/Examples/python/local-essence
 
 # 2. Place your .imx model(s)
 mkdir -p models
@@ -200,7 +200,7 @@ curl -s http://localhost:4202 | head -5
 ## Troubleshooting
 
 **No .imx model files?**
-Place at least one `.imx` file in the `./models/` directory. Download from [www.bithuman.ai](https://www.bithuman.ai) > Explore, or generate via `../../cloud/rest-api/generation.py`.
+Place at least one `.imx` file in the `./models/` directory. Download from [www.bithuman.ai](https://www.bithuman.ai) > Explore, or generate via `../../rest-api/python/generation.py`.
 
 **Model path wrong?**
 The Docker stack mounts `./models/` to `/imx-models` inside the container. The agent auto-discovers `.imx` files in that directory.

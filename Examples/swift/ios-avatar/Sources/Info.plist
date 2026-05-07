@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Privacy: microphone access for voice input -->
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Talk to your on-device assistant.</string>
+
+    <!-- Privacy: speech recognition for transcription -->
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>Recognise what you say so the assistant can respond.</string>
+
+    <!-- Memory entitlements (REQUIRED -- must be approved by Apple) -->
+    <!-- Without these the app will be terminated mid-conversation    -->
+    <!-- when memory exceeds the default ~3 GB ceiling.               -->
+    <!-- Request approval: developer.apple.com -> Account ->          -->
+    <!--   Membership -> Request Additional Capabilities              -->
+    <key>com.apple.developer.kernel.increased-memory-limit</key>
+    <true/>
+    <key>com.apple.developer.kernel.extended-virtual-addressing</key>
+    <true/>
+
+    <!-- Lock iPhone to portrait orientation -->
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+    </array>
+</dict>
+</plist>

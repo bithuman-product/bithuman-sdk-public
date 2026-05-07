@@ -15,7 +15,7 @@ No local GPU needed. Provide any face image and the cloud renders a high-fidelit
 ```bash
 # 1. Clone and enter the directory
 git clone https://github.com/bithuman-product/bithuman-sdk-public.git
-cd bithuman-sdk-public/Examples/cloud/expression-livekit
+cd bithuman-sdk-public/Examples/python/cloud-expression
 
 # 2. Create your .env file
 cp .env.example .env
@@ -38,8 +38,8 @@ First frame arrives in 4-6 seconds. The cloud handles all GPU rendering.
 
 Cloud Expression dispatches through the LiveKit plugin (`bithuman.AvatarSession` with `model="expression"`), not standalone `AsyncBithuman`. There are two terminal-only options that don't need this stack:
 
-- **On-device on Apple Silicon (M3+)**: [`../../self-hosted/expression-apple/`](../../self-hosted/expression-apple/) — runs the Expression `.imx` bundle locally through the bundled Swift daemon. No Docker, no cloud.
-- **Against a self-hosted container on a Linux + NVIDIA box**: [`../../self-hosted/expression-gpu/`](../../self-hosted/expression-gpu/) — exposes the container's HTTP API on port 8089.
+- **On-device on Apple Silicon (M3+)**: [`../local-expression-mac/`](../local-expression-mac/) — runs the Expression `.imx` bundle locally through the bundled Swift daemon. No Docker, no cloud.
+- **Against a self-hosted container on a Linux + NVIDIA box**: [`../local-expression-gpu/`](../local-expression-gpu/) — exposes the container's HTTP API on port 8089.
 
 ## Architecture
 

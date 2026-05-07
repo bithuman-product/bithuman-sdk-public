@@ -21,7 +21,7 @@ The SDK ships one API — `AsyncBithuman.create(model_path=…)` — driving two
 | Footprint | 1–2 CPU cores, &lt;200 MB RAM | ~4 GB RAM working set |
 | Best for | Voice agents, kiosks, edge devices, everywhere | Custom-face avatars on Mac M3+ |
 
-Loading an Expression `.imx` on an unsupported host raises a typed `ExpressionModelNotSupported` — not a crash. For cloud or self-hosted-GPU Expression dispatch (Linux + NVIDIA, or bitHuman's cloud workers), use the [LiveKit plugin](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/cloud/expression-livekit) (`bithuman.AvatarSession`), not `AsyncBithuman`.
+Loading an Expression `.imx` on an unsupported host raises a typed `ExpressionModelNotSupported` — not a crash. For cloud or self-hosted-GPU Expression dispatch (Linux + NVIDIA, or bitHuman's cloud workers), use the [LiveKit plugin](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-expression) (`bithuman.AvatarSession`), not `AsyncBithuman`.
 
 Architecture deep dive + production patterns at [docs.bithuman.ai](https://docs.bithuman.ai).
 
@@ -53,7 +53,7 @@ bithuman generate avatar.imx --audio speech.wav --output demo.mp4
 Don't have a WAV to test with? Grab the 13-second sample bundled in the examples repo:
 
 ```bash
-curl -O https://raw.githubusercontent.com/bithuman-product/bithuman-sdk-public/main/Examples/self-hosted/essence-cpu/speech.wav
+curl -O https://raw.githubusercontent.com/bithuman-product/bithuman-sdk-public/main/Examples/python/local-essence/speech.wav
 ```
 
 ### Python

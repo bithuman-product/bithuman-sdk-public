@@ -16,11 +16,11 @@ No local runtime — call the REST API or use the LiveKit plugin.
 
 | Example | Model | What it does | Source |
 |---------|-------|--------------|--------|
-| **Agent Management** | — | Validate credentials, get/update agents | [cloud/rest-api/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/cloud/rest-api) |
-| **Agent Generation** | — | Create agents from prompt, poll status | [cloud/rest-api/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/cloud/rest-api) |
-| **Dynamics** | Essence | Generate gestures, list available gestures | [cloud/rest-api/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/cloud/rest-api) |
-| **Essence + Cloud Plugin** | Essence (CPU) | LiveKit avatar with hosted Essence agent | [cloud/essence-livekit/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/cloud/essence-livekit) |
-| **Expression + Cloud Plugin** | Expression (GPU) | LiveKit avatar with hosted Expression agent or any face image | [cloud/expression-livekit/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/cloud/expression-livekit) |
+| **Agent Management** | — | Validate credentials, get/update agents | [rest-api/python/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/rest-api/python) |
+| **Agent Generation** | — | Create agents from prompt, poll status | [rest-api/python/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/rest-api/python) |
+| **Dynamics** | Essence | Generate gestures, list available gestures | [rest-api/python/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/rest-api/python) |
+| **Essence + Cloud Plugin** | Essence (CPU) | LiveKit avatar with hosted Essence agent | [python/cloud-essence/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-essence) |
+| **Expression + Cloud Plugin** | Expression (GPU) | LiveKit avatar with hosted Expression agent or any face image | [python/cloud-expression/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-expression) |
 
 REST API reference: **[/api-reference/overview](/api-reference/overview)** · LiveKit plugin guide: **[/deployment/livekit-cloud-plugin](/deployment/livekit-cloud-plugin)**.
 
@@ -30,12 +30,12 @@ Run the runtime on your own hardware.
 
 | Example | Model | What it does | Source |
 |---------|-------|--------------|--------|
-| **[Essence + Self-Hosted](/examples/audio-clip)** | Essence (CPU) | Python SDK — push audio, render avatar locally | [self-hosted/essence-cpu/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/self-hosted/essence-cpu) |
-| **[Audio Clip](/examples/audio-clip)** | Essence (CPU) | Play a `.wav` through an avatar with OpenCV display | [self-hosted/essence-cpu/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/self-hosted/essence-cpu) |
-| **[Live Microphone](/examples/microphone)** | Essence (CPU) | Real-time mic input → avatar | [self-hosted/essence-cpu/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/self-hosted/essence-cpu) |
-| **[AI Conversation](/examples/ai-conversation)** | Essence (CPU) | OpenAI voice chat → avatar | [self-hosted/essence-cpu/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/self-hosted/essence-cpu) |
+| **[Essence + Self-Hosted](/examples/audio-clip)** | Essence (CPU) | Python SDK — push audio, render avatar locally | [python/local-essence/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) |
+| **[Audio Clip](/examples/audio-clip)** | Essence (CPU) | Play a `.wav` through an avatar with OpenCV display | [python/local-essence/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) |
+| **[Live Microphone](/examples/microphone)** | Essence (CPU) | Real-time mic input → avatar | [python/local-essence/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) |
+| **[AI Conversation](/examples/ai-conversation)** | Essence (CPU) | OpenAI voice chat → avatar | [python/local-essence/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) |
 | **[Raspberry Pi](/examples/raspberry-pi)** | Essence (CPU) | Edge deployment on Raspberry Pi | — |
-| **Expression + Self-Hosted GPU** | Expression (GPU) | Linux + NVIDIA Docker, dynamic face from any image | [self-hosted/expression-gpu/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/self-hosted/expression-gpu) |
+| **Expression + Self-Hosted GPU** | Expression (GPU) | Linux + NVIDIA Docker, dynamic face from any image | [self-hosted/expression-gpu/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-gpu) |
 
 Python SDK quickstart: **[/getting-started/quickstart](/getting-started/quickstart)** · GPU container: **[/deployment/self-hosted-gpu](/deployment/self-hosted-gpu)**.
 
@@ -70,4 +70,4 @@ Swift SDK overview: **[/swift-sdk/overview](/swift-sdk/overview)** · Quickstart
 
 ---
 
-**New to bitHuman?** Start with [Essence + Cloud](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/cloud/essence-livekit) — the simplest setup with no models to download. Building a Mac/iPad/iPhone app instead? Jump to the [Swift SDK quickstart](/swift-sdk/quickstart).
+**New to bitHuman?** Start with [Essence + Cloud](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-essence) — the simplest setup with no models to download. Building a Mac/iPad/iPhone app instead? Jump to the [Swift SDK quickstart](/swift-sdk/quickstart).

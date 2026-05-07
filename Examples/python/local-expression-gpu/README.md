@@ -28,7 +28,7 @@ If this fails, install the [NVIDIA Container Toolkit](https://docs.nvidia.com/da
 ```bash
 # 1. Clone and enter the directory
 git clone https://github.com/bithuman-product/bithuman-sdk-public.git
-cd bithuman-sdk-public/Examples/self-hosted/expression-gpu
+cd bithuman-sdk-public/Examples/python/local-expression-gpu
 
 # 2. Create your .env file
 cp .env.example .env

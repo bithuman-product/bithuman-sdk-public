@@ -7,7 +7,7 @@ No local GPU, no `.imx` model files. Just an API secret and an agent ID.
 
 - Python 3.9+ (or Docker)
 - bitHuman API secret ([www.bithuman.ai](https://www.bithuman.ai/#developer) → Developer → API Keys)
-- An agent ID (create one at [www.bithuman.ai](https://www.bithuman.ai) or via `../rest-api/generation.py`)
+- An agent ID (create one at [www.bithuman.ai](https://www.bithuman.ai) or via [`rest-api/`](../../rest-api/python/generation.py))
 - OpenAI API key (for `agent.py`)
 
 ## Quick Start (Full Stack)
@@ -15,7 +15,7 @@ No local GPU, no `.imx` model files. Just an API secret and an agent ID.
 ```bash
 # 1. Clone and enter the directory
 git clone https://github.com/bithuman-product/bithuman-sdk-public.git
-cd bithuman-sdk-public/Examples/cloud/essence-livekit
+cd bithuman-sdk-public/Examples/python/cloud-essence
 
 # 2. Create your .env file
 cp .env.example .env
@@ -33,7 +33,7 @@ First frame arrives in 2-4 seconds. No model files to manage -- the cloud handle
 
 Cloud Essence avatars dispatch through the LiveKit plugin (`bithuman.AvatarSession`), not standalone `AsyncBithuman` — there's no terminal quickstart for this stack. Run the Docker Compose stack above and open http://localhost:4202, or use `agent.py` directly if you already have a LiveKit project.
 
-For a terminal-only, standalone demo, see [`../../self-hosted/essence-cpu/`](../../self-hosted/essence-cpu/) (local `.imx`, no Docker, no LiveKit).
+For a terminal-only, standalone demo, see [`../local-essence/`](../local-essence/) (local `.imx`, no Docker, no LiveKit).
 
 ## Architecture
 
