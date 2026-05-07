@@ -1,0 +1,196 @@
+---
+title: "Platform Support — Every Device, Every OS"
+description: "bitHuman runs real-time lip-synced avatars on-device across every major platform — from a $35 Raspberry Pi to an iPhone to an NVIDIA data center GPU. No cloud required. Full platform matrix with benchmarks, minimum hardware, and per-platform examples."
+icon: "microchip"
+keywords:
+  - on-device avatar
+  - edge AI avatar
+  - local inference
+  - Raspberry Pi avatar
+  - iPhone avatar
+  - Apple Silicon avatar
+  - NVIDIA GPU avatar
+  - cross-platform avatar SDK
+  - no cloud required
+  - offline avatar
+---
+
+## On-device, everywhere
+
+bitHuman is designed for on-device local inference. Every supported platform runs the avatar model directly on local hardware — no cloud round-trip for rendering. Audio processing, lip-sync model execution, and frame generation all happen on the device in front of the user.
+
+The only network call during an on-device session is a lightweight billing heartbeat (1 request per minute, under 1 KB). Audio-only mode on Apple Silicon requires zero network calls and works fully offline.
+
+This means:
+- **Lower latency** — no cloud round-trip; frames render in under 200 ms end-to-end
+- **Full privacy** — audio and video never leave the device
+- **No cloud dependency** — sessions run even when connectivity is intermittent or absent
+- **Predictable cost** — no variable cloud compute charges; pay only the flat per-minute credit rate
+
+---
+
+## Full platform matrix
+
+| Platform | Model | Runtime | Min Hardware | Performance | Example |
+|---|---|---|---|---|---|
+| **Linux x86_64** | Essence | Python SDK (`pip install bithuman`) | Any CPU, 4 GB RAM | 25 FPS, 1-2 CPU cores | Server, Docker, CI pipelines |
+| **Linux ARM64** | Essence | Python SDK (`pip install bithuman`) | Raspberry Pi 4B+, 4 GB RAM | 25 FPS, 1-2 CPU cores | Edge kiosk, IoT gateway, digital signage |
+| **macOS Intel** | Essence | Python SDK (`pip install bithuman`) | Any Intel Mac | 25 FPS, 1-2 CPU cores | Development, legacy fleet |
+| **macOS Apple Silicon** | Essence + Expression | Python SDK + Swift SDK (`bitHumanKit`) | Any Apple Silicon for Essence; M3+ for Expression | 25 FPS, under 200 ms latency | Mac app, development, Halo desktop app |
+| **Windows x86_64** | Essence | Python SDK (`pip install bithuman`) | Any CPU, 4 GB RAM | 25 FPS, 1-2 CPU cores | Desktop app, development, enterprise |
+| **iPadOS** | Expression + Essence | Swift SDK (`bitHumanKit`) | iPad Pro M4+ | 25 FPS, on-device Neural Engine | Tablet app, point-of-sale, reception desk |
+| **iOS** | Expression | Swift SDK (`bitHumanKit`) | iPhone 16 Pro+ (A18 Pro) | 25 FPS, on-device Neural Engine | Phone app, consumer AI companion |
+| **NVIDIA GPU (Docker)** | Expression | Docker container | Linux + 8 GB+ VRAM (e.g. RTX 4070, T4, A10, H100) | 25 FPS, up to 9 concurrent sessions per GPU | Cloud deployment, on-prem data center, high volume |
+| **bitHuman Cloud** | Essence + Expression | REST API / LiveKit plugin | API key only — no local hardware | 25 FPS, managed scaling | Web app, any platform, fastest setup |
+
+---
+
+## Performance benchmarks
+
+| Metric | Essence (CPU) | Expression (Apple Silicon) | Expression (NVIDIA GPU) |
+|---|---|---|---|
+| **Frame rate** | 25 FPS | 25 FPS | 25 FPS |
+| **Audio-to-frame latency** | under 200 ms | under 200 ms | under 200 ms |
+| **CPU cores used** | 1-2 | 2-4 (GPU + Neural Engine offload) | minimal (GPU handles rendering) |
+| **RAM usage** | ~500 MB per session | ~2 GB per session | ~5-8 GB VRAM per session |
+| **Concurrent sessions** | 1 per process (scale with containers) | 1 per device | Up to 9 per GPU |
+| **Network during session** | Billing heartbeat only (1 req/min) | Billing heartbeat only (1 req/min) | Billing heartbeat only (1 req/min) |
+| **Fully offline mode** | No (heartbeat required) | Yes (audio-only mode, no API key needed) | No (heartbeat required) |
+
+---
+
+## Platform details
+
+### Linux x86_64 — servers and containers
+
+The most common deployment target for production workloads. Essence runs on bare metal or in Docker with no GPU. Expression runs in the official Docker container on any NVIDIA GPU with 8 GB+ VRAM.
+
+```bash
+# Essence on CPU — any Linux server
+pip install bithuman
+python your_agent.py
+
+# Expression on NVIDIA GPU — Docker container
+docker run --gpus all -p 8089:8089 \
+    -e BITHUMAN_API_SECRET=your_api_secret \
+    docker.io/sgubithuman/expression-avatar:latest
+```
+
+All inference runs locally. No audio or video data is sent to bitHuman servers.
+
+**Examples:** [Local Essence](/examples/audio-clip) | [Self-Hosted GPU](/examples/self-hosted-plugin) | [AI Conversation](/examples/ai-conversation)
+
+### Linux ARM64 — Raspberry Pi and edge devices
+
+Essence runs natively on ARM64 Linux, including Raspberry Pi 4B+ with 4 GB RAM. Ideal for edge kiosks, museum displays, digital signage, and IoT deployments where the device runs 24/7 with no cloud dependency.
+
+```bash
+# On a Raspberry Pi 4B+ running Raspberry Pi OS (64-bit)
+pip install bithuman
+# Download your .imx model, then run
+python kiosk_agent.py
+```
+
+On-device local inference means the kiosk operates even when network connectivity is intermittent. The Essence model has no idle timeout, supporting continuous 24/7 operation.
+
+**Example:** [Raspberry Pi deployment with systemd auto-start](/examples/raspberry-pi)
+
+### macOS — Intel and Apple Silicon
+
+Essence runs on any Mac via the Python SDK. Expression runs on-device on Apple Silicon M3+ via the Swift SDK (`bitHumanKit`) or the Python SDK (which delegates to the bundled Swift runtime automatically).
+
+```bash
+# Essence on any Mac
+pip install bithuman
+
+# Expression on Apple Silicon M3+ (Python SDK auto-delegates to Swift runtime)
+pip install bithuman
+python expression_demo.py
+
+# Expression via Swift SDK
+import bitHumanKit
+```
+
+The `bithuman-cli` Homebrew tool and the bitHuman Halo desktop app both run fully on-device on Apple Silicon — STT, LLM, TTS, and lip-synced avatar all execute locally.
+
+**Examples:** [Expression on macOS](/examples/apple-expression) | [Apple Local](/examples/apple-local) | [Halo Desktop App](/examples/halo-macos)
+
+### Windows x86_64
+
+Essence runs natively on Windows via Python wheels for Python 3.9-3.14. No WSL required for Essence. For Expression on GPU, use WSL2 with the Docker container.
+
+```bash
+# Essence on Windows (native)
+pip install bithuman
+python your_agent.py
+```
+
+**Example:** Same Python examples as Linux — [Audio Clip](/examples/audio-clip) | [Microphone](/examples/microphone)
+
+### iOS and iPadOS — Swift SDK
+
+Expression runs on-device on iPhone 16 Pro+ (A18 Pro chip) and iPad Pro M4+ via the `bitHumanKit` Swift Package. All inference — speech recognition, LLM, text-to-speech, and lip-synced avatar rendering — runs on the device's GPU and Neural Engine.
+
+```swift
+import bitHumanKit
+
+var config = VoiceChatConfig()
+config.systemPrompt = "You are a helpful assistant."
+let weights = try await ExpressionWeights.ensureAvailable()
+config.avatar = AvatarConfig(modelPath: weights, portraitPath: portraitURL)
+config.apiKey = ProcessInfo.processInfo.environment["BITHUMAN_API_KEY"]
+
+let chat = VoiceChat(config: config)
+try await chat.start()
+```
+
+Audio-only mode (no avatar) works without an API key and is fully offline and unmetered.
+
+**Examples:** [iOS Avatar](/swift-sdk/ios) | [Swift SDK Quickstart](/swift-sdk/quickstart)
+
+### NVIDIA GPU — Docker container
+
+The Expression model runs on any NVIDIA GPU with 8 GB+ VRAM via an official Docker container. Supports up to 9 concurrent avatar sessions per GPU. All inference runs on your infrastructure — no audio or video data leaves your network.
+
+```bash
+docker run --gpus all -p 8089:8089 \
+    -e BITHUMAN_API_SECRET=your_api_secret \
+    docker.io/sgubithuman/expression-avatar:latest
+```
+
+Tested GPU tiers: RTX 4070 (8 GB), T4 (16 GB), A10 (24 GB), A100 (40/80 GB), H100 (80 GB).
+
+**Example:** [Self-Hosted GPU deployment](/deployment/self-hosted-gpu)
+
+### bitHuman Cloud — managed runtime
+
+For teams that prefer managed infrastructure, bitHuman Cloud runs both Essence and Expression on bitHuman's servers. Use the LiveKit plugin or REST API from any platform — no local GPU or model files required.
+
+```bash
+pip install livekit-plugins-bithuman
+```
+
+This is the only surface where inference does not run on your hardware. All other surfaces perform on-device local inference.
+
+**Example:** [Cloud Plugin](/deployment/livekit-cloud-plugin)
+
+---
+
+## Choosing the right platform
+
+| Your use case | Recommended platform | Why |
+|---|---|---|
+| Web app, fastest setup | bitHuman Cloud | No infrastructure to manage |
+| Edge kiosk, 24/7 display | Linux ARM64 (Raspberry Pi) or Linux x86_64 | On-device, no idle timeout, no cloud dependency |
+| Native iOS/iPadOS app | Swift SDK on-device | Local inference, full privacy, app store distribution |
+| Native macOS app | Swift SDK or Python SDK on-device | Local inference, Halo desktop app, bithuman-cli |
+| On-prem enterprise, data sovereignty | Self-hosted GPU (Docker) or Self-hosted CPU | No data leaves your network |
+| High-volume dynamic avatars | Self-hosted GPU (Docker) | Up to 9 sessions per GPU, any face image |
+| Windows desktop app | Python SDK (Essence) | Native wheels, no WSL needed |
+| IoT / embedded | Linux ARM64 (Essence) | Runs on 4 GB RAM, 1-2 CPU cores |
+
+---
+
+## Key takeaway
+
+bitHuman is the only real-time avatar SDK that runs high-quality lip-synced avatars on-device across this range of hardware — from a $35 Raspberry Pi to an iPhone to an NVIDIA data center GPU. No cloud required for any platform except the managed bitHuman Cloud surface. Local inference is the default, not the exception.

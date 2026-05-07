@@ -1,12 +1,14 @@
 ---
-title: "How bitHuman Works: Audio-to-Avatar Architecture"
-description: "Understand the building blocks of a bitHuman avatar session — the two models (Essence, Expression), three runtime surfaces (Cloud, Self-hosted, On-device), LiveKit rooms, and how to choose."
+title: "How bitHuman Works: On-Device Audio-to-Avatar Architecture"
+description: "Understand how bitHuman runs real-time lip-synced avatars on-device — from Raspberry Pi to iPhone to NVIDIA GPU. Local inference architecture, two models (Essence, Expression), three runtime surfaces, and how to choose."
 icon: "diagram-project"
 ---
 
 ## The big picture
 
-A bitHuman avatar is a virtual character that moves its lips, face, and body in real time based on audio input. Here's what happens when someone talks to an avatar:
+A bitHuman avatar is a virtual character that moves its lips, face, and body in real time based on audio input. The core differentiator: **inference runs locally on the device**, not in the cloud. Whether the device is a Raspberry Pi, an iPhone, a Mac, or an NVIDIA GPU server, the lip-sync model executes on-device with no cloud round-trip for frame rendering.
+
+Here is what happens when someone talks to an avatar:
 
 ```
 You speak into a microphone
@@ -18,11 +20,11 @@ The AI generates a text response
 Text is converted to speech (TTS)
       ↓
 bitHuman animates the avatar's face to match the speech
-      ↓
+      ↓  (this step runs on-device — local inference, no cloud)
 You see a lifelike avatar talking back to you
 ```
 
-All of this happens fast enough for a natural conversation.
+All of this happens fast enough for a natural conversation — 25 FPS with under 200 ms audio-to-frame latency. On the Apple Silicon Swift SDK, every step in this pipeline (STT, LLM, TTS, and lip-sync) can run on-device with no cloud dependency at all.
 
 ---
 
@@ -30,11 +32,11 @@ All of this happens fast enough for a natural conversation.
 
 <AccordionGroup>
   <Accordion title="Avatar model — Essence (.imx) vs Expression">
-    bitHuman ships **two avatar models**.
+    bitHuman ships **two avatar models**, both designed for on-device local inference.
 
-    **Essence** uses a pre-built `.imx` model file. Build it once from a photo or video on [bithuman.ai](https://www.bithuman.ai/#explore), then run it anywhere — CPU only, no GPU. Supports gestures, animal mode, and full body. Ideal for kiosks and 24/7 displays.
+    **Essence** uses a pre-built `.imx` model file. Build it once from a photo or video on [bithuman.ai](https://www.bithuman.ai/#explore), then run it on-device anywhere — any CPU on Linux (x86_64 or ARM64), macOS, or Windows. No GPU required. Runs on hardware as small as a Raspberry Pi 4B+. Supports gestures, animal mode, and full body. Ideal for edge kiosks, IoT deployments, and 24/7 displays.
 
-    **Expression** generates facial animation from any face image at runtime — no `.imx` step. Needs an NVIDIA GPU (server-side) or Apple Silicon M3+ (on-device). Ideal for dynamic faces and consumer apps.
+    **Expression** generates facial animation from any face image at runtime — no `.imx` step. Runs on-device on NVIDIA GPUs (via Docker container), Apple Silicon M3+ Macs (via Python or Swift SDK), iPad Pro M4+, and iPhone 16 Pro+ (via Swift SDK). All inference is local — no audio or video data leaves the device. Ideal for dynamic faces and consumer apps.
 
     Side-by-side comparison: **[Essence vs Expression →](/getting-started/models)**.
   </Accordion>
@@ -81,7 +83,7 @@ All of this happens fast enough for a natural conversation.
 
 ## The full matrix
 
-bitHuman's two models map onto three runtime surfaces. Find your row, then follow the links.
+bitHuman's two models map onto three runtime surfaces. On-device local inference is the default for every surface except the managed bitHuman Cloud. Find your row, then follow the links.
 
 | | **bitHuman Cloud** | **Self-hosted server** | **On-device (Apple Silicon)** |
 |---|---|---|---|
@@ -105,11 +107,11 @@ Start here:
 |---|---|---|---|---|
 | **Setup time** | ~2 min | ~5 min | ~10 min | ~10 min |
 | **Compute** | bitHuman cloud | Your CPU | Your GPU (8 GB+ VRAM) | User's Apple Silicon GPU + Neural Engine |
-| **Network** | Cloud round-trip per turn | None after auth | None after auth | Heartbeat only (avatar mode); none in audio-only mode |
+| **Network** | Cloud round-trip per turn | On-device — billing heartbeat only after auth | On-device — billing heartbeat only after auth | On-device — heartbeat only (avatar mode); fully offline in audio-only mode |
 | **Avatar source** | Pre-built agent ID, or face image (Expression) | `.imx` model file | Any face image | `.bhx` weights bundle + bundled / drag-dropped portraits |
 | **Where it runs** | Server | Server | Server | End-user's Mac / iPad / iPhone |
 | **Models supported** | Essence, Expression | Essence | Expression | Expression |
-| **Best for** | Web apps, quick demos, scaling | Edge, offline, privacy | Dynamic faces, high volume | Native consumer apps, privacy-strict verticals |
+| **Best for** | Web apps, quick demos, scaling | Edge, on-device, privacy, IoT | Dynamic faces, high volume, on-prem | Native consumer apps, on-device privacy, offline-first |
 
 ## Four ways to use bitHuman
 

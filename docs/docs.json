@@ -53,6 +53,7 @@
               "getting-started/how-it-works",
               "getting-started/architecture",
               "getting-started/models",
+              "getting-started/platforms",
               "getting-started/authentication",
               "getting-started/pricing",
               "getting-started/use-cases",
@@ -167,8 +168,8 @@
       "twitter:card": "summary_large_image",
       "twitter:site": "@bithuman_ai",
       "twitter:image": "https://docs.bithuman.ai/images/bithuman-banner.jpg",
-      "description": "bitHuman real-time avatar animation API documentation. Two models (Essence, Expression). Three surfaces (Cloud REST/LiveKit, self-hosted Python+Docker, on-device Apple Silicon Swift SDK + bithuman-cli).",
-      "keywords": "bitHuman, avatar API, real-time lip sync, talking avatar, AI digital human, Apple Silicon avatar, on-device avatar, LiveKit avatar plugin, NVIDIA avatar Docker, Essence Expression model, bitHumanKit, bithuman-cli, avatar pricing, credits per minute, offline avatar, on-device AI, self-hosted avatar, cost-effective avatar"
+      "description": "bitHuman runs real-time lip-synced avatars on-device — from Raspberry Pi to iPhone to NVIDIA GPU. No cloud required. On-device local inference across Linux, macOS, iOS, iPadOS, and Windows. Two models (Essence for CPU, Expression for GPU and Apple Silicon), three runtime surfaces (cloud API, self-hosted, on-device). Edge-to-cloud avatar SDK for AI agents, kiosks, and consumer apps.",
+      "keywords": "bitHuman, on-device avatar, edge AI avatar, local inference avatar, Raspberry Pi avatar, iPhone avatar, Apple Silicon avatar, NVIDIA GPU avatar, cross-platform avatar SDK, real-time lip sync, talking avatar API, AI digital human, avatar no cloud required, offline avatar, on-device AI inference, self-hosted avatar, LiveKit avatar plugin, Essence Expression model, bitHumanKit, bithuman-cli, avatar pricing, credits per minute, cost-effective avatar, ARM64 avatar, Linux avatar, macOS avatar, Windows avatar, iOS avatar, iPadOS avatar, edge deployment avatar, IoT avatar, kiosk avatar, AI agent avatar SDK, LLM avatar integration, conversational AI avatar"
     },
     "indexing": "navigable"
   },

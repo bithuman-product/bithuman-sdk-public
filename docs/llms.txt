@@ -1,15 +1,19 @@
 # bitHuman
 
-> Real-time avatar animation API. Audio in, animated face out at 25 FPS.
+> On-device real-time avatar SDK. Runs high-quality lip-synced avatars on
+> any device — from a $35 Raspberry Pi to an iPhone to an NVIDIA data
+> center GPU. No cloud required. All inference runs locally on the device.
 > Two avatar models — Essence (CPU, .imx files) and Expression (GPU /
 > Apple Silicon M3+, dynamic faces). Three runtime surfaces — bitHuman
 > Cloud (managed), self-hosted server (Python CPU + Docker GPU), and
 > on-device Apple Silicon (Swift SDK + bithuman-cli).
 
-bitHuman creates digital avatars that lip-sync to audio in real time.
-Use it for AI companions, customer-support bots, virtual tutors, digital
-receptionists, game NPCs, and any application needing a visual character
-that speaks. Get an API secret at https://www.bithuman.ai/#developer →
+bitHuman creates digital avatars that lip-sync to audio in real time
+using on-device local inference. No cloud required — audio processing,
+lip-sync, and frame rendering all run on the hardware where your app
+runs. Use it for AI companions, customer-support bots, virtual tutors,
+digital receptionists, game NPCs, and any application needing a visual
+character that speaks. Get an API secret at https://www.bithuman.ai/#developer →
 set `BITHUMAN_API_SECRET` (Python/REST/LiveKit) or `BITHUMAN_API_KEY`
 (Swift SDK) before any code runs.
 
@@ -22,6 +26,29 @@ set `BITHUMAN_API_SECRET` (Python/REST/LiveKit) or `BITHUMAN_API_KEY`
 - Agent generation: 250 credits (one-time)
 - Free tier: 99 credits/month (no credit card required)
 - Check balance: GET https://api.bithuman.ai/v2/credit-summaries
+
+## Supported Platforms (on-device local inference)
+
+bitHuman runs on-device across every major platform. No cloud required
+for any platform except the managed bitHuman Cloud surface. All
+inference — audio processing, lip-sync model execution, and frame
+rendering — runs locally on the device.
+
+- **Linux x86_64** — Essence (CPU), Expression (NVIDIA GPU Docker). Any CPU with 4 GB RAM for Essence; 8 GB+ VRAM for Expression. Servers, Docker, CI.
+- **Linux ARM64** — Essence (CPU). Raspberry Pi 4B+ with 4 GB RAM. Edge kiosks, IoT, digital signage.
+- **macOS Intel** — Essence (CPU). Any Intel Mac. Development, legacy fleet.
+- **macOS Apple Silicon** — Essence + Expression (on-device). Any Apple Silicon for Essence; M3+ for Expression. Mac apps, bithuman-cli, Halo desktop app.
+- **Windows x86_64** — Essence (CPU). Native Python wheels for 3.9-3.14, 4 GB RAM. Desktop apps, enterprise.
+- **iPadOS** — Expression + Essence (on-device). iPad Pro M4+ via Swift SDK. Tablet apps, point-of-sale.
+- **iOS** — Expression (on-device). iPhone 16 Pro+ (A18 Pro) via Swift SDK. Phone apps, consumer AI.
+- **NVIDIA GPU (Docker)** — Expression. 8 GB+ VRAM (RTX 4070, T4, A10, A100, H100). Up to 9 sessions per GPU. Cloud, on-prem.
+- **bitHuman Cloud** — Essence + Expression (managed, cloud inference). REST API / LiveKit plugin. API key only, no local hardware.
+
+Performance: 25 FPS, under 200 ms audio-to-frame latency, 1-2 CPU cores
+for Essence. Audio-only mode on Apple Silicon works fully offline with
+zero network calls.
+
+Full platform matrix: https://docs.bithuman.ai/getting-started/platforms
 
 ## Models
 
