@@ -22,7 +22,7 @@ Models are explained on [/getting-started/models](/getting-started/models). Surf
 | Surface | Visibility | License |
 |---|---|---|
 | **Examples** ([bithuman-sdk-public/Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples)) | Public | MIT |
-| **Reference apps** (bithuman-apps) | Internal — apps ship as compiled artifacts | Apache-2.0 |
+| **Reference apps** ([bithuman-apps](https://github.com/bithuman-product/bithuman-apps)) | Private — Mac, iPad, and iPhone apps that consume the SDK via the published SwiftPM binary package (the same way any external developer would). Ship as compiled artifacts. | Apache-2.0 |
 | **Homebrew tap** ([homebrew-bithuman](https://github.com/bithuman-product/homebrew-bithuman)) | Public | Apache-2.0 |
 | **Public binary Swift Package** ([bithuman-sdk-public](https://github.com/bithuman-product/bithuman-sdk-public)) | Public — wraps the released `.xcframework` | bitHuman ToS |
 | **Docs site source** ([bithuman-sdk-public/docs](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/docs)) | Public | — |
@@ -97,7 +97,7 @@ Weight downloads are SHA-256 verified and cached. Subsequent launches are instan
 | **bithuman-cli** | homebrew-bithuman | Notarised `.tar.gz` per release; formula bumps `url` + `sha256` |
 | **Docker GPU container** | private | `docker push docker.io/sgubithuman/expression-avatar` |
 | **Docs** | bithuman-sdk-public | Every push to `main` triggers Mintlify auto-deploy to docs.bithuman.ai |
-| **Reference apps** | bithuman-apps | TestFlight / App Store via Xcode archive (iPad, iPhone) and Sparkle DMG (Mac) |
+| **Reference apps** | bithuman-apps (separate repo; consumes the SDK via the published SwiftPM binary) | TestFlight / App Store via Xcode archive (iPad, iPhone) and Sparkle DMG (Mac) |
 
 ## Authentication & billing
 

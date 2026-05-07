@@ -209,7 +209,18 @@ await runtime.set_identity("bob.jpg")       # ~300ms
 await runtime.set_identity("bob.npy")       # instant (pre-encoded)
 ```
 
-## Repository File Structure
+## Repository Layout
+
+There are two repos relevant to Apple-platform development:
+
+| Repo | Visibility | What it contains |
+|------|-----------|------------------|
+| **bithuman-sdk-public** | Public | SwiftPM binary package, Python SDK metadata, runnable examples, docs.bithuman.ai source |
+| **bithuman-apps** | Private | Reference apps (Mac, iPad, iPhone) that consume the SDK via the published SwiftPM binary — the same way any external developer would |
+
+Reference apps do **not** live inside bithuman-sdk-public. They are in the separate `bithuman-apps` repo and depend on the SDK as a normal SwiftPM consumer.
+
+### bithuman-sdk-public
 
 ```
 bithuman-sdk-public/
