@@ -117,9 +117,17 @@ Don't have an `.imx` file? Download one from [bithuman.ai → Explore](https://w
 ## What's in this repo
 
 ```
-├── python/                    Python SDK documentation and changelog
-├── swift/                     Swift SDK documentation and changelog
-├── Package.swift              Swift package manifest (required at root by SwiftPM)
+├── Package.swift              Swift package manifest — the binary distribution of bitHumanKit
+│                              (binaryTarget consuming bitHumanKit.xcframework.zip from
+│                              this repo's GitHub Releases). Required at root by SwiftPM.
+│
+├── python/                    Per-language landing page for the `bithuman` PyPI package.
+│                              README, CHANGELOG, LICENSE — no SDK source (the runtime
+│                              ships as wheels, source is private).
+├── swift/                     Per-language landing page for the `bitHumanKit` Swift package.
+│                              README, CHANGELOG, LICENSE — no SDK source (the framework
+│                              ships as a pre-compiled xcframework consumed via Package.swift
+│                              above).
 │
 ├── Examples/                  Working code you can run
 │   ├── quickstart/                Your first demo (start here)
@@ -129,10 +137,12 @@ Don't have an `.imx` file? Download one from [bithuman.ai → Explore](https://w
 │   ├── rest-api/                  curl and Python scripts for the HTTP API
 │   └── integrations/              Next.js, Java, Gradio, offline Mac
 │
-├── docs/                      Source for docs.bithuman.ai
+├── docs/                      Source for docs.bithuman.ai (Mintlify)
 ├── AGENTS.md                  Instructions for AI coding agents
 └── CONTRIBUTING.md            How to contribute to this repo
 ```
+
+> **Heads up on `python/` and `swift/`.** These directories hold the per-language landing pages and changelogs only — the SDK runtime sources are private (signing material is baked into the published artefacts). Use them as a navigation entry point ("here is the README and version history for the Python SDK") rather than expecting to find source. To install: `pip install bithuman` (Python) or add the SwiftPM URL above (Swift). To file a bug: [bithuman-sdk-public/issues](https://github.com/bithuman-product/bithuman-sdk-public/issues).
 
 ## Pricing
 

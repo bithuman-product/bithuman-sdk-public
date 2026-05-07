@@ -1,4 +1,6 @@
-# bitHumanKit — Swift SDK
+# bitHumanKit — Swift SDK landing page
+
+> **What this directory is.** The per-language landing page (README + [CHANGELOG](CHANGELOG.md) + [LICENSE](LICENSE.md)) for the `bitHumanKit` Swift package. **The SDK source is private** — the framework ships as a pre-compiled `bitHumanKit.xcframework` consumed via the `Package.swift` at this repo's root (a SwiftPM `binaryTarget` pointing at the latest GitHub Release). To install: add the SwiftPM URL `https://github.com/bithuman-product/bithuman-sdk-public.git` to your Xcode project. To browse runnable examples: [`Examples/swift/`](../Examples/swift/). To file a bug: [bithuman-sdk-public/issues](https://github.com/bithuman-product/bithuman-sdk-public/issues).
 
 ![bitHuman Banner](https://docs.bithuman.ai/images/bithuman-banner.jpg)
 
