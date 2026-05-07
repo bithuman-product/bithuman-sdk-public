@@ -1,86 +1,159 @@
 # bitHuman Examples
 
-Real-time avatar animation — audio in, lip-synced video out at 25 FPS. Pick your SDK/tool below.
+Working code you can run. Each example is self-contained — pick one, follow its README, and you'll have a talking avatar running.
 
-Full documentation at **[docs.bithuman.ai](https://docs.bithuman.ai)**.
+## Where to start
 
-## Choose your path
+**If you've never used bitHuman before**, follow this path:
 
-| I want to... | Go to |
-|---|---|
-| Try it in 2 minutes (any path) | [quickstart/](quickstart/) |
-| Build with Python (local or cloud) | [python/](python/) |
-| Build a native Mac/iPad/iPhone app | [swift/](swift/) |
-| Use the CLI (no code) | [cli/](cli/) |
-| Call the HTTP API from any language | [rest-api/](rest-api/) |
-| Connect to an existing stack | [integrations/](integrations/) |
+1. Get your API key at [www.bithuman.ai](https://www.bithuman.ai) → Developer → API Keys (30 seconds, free)
+2. Run one of the [quickstart/](quickstart/) scripts (5 minutes)
+3. Pick a full example from the table below based on what you're building
 
-## Directory layout
+## Pick your example
 
-```
-Examples/
-├── quickstart/                  Try bitHuman in under 2 minutes
-│
-├── python/                      Python SDK examples (progressive)
-│   ├── cloud-essence/               Cloud Essence via LiveKit plugin
-│   ├── cloud-expression/            Cloud Expression via LiveKit plugin
-│   ├── local-essence/               Essence on any machine (CPU)
-│   ├── local-expression-gpu/        Expression on NVIDIA GPU (Docker)
-│   ├── local-expression-mac/        Expression on macOS M3+ (Python)
-│   └── local-expression-gpu-livekit-cloud/  GPU + LiveKit Cloud WebRTC
-│
-├── swift/                       Swift SDK for Apple platforms
-│   ├── macos-voice/                 macOS voice agent (audio only)
-│   ├── macos-avatar/                macOS voice + lip-synced avatar
-│   ├── ios-avatar/                  iOS/iPadOS with hardware gate
-│   └── essence-playback/            Essence .imx on Apple Silicon
-│
-├── cli/                         Command-line tools (no code)
-│   ├── render-video.sh              Render .imx + audio → MP4
-│   ├── live-stream.sh               Start local streaming server
-│   └── mac-app.sh                   bithuman-cli Homebrew Mac app
-│
-├── rest-api/                    HTTP API (any language)
-│   ├── curl/                        Individual curl scripts per endpoint
-│   └── python/                      Full Python scripts
-│
-└── integrations/                Framework bridges
-    ├── nextjs-ui/                   Next.js LiveKit frontend
-    ├── java-websocket/              Java WebSocket client
-    ├── gradio-web/                  Gradio + FastRTC browser UI
-    └── offline-mac/                 100% offline macOS stack
-```
+### By what you're building
 
-## Two models
-
-| | **Essence** | **Expression** |
+| I want to... | Example | What you need |
 |---|---|---|
-| **What** | Pre-rendered avatar from photo/video | AI-generated animation from any face image |
-| **Compute** | CPU only (any platform) | NVIDIA GPU **or** Apple Silicon M3+ |
-| **Avatar source** | `.imx` file from [bithuman.ai](https://www.bithuman.ai/#explore) | Any face image (JPG/PNG) |
-| **Best for** | Kiosks, edge devices, 24/7 displays | Custom faces, native apps, dynamic characters |
+| **Just see it work** | [quickstart/](quickstart/) | API key |
+| **Web app, fastest path** | [python/cloud-essence/](python/cloud-essence/) | API key + agent ID |
+| **Web app with any face as avatar** | [python/cloud-expression/](python/cloud-expression/) | API key + face image |
+| **Run on my own server (CPU only)** | [python/local-essence/](python/local-essence/) | API key + `.imx` model file |
+| **Run on my own NVIDIA GPU** | [python/local-expression-gpu/](python/local-expression-gpu/) | API key + NVIDIA GPU (8 GB+ VRAM) |
+| **Run on Mac M3+ (Python)** | [python/local-expression-mac/](python/local-expression-mac/) | API key + Mac with M3 or newer |
+| **Build a Mac app (Swift)** | [swift/macos-avatar/](swift/macos-avatar/) | API key + Xcode 26 + Mac M3+ |
+| **Build an iPhone/iPad app** | [swift/ios-avatar/](swift/ios-avatar/) | API key + Xcode 26 + iPhone 16 Pro or iPad Pro M4 |
+| **Use the command line (no code)** | [cli/](cli/) | API key |
+| **Call from Java, Go, or any language** | [rest-api/curl/](rest-api/curl/) | API key |
+| **100% offline on Mac** | [integrations/offline-mac/](integrations/offline-mac/) | Mac with M2 or newer |
+
+### By SDK / language
+
+| SDK | Examples | Description |
+|-----|----------|-------------|
+| [python/](python/) | 6 examples | Cloud-hosted and self-hosted avatars using the Python SDK |
+| [swift/](swift/) | 4 examples | Native Mac, iPad, and iPhone apps using the Swift SDK |
+| [cli/](cli/) | 3 scripts | Shell scripts — render videos, stream, Mac desktop app |
+| [rest-api/](rest-api/) | 7 curl + 6 Python | HTTP API calls that work from any programming language |
+| [integrations/](integrations/) | 4 projects | Next.js frontend, Java client, Gradio UI, offline Mac |
+
+## Recommended learning path (Python)
+
+If you want to understand bitHuman deeply, follow these examples in order:
+
+1. **[quickstart/local-avatar.py](quickstart/local-avatar.py)** — The simplest possible thing: load a model, push audio, see frames. ~25 lines.
+2. **[python/local-essence/quickstart.py](python/local-essence/quickstart.py)** — Same idea but with OpenCV display and real-time playback.
+3. **[python/local-essence/microphone.py](python/local-essence/microphone.py)** — Feed your microphone into the avatar in real time.
+4. **[python/local-essence/conversation.py](python/local-essence/conversation.py)** — Full AI conversation: you speak, OpenAI thinks, the avatar replies.
+5. **[python/cloud-essence/](python/cloud-essence/)** — Docker Compose stack with LiveKit, OpenAI, and a web UI.
+
+## How authentication works
+
+You need an API key to use bitHuman. It's free to sign up (99 credits/month, no credit card).
+
+1. Go to [www.bithuman.ai](https://www.bithuman.ai) and create an account
+2. Click **Developer** → **API Keys** and copy your secret
+
+Then set it as an environment variable before running any example:
+
+```bash
+# For Python, CLI, and REST API examples:
+export BITHUMAN_API_SECRET="paste_your_key_here"
+
+# For Swift examples (different variable name, same key):
+export BITHUMAN_API_KEY="paste_your_key_here"
+```
+
+> **Why two different variable names?** The Python SDK was built first and used `BITHUMAN_API_SECRET`. The Swift SDK came later and uses `BITHUMAN_API_KEY`. They're the same credential from the same dashboard — just different names for historical reasons. We know it's confusing. Use the right one for your SDK.
+
+## Two avatar models
+
+bitHuman offers two ways to create avatars:
+
+**Essence** (recommended for beginners)
+- You upload a photo or video on [bithuman.ai](https://www.bithuman.ai/#explore), and it generates a `.imx` model file
+- Download the `.imx` file and use it in your code
+- Runs on any CPU — no GPU needed
+- Costs 1 credit/min (self-hosted) or 2 credits/min (cloud)
+
+**Expression** (advanced — for dynamic faces)
+- Provide any face image (JPG/PNG) at runtime — no generation step
+- The avatar is created on-the-fly from the image
+- Requires an NVIDIA GPU or Mac with M3+ chip
+- Costs 2 credits/min (self-hosted) or 4 credits/min (cloud)
 
 Full comparison: [docs.bithuman.ai/getting-started/models](https://docs.bithuman.ai/getting-started/models)
 
-## Get an API key
+## Pricing
 
-Sign in at [www.bithuman.ai](https://www.bithuman.ai) → Developer → API Keys.
+| What | Cost |
+|------|------|
+| Free tier | 99 credits/month (no credit card) |
+| Essence, you host the avatar | 1 credit per minute |
+| Essence, bitHuman hosts it | 2 credits per minute |
+| Expression, you host the avatar | 2 credits per minute |
+| Expression, bitHuman hosts it | 4 credits per minute |
+| Generate a new avatar agent | 250 credits (one-time) |
 
-- Python / REST / CLI: set `BITHUMAN_API_SECRET`
-- Swift SDK: set `BITHUMAN_API_KEY`
+1 credit = roughly 1 minute of avatar time. [Full pricing details](https://docs.bithuman.ai/getting-started/pricing)
 
-Free tier: 99 credits/month (~50 min cloud Essence). See [pricing](https://docs.bithuman.ai/getting-started/pricing).
+## Directory structure
+
+```
+Examples/
+├── quickstart/                  Your first demo (start here)
+│   ├── cloud-avatar.py              Cloud avatar via LiveKit + OpenAI
+│   └── local-avatar.py              Local avatar from .imx file + audio
+│
+├── python/                      Python SDK examples
+│   ├── cloud-essence/               bitHuman hosts the avatar (easiest)
+│   ├── cloud-expression/            bitHuman hosts it, any face image
+│   ├── local-essence/               You host, any CPU
+│   ├── local-expression-gpu/        You host, NVIDIA GPU required
+│   ├── local-expression-mac/        You host, Mac M3+ required
+│   └── local-expression-gpu-livekit-cloud/  You host GPU, LiveKit Cloud for WebRTC
+│
+├── swift/                       Swift SDK for Apple devices
+│   ├── macos-voice/                 Voice-only agent on Mac (free, no API key)
+│   ├── macos-avatar/                Voice + animated face on Mac
+│   ├── ios-avatar/                  iPhone/iPad with hardware checks
+│   └── essence-playback/            Play .imx files on Apple devices
+│
+├── cli/                         Command-line tools (no programming needed)
+│   ├── render-video.sh              Turn .imx + audio into an MP4 video
+│   ├── live-stream.sh               Start a live avatar streaming server
+│   └── mac-app.sh                   Install the Mac desktop app via Homebrew
+│
+├── rest-api/                    HTTP API (works from any language)
+│   ├── curl/                        One shell script per API endpoint
+│   │   ├── validate.sh                  Check if your API key works
+│   │   ├── speak.sh                     Make an avatar speak text
+│   │   ├── generate-agent.sh            Create a new avatar from scratch
+│   │   ├── add-context.sh               Give the avatar background knowledge
+│   │   ├── list-agents.sh               Get info about an avatar
+│   │   ├── upload-file.sh               Upload an image/video/audio
+│   │   └── check-credits.sh             Check your credit balance
+│   └── python/                      Same operations as Python scripts
+│
+└── integrations/                Connect bitHuman to existing tools
+    ├── nextjs-ui/                   Ready-made web interface (Next.js + LiveKit)
+    ├── java-websocket/              Java client for streaming avatar frames
+    ├── gradio-web/                  Browser-based UI with Gradio
+    └── offline-mac/                 100% offline Mac setup (Ollama + Apple Speech)
+```
 
 ## Documentation
 
-- [Getting started](https://docs.bithuman.ai/getting-started/quickstart) (Python) / [Swift SDK](https://docs.bithuman.ai/swift-sdk/quickstart) (Apple)
-- [REST API](https://docs.bithuman.ai/api-reference/overview) / [OpenAPI spec](https://docs.bithuman.ai/api-reference/openapi.yaml)
-- [Pricing](https://docs.bithuman.ai/getting-started/pricing) / [Authentication](https://docs.bithuman.ai/getting-started/authentication)
+- **Getting started**: [Python quickstart](https://docs.bithuman.ai/getting-started/quickstart) | [Swift quickstart](https://docs.bithuman.ai/swift-sdk/quickstart)
+- **API reference**: [REST API](https://docs.bithuman.ai/api-reference/overview) | [OpenAPI spec](https://docs.bithuman.ai/api-reference/openapi.yaml)
+- **Guides**: [Authentication](https://docs.bithuman.ai/getting-started/authentication) | [Pricing](https://docs.bithuman.ai/getting-started/pricing) | [Models](https://docs.bithuman.ai/getting-started/models)
 
-## Resources
+## Get help
 
-- [Platform dashboard](https://www.bithuman.ai) / [API keys](https://www.bithuman.ai/#developer)
-- [Python SDK (PyPI)](https://pypi.org/project/bithuman/) / [Discord](https://discord.gg/ES953n7bPA)
+- [GitHub Issues](https://github.com/bithuman-product/bithuman-sdk-public/issues) — bug reports and feature requests
+- [Discord](https://discord.gg/ES953n7bPA) — community chat
+- [docs.bithuman.ai](https://docs.bithuman.ai) — full documentation
 
 ## License
 
