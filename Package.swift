@@ -1,13 +1,13 @@
 // swift-tools-version: 6.0
 // bitHumanKit — public binary distribution.
 //
-// The source for bitHumanKit lives in the swift/ tree of the private
-// monorepo bithuman-product/bithuman-sdk (formerly the standalone
-// bithuman-product/bithuman-kit before the 2026-05-05 consolidation).
-// This package consumes the pre-compiled XCFramework attached to
-// THIS repo's GitHub Releases via SwiftPM's binaryTarget — the
-// `.xcframework.zip` is built from bithuman-sdk and uploaded here
-// per release; consumers depend only on this package URL.
+// The source for bitHumanKit lives at SDK/ in the private monorepo
+// bithuman-product/bithuman-apps (alongside the Mac/iPad/iPhone/CLI
+// reference apps that consume it). This package consumes the
+// pre-compiled XCFramework attached to THIS repo's GitHub Releases
+// via SwiftPM's binaryTarget — the `.xcframework.zip` is built from
+// bithuman-apps/SDK and uploaded here per release; consumers depend
+// only on this package URL.
 //
 // All third-party deps (MLX, HuggingFace, Tokenizers, …) are
 // statically linked into the framework binary, so consumers
