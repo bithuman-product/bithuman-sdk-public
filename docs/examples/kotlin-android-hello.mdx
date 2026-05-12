@@ -1,0 +1,93 @@
+---
+title: "Kotlin / Android Hello World"
+description: "Render an on-device AI avatar on Android in ~20 lines of Kotlin — Maven Central AAR, arm64-v8a, fully private lip-sync."
+icon: "android"
+---
+
+This page is the minimum runnable Android program that drives the
+bitHuman avatar runtime on-device. Real-time lip-sync compositing on
+`arm64-v8a` phones and tablets, no cloud inference. Compatible with
+Android 10+ (API 29+).
+
+## Prerequisites
+
+- **Android Studio** with NDK 28.0.13004108, compile SDK 35.
+- An `arm64-v8a` test device (physical phone or arm64 emulator image).
+- A bitHuman API secret exported via env var or read by your app at
+  startup. Sign in at
+  [www.bithuman.ai → Developer → API Keys](https://www.bithuman.ai/#developer).
+- A `.imx` model file pushed to the device. The sample app uses
+  `getExternalFilesDir(null)`; adapt to your storage scheme as needed.
+
+## 1. Add the dependency
+
+`app/build.gradle.kts`:
+
+```kotlin
+android {
+    defaultConfig {
+        ndk { abiFilters += setOf("arm64-v8a") }
+        minSdk = 29
+    }
+}
+
+dependencies {
+    implementation("ai.bithuman:sdk:1.12.0")   // Maven Central
+}
+```
+
+## 2. Compose frames into an `ImageView`
+
+The canonical snippet from the [Kotlin SDK README](https://github.com/bithuman-product/bithuman-sdk/blob/main/cpp/bindings/kotlin/README.md):
+
+```kotlin
+// MainActivity.kt — load model, compose frames, display them
+package com.example.bithumanhello
+
+import android.app.Activity
+import android.os.Bundle
+import android.widget.ImageView
+import ai.bithuman.sdk.Avatar
+import java.io.File
+
+class MainActivity : Activity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val imageView = ImageView(this).also { setContentView(it) }
+
+        // Read .imx + WAV from app-private external files dir.
+        val dir   = getExternalFilesDir(null)!!
+        val model = File(dir, "sample-avatar.imx").absolutePath
+        val audio = File(dir, "speech.wav").absolutePath
+
+        // Compose runs off the main thread; each Bitmap is a 25 fps frame.
+        Thread {
+            Avatar.load(model).use { avatar ->
+                avatar.composeFromFile(audio).forEach { frame ->
+                    runOnUiThread { imageView.setImageBitmap(frame.toBitmap()) }
+                }
+            }
+        }.start()
+    }
+}
+```
+
+That's the whole loop: 16 kHz mono PCM in, lip-synced `Bitmap`s out at
+25 fps, fully on-device.
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Kotlin SDK quickstart" icon="rocket" href="/kotlin-sdk/quickstart">
+    Full Android Studio walkthrough.
+  </Card>
+  <Card title="Kotlin SDK overview" icon="book" href="/kotlin-sdk/overview">
+    API surface, low-level `Fixture` + `Runtime` types.
+  </Card>
+  <Card title="Device matrix" icon="microchip" href="/getting-started/device-matrix">
+    Which phones, tablets, and SoCs have been benched.
+  </Card>
+  <Card title="Architecture" icon="diagram-project" href="/getting-started/architecture">
+    How the AAR sits on top of libessence.
+  </Card>
+</CardGroup>

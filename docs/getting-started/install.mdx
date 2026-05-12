@@ -1,0 +1,168 @@
+---
+title: "Install"
+description: "All four bitHuman SDK install channels — pip, SwiftPM, Maven Central, Homebrew — on one page."
+icon: "download"
+---
+
+bitHuman ships from one source tag (`libessence-v1.12.0`) into four package
+registries. Pick the channel that matches your target platform.
+
+| Channel | Coord | Platforms |
+| ------- | ----- | --------- |
+| pip (Python) | `bithuman` 1.12.0 | macOS arm64, Linux x86_64, Linux aarch64 |
+| SwiftPM (Apple) | `Bithuman` @ `libessence-v1.12.0` | macOS arm64, iOS device, iOS simulator |
+| Maven Central (Android) | `ai.bithuman:sdk:1.12.0` | Android `arm64-v8a`, minSdk 29 |
+| Homebrew (CLI) | `bithuman` 1.12.0 | macOS arm64 |
+
+For the underlying architecture (Layer 1/2/3, the role of `libessence`),
+see [Architecture](/getting-started/architecture).
+
+## Python — `pip`
+
+```bash
+pip install bithuman --upgrade   # 1.12.0
+```
+
+- Python 3.10 – 3.13 (CPython).
+- Wheels: macOS arm64, Linux x86_64 (`manylinux_2_28`), Linux aarch64 (`manylinux_2_28`).
+- Windows wheels are tracked for a follow-up release.
+
+Smoke-test in one line:
+
+```python
+from bithuman import Avatar
+with Avatar.load("model.imx") as avatar:
+    for frame in avatar.compose("speech.wav"):
+        # frame.bgr is (H, W, 3) uint8 BGR
+        ...
+```
+
+Full guide: [Python quickstart](/getting-started/quickstart).
+
+## Swift — SwiftPM
+
+In `Package.swift`:
+
+```swift
+dependencies: [
+    .package(
+        url: "https://github.com/bithuman-product/bithuman-sdk",
+        from: "libessence-v1.12.0"
+    ),
+],
+targets: [
+    .target(
+        name: "MyApp",
+        dependencies: [
+            .product(name: "Bithuman", package: "bithuman-sdk"),
+        ]
+    )
+]
+```
+
+In Xcode: **File → Add Package Dependencies…** → paste the repo URL → pick
+the latest `libessence-v*` tag.
+
+```swift
+import Bithuman
+
+let avatar = try Avatar(modelPath: modelURL)
+try avatar.compose(audioFile: speechURL) { frame in
+    if let cg = frame.cgImage() { /* hand to SwiftUI / UIKit / AppKit */ }
+}
+```
+
+The package ships a 3-slice xcframework (macOS arm64 + iOS arm64 device + iOS
+arm64 simulator). Static link of `libessence` — zero transitive SwiftPM
+dependencies. Full guide: [Swift quickstart](/swift-sdk/quickstart).
+
+## Kotlin / Android — Maven Central
+
+In `app/build.gradle.kts`:
+
+```kotlin
+android {
+    defaultConfig {
+        ndk { abiFilters += setOf("arm64-v8a") }
+        minSdk = 29
+    }
+}
+
+dependencies {
+    implementation("ai.bithuman:sdk:1.12.0")
+}
+```
+
+```kotlin
+import ai.bithuman.sdk.Avatar
+
+Avatar.load("/path/to/model.imx").use { avatar ->
+    avatar.composeFromFile("/path/to/speech.wav").forEach { frame ->
+        // frame.bgr is width*height*3 packed BGR uint8
+    }
+}
+```
+
+AAR is ~14 MB. `arm64-v8a` only (other ABIs deferred). Full guide:
+[Kotlin quickstart](/kotlin-sdk/quickstart).
+
+## CLI — Homebrew
+
+```sh
+brew tap bithuman-product/bithuman
+brew install bithuman
+```
+
+The canonical formula is `bithuman`. `bithuman-cli` is kept as a tap alias
+for back-compat — existing scripts using `brew install bithuman-cli` continue
+to work unchanged.
+
+```sh
+bithuman doctor          # verify host setup + API key presence
+bithuman avatar          # browser-served local avatar on :8080
+bithuman voice --openai  # spoken conversation via OpenAI Realtime
+```
+
+No-Homebrew alternative (curl-pipe):
+
+```sh
+curl -fsSL https://github.com/bithuman-product/bithuman-sdk/releases/latest/download/install.sh | sh
+```
+
+You'll still need the runtime dylibs the CLI links against:
+
+```sh
+brew install onnxruntime hdf5 jpeg-turbo webp ffmpeg
+```
+
+Full guide: [CLI reference](/swift-sdk/cli).
+
+## Authentication
+
+Every channel reads the same credential under one of two equivalent env-var
+names (platform convention determines which):
+
+```sh
+export BITHUMAN_API_SECRET=...   # Python, Kotlin, REST API, CLI
+export BITHUMAN_API_KEY=...      # Swift (Apple-platform convention)
+```
+
+Sign in at [www.bithuman.ai → Developer → API Keys](https://www.bithuman.ai/#developer)
+to fetch a secret. Full auth flow: [Authentication](/getting-started/authentication).
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Architecture" icon="diagram-project" href="/getting-started/architecture">
+    The 3-layer model behind every channel
+  </Card>
+  <Card title="Python quickstart" icon="rocket" href="/getting-started/quickstart">
+    `pip install bithuman` end-to-end
+  </Card>
+  <Card title="Swift quickstart" icon="apple" href="/swift-sdk/quickstart">
+    SwiftPM `Bithuman` in 10 minutes
+  </Card>
+  <Card title="Kotlin quickstart" icon="android" href="/kotlin-sdk/quickstart">
+    `ai.bithuman:sdk` in 10 minutes
+  </Card>
+</CardGroup>

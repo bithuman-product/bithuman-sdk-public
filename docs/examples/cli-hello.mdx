@@ -1,0 +1,95 @@
+---
+title: "CLI Hello World"
+description: "Get an on-device AI avatar talking in 5 minutes — Homebrew install, doctor check, browser-served avatar, no code required."
+icon: "terminal"
+---
+
+This page is the fastest way to try a real-time on-device avatar end-to-end.
+No code: just install the `bithuman` CLI, check your host, and open a
+browser-served avatar on `localhost`. Audio is captured from your mic;
+lip-synced frames stream back over MJPEG.
+
+## Prerequisites
+
+- macOS 26 (Tahoe) or later, Apple Silicon (M3+).
+- ~3 GB free disk for voice mode, ~7 GB for the full local stack.
+- A bitHuman API key (free tier works). Sign in at
+  [www.bithuman.ai → Developer → API Keys](https://www.bithuman.ai/#developer).
+- Optional: `OPENAI_API_KEY` for cloud `voice` / `text` mode.
+
+## 1. Install
+
+```bash
+# Homebrew (recommended) — pulls onnxruntime / hdf5 / jpeg-turbo / webp / ffmpeg.
+brew install bithuman-product/bithuman/bithuman
+
+# Sanity-check host setup + API key presence.
+bithuman doctor
+```
+
+`doctor` is idempotent — re-run it any time you change env vars or move
+the sample avatar.
+
+## 2. Browser-served avatar
+
+```bash
+# Spin up an HTTP avatar runtime on http://127.0.0.1:8080.
+# Open the URL, grant mic permission, talk. Lip-synced MJPEG streams back.
+bithuman avatar
+```
+
+The first run pulls `sample-avatar.imx` into
+`~/.cache/bithuman/models/`. Pass `--model /path/to/your.imx` to drive
+your own fixture.
+
+## 3. One-shot text chat (no UI)
+
+```bash
+# Cloud (default): uses OpenAI Chat Completions — instant, requires OPENAI_API_KEY.
+echo "Hello, who are you?" | bithuman text --openai
+
+# --local: pulls Gemma 3 1B 4-bit (~840 MB) to ~/.cache/huggingface/.
+#          Fully offline, private, air-gap-friendly after first run.
+echo "Hello, who are you?" | bithuman text --local
+```
+
+## 4. Voice conversation
+
+```bash
+# Cloud voice (OpenAI Realtime — instant startup).
+bithuman voice --openai
+
+# Local voice (whisper.cpp ASR + Gemma 3 1B + Piper TTS, fully on-device).
+bithuman voice --local
+```
+
+Ctrl-C exits gracefully. Both modes capture the system mic, play
+responses through the default output device, and print transcripts.
+
+## 5. Offline batch render
+
+```bash
+# Render an MP4 from a model + WAV file, no interactive session.
+bithuman generate avatar.imx --audio speech.wav --output rendered.mp4
+```
+
+Default canvas is 1280×720 (letterboxed for non-matching fixture
+aspects). Use `--target-size WxH` and `--quality LOW|MEDIUM|HIGH` to
+tune.
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="CLI reference" icon="book" href="/getting-started/cli">
+    All 13 subcommands, cache layout, exit codes.
+  </Card>
+  <Card title="Halo macOS" icon="apple" href="/examples/halo-macos">
+    Free signed DMG — floating avatar desktop app.
+  </Card>
+  <Card title="Swift quickstart" icon="rocket" href="/swift-sdk/quickstart">
+    Embed the same engine in a Mac / iPad / iPhone app.
+  </Card>
+  <Card title="Architecture" icon="diagram-project" href="/getting-started/architecture">
+    How the CLI sits between libessence and the language SDKs.
+  </Card>
+</CardGroup>

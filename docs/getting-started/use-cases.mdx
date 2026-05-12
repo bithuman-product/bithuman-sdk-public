@@ -1,129 +1,175 @@
 ---
-title: "Use Cases"
-description: "What you can build with bitHuman — AI companions, customer support avatars, virtual tutors, and more."
+title: "Use cases"
+description: "Concrete on-device, on-edge, and on-cloud deployment scenarios for bitHuman — by host class, model choice, resolution, and network requirement."
 icon: "lightbulb"
 ---
 
-## What Can You Build?
+bitHuman runs the same engine on a phone, a kiosk, and a GPU server. This page lists concrete deployment scenarios drawn from the example apps in this repo, organised by host class. For raw per-device performance numbers see the [device compatibility matrix](/getting-started/device-matrix); for the model trade-off itself see [Essence vs Expression](/getting-started/models).
 
-bitHuman turns audio into a real-time talking avatar. Anywhere you need a visual character that speaks — that's where bitHuman fits.
-
----
-
-## Customer Support Avatar
-
-Replace hold music with a face. An avatar greets visitors, answers FAQs, and escalates to a human when needed.
-
-**Architecture:** Website embed (iframe) → bitHuman cloud → OpenAI for conversation
-
-```python
-avatar = bithuman.AvatarSession(
-    avatar_id="YOUR_SUPPORT_AGENT",
-    api_secret=os.getenv("BITHUMAN_API_SECRET"),
-)
-```
-
-**Best deployment:** [Cloud Plugin](/deployment/livekit-cloud-plugin) for fastest setup, or [Website Embed](/integrations/embed) for dropping into existing pages.
+The four production showcase agents — **Nova**, **Captain Quizbeard**, **Lena**, and **Bee Buffalo** — are good starting characters for any of the scenarios below. Pick one from [bithuman.ai](https://bithuman.ai) and drop the agent code straight into the example.
 
 ---
 
-## AI Tutor / Virtual Teacher
+## On-device — consumer apps on Apple Silicon
 
-A patient avatar that explains concepts, answers questions, and adapts to the student's pace. Lip-sync creates presence that text chat can't match.
+The Apple Silicon target (Mac M3+, iPad Pro M4+, iPhone 17 Pro) is the densest combination of "fast CPU + GPU + NPU" in any consumer hardware. The Swift SDK ships an xcframework with libessence statically linked — zero transitive dependencies for the host app.
 
-**Architecture:** LiveKit room → AI agent (GPT-4 + domain knowledge) → bitHuman avatar
+### Avatar chat assistant
 
-**Best deployment:** [Cloud Plugin](/deployment/livekit-cloud-plugin) with custom system prompt via [Prompt Guide](/getting-started/prompts).
+A Mac, iPad, or iPhone app running the bitHuman SDK alongside an on-device LLM (Qwen3 / Gemma 3n) and on-device TTS. The whole loop fits on the device.
 
----
+| Field | Value |
+|---|---|
+| Host device | Mac M3+, iPad Pro M4+, iPhone 17 Pro |
+| Model | Essence on iPhone; either Essence or Expression on Mac/iPad |
+| Resolution | 384² (iPhone/iPad), 512² or 720p (Mac) |
+| Network | None after first-launch model download; 1-req/min billing heartbeat thereafter |
 
-## Digital Receptionist / Kiosk
+Reference: `bithuman avatar --local`. Use cases: privacy-first AI assistant, accessibility (read-out-loud avatar companion), education.
 
-A lobby screen or tablet that greets visitors, provides directions, and handles check-in. Runs on a Raspberry Pi or any Linux machine.
+### AI-powered story narrator
 
-**Architecture:** Kiosk browser → LiveKit → AI agent → bitHuman (self-hosted CPU)
+An iPad reads a children's story aloud with a synthesized avatar. The iPad Pro M5 is the sweet spot — Essence at 384² leaves enough headroom for a 1.7B-parameter on-device LLM and an on-device TTS voice.
 
-**Best deployment:** [Self-Hosted CPU](/examples/self-hosted-plugin) for offline capability, or [Raspberry Pi](/examples/raspberry-pi) for dedicated hardware.
+| Field | Value |
+|---|---|
+| Host device | iPad Pro M5 (16 GB) |
+| Model | Essence |
+| Resolution | 384² |
+| Network | None after model download — works on airplane mode |
 
----
+No cloud round-trip means it works offline, on a long flight, with no telemetry leaving the device.
 
-## AI Companion / Virtual Friend
+### Conversation / language training
 
-A character with a persistent personality that remembers past conversations. Use [context injection](/api-reference/agent-context) to maintain relationship state.
+A language-tutor app where the avatar lip-syncs the target language with TTS audio. Latency matters here because the user is mimicking the avatar's mouth shapes.
 
-**Architecture:** Mobile app (Flutter/React) → LiveKit → AI agent with memory → bitHuman
+| Field | Value |
+|---|---|
+| Host device | iPhone 17 Pro, iPad Pro M5, Mac M3+ |
+| Model | Essence (gesture-capable, low latency) |
+| Resolution | 384² (mobile) / 512² (Mac) |
+| Network | None |
 
-**Best deployment:** [Cloud Plugin](/deployment/livekit-cloud-plugin) + [Flutter integration](/integrations/flutter).
+Pure on-device deployment: private, no telemetry, suitable for child-facing apps.
 
----
+### Local-only kiosk on a Mac mini
 
-## Game NPC / Interactive Character
+A single Mac mini drives a touch-display kiosk: microphone in, looped lip-synced avatar out. No internet required after the initial model download.
 
-Non-player characters that respond dynamically to player actions. Use [dynamics](/api-reference/dynamics) for gestures (wave, nod, laugh) triggered by game events.
+| Field | Value |
+|---|---|
+| Host device | Mac mini M-series |
+| Model | Essence (no idle timeout — runs 24/7) |
+| Resolution | 720p |
+| Network | None after first-launch download; billing heartbeat optional |
 
-**Architecture:** Game client → WebSocket → AI agent → bitHuman (GPU for custom faces)
-
-**Best deployment:** [Self-Hosted GPU](/deployment/self-hosted-gpu) for dynamic face generation from character art.
-
----
-
-## Accessibility Tool
-
-Give a face and voice to text-to-speech output. Visual lip-sync helps hearing-impaired users follow along. Audio output helps visually impaired users interact with content.
-
-**Architecture:** Screen reader / TTS → bitHuman SDK → overlay window
-
-**Best deployment:** [Python SDK directly](/deployment/avatar-sessions#using-the-sdk-without-livekit) (no LiveKit needed).
-
----
-
-## Content Creation / Video Generation
-
-Generate talking-head videos from scripts without recording. Batch-process audio files through avatars to create training videos, announcements, or social content.
-
-**Architecture:** Script → TTS → bitHuman SDK → video frames → ffmpeg → MP4
-
-```python
-runtime = await AsyncBithuman.create(model_path="presenter.imx", api_secret="...")
-await runtime.start()
-await runtime.push_audio(tts_audio, sample_rate=16000)
-await runtime.flush()
-
-# Collect frames and encode to video
-frames = []
-async for frame in runtime.run():
-    if frame.has_image:
-        frames.append(frame.bgr_image)
-```
-
-**Best deployment:** [Python SDK directly](/deployment/avatar-sessions#using-the-sdk-without-livekit) with [Self-Hosted GPU](/deployment/self-hosted-gpu) for custom faces.
+Good for retail and museum installations where Wi-Fi is unreliable.
 
 ---
 
-## Choosing the Right Deployment
+## On-edge — single-board and small-form-factor Linux
 
-| Use Case | Recommended Deployment | Why |
-|----------|----------------------|-----|
-| Customer support | Cloud Plugin | Fast setup, scales automatically |
-| AI tutor | Cloud Plugin | Low latency, no infrastructure |
-| Receptionist kiosk | Self-Hosted CPU | Offline capable, privacy |
-| AI companion | Cloud Plugin + Flutter | Mobile-friendly, cross-platform |
-| Game NPC | Self-Hosted GPU | Dynamic faces, low latency |
-| Accessibility | Python SDK | Lightweight, no WebRTC overhead |
-| Content creation | Python SDK + GPU | Batch processing, custom faces |
+The Linux arm64 and x86_64 wheels carry the same libessence engine. CPU-only inference at 25 FPS is realistic for Essence on modern single-board hardware.
+
+### Receptionist / lobby kiosk on Raspberry Pi 5
+
+A Raspberry Pi 5 with a USB microphone and a small HDMI display greets visitors and answers FAQs.
+
+| Field | Value |
+|---|---|
+| Host device | Raspberry Pi 5 (arm64) |
+| Model | **Essence only** — Expression is too heavy for Pi-class CPU |
+| Resolution | 384² |
+| Network | Outbound to your AI agent + 1-req/min billing heartbeat |
+
+Reference: the [Raspberry Pi example](/examples/raspberry-pi). Expression on a Pi is not in the supported matrix.
+
+### Industrial HMI on an Intel NUC
+
+A control-panel display for factory equipment uses an avatar to explain machine state. Headless Linux x86_64 NUC, browser-served avatar.
+
+| Field | Value |
+|---|---|
+| Host device | Intel NUC (Linux x86_64) |
+| Model | Essence |
+| Resolution | 720p |
+| Network | LAN only — no public internet required |
+
+The `bithuman stream` HTTP server exposes frames over localhost; the HMI front-end polls or streams via WebRTC. See [Self-Hosted Plugin](/examples/self-hosted-plugin).
+
+### In-vehicle assistant
+
+An automotive HMI with an avatar copilot for navigation prompts and assistant interactions. Privacy-preserving: no cloud, no microphone data leaves the vehicle.
+
+| Field | Value |
+|---|---|
+| Host device | Edge-deployed Linux box (x86_64 or arm64) |
+| Model | Essence |
+| Resolution | 720p |
+| Network | None for inference; optional outbound for OTA model updates |
+
+Headless mode plus a local browser display in the head unit is the typical wiring.
 
 ---
 
-## Next Steps
+## On-cloud — when latency budget tolerates a round-trip
+
+When the client is a browser or a low-power phone with a network connection, hosting the avatar on a Mac mini fleet or a Linux GPU box is the cleanest path.
+
+### Web-based avatar API
+
+A fleet of M5 / M4 Mac minis (or Linux GPU boxes for Expression) exposes the `bithuman stream` HTTP server. Routing happens through LiveKit / WebRTC for low-latency video to browsers.
+
+| Field | Value |
+|---|---|
+| Host device | M5/M4 Mac mini fleet (Essence) or Linux + NVIDIA GPU (Expression) |
+| Model | Either — Essence for density, Expression for dynamic faces |
+| Resolution | 720p |
+| Network | Persistent — WebRTC client to server |
+
+Tens of concurrent conversations per machine via the shared-fixture multi-runtime API: one `Fixture` (~344 MB) plus N `Runtime` instances (~36 MB each). On an M5 24 GB this is roughly 50–80 concurrent Essence runtimes per fixture.
+
+### Hosted LiveKit Cloud Plugin
+
+If you do not want to operate any infrastructure, the [LiveKit Cloud Plugin](/deployment/livekit-cloud-plugin) is the same SDK running on bitHuman-hosted workers. Drop the agent code into a LiveKit room and you get a lip-synced participant.
+
+| Field | Value |
+|---|---|
+| Host device | bitHuman cloud |
+| Model | Either |
+| Resolution | 720p |
+| Network | Persistent — LiveKit room |
+
+---
+
+## Picking the right deployment
+
+| Scenario | Host class | Model | Resolution | Network |
+|---|---|---|---|---|
+| Mac/iPad desktop assistant | Apple Silicon M3+ | Essence or Expression | 512² / 720p | None |
+| iPhone consumer app | iPhone 17 Pro | **Essence** | 384² | None |
+| iPad story narrator | iPad Pro M5 | Essence | 384² | None |
+| Android consumer app | SD8G2+ Android | Essence | 384² | Outbound to agent |
+| Mac mini kiosk | Apple Silicon Mac mini | Essence | 720p | None |
+| Lobby receptionist | Raspberry Pi 5 | **Essence only** | 384² | LAN |
+| Industrial HMI | Intel NUC (Linux) | Essence | 720p | LAN |
+| In-vehicle | Edge Linux box | Essence | 720p | None |
+| Web service / SaaS | Mac mini fleet or Linux GPU | Either | 720p | Persistent |
+| Zero-infra prototype | LiveKit Cloud | Either | 720p | Persistent |
+
+---
+
+## Next steps
 
 <CardGroup cols={3}>
-  <Card title="Quick Start" icon="rocket" href="/getting-started/quickstart">
+  <Card title="Device matrix" icon="table-cells" href="/getting-started/device-matrix">
+    Measured per-tick latency and RSS on every supported host
+  </Card>
+  <Card title="Quick start" icon="rocket" href="/getting-started/quickstart">
     Run your first avatar in 5 minutes
   </Card>
-  <Card title="Avatar Sessions" icon="book-open" href="/deployment/avatar-sessions">
-    Complete deployment guide
-  </Card>
   <Card title="Examples" icon="code" href="/examples/overview">
-    Working code for every use case
+    Working code for every scenario above
   </Card>
 </CardGroup>

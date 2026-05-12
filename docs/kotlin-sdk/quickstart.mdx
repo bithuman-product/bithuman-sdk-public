@@ -1,0 +1,181 @@
+---
+title: "Kotlin SDK quickstart"
+description: "Add the bitHuman avatar runtime to your Android app — Maven coord, 10-line code example, sample app."
+---
+
+This page walks through dropping the `ai.bithuman:sdk` AAR into an
+Android Studio project and composing your first lip-synced frame.
+Should take ~10 minutes.
+
+For the underlying architecture (Layer 1/2/3, the role of `libessence`),
+see [Architecture](/getting-started/architecture). For the API surface
+reference see [Kotlin SDK overview](/kotlin-sdk/overview).
+
+## Prerequisites
+
+- **Android Studio** with NDK 28.0.13004108, compile SDK 35.
+- **A target device with `arm64-v8a`**, Android 10+ (API 29+). Older
+  ABIs are not yet shipped.
+- **Apple Silicon Mac or Linux x86_64/arm64 dev box.** Pure-Kotlin
+  development; no platform-specific build tooling required beyond
+  Android SDK + NDK.
+- **A bitHuman API secret** — sign in at
+  [www.bithuman.ai → Developer → API Keys](https://www.bithuman.ai/#developer).
+
+## 1. Add the dependency
+
+In your app module's `build.gradle.kts`:
+
+```kotlin
+android {
+    defaultConfig {
+        ndk { abiFilters += setOf("arm64-v8a") }
+        minSdk = 29
+    }
+}
+
+dependencies {
+    implementation("ai.bithuman:sdk:1.12.0")
+}
+```
+
+The AAR pulls itself from Maven Central. Ensure `mavenCentral()` is
+in your `settings.gradle.kts` repositories block (it's there by
+default in new projects).
+
+## 2. Provide an avatar fixture and audio
+
+Push a `.imx` fixture and a driving audio clip to the device's
+external files directory:
+
+```sh
+adb push sample-avatar.imx /sdcard/Android/data/your.app.id/files/
+adb push speech.wav        /sdcard/Android/data/your.app.id/files/
+```
+
+Or fetch them inside the app over HTTPS and cache locally. The fixture
+file path can be passed directly to `Avatar.load` — no need to copy
+into app assets.
+
+## 3. Set the API secret
+
+In `Application.onCreate()` (or read from your secrets-management of
+choice):
+
+```kotlin
+class App : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        System.setProperty("BITHUMAN_API_SECRET", BuildConfig.BITHUMAN_API_SECRET)
+    }
+}
+```
+
+For dev / parity-test runs against the audio-only pipeline set
+`BITHUMAN_UNMETERED=1` instead.
+
+## 4. Compose a frame
+
+The high-level facade — one fixture, one runtime, audio-file-driven:
+
+```kotlin
+import ai.bithuman.sdk.Avatar
+
+val modelPath = "${filesDir}/sample-avatar.imx"
+val audioPath = "${filesDir}/speech.wav"
+
+Avatar.load(modelPath).use { avatar ->
+    avatar.composeFromFile(audioPath).forEach { frame ->
+        // frame.bgr is width*height*3 packed BGR uint8
+        // hand to ImageView via a Bitmap, or to a SurfaceView
+    }
+}
+```
+
+For a raw 16 kHz mono `FloatArray` PCM source (e.g. live mic):
+
+```kotlin
+val pcm: FloatArray = /* 16 kHz mono, length = N * avatar.samplesPerTick */
+Avatar.load(modelPath).use { avatar ->
+    avatar.composeAsBitmaps(pcm).forEach { bitmap ->
+        imageView.setImageBitmap(bitmap)
+    }
+}
+```
+
+`composeAsBitmaps` returns Android `Bitmap` instances directly — no
+manual buffer-to-bitmap step. `composeFromFile` accepts WAV / MP3 / M4A
+and decodes through `MediaExtractor`.
+
+## 5. Multi-conversation hosting
+
+For a server-style scenario hosting multiple concurrent conversations,
+share one fixture across many runtimes:
+
+```kotlin
+import ai.bithuman.sdk.Fixture
+import ai.bithuman.sdk.Runtime
+
+Fixture(modelPath).use { fx ->
+    val rtA = Runtime(fx)
+    val rtB = Runtime(fx)
+
+    // Interleave per-conversation ticks. Each runtime is independent;
+    // do not share a single runtime across threads without external
+    // synchronization.
+}
+```
+
+One fixture (~344 MB on a 1248×704 model) backs many runtimes (~36 MB
+each); on M-class silicon this lands ~5.6× memory efficiency at N=10
+vs naive per-conversation loads.
+
+## 6. Choose an execution provider (optional)
+
+The default execution provider is `CPU` — canonical and bit-exact
+across platforms. Override via the low-level API:
+
+```kotlin
+import ai.bithuman.sdk.ExecutionProvider
+import ai.bithuman.sdk.Fixture
+
+Fixture(modelPath, preferredEp = ExecutionProvider.CPU, intraOpThreads = 1).use { fx ->
+    // ...
+}
+```
+
+`NNAPI` / `QNN` are accepted but currently no-op to CPU in the v0.1
+build — the 2.84 MB audio encoder is below the NPU marshalling
+break-even on every NPU measured.
+
+## Smoke-test the sample app
+
+The Kotlin binding source repo ships a working Compose sample under
+`cpp/bindings/kotlin/app/` (private). The same flow above is the
+canonical integration pattern — feed PCM, render frames at 25 fps.
+
+## Common pitfalls
+
+| Symptom | Fix |
+| ------- | --- |
+| `UnsatisfiedLinkError: libessence_jni.so` | Build variant didn't include `arm64-v8a` — check `abiFilters` in `defaultConfig`. |
+| `BithumanException: AUTH_FAILED` | API secret is missing or invalid. Confirm `BITHUMAN_API_SECRET` is set before the first `Avatar.load` call. |
+| First compose tick is slow (~400 ms) | Lazy ONNX init. Subsequent ticks run at the bench numbers. Pre-warm by composing one silent tick at startup. |
+| `Avatar.composeAsBitmaps` returns empty | PCM length must be ≥ `avatar.samplesPerTick`. Each tick consumes 640 samples (40 ms at 16 kHz). |
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Kotlin SDK overview" icon="book" href="/kotlin-sdk/overview">
+    Full API surface + performance numbers
+  </Card>
+  <Card title="Architecture" icon="diagram-project" href="/getting-started/architecture">
+    3-layer model behind every binding
+  </Card>
+  <Card title="Authentication" icon="key" href="/getting-started/authentication">
+    Heartbeat, runtime tokens, offline grace
+  </Card>
+  <Card title="Swift SDK" icon="apple" href="/swift-sdk/overview">
+    Same engine, Apple platforms
+  </Card>
+</CardGroup>

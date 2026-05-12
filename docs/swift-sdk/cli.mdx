@@ -18,8 +18,24 @@ Mac in three modes: text, voice, or video. Useful for:
 
 ```sh
 brew tap bithuman-product/bithuman
-brew install bithuman-cli
+brew install bithuman
 ```
+
+The canonical formula name is now `bithuman` (was `bithuman-cli`).
+The Homebrew tap keeps `bithuman-cli` as an alias for back-compat,
+so existing `brew install bithuman-cli` scripts continue to work
+unchanged — the alias resolves to the same bottle.
+
+Alternative install (no Homebrew, curl-pipe):
+
+```sh
+curl -fsSL https://github.com/bithuman-product/bithuman-sdk/releases/latest/download/install.sh | sh
+```
+
+This downloads the latest `bithuman-aarch64-apple-darwin.tar.gz`,
+verifies the SHA-256, and drops the binary at `/usr/local/bin/bithuman`.
+You'll still need the runtime dylibs from Homebrew:
+`brew install onnxruntime hdf5 jpeg-turbo webp ffmpeg`.
 
 Requires macOS 26 (Tahoe) or later, Apple Silicon (M3+), ~3 GB
 free disk for voice mode or ~7 GB for video mode (LLM + TTS +

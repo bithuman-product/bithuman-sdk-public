@@ -1,0 +1,72 @@
+---
+title: "Device compatibility matrix"
+description: "Which model runs on which device, with measured per-tick performance and peak RSS for Essence and Expression across Mac, iPhone, iPad, and Android."
+icon: "table-cells"
+---
+
+This page is the source of truth for **device × model compatibility**. Use it before choosing a host for an on-device or edge deployment. All numbers below are measured on real hardware — not theoretical projections. Where we have not yet benched a combination, the table says **not measured** rather than guessing.
+
+For a side-by-side feature comparison of the two models, see [Essence vs Expression](/getting-started/models).
+
+## Essence model (CPU-friendly, runs everywhere)
+
+The Essence engine — `libessence` v1 compose pipeline — has been benched on every supported host. It is the right choice for mobile, edge, and any deployment without a discrete GPU.
+
+| Host | Per-tick (mean) | Sustained FPS | Peak RSS | Notes |
+|---|---|---|---|---|
+| Apple M5 MacBook Pro (24 GB, macOS 26.3) | 0.88 – 1.50 ms | 235 – 1130 FPS | 120 – 465 MB | Range spans Swift v0.18.15 reference impl through optimized libessence v1. Either reading is comfortably real-time. |
+| iPhone 17 Pro (A19 Pro) | 1.26 ms (paced) | 793 FPS | 59 MB | libessence v1 compose, on-device. Smallest RSS of any platform. |
+| iPad Pro M5 (16 GB) | not measured separately | similar to iPhone | similar | Treated as iPhone-class for budget planning. 384² avatar + Qwen3-1.7B-4bit is a smooth chat. |
+| Samsung Z Fold 5 (Snapdragon 8 Gen 2) | 3.10 ms | 322 FPS | 139 MB | Android arm64-v8a, libessence v1 compose. |
+| Linux x86_64 / aarch64 server | not measured in this matrix | well above 25 FPS | varies | PyPI `bithuman` wheel; performance dominated by ONNX Runtime CPU EP. |
+| Raspberry Pi 5 (arm64, Linux) | **not measured** — expect 30+ ms/tick | TBD | TBD | Linux arm64 wheel ships; ORT CPU EP only. Essence-only; Expression is too heavy. |
+| Apple Watch | **not supported** | — | — | No SDK target; insufficient memory and no Metal access for the pipeline. |
+
+All hosts produce pixel-identical frames (max-abs diff ≤ 18 LSB vs. the Python golden), so the device decision is purely about latency budget, memory budget, and form factor.
+
+## Expression model (DiT pipeline)
+
+Expression is the heavier model — a diffusion-based facial animator. It runs on a GPU server or on Apple Silicon. Mobile support is selective.
+
+| Host | Status | Notes |
+|---|---|---|
+| Apple M5 MacBook Pro | Works | int4-quantized DiT: ~750 MB resident (down from ~2.6 GB fp16). At 384², visually on par with fp16. Default ship config for Mac. |
+| iPad Pro M5 (16 GB) | Works at 384² | 384² avatar + Qwen3-1.7B-4bit gives a smooth conversation. 512² avatar + a 4B-param LLM is noticeably choppy. Stay at 384² for chat. |
+| iPhone 17 Pro | **Not viable** | The DiT pipeline blows the ~6 GB per-app memory cap on a single conversation turn. Use Essence on iPhone instead. |
+| Samsung Z Fold 5 | not measured | Likely OK in int4; no benchmark yet. |
+| Raspberry Pi 5 | **Not supported in practice** | CPU-only DiT inference exceeds real-time budget by an order of magnitude. Use Essence here. |
+| NVIDIA GPU server | Works | Reference deployment for the [Self-Hosted GPU](/deployment/self-hosted-gpu) container and the cloud Expression service. |
+
+If you are deploying to iPhone today, choose **Essence**. The iPhone reference app is built around Essence + Qwen3 0.6B + Qwen3-TTS, which sits at ~2.5 GB idle and peaks ~4 GB — well inside Apple's per-app cap.
+
+## Avatar resolutions
+
+Resolution choice interacts with both model and host:
+
+| Resolution | Best for | Notes |
+|---|---|---|
+| 384² | Mobile and edge (iPhone, iPad Pro, Z Fold 5, single-board) | The default sweet spot. Lowest RSS, fastest tick, indistinguishable in a conversational viewport. |
+| 512² | Mac and iPad Pro | Comfortable on M-series. On iPhone the memory budget gets tight with a co-resident LLM. |
+| 720p (1280×720) | Desktop / cloud streaming | Default output for the `bithuman` CLI's browser-served avatar and for the cloud LiveKit plugin. |
+
+The libessence v1 compose pipeline produces a fixed 1280×720 frame; smaller avatars are letterboxed / pillarboxed into that frame. The contract is stable across every binding.
+
+## Picking a host
+
+A quick decision tree:
+
+- **Mobile consumer app** → iPhone / iPad → Essence at 384², Swift SDK, on-device LLM (Gemma 3 1B on iPhone, Qwen3 1.7B on iPad).
+- **Mac desktop app** → either model. Expression gives the dynamic-face look; Essence is lighter and supports gesture triggers.
+- **Android consumer app** → Essence via the Kotlin SDK. Expression on Android is not in the supported matrix.
+- **Single-board edge (Raspberry Pi, NUC)** → Essence + Python SDK (`pip install bithuman`). Linux arm64 or x86_64 wheel.
+- **GPU server** → Expression via the [Self-Hosted GPU](/deployment/self-hosted-gpu) container.
+- **No infra, want speed** → [LiveKit Cloud Plugin](/deployment/livekit-cloud-plugin). Either model.
+
+For full deployment scenarios with concrete device + model + network combinations, see [Use cases](/getting-started/use-cases).
+
+## How these numbers were measured
+
+- Essence per-tick figures are mean over a 30-second steady-state run after a 5-second warmup, single conversation, tight loop, CPU execution provider, one intra-op thread.
+- Peak RSS is the process-wide high-water mark over the same run, including model weights and base-frame caches.
+- "Paced" iPhone number is a real-time pacing harness (25 FPS target with sleep). A tight loop on iPhone 17 Pro reads anomalously slow due to DVFS de-boost; the paced number is the one that matches real-world streaming.
+- Expression figures come from the int4 build at 384² unless noted.

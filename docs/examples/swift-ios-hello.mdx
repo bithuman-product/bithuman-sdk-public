@@ -1,0 +1,106 @@
+---
+title: "Swift / iOS Hello World"
+description: "Render an on-device AI avatar on iPhone or iPad in ~30 lines of SwiftUI — SwiftPM package, on-device lip-sync, no cloud."
+icon: "apple"
+---
+
+This page is the minimum runnable iOS program that drives the bitHuman
+avatar runtime on-device. Real-time lip-sync compositing on Apple
+Silicon iPhones and iPads with sub-50 ms latency, no cloud inference,
+fully private.
+
+## Prerequisites
+
+- **Xcode 16+**, iOS 26.0+ deployment target.
+- An iPhone 16 Pro or newer (A18 Pro), or an iPad Pro M4+ for on-device
+  Expression. Essence works on a wider Apple Silicon set — see
+  [device matrix](/getting-started/device-matrix).
+- A `.imx` model file added to your app bundle as a resource.
+- A bitHuman API key exposed to the app process via `BITHUMAN_API_KEY`
+  (Apple convention) or your secret store.
+
+## 1. Add the SwiftPM dependency
+
+In `Package.swift` or via **Xcode → File → Add Package Dependencies…**:
+
+```swift
+dependencies: [
+    .package(
+        url: "https://github.com/bithuman-product/bithuman-sdk",
+        from: "libessence-v1.12.0"
+    ),
+],
+targets: [
+    .target(
+        name: "BithumanHello",
+        dependencies: [
+            .product(name: "Bithuman", package: "bithuman-sdk"),
+        ]
+    )
+]
+```
+
+The xcframework is fat — macOS arm64 + iOS device + iOS simulator — and
+links `libessence` statically. Zero transitive SwiftPM dependencies.
+
+## 2. Minimal SwiftUI view
+
+Load an `.imx` from the app bundle, compose frames from a bundled WAV,
+display them via `Image(uiImage:)`. The whole pipeline is on-device.
+
+```swift
+// ContentView.swift — load model, compose frames, render in SwiftUI
+import SwiftUI
+import Bithuman
+
+struct ContentView: View {
+    @State private var frame: UIImage?
+
+    var body: some View {
+        Group {
+            if let frame { Image(uiImage: frame).resizable().scaledToFit() }
+            else         { ProgressView() }
+        }
+        .task { await run() }
+    }
+
+    private func run() async {
+        // .imx + .wav shipped as bundle resources.
+        guard let model = Bundle.main.url(forResource: "sample-avatar", withExtension: "imx"),
+              let audio = Bundle.main.url(forResource: "speech",        withExtension: "wav")
+        else { return }
+
+        do {
+            let avatar = try Avatar(modelPath: model)
+            try avatar.compose(audioFile: audio) { composed in
+                // ~25 fps callback on a background queue.
+                if let img = composed.uiImage() {
+                    Task { @MainActor in self.frame = img }
+                }
+            }
+        } catch {
+            print("compose failed: \(error)")
+        }
+    }
+}
+```
+
+That's the whole loop: bundled audio in, lip-synced `UIImage`s on the
+main actor at 25 fps, fully on-device.
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Swift quickstart" icon="rocket" href="/swift-sdk/quickstart">
+    Full Swift / SwiftUI walkthrough.
+  </Card>
+  <Card title="Swift iOS guide" icon="mobile" href="/swift-sdk/ios">
+    Background mode, PiP, lifecycle integration.
+  </Card>
+  <Card title="Apple-local example" icon="laptop" href="/examples/apple-local">
+    Offline macOS conversation (Siri + Ollama + Essence).
+  </Card>
+  <Card title="Device matrix" icon="microchip" href="/getting-started/device-matrix">
+    iPhone / iPad / Mac performance numbers.
+  </Card>
+</CardGroup>

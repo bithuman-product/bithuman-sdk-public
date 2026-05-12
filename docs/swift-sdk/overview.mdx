@@ -30,9 +30,11 @@ heartbeat to `api.bithuman.ai`; audio-only mode runs unmetered.
 ## Install
 
 ```swift
-.package(url: "https://github.com/bithuman-product/bithuman-sdk-public.git",
-         from: "0.8.1")
+.package(url: "https://github.com/bithuman-product/bithuman-sdk",
+         from: "libessence-v1.12.0")
 ```
+
+The package ships a single `Bithuman` product wrapping a 3-slice xcframework (macOS arm64 + iOS device arm64 + iOS simulator arm64). Static link of `libessence` — zero transitive SwiftPM dependencies. The legacy `bitHumanKit` package distributed via `bithuman-sdk-public` continues to work for existing consumers; new integrations should target the unified `Bithuman` module above.
 
 ## What you get
 

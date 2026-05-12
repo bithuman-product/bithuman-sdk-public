@@ -1,70 +1,116 @@
 ---
 title: "Architecture & development model"
-description: "How bitHuman ships — the production model behind every SDK, framework, and example. Useful for understanding what runs where, what's open vs proprietary, and how releases flow."
+description: "How bitHuman ships — one C++ engine, one CLI binary, and four platform-specific libraries on top. Useful for understanding what runs where and which surface to integrate against."
 icon: "diagram-project"
 ---
 
 This page is the source of truth for **how bitHuman is built and shipped**. If you want to understand the moving parts before integrating, or you're an AI coding agent trying to map the ecosystem, start here.
 
-## Two models, three runtime surfaces
+## Install matrix
 
-Every bitHuman integration sits in one cell of this matrix:
+| Target                  | Command                                                                                                |
+| ----------------------- | ------------------------------------------------------------------------------------------------------ |
+| Python                  | `pip install bithuman` (1.12.0)                                                                        |
+| Swift (iOS / macOS)     | SwiftPM `.package(url: "https://github.com/bithuman-product/bithuman-sdk", from: "libessence-v1.12.0")` |
+| Android (Kotlin / Java) | Gradle `implementation("ai.bithuman:sdk:1.12.0")` (Maven Central)                                      |
+| macOS CLI (Homebrew)    | `brew install bithuman-product/bithuman/bithuman`                                                      |
+| macOS CLI (curl-pipe)   | `curl -fsSL https://github.com/bithuman-product/bithuman-sdk/releases/latest/download/install.sh \| sh` |
 
-| | bitHuman Cloud (managed) | Self-hosted server | On-device Apple Silicon |
-|---|---|---|---|
-| **Essence** (CPU, `.imx`) | LiveKit plugin + REST API | [Python SDK](/getting-started/quickstart) on CPU | — |
-| **Expression** (GPU / M3+) | LiveKit plugin + REST API | [Docker container](/deployment/self-hosted-gpu) on Linux+NVIDIA | [Swift SDK](/swift-sdk/overview) + bithuman-cli |
+All five flavors are produced from the same `libessence-v1.12.0` source tag. The unified [install page](/getting-started/install) shows all channels side-by-side.
 
-Models are explained on [/getting-started/models](/getting-started/models). Surfaces are explained on [/getting-started/how-it-works](/getting-started/how-it-works).
+## Three layers
+
+bitHuman ships in three layers — most app developers only touch Layer 3:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ Layer 3: Platform-specific libraries (app developers)       │
+│   - Python wheel       pip install bithuman                 │
+│   - Swift package      SwiftPM Bithuman                     │
+│   - Kotlin AAR         ai.bithuman:sdk                      │
+│   - (future) Rust crate, JS/TS, Go, ...                     │
+└─────────────────────────────────────────────────────────────┘
+                          ▼ embeds
+┌─────────────────────────────────────────────────────────────┐
+│ Layer 2: bithuman CLI (end-user tool)                       │
+│   - one cross-platform binary on macOS / Linux / Windows    │
+│   - brew install bithuman · curl-pipe installer             │
+└─────────────────────────────────────────────────────────────┘
+                          ▼ links
+┌─────────────────────────────────────────────────────────────┐
+│ Layer 1: libessence engine (cross-platform C++ core)        │
+│   - portable C ABI, same source on every target             │
+│   - macOS · iOS · Android · Linux · Windows                 │
+│   - never imported directly by app developers               │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Layer 1 — `libessence` engine
+
+A portable C++17 core (~12 k LoC) that turns 16 kHz mono PCM audio into 25 fps BGR avatar frames. The same source tree compiles to a macOS / iOS xcframework, an Android `libessence_jni.so`, a Linux/macOS Python module, and the Rust CLI binary. The engine exposes a stable C ABI (`be_*` symbols, currently **ABI v4**) — every higher layer is a thin wrapper over it.
+
+App developers never import this layer directly. It's documented for engine internals and parity-test consumers — see [`cpp/README.md`](https://github.com/bithuman-product/bithuman-sdk/blob/main/cpp/README.md).
+
+Performance reference (single conversation, tight loop, CPU EP, one intra-op thread):
+
+| Platform                       | Mean / tick | p99    | Sustained | Peak RSS |
+| ------------------------------ | ----------- | ------ | --------- | -------- |
+| Apple M5 (24 GB, macOS 26.3)   | 0.89 ms     | 1.0 ms | 1130 FPS  | 120 MB   |
+| iPhone 17 Pro                  | 1.26 ms     | 1.4 ms | 793 FPS   | 59 MB    |
+| Snapdragon 8 Gen 2 (Z Fold 5)  | 3.10 ms     | 3.6 ms | 322 FPS   | 139 MB   |
+
+All three platforms run pixel-identical frames (max-abs diff ≤ 18 LSB vs Python golden).
+
+#### Where it runs
+
+The engine targets a wide host range, from a Raspberry Pi 5 up to a 24 GB Mac. Per-device performance, peak RSS, and model compatibility live in the [device matrix](/getting-started/device-matrix); concrete on-device, on-edge, and on-cloud deployment scenarios are catalogued in [use cases](/getting-started/use-cases). Read those two pages before locking in a host for an on-device or edge product.
+
+### Layer 2 — `bithuman` CLI
+
+A single Rust binary that links `libessence` statically and ships a browser-served local avatar, optional on-device ASR / LLM / TTS, and a `doctor` command. One binary, one config story, same UX on macOS / Linux / Windows. Distributed via Homebrew (`brew install bithuman`) and a curl-pipe install script. Full reference: [`docs/CLI.md`](https://github.com/bithuman-product/bithuman-sdk/blob/main/docs/CLI.md).
+
+### Layer 3 — platform-specific libraries
+
+Idiomatic bindings each language's developers can drop straight into their project:
+
+| Binding | Coord                  | Surface                          | Wraps libessence |
+| ------- | ---------------------- | -------------------------------- | ---------------- |
+| Python  | `bithuman` on PyPI     | pybind11 cdylib                  | static           |
+| Swift   | SwiftPM `Bithuman`     | xcframework (macOS + iOS dev/sim)| static           |
+| Kotlin  | `ai.bithuman:sdk` AAR  | JNI shim                         | static           |
+
+The public types are the same shape across all three: an `Avatar` convenience facade for the single-conversation case, plus a `Fixture` + `Runtime` split (`Fixture.createRuntime()` / `Runtime(fixture)`) for multi-conversation hosts. Every binding speaks the same `.imx` model format and produces pixel-identical output.
 
 ## What's open, what's proprietary
 
 | Surface | Visibility | License |
 |---|---|---|
 | **Examples** ([bithuman-sdk-public/Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples)) | Public | MIT |
-| **Reference apps** ([bithuman-apps](https://github.com/bithuman-product/bithuman-apps)) | Private — Mac, iPad, and iPhone apps that consume the SDK via the published SwiftPM binary package (the same way any external developer would). Ship as compiled artifacts. | Apache-2.0 |
+| **Reference apps** ([bithuman-apps](https://github.com/bithuman-product/bithuman-apps)) | Private — Mac, iPad, and iPhone apps that consume the SDK via the published packages (same way any external developer would). Ship as compiled artifacts. | Apache-2.0 |
 | **Homebrew tap** ([homebrew-bithuman](https://github.com/bithuman-product/homebrew-bithuman)) | Public | Apache-2.0 |
-| **Public binary Swift Package** ([bithuman-sdk-public](https://github.com/bithuman-product/bithuman-sdk-public)) | Public — wraps the released `.xcframework` | bitHuman ToS |
 | **Docs site source** ([bithuman-sdk-public/docs](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/docs)) | Public | — |
-| **Swift SDK source** (`bitHumanKit`) | **Private** | Proprietary |
-| **Python SDK source** (`bithuman` on PyPI) | **Private** | Proprietary |
+| **libessence engine + bindings source** | **Private** | Proprietary |
 | **Cloud runtime** (`api.bithuman.ai`) | **Closed** | Proprietary |
 | **Model weights** (downloaded at runtime) | **Closed** | Proprietary, gated by API key |
 
-The IP that matters — model weights, the `.imx` build pipeline, the cloud Expression GPU service, billing/heartbeat backend — is server-side and access-gated. The Swift glue and Python SDK code is private but compiled into the public binary distribution.
+The IP that matters — model weights, the `.imx` build pipeline, the cloud Expression GPU service, billing/heartbeat backend — is server-side and access-gated. The engine source compiles into the public binary distributions.
 
-## Swift SDK distribution flow
+## Distribution flow
 
-The Swift SDK is the only surface where source privacy required engineering work. Here's how it ships:
+Every release starts from a single `libessence-vX.Y.Z` git tag on the engine monorepo. CI fans out:
 
 ```
-bithuman-kit (private, source)
+libessence-vX.Y.Z (monorepo tag)
     │
-    │  Scripts/build-binary-xcframework.sh
-    │    • per-target -enable-library-evolution (only on bitHumanKit)
-    │    • internal import for every third-party dep
-    │    • static merge of all dep object code into one libbitHumanKit.a
-    │    • assemble bitHumanKit.framework × {macOS, iOS, iOS-sim} arm64 slices
-    │    • xcodebuild -create-xcframework merge → bitHumanKit.xcframework.zip
+    ├──► PyPI                 bithuman-X.Y.Z (mac arm64 + linux x86_64 + linux aarch64 wheels)
+    ├──► Maven Central        ai.bithuman:sdk:X.Y.Z (AAR — arm64-v8a)
+    ├──► GitHub Releases      libessence-vX.Y.Z xcframework + Rust CLI tarballs
+    └──► Homebrew tap         bithuman X.Y.Z formula (bumps url + sha256)
     ▼
-bithuman-sdk-public (public, binaryTarget)
+Consumer app picks its preferred channel
     │
-    │  Package.swift declares:
-    │    .binaryTarget(name: "bitHumanKit",
-    │                  url: "https://.../bithuman-sdk-public/releases/...",
-    │                  checksum: "...")
-    │
-    │  Tags 0.8.1, 0.8.2 each correspond to a release with the
-    │  matching .xcframework.zip artifact attached.
-    ▼
-Consumer app (Mac/iPad/iPhone)
-    │
-    │  .package(url: "bithuman-sdk-public.git", from: "0.8.1")
-    │  import bitHumanKit
-    │
-    │  Zero transitive Swift Package dependencies — every dep
-    │  (MLX, HuggingFace, Tokenizers, …) is statically linked
-    │  into the framework binary. Just add the package and go.
+    │  Zero transitive dependencies on every binding —
+    │  libessence is statically linked into the artifact.
     ▼
 At runtime
     │
@@ -72,43 +118,31 @@ At runtime
     │  Avatar mode: 1-request-per-minute heartbeat to api.bithuman.ai
     │    for billing (5-min offline grace window).
     ▼
-[Voice + lip-synced avatar @ 25 FPS, on the user's Apple Silicon device]
+[Voice + lip-synced avatar @ 25 FPS]
 ```
 
 ## Model weights
 
-Both Essence (`.imx`) and Expression (universal weights bundle for the Swift SDK; per-agent bundles for Python) live in **proprietary cloud storage**. They're downloaded at runtime from authenticated endpoints and cached locally:
+Avatar `.imx` fixtures live in **proprietary cloud storage** and are downloaded at runtime from authenticated endpoints, then cached locally:
 
 | Surface | Cache location | First-launch download |
 |---|---|---|
-| Python SDK / LiveKit plugin (Essence) | `~/.cache/bithuman/models/` | ~500 MB per `.imx` |
-| Python SDK / LiveKit plugin (Expression) | `~/.cache/huggingface/hub/` | varies by agent |
-| Swift SDK (Expression on-device) | `~/.cache/bithuman/expression/` | ~1.6 GB universal bundle |
-| bithuman-cli (video mode) | Same as Swift SDK | ~7 GB (LLM + TTS + Expression) |
+| Python / Swift / Kotlin (Essence) | `~/.cache/bithuman/models/` | ~500 MB per `.imx` |
+| Legacy on-device Expression (Swift) | `~/.cache/bithuman/expression/` | ~1.6 GB universal bundle |
+| bithuman CLI (video / `--local` mode) | Same as above | ~5–7 GB (LLM + TTS + Expression) |
 
 Weight downloads are SHA-256 verified and cached. Subsequent launches are instant.
-
-## Build & release pipeline
-
-| Component | Repo | How releases happen |
-|---|---|---|
-| **Python SDK** | private | PyPI publish on tag |
-| **Swift SDK binary** | bithuman-sdk-public | `Scripts/build-binary-xcframework.sh` on the source repo's `binary-dist-v<X.Y.Z>` branch → manual `gh release create` on the public repo with the xcframework.zip + computed SHA256 |
-| **bithuman-cli** | homebrew-bithuman | Notarised `.tar.gz` per release; formula bumps `url` + `sha256` |
-| **Docker GPU container** | private | `docker push docker.io/sgubithuman/expression-avatar` |
-| **Docs** | bithuman-sdk-public | Every push to `main` triggers Mintlify auto-deploy to docs.bithuman.ai |
-| **Reference apps** | bithuman-apps (separate repo; consumes the SDK via the published SwiftPM binary) | TestFlight / App Store via Xcode archive (iPad, iPhone) and Sparkle DMG (Mac) |
 
 ## Authentication & billing
 
 The same credential drives every surface, with two equivalent env-var names matching platform conventions:
 
 ```
-BITHUMAN_API_SECRET    # Python SDK, REST API, LiveKit plugin
+BITHUMAN_API_SECRET    # Python SDK, Kotlin SDK, REST API, CLI
 BITHUMAN_API_KEY       # Swift SDK (Apple-platform convention)
 ```
 
-The SDK never holds the long-lived secret in process memory: on `chat.start()` (Swift) or runtime initialisation (Python/Docker), it exchanges the secret for a short-lived **runtime token** at `https://api.bithuman.ai/v1/runtime-tokens/request`. Tokens auto-renew on a 1-request-per-minute heartbeat. Failed heartbeats trigger a 5-minute offline grace window before the avatar pauses.
+The SDK never holds the long-lived secret in process memory: on runtime initialisation it exchanges the secret for a short-lived **runtime token** at `https://api.bithuman.ai/v1/runtime-tokens/request`. Tokens auto-renew on a 1-request-per-minute heartbeat. Failed heartbeats trigger a 5-minute offline grace window before the avatar pauses.
 
 Full flow + per-SDK setup: [/getting-started/authentication](/getting-started/authentication). Pricing: [/getting-started/pricing](/getting-started/pricing).
 
@@ -116,25 +150,25 @@ Full flow + per-SDK setup: [/getting-started/authentication](/getting-started/au
 
 A few design constraints drove the architecture:
 
-- **Source privacy for the Swift SDK.** The heartbeat / billing / engine glue compiles into the binary; the public package just wraps it. Consumers `import bitHumanKit` and never see the source.
-- **Zero transitive deps for SwiftPM consumers.** `internal import` on every third-party module + static merge means a consumer's `Package.swift` only needs `bithuman-sdk-public` — no `mlx-swift`, no `swift-transformers`, no `swift-huggingface`. Cuts integration friction dramatically.
+- **One engine, every platform.** The same C++ source produces the iOS xcframework, the Android `.so`, the Linux/macOS Python wheel, and the Rust CLI binary. Pixel-identical output across all targets — verified by golden-parity tests in CI.
+- **Zero transitive deps for SwiftPM / Gradle / pip consumers.** Static link of `libessence.a` into each binding means an app's `Package.swift` / `build.gradle.kts` / `requirements.txt` only needs the bithuman dependency — no ONNX Runtime, no FFmpeg, no HDF5 to add manually.
 - **Same credential for every surface.** `BITHUMAN_API_KEY` and `BITHUMAN_API_SECRET` are the same value; only the env-var name differs by platform convention.
-- **Audio-only Swift mode is unmetered.** The Swift SDK without an attached avatar runs fully offline and bills nothing — encourages experimentation.
+- **Audio-only mode is unmetered.** Without an attached avatar the runtime is fully offline and bills nothing — encourages experimentation.
 - **Model weights stay cloud-gated.** The proprietary IP is the model, not the glue. Code can be open-ish; weights stay locked.
 
 ## Where to go next
 
 <CardGroup cols={2}>
-  <Card title="Pick a surface" icon="route" href="/getting-started/how-it-works">
-    Decision tree across cloud / self-hosted / on-device
+  <Card title="Install matrix" icon="download" href="/getting-started/install">
+    All four install channels (pip / SwiftPM / Maven / brew) on one page
   </Card>
   <Card title="Quickstart (Python)" icon="rocket" href="/getting-started/quickstart">
     `pip install bithuman` in 5 minutes
   </Card>
   <Card title="Quickstart (Swift)" icon="apple" href="/swift-sdk/quickstart">
-    `bitHumanKit` Swift Package in 10 minutes
+    `Bithuman` Swift Package in 10 minutes
   </Card>
-  <Card title="REST API" icon="code" href="/api-reference/overview">
-    `curl https://api.bithuman.ai/v1/...` — any language
+  <Card title="Quickstart (Kotlin)" icon="android" href="/kotlin-sdk/quickstart">
+    `ai.bithuman:sdk` AAR for Android
   </Card>
 </CardGroup>

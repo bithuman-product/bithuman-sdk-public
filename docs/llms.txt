@@ -1,21 +1,44 @@
 # bitHuman
 
-> On-device real-time avatar SDK. Runs high-quality lip-synced avatars on
-> any device — from a $35 Raspberry Pi to an iPhone to an NVIDIA data
-> center GPU. No cloud required. All inference runs locally on the device.
-> Two avatar models — Essence (CPU, .imx files) and Expression (GPU /
-> Apple Silicon M3+, dynamic faces). Three runtime surfaces — bitHuman
-> Cloud (managed), self-hosted server (Python CPU + Docker GPU), and
-> on-device Apple Silicon (Swift SDK + bithuman-cli).
+> Real-time on-device AI avatar SDK. Private, low-latency lip-sync
+> compositing for interactive conversational agents on iPhone, iPad,
+> Android, Mac, Linux (incl. Raspberry Pi), and NVIDIA GPU servers.
+> No cloud required for on-device runtimes. Two avatar models —
+> Essence (CPU, .imx files) and Expression (GPU / Apple Silicon M3+,
+> dynamic faces). One libessence engine, four shipping channels: pip
+> (Python), SwiftPM (Apple), Maven Central (Android), Homebrew (CLI).
 
-bitHuman creates digital avatars that lip-sync to audio in real time
-using on-device local inference. No cloud required — audio processing,
-lip-sync, and frame rendering all run on the hardware where your app
-runs. Use it for AI companions, customer-support bots, virtual tutors,
-digital receptionists, game NPCs, and any application needing a visual
-character that speaks. Get an API secret at https://www.bithuman.ai/#developer →
-set `BITHUMAN_API_SECRET` (Python/REST/LiveKit) or `BITHUMAN_API_KEY`
-(Swift SDK) before any code runs.
+bitHuman creates virtual AI avatars that lip-sync to audio in real time
+using on-device / on-edge local inference. Audio processing, lip-sync,
+and frame rendering all run on the hardware where your app runs — sub-50
+ms turn latency on Apple Silicon, fully private / offline / self-hosted.
+Use it for AI companions, customer-support bots, virtual tutors,
+digital receptionists, game NPCs, kiosks, and any interactive
+conversational application needing a visual character that speaks. Get
+an API secret at https://www.bithuman.ai/#developer → set
+`BITHUMAN_API_SECRET` (Python/REST/LiveKit/Kotlin/CLI) or
+`BITHUMAN_API_KEY` (Swift SDK) before any code runs.
+
+## Install commands (all four channels ship from libessence-v1.12.0)
+
+- Python (pip): `pip install bithuman --upgrade`
+  Platforms: macOS arm64, Linux x86_64, Linux aarch64. Python 3.10–3.13.
+- Swift (SwiftPM): add
+  `.package(url: "https://github.com/bithuman-product/bithuman-sdk", from: "libessence-v1.12.0")`
+  Platforms: macOS arm64, iOS device, iOS simulator (one xcframework).
+- Kotlin / Android (Maven Central): `implementation("ai.bithuman:sdk:1.12.0")`
+  Platforms: Android arm64-v8a, minSdk 29.
+- CLI (Homebrew): `brew install bithuman-product/bithuman/bithuman`
+  Platforms: macOS arm64. Linux/Windows .zip via GitHub Releases.
+
+## Use cases
+
+- AI companions and 24/7 conversational virtual assistants on phone or desktop.
+- On-device customer support bots and digital receptionists (no PII leaves the device).
+- Edge kiosks, point-of-sale, and digital signage on Raspberry Pi or Android tablets.
+- Virtual tutors and language-practice partners with private, offline conversation.
+- Game NPCs and consumer apps needing a lip-synced talking character.
+- Server-side video pipelines (NVIDIA GPU Docker) for cloud rendering at scale.
 
 
 ## Pricing (credits per minute)

@@ -1,0 +1,113 @@
+---
+title: "bithuman CLI"
+description: "The unified bitHuman command-line tool — one binary for on-device avatar, voice, text, ASR, TTS, and offline render. macOS, Linux, Windows."
+icon: "terminal"
+---
+
+`bithuman` is **Layer 2** of the bitHuman SDK: a single Rust binary that
+drives the on-device AI avatar runtime. Same semantics on macOS, Linux,
+and (soon) Windows. It links the `libessence` engine statically, serves
+the avatar in your browser over `127.0.0.1`, and bundles optional
+on-device ASR / LLM / TTS for fully private voice conversations. One
+binary, one `doctor` command, zero language toolchain.
+
+This page is the high-level introduction. The canonical reference is
+[`docs/CLI.md`](https://github.com/bithuman-product/bithuman-sdk/blob/main/docs/CLI.md)
+in the `bithuman-sdk` repo — read it for every flag of every subcommand.
+
+## When to use the CLI vs the SDK libraries
+
+| You are…                                                | Use                                                      |
+| ------------------------------------------------------- | -------------------------------------------------------- |
+| Trying bitHuman in 5 minutes without writing code       | **CLI** (`brew install bithuman` → `bithuman avatar`)    |
+| Scripting a one-off render or batch job                 | **CLI** (`bithuman generate`)                            |
+| Wiring CI / smoke tests / shell pipelines               | **CLI**                                                  |
+| Building a Python service, agent, or web backend        | **Python SDK** (`pip install bithuman`)                  |
+| Building a Mac / iPad / iPhone app                      | **Swift SDK** (SwiftPM `Bithuman`)                       |
+| Building an Android app                                 | **Kotlin SDK** (`ai.bithuman:sdk` AAR)                   |
+
+The CLI is for users / scripts / CI. The Layer 3 language SDKs are for
+app developers who want to embed the engine in their own process.
+
+## Install
+
+```bash
+# macOS — Homebrew (recommended; pulls onnxruntime / hdf5 / jpeg-turbo / webp / ffmpeg).
+brew install bithuman-product/bithuman/bithuman
+
+# macOS — curl-pipe alternative (no Homebrew).
+curl -fsSL https://github.com/bithuman-product/bithuman-sdk/releases/latest/download/install.sh | sh
+
+# Linux — tarballs tracked for v0.2.x; build from source today via cpp/bindings/rust/scripts/build-all.sh.
+# Windows — .zip via GitHub Releases (CMake portability gate WINDOWS_CMAKE_PORTED in progress).
+```
+
+Verify:
+
+```bash
+bithuman doctor      # host capability check + API key presence
+bithuman version     # libessence semver + ABI version + CLI build version
+```
+
+## Cloud vs `--local`
+
+`voice` and `text` both have two backends. You pick per-invocation —
+mix and match freely.
+
+| Mode      | Pros                                                                       | Cons                                                       |
+| --------- | -------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Cloud (default) | Instant startup, no model downloads. Streams to OpenAI Realtime / Chat. | Requires `OPENAI_API_KEY` and network connectivity.        |
+| `--local` | Fully offline, private, air-gap-friendly. Sub-50 ms turn latency on M3+.   | First run downloads ~5–7 GB of weights to `~/.cache/`.     |
+
+Local mode runs `whisper.cpp` ASR + Gemma 3 1B LLM + Piper TTS on-device.
+After the first download it operates entirely offline.
+
+## Subcommands
+
+All 13 subcommands accept `--help` for full flag listings.
+
+| Subcommand          | One-line description                                                            |
+| ------------------- | ------------------------------------------------------------------------------- |
+| `bithuman doctor`   | Host capability check — OS, RAM, libessence ABI, API keys, cache sizes.         |
+| `bithuman cleanup`  | Wipe regenerable model caches under `~/.cache/bithuman/`.                       |
+| `bithuman version`  | Print libessence semver + ABI version + CLI build version.                      |
+| `bithuman voice`    | Interactive voice chat (`--openai` cloud or `--local` on-device).               |
+| `bithuman text`     | Non-interactive text chat — reads stdin, streams stdout, exits.                 |
+| `bithuman asr`      | Transcribe a 16 kHz mono WAV file with whisper.cpp (Metal-accelerated on Mac).  |
+| `bithuman tts`      | Synthesize text to a 24 kHz mono WAV via Piper, fully offline after first run.  |
+| `bithuman avatar`   | Browser-served avatar runtime on `127.0.0.1:8080`, mic in, MJPEG out.           |
+| `bithuman info`     | Print `.imx` metadata — sample rate, frame size, cluster count, TOC layout.     |
+| `bithuman generate` | Offline batch render an MP4 from a model + WAV at 1280×720 (configurable).      |
+| `bithuman stream`   | HTTP avatar server driven by POSTed audio (instead of local mic).               |
+| `bithuman speak`    | POST a WAV file to a running `bithuman stream` server.                          |
+| `bithuman action`   | POST a named animation trigger (e.g. `wave`, `nod`) to a stream server.         |
+| `bithuman imx`      | IMX inspection / packing subtree (currently stubbed — use `bithuman info`).     |
+
+## Cache layout
+
+| Path                                                          | Contents                                            |
+| ------------------------------------------------------------- | --------------------------------------------------- |
+| `~/.cache/bithuman/models/`                                   | `.imx` model fixtures (sample-avatar.imx + yours)   |
+| `~/.cache/bithuman/tts/`                                      | Piper ONNX voices + JSON configs                    |
+| `~/.cache/huggingface/hub/`                                   | whisper.cpp ggml + Gemma 3 weights                  |
+| `~/Library/Application Support/com.bithuman.cli/*-api-key`    | Keyfile fallback (mode 600 recommended)             |
+
+`bithuman cleanup` wipes the first three. Keyfiles and their parent
+directory are preserved.
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="CLI Hello World" icon="rocket" href="/examples/cli-hello">
+    First 5 minutes — install → doctor → avatar.
+  </Card>
+  <Card title="Full CLI reference" icon="book" href="https://github.com/bithuman-product/bithuman-sdk/blob/main/docs/CLI.md">
+    Every flag of every subcommand, in `docs/CLI.md`.
+  </Card>
+  <Card title="Architecture" icon="diagram-project" href="/getting-started/architecture">
+    Where the CLI sits in the 3-layer model.
+  </Card>
+  <Card title="Halo macOS" icon="apple" href="/examples/halo-macos">
+    Signed-DMG desktop variant of the CLI (no Terminal).
+  </Card>
+</CardGroup>

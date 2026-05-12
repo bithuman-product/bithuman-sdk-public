@@ -49,14 +49,17 @@
             "group": "Getting Started",
             "pages": [
               "introduction",
+              "getting-started/install",
               "getting-started/quickstart",
-              "getting-started/how-it-works",
+              "getting-started/cli",
               "getting-started/architecture",
+              "getting-started/device-matrix",
+              "getting-started/use-cases",
+              "getting-started/how-it-works",
               "getting-started/models",
               "getting-started/platforms",
               "getting-started/authentication",
               "getting-started/pricing",
-              "getting-started/use-cases",
               "getting-started/prompts",
               "getting-started/media-guide",
               "getting-started/animal-mode"
@@ -72,6 +75,13 @@
               "swift-sdk/ios",
               "swift-sdk/cli",
               "swift-sdk/troubleshooting"
+            ]
+          },
+          {
+            "group": "Kotlin SDK",
+            "pages": [
+              "kotlin-sdk/overview",
+              "kotlin-sdk/quickstart"
             ]
           },
           {
@@ -134,6 +144,10 @@
             "group": "Examples",
             "pages": [
               "examples/overview",
+              "examples/python-hello",
+              "examples/kotlin-android-hello",
+              "examples/swift-ios-hello",
+              "examples/cli-hello",
               "examples/audio-clip",
               "examples/microphone",
               "examples/ai-conversation",
@@ -168,8 +182,8 @@
       "twitter:card": "summary_large_image",
       "twitter:site": "@bithuman_ai",
       "twitter:image": "https://docs.bithuman.ai/images/bithuman-banner.jpg",
-      "description": "bitHuman runs real-time lip-synced avatars on-device — from Raspberry Pi to iPhone to NVIDIA GPU. No cloud required. On-device local inference across Linux, macOS, iOS, iPadOS, and Windows. Two models (Essence for CPU, Expression for GPU and Apple Silicon), three runtime surfaces (cloud API, self-hosted, on-device). Edge-to-cloud avatar SDK for AI agents, kiosks, and consumer apps.",
-      "keywords": "bitHuman, on-device avatar, edge AI avatar, local inference avatar, Raspberry Pi avatar, iPhone avatar, Apple Silicon avatar, NVIDIA GPU avatar, cross-platform avatar SDK, real-time lip sync, talking avatar API, AI digital human, avatar no cloud required, offline avatar, on-device AI inference, self-hosted avatar, LiveKit avatar plugin, Essence Expression model, bitHumanKit, bithuman-cli, avatar pricing, credits per minute, cost-effective avatar, ARM64 avatar, Linux avatar, macOS avatar, Windows avatar, iOS avatar, iPadOS avatar, edge deployment avatar, IoT avatar, kiosk avatar, AI agent avatar SDK, LLM avatar integration, conversational AI avatar"
+      "description": "bitHuman SDK — real-time on-device AI avatar runtime for iOS, iPadOS, Android, macOS, and Linux. Private, low-latency lip-sync compositing for interactive conversational agents on-device or on-edge. Sub-50 ms turn latency, offline-capable, self-hosted. Python, Swift, Kotlin, and Rust CLI shipped from one libessence engine.",
+      "keywords": "AI avatar, virtual avatar, on-device avatar, on-edge AI, edge AI avatar, private AI avatar, offline avatar, self-hosted avatar, real-time lip sync, lip-synced avatar, low-latency avatar, sub-50ms avatar, interactive avatar, conversational AI avatar, iPhone avatar, iPad avatar, Android avatar, Mac avatar, Linux avatar, Apple Silicon avatar, Raspberry Pi avatar, NVIDIA GPU avatar, cross-platform avatar SDK, talking avatar API, AI digital human, on-device AI inference, private deployment, LiveKit avatar plugin, Essence Expression model, bitHumanKit, bithuman CLI, libessence, Python SDK, Swift SDK, Kotlin SDK, ARM64 avatar, edge deployment, IoT avatar, kiosk avatar, AI agent avatar SDK, LLM avatar integration"
     },
     "indexing": "navigable"
   },

@@ -8,6 +8,31 @@ icon: "clock-rotate-left"
 This page tracks **product-level** changes (platform, web, agent runtime). For per-version release notes of the **`bithuman` PyPI package** specifically, see the [Python SDK CHANGELOG](https://github.com/bithuman-product/bithuman-sdk-public/blob/main/python/CHANGELOG.md). For the **Swift SDK** (`bitHumanKit`), see the [bithuman-sdk-public Releases page](https://github.com/bithuman-product/bithuman-sdk-public/releases).
 </Note>
 
+## May 2026
+
+### v1.12.0 — unified SDK release (2026-05-12)
+
+First unified release of the new monorepo: one `libessence-v1.12.0` source tag fans out to PyPI, Maven Central, SwiftPM, and Homebrew. The legacy `bithuman` (PyPI 1.11.3) is superseded; install matrix:
+
+- `pip install bithuman` → **1.12.0** (macOS arm64 + Linux x86_64 + Linux aarch64 wheels)
+- SwiftPM `Bithuman` package, tag `libessence-v1.12.0` — 3-slice xcframework (macOS + iOS device + iOS simulator)
+- Maven `ai.bithuman:sdk:1.12.0` — first publish on Maven Central, `arm64-v8a`, minSdk 29
+- `brew install bithuman` → 1.12.0 (canonical name; `bithuman-cli` kept as alias)
+- `curl -fsSL https://github.com/bithuman-product/bithuman-sdk/releases/latest/download/install.sh | sh`
+
+What shipped:
+
+- **Single C++ engine, four bindings.** `libessence` ABI v4 powers Python, Swift, Kotlin, and the Rust CLI — same source, pixel-identical output on every target (max-abs diff ≤ 18 LSB vs Python golden).
+- **Maven Central, first publish.** `ai.bithuman:sdk:1.12.0` AAR with vendored OpenSSL + libcurl for the auth heartbeat.
+- **3-slice xcframework.** macOS arm64 + iOS arm64 device + iOS arm64 simulator in one binary target.
+- **Linux wheels.** `manylinux_2_28` x86_64 and aarch64 across cp310 – cp313 (8 wheels) with auditwheel-bundled deps.
+- **M5 self-hosted CI.** Apple Silicon builds run on a dedicated M5 self-hosted runner (xcframework + macOS arm64 wheel + Homebrew bottle).
+- **Architecture refactor.** [3-layer model](/getting-started/architecture): libessence engine → bithuman CLI → platform bindings. App developers integrate at Layer 3; the engine is internal.
+
+The previous legacy `bithuman` PyPI 1.11.3 and Swift `bitHumanKit` 0.8.x continue to be available for existing integrations.
+
+---
+
 ## April 2026
 
 ### Chat Widget v5
