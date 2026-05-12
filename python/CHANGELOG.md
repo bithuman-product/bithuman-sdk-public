@@ -2,6 +2,13 @@
 
 All notable changes to the `bithuman` package are documented here.
 
+## [1.11.3] - 2026-05-12
+
+### Fixed
+- **Dynamics .imx files no longer crash on load when built without similarity matrices.** The `VideoGraph` now returns a zero matrix instead of raising `FileNotFoundError` when similarity data between video clips is missing. This allows dynamics-enabled models to load with hard-cut transitions between gestures and talking video, without requiring the expensive ~20 min filler-frame generation pipeline.
+- **Peak memory display on macOS now shows correct units.** `resource.getrusage` returns bytes on macOS vs KB on Linux; the CLI now handles both correctly (was showing ~1.9 PB instead of ~1.9 GB).
+- **Token refresh log noise reduced.** The per-minute "Token refreshed successfully" message moved from DEBUG to TRACE level so it no longer clutters stdout in long-running scripts.
+
 ## [1.10.6] - 2026-04-21
 
 ### Fixed
