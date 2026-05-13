@@ -18,7 +18,7 @@ from pathlib import Path
 
 import cv2
 
-from bithuman import AsyncBithuman
+from bithuman import AsyncAvatar
 from bithuman.audio import float32_to_int16, load_audio
 
 # Public sample model (112 MB, "Coach Mason" avatar from bithuman.ai).
@@ -99,8 +99,9 @@ async def main():
     # Load the avatar runtime
     print(f"Loading model: {model_path}")
     print("  (First run may take 30s for format conversion — this is a one-time cost)")
-    runtime = await AsyncBithuman.create(model_path=model_path, api_secret=secret)
-    await runtime.start()
+    runtime = await AsyncAvatar.create(model_path=model_path, api_secret=secret)
+    # AsyncAvatar starts its frame producer inside .create(); no explicit
+    # .start() call needed.
     print("  Model loaded!")
 
     # Push audio
