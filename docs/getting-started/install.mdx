@@ -4,15 +4,22 @@ description: "All four bitHuman SDK install channels — pip, SwiftPM, Maven Cen
 icon: "download"
 ---
 
-bitHuman ships from one source tag (`libessence-v1.12.0`) into four package
+bitHuman ships from one source tag (`libessence-v1.16.0`) into four package
 registries. Pick the channel that matches your target platform.
 
 | Channel | Coord | Platforms |
 | ------- | ----- | --------- |
-| pip (Python) | `bithuman` 1.12.0 | macOS arm64, Linux x86_64, Linux aarch64 |
-| SwiftPM (Apple) | `Bithuman` @ `libessence-v1.12.0` | macOS arm64, iOS device, iOS simulator |
-| Maven Central (Android) | `ai.bithuman:sdk:1.12.0` | Android `arm64-v8a`, minSdk 29 |
-| Homebrew (CLI) | `bithuman` 1.12.0 | macOS arm64 |
+| pip (Python) | `bithuman` 1.12.4 | macOS arm64, Linux x86_64, Linux aarch64 |
+| SwiftPM (Apple) | `Bithuman` @ `libessence-v1.16.0` | macOS arm64, iOS device, iOS simulator |
+| Maven Central (Android) | `ai.bithuman:sdk:1.16.0` | Android `arm64-v8a`, minSdk 29 |
+| Homebrew (CLI) | `bithuman` 1.16.0 | macOS arm64 |
+
+<Note>
+The Python wheel is still on the legacy 1.12.4 batched API while the
+`py-v1.16.0` publish is queued. Swift, Kotlin, and the engine's C ABI
+expose the new [streaming push/pull API](/getting-started/architecture#streaming-api-c-abi-v6)
+introduced in v1.16.0.
+</Note>
 
 For the underlying architecture (Layer 1/2/3, the role of `libessence`),
 see [Architecture](/getting-started/architecture).
@@ -20,7 +27,7 @@ see [Architecture](/getting-started/architecture).
 ## Python — `pip`
 
 ```bash
-pip install bithuman --upgrade   # 1.12.0
+pip install bithuman --upgrade   # 1.12.4 (legacy batched API)
 ```
 
 - Python 3.10 – 3.13 (CPython).
@@ -47,7 +54,7 @@ In `Package.swift`:
 dependencies: [
     .package(
         url: "https://github.com/bithuman-product/bithuman-sdk",
-        from: "libessence-v1.12.0"
+        from: "libessence-v1.16.0"
     ),
 ],
 targets: [
@@ -89,7 +96,7 @@ android {
 }
 
 dependencies {
-    implementation("ai.bithuman:sdk:1.12.0")
+    implementation("ai.bithuman:sdk:1.16.0")
 }
 ```
 

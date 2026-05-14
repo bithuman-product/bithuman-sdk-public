@@ -1,0 +1,125 @@
+---
+title: "Streaming API (Swift)"
+sidebarTitle: "Streaming API"
+description: "Push 16 kHz PCM as it arrives, pull composed BGR frames at 25 fps — O(1) per tick on Bithuman.Runtime."
+icon: "bolt"
+---
+
+The streaming push/pull API on `Bithuman.Runtime` is the recommended
+shape for any conversation that runs longer than a few seconds. It
+lands in SwiftPM `Bithuman` at tag `libessence-v1.16.0` (C ABI v6) and
+is bit-exact vs the legacy batched API.
+
+<Note>
+**Why this exists.** The legacy batched API required passing the entire
+accumulated audio buffer on every tick, which grew O(n) per tick in
+cumulative audio length. Past ~10 s of conversation a single tick blew
+the 40 ms render budget. The streaming API splits that into an O(n_new)
+append (`pushAudio`) and an O(1) pull (`pullFrame`), so cost is flat
+regardless of session length.
+</Note>
+
+## API surface
+
+```swift
+extension Bithuman.Runtime {
+    /// Append PCM to the runtime's mel cache. O(n_new).
+    /// `audioPCM` is 16 kHz mono Int16 (or Float32 — both accepted).
+    public func pushAudio(audioPCM: Data) throws
+
+    /// Pull the next composed BGR frame. O(1).
+    /// `frameOut` is a caller-allocated buffer sized to
+    /// `info.frameWidth * info.frameHeight * 3`.
+    /// `frameIdxHint` lets you resync the base-frame schedule
+    /// (pass `-1` to let the runtime advance internally).
+    public func pullFrame(frameIdxHint: Int, frameOut: inout Data) throws
+
+    /// How many frames are ready to drain right now.
+    public var ticksAvailable: Int { get }
+
+    /// Drop cached audio + per-stream counters at end of utterance.
+    public func resetStream() throws
+}
+```
+
+The legacy methods (`runtime.tickCompose(...)`, etc.) continue to work
+unchanged for existing integrations.
+
+## Minimal driver
+
+```swift
+import Bithuman
+
+let fixture = try Bithuman.loadEssenceFixture(modelPath: imxURL)
+let runtime = try fixture.createRuntime()
+
+let info = try fixture.info()
+var frameOut = Data(count: info.frameWidth * info.frameHeight * 3)
+
+// On every audio chunk arriving from the mic / TTS / WebRTC track:
+func onAudio(_ pcm: Data) throws {
+    try runtime.pushAudio(audioPCM: pcm)
+
+    // Drain composed frames at 25 fps.
+    while runtime.ticksAvailable > 0 {
+        try runtime.pullFrame(frameIdxHint: -1, frameOut: &frameOut)
+        renderer.present(bgr: frameOut, width: info.frameWidth, height: info.frameHeight)
+    }
+}
+
+// End of utterance: drop the audio cache so the next turn starts fresh.
+func onEndOfTurn() throws {
+    try runtime.resetStream()
+}
+```
+
+`pushAudio` and `pullFrame` are independent — push as audio arrives,
+pull on a 40 ms display tick. Back-pressure is the caller's choice:
+either drain everything in `ticksAvailable` whenever new audio comes
+in, or pace the pull on a `CADisplayLink` / `CVDisplayLink` and let
+`ticksAvailable` rise transiently.
+
+## Fitting it into a SwiftUI app
+
+Inside your existing voice-chat lifecycle, replace the legacy
+single-call compose with the push/pull split:
+
+```swift
+// On WebRTC remote-audio sink (or AVAudioEngine tap):
+try await runtime.pushAudio(audioPCM: pcmChunk)
+
+// On display-link tick:
+guard runtime.ticksAvailable > 0 else { return }
+try runtime.pullFrame(frameIdxHint: -1, frameOut: &frameOut)
+renderer.present(bgr: frameOut, ...)
+```
+
+Idle frames work the same as before — when there's no audio in flight,
+`ticksAvailable` returns 0 and you keep showing your last good frame
+(or a static idle composite).
+
+## When to call `resetStream()`
+
+Reset at the boundary between user turns: barge-in, end-of-utterance
+detection, agent switch, or any time the cached audio history is no
+longer relevant. Skipping the reset doesn't break correctness, but
+keeps the mel cache growing across turns and trims the maximum
+session length you can run before hitting the per-runtime audio
+buffer cap.
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="Swift SDK quickstart" icon="rocket" href="/swift-sdk/quickstart">
+    The full audio-only and avatar boot path
+  </Card>
+  <Card title="Architecture" icon="diagram-project" href="/getting-started/architecture#streaming-api-c-abi-v6">
+    The C ABI v6 contract under the binding
+  </Card>
+  <Card title="Kotlin streaming API" icon="bolt" href="/kotlin-sdk/streaming">
+    Same shape on `ai.bithuman.sdk.Runtime`
+  </Card>
+  <Card title="Changelog v1.16.0" icon="clock-rotate-left" href="/changelog">
+    Release notes for the streaming-first refactor
+  </Card>
+</CardGroup>

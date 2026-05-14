@@ -10,46 +10,62 @@ This page is the source of truth for **how bitHuman is built and shipped**. If y
 
 | Target                  | Command                                                                                                |
 | ----------------------- | ------------------------------------------------------------------------------------------------------ |
-| Python                  | `pip install bithuman` (1.12.0)                                                                        |
-| Swift (iOS / macOS)     | SwiftPM `.package(url: "https://github.com/bithuman-product/bithuman-sdk", from: "libessence-v1.12.0")` |
-| Android (Kotlin / Java) | Gradle `implementation("ai.bithuman:sdk:1.12.0")` (Maven Central)                                      |
-| macOS CLI (Homebrew)    | `brew install bithuman-product/bithuman/bithuman`                                                      |
+| Python                  | `pip install bithuman` (1.12.4 — legacy batched API)                                                   |
+| Swift (iOS / macOS)     | SwiftPM `.package(url: "https://github.com/bithuman-product/bithuman-sdk", from: "libessence-v1.16.0")` |
+| Android (Kotlin / Java) | Gradle `implementation("ai.bithuman:sdk:1.16.0")` (Maven Central)                                      |
+| macOS CLI (Homebrew)    | `brew install bithuman-product/bithuman/bithuman` (1.16.0)                                             |
 | macOS CLI (curl-pipe)   | `curl -fsSL https://github.com/bithuman-product/bithuman-sdk/releases/latest/download/install.sh \| sh` |
 
-All five flavors are produced from the same `libessence-v1.12.0` source tag. The unified [install page](/getting-started/install) shows all channels side-by-side.
+The Swift, Kotlin, CLI, and engine flavors are produced from the same `libessence-v1.16.0` source tag and expose the new streaming push/pull API (C ABI v6). The Python wheel is one tag behind on `libessence-v1.12.4` (legacy batched API); a `py-v1.16.0` publish is queued. The unified [install page](/getting-started/install) shows all channels side-by-side.
 
 ## Three layers
 
-bitHuman ships in three layers — most app developers only touch Layer 3:
+bitHuman ships in three layers — most app developers only touch Layer 3 (a binding) or one of the end-user surfaces (CLI, Flutter plugin, reference apps) built on top:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ Layer 3: Platform-specific libraries (app developers)       │
+│ Layer 3 surfaces: end-user tools + reference apps           │
+│   - bithuman CLI            brew install bithuman           │
+│   - bithuman_avatar         Flutter plugin (mac/iOS/Android)│
+│   - reference apps          one Flutter codebase            │
+└─────────────────────────────────────────────────────────────┘
+                          ▼ build on
+┌─────────────────────────────────────────────────────────────┐
+│ Layer 2: language bindings (app developers integrate here)  │
 │   - Python wheel       pip install bithuman                 │
 │   - Swift package      SwiftPM Bithuman                     │
 │   - Kotlin AAR         ai.bithuman:sdk                      │
-│   - (future) Rust crate, JS/TS, Go, ...                     │
+│   - Rust crate         bundled with the CLI                 │
 └─────────────────────────────────────────────────────────────┘
-                          ▼ embeds
-┌─────────────────────────────────────────────────────────────┐
-│ Layer 2: bithuman CLI (end-user tool)                       │
-│   - one cross-platform binary on macOS / Linux / Windows    │
-│   - brew install bithuman · curl-pipe installer             │
-└─────────────────────────────────────────────────────────────┘
-                          ▼ links
+                          ▼ link
 ┌─────────────────────────────────────────────────────────────┐
 │ Layer 1: libessence engine (cross-platform C++ core)        │
-│   - portable C ABI, same source on every target             │
+│   - portable C ABI v6 (streaming push/pull)                 │
 │   - macOS · iOS · Android · Linux · Windows                 │
 │   - never imported directly by app developers               │
 └─────────────────────────────────────────────────────────────┘
 ```
 
+The reference apps are now consolidating onto **one Flutter codebase** that covers macOS + iOS + Android. The native Swift Mac / iPad / iPhone reference apps are being archived; the SDK bindings themselves stay first-class on every platform.
+
 ### Layer 1 — `libessence` engine
 
-A portable C++17 core (~12 k LoC) that turns 16 kHz mono PCM audio into 25 fps BGR avatar frames. The same source tree compiles to a macOS / iOS xcframework, an Android `libessence_jni.so`, a Linux/macOS Python module, and the Rust CLI binary. The engine exposes a stable C ABI (`be_*` symbols, currently **ABI v4**) — every higher layer is a thin wrapper over it.
+A portable C++17 core (~12 k LoC) that turns 16 kHz mono PCM audio into 25 fps BGR avatar frames. The same source tree compiles to a macOS / iOS xcframework, an Android `libessence_jni.so`, a Linux/macOS Python module, and the Rust CLI binary. The engine exposes a stable C ABI (`be_*` symbols, currently **ABI v6**) — every higher layer is a thin wrapper over it.
 
 App developers never import this layer directly. It's documented for engine internals and parity-test consumers — see [`cpp/README.md`](https://github.com/bithuman-product/bithuman-sdk/blob/main/cpp/README.md).
+
+#### Streaming API (C ABI v6)
+
+ABI v6 introduced a streaming push/pull split that replaces the legacy "pass the entire accumulated audio buffer on every tick" pattern. The legacy shape was O(n) per tick in cumulative audio length and missed the 40 ms render budget after ~10 s of conversation; the new shape is O(n_new) on append and O(1) on frame pull, bit-exact vs the legacy batched API.
+
+| Symbol                              | Cost     | Role                                          |
+| ----------------------------------- | -------- | --------------------------------------------- |
+| `be_runtime_push_audio(r, pcm, n)`  | O(n_new) | Append PCM, incrementally extend mel cache    |
+| `be_runtime_pull_frame(r, hint, …)` | O(1)     | Pull the next composed BGR frame              |
+| `be_runtime_ticks_available(r)`     | O(1)     | How many composed frames are ready to drain   |
+| `be_runtime_reset_stream(r)`        | O(1)     | End-of-utterance: drop cached audio + counters |
+
+Surfaced today in the **Swift** binding (`Bithuman.Runtime.pushAudio` / `pullFrame` / `ticksAvailable` / `resetStream`) and the **Kotlin** binding (`ai.bithuman.sdk.Runtime.pushAudio` / `pullFrame` / `ticksAvailable` / `resetStream`). The Python wheel is still on the legacy batched API (`AsyncBithuman.push_audio` / `runtime.run()`); a `py-v1.16.0` publish is queued.
 
 Performance reference (single conversation, tight loop, CPU EP, one intra-op thread):
 
@@ -65,21 +81,26 @@ All three platforms run pixel-identical frames (max-abs diff ≤ 18 LSB vs Pytho
 
 The engine targets a wide host range, from a Raspberry Pi 5 up to a 24 GB Mac. Per-device performance, peak RSS, and model compatibility live in the [device matrix](/getting-started/device-matrix); concrete on-device, on-edge, and on-cloud deployment scenarios are catalogued in [use cases](/getting-started/use-cases). Read those two pages before locking in a host for an on-device or edge product.
 
-### Layer 2 — `bithuman` CLI
-
-A single Rust binary that links `libessence` statically and ships a browser-served local avatar, optional on-device ASR / LLM / TTS, and a `doctor` command. One binary, one config story, same UX on macOS / Linux / Windows. Distributed via Homebrew (`brew install bithuman`) and a curl-pipe install script. Full reference: [`docs/CLI.md`](https://github.com/bithuman-product/bithuman-sdk/blob/main/docs/CLI.md).
-
-### Layer 3 — platform-specific libraries
+### Layer 2 — language bindings
 
 Idiomatic bindings each language's developers can drop straight into their project:
 
-| Binding | Coord                  | Surface                          | Wraps libessence |
-| ------- | ---------------------- | -------------------------------- | ---------------- |
-| Python  | `bithuman` on PyPI     | pybind11 cdylib                  | static           |
-| Swift   | SwiftPM `Bithuman`     | xcframework (macOS + iOS dev/sim)| static           |
-| Kotlin  | `ai.bithuman:sdk` AAR  | JNI shim                         | static           |
+| Binding | Coord                  | Surface                          | Wraps libessence | Streaming API |
+| ------- | ---------------------- | -------------------------------- | ---------------- | ------------- |
+| Python  | `bithuman` on PyPI     | pybind11 cdylib                  | static           | legacy batched (1.12.4); v1.16.0 queued |
+| Swift   | SwiftPM `Bithuman`     | xcframework (macOS + iOS dev/sim)| static           | yes (1.16.0) |
+| Kotlin  | `ai.bithuman:sdk` AAR  | JNI shim                         | static           | yes (1.16.0) |
+| Rust    | bundled with the CLI   | crate                            | static           | yes (1.16.0) |
 
-The public types are the same shape across all three: an `Avatar` convenience facade for the single-conversation case, plus a `Fixture` + `Runtime` split (`Fixture.createRuntime()` / `Runtime(fixture)`) for multi-conversation hosts. Every binding speaks the same `.imx` model format and produces pixel-identical output.
+The public types are the same shape across bindings: an `Avatar` convenience facade for the single-conversation case, plus a `Fixture` + `Runtime` split (`Fixture.createRuntime()` / `Runtime(fixture)`) for multi-conversation hosts. Every binding speaks the same `.imx` model format and produces pixel-identical output. See the per-binding streaming pages: [Swift](/swift-sdk/streaming) · [Kotlin](/kotlin-sdk/streaming).
+
+### Layer 3 — end-user surfaces
+
+Built on top of the bindings:
+
+- **`bithuman` CLI** — single Rust binary that links `libessence` statically and ships a browser-served local avatar, optional on-device ASR / LLM / TTS, and a `doctor` command. Same UX on macOS / Linux / Windows. Distributed via Homebrew (`brew install bithuman`) and a curl-pipe install script. Now defaults to OpenAI Realtime model `gpt-realtime-mini` (cost-efficient tier) on the GA Realtime endpoint. Full reference: [`docs/CLI.md`](https://github.com/bithuman-product/bithuman-sdk/blob/main/docs/CLI.md).
+- **`bithuman_avatar` Flutter plugin** — one Dart codebase covering macOS + iOS + Android, wrapping the Swift and Kotlin bindings.
+- **Reference apps** — converging onto the Flutter codebase above. The legacy native Mac / iPad / iPhone Swift apps are being archived.
 
 ## What's open, what's proprietary
 

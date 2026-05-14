@@ -10,17 +10,17 @@
 1. Layer 1 — libessence: cross-platform C++ engine with a portable C ABI. Same source on macOS / iOS / Android / Linux / Windows. Never imported directly by app developers.
 2. Layer 2 — bithuman CLI: one Rust binary, statically links libessence. End-user tool (bithuman avatar, bithuman voice, bithuman generate). Ships via Homebrew / curl-pipe / GitHub Releases.
 3. Layer 3 — language SDKs: thin platform-specific wrappers around libessence. Python wheel (pip install bithuman), Swift package (SwiftPM Bithuman), Kotlin AAR (ai.bithuman:sdk). Future: Rust crate, JS/TS, Go.
-4. All four shipping channels (pip, SwiftPM, Maven Central, Homebrew) are built from one source tag (libessence-v1.12.0).
+4. Swift, Kotlin, CLI, and engine ship from one source tag (libessence-v1.16.0, C ABI v6, streaming push/pull). The Python wheel is one tag behind on libessence-v1.12.4 (legacy batched API); a `py-v1.16.0` publish is queued.
 5. App developers consume Layer 3 directly. Users and scripters consume Layer 2 (the CLI). Layer 1 is the shared engine — same code, same numerics, every platform.
 
 Base URL: https://api.bithuman.ai
 Authentication: api-secret header on every request (or BITHUMAN_API_KEY for the Swift SDK)
-Python SDK: pip install bithuman --upgrade (1.12.0)
+Python SDK: pip install bithuman --upgrade (1.12.4, legacy batched API)
 LiveKit Plugin: pip install livekit-plugins-bithuman
 GPU Container: docker.io/sgubithuman/expression-avatar:latest
-Swift Package: https://github.com/bithuman-product/bithuman-sdk (from "libessence-v1.12.0")
-Kotlin / Android: implementation("ai.bithuman:sdk:1.12.0") (Maven Central)
-CLI: brew install bithuman-product/bithuman/bithuman
+Swift Package: https://github.com/bithuman-product/bithuman-sdk (from "libessence-v1.16.0") — streaming API
+Kotlin / Android: implementation("ai.bithuman:sdk:1.16.0") (Maven Central) — streaming API
+CLI: brew install bithuman-product/bithuman/bithuman (1.16.0; defaults to OpenAI Realtime model gpt-realtime-mini)
 Examples: https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples
 Dashboard: https://www.bithuman.ai
 

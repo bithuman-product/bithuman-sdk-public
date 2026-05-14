@@ -10,6 +10,20 @@ This page tracks **product-level** changes (platform, web, agent runtime). For p
 
 ## May 2026
 
+### v1.16.0 — streaming-first ABI (2026-05-14)
+
+Streaming-first refactor of the engine ABI. The legacy "pass the entire accumulated audio buffer on every tick" pattern grew O(n²) over a long session and missed the 40 ms render budget after ~10 s of conversation; the new push/pull split keeps every tick O(1) regardless of session length, bit-exact vs the legacy batched API.
+
+What shipped:
+
+- **C ABI v6 streaming API.** `be_runtime_push_audio(r, pcm, n)` (O(n_new) append to mel cache), `be_runtime_pull_frame(r, hint, out, cap, result)` (O(1) composed BGR pull), plus `be_runtime_ticks_available(r)` and `be_runtime_reset_stream(r)`.
+- **Swift binding** — new methods on `Bithuman.Runtime`: `pushAudio(audioPCM:)`, `pullFrame(frameIdxHint:frameOut:)`, `ticksAvailable: Int`, `resetStream()`. SwiftPM tag `libessence-v1.16.0`.
+- **Kotlin binding** — new methods on `ai.bithuman.sdk.Runtime`: `pushAudio(audioPCM, offset, length)`, `pullFrame(frameOut, frameIdxHint)`, `ticksAvailable: Long`, `resetStream()`. Maven `ai.bithuman:sdk:1.16.0`.
+- **CLI** — Rust `bithuman` binary (Homebrew) now defaults to OpenAI Realtime model `gpt-realtime-mini` (cost-efficient tier) on the GA Realtime endpoint.
+- **Reference apps consolidating to Flutter.** One Flutter codebase covers macOS + iOS + Android. The native Mac / iPad / iPhone Swift reference apps are being archived.
+
+The Python wheel `bithuman` is still on the legacy 1.12.4 batched API; a `py-v1.16.0` PyPI publish is queued. Existing `AsyncBithuman.push_audio` / `runtime.run()` usage continues to work unchanged.
+
 ### v1.12.0 — unified SDK release (2026-05-12)
 
 First unified release of the new monorepo: one `libessence-v1.12.0` source tag fans out to PyPI, Maven Central, SwiftPM, and Homebrew. The legacy `bithuman` (PyPI 1.11.3) is superseded; install matrix:

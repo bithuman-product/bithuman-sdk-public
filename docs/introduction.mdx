@@ -21,6 +21,10 @@ keywords:
 
 bitHuman runs real-time lip-synced avatars **on any device** — from a $35 Raspberry Pi to an iPhone to an NVIDIA data center GPU. **No cloud required.** All inference runs locally on the device: push audio in, get animated video out at 25 FPS with under 200ms latency. Whether you are building an edge kiosk, a native mobile app, or a cloud-scale web service, bitHuman runs where your users are.
 
+<Note>
+**v1.16.0 is streaming-first.** The new C ABI v6 splits the runtime into a cheap `pushAudio` append and a constant-time `pullFrame` pull, replacing the legacy "pass the entire accumulated buffer per tick" loop that grew O(n²) and missed the 40 ms render budget after ~10 s. Surfaced today in the [Swift](/swift-sdk/streaming) and [Kotlin](/kotlin-sdk/streaming) bindings; the Python wheel `bithuman` is still on the legacy 1.12.4 batched API.
+</Note>
+
 ## Runs everywhere — on-device, no cloud required
 
 bitHuman is the only avatar SDK that runs high-quality real-time lip-sync on-device across every major platform. Local inference means lower latency, full privacy, and no dependency on cloud availability.

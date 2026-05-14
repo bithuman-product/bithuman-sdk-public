@@ -70,6 +70,7 @@
             "pages": [
               "swift-sdk/overview",
               "swift-sdk/quickstart",
+              "swift-sdk/streaming",
               "swift-sdk/essence",
               "swift-sdk/macos",
               "swift-sdk/ios",
@@ -81,7 +82,8 @@
             "group": "Kotlin SDK",
             "pages": [
               "kotlin-sdk/overview",
-              "kotlin-sdk/quickstart"
+              "kotlin-sdk/quickstart",
+              "kotlin-sdk/streaming"
             ]
           },
           {

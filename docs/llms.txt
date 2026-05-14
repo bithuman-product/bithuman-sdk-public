@@ -19,17 +19,25 @@ an API secret at https://www.bithuman.ai/#developer → set
 `BITHUMAN_API_SECRET` (Python/REST/LiveKit/Kotlin/CLI) or
 `BITHUMAN_API_KEY` (Swift SDK) before any code runs.
 
-## Install commands (all four channels ship from libessence-v1.12.0)
+## Install commands (Swift / Kotlin / CLI ship from libessence-v1.16.0; Python is one tag behind on libessence-v1.12.4)
 
-- Python (pip): `pip install bithuman --upgrade`
+- Python (pip): `pip install bithuman --upgrade` (1.12.4, legacy batched API)
   Platforms: macOS arm64, Linux x86_64, Linux aarch64. Python 3.10–3.13.
 - Swift (SwiftPM): add
-  `.package(url: "https://github.com/bithuman-product/bithuman-sdk", from: "libessence-v1.12.0")`
+  `.package(url: "https://github.com/bithuman-product/bithuman-sdk", from: "libessence-v1.16.0")`
   Platforms: macOS arm64, iOS device, iOS simulator (one xcframework).
-- Kotlin / Android (Maven Central): `implementation("ai.bithuman:sdk:1.12.0")`
+- Kotlin / Android (Maven Central): `implementation("ai.bithuman:sdk:1.16.0")`
   Platforms: Android arm64-v8a, minSdk 29.
-- CLI (Homebrew): `brew install bithuman-product/bithuman/bithuman`
+- CLI (Homebrew): `brew install bithuman-product/bithuman/bithuman` (1.16.0)
   Platforms: macOS arm64. Linux/Windows .zip via GitHub Releases.
+
+## Streaming API (C ABI v6, libessence-v1.16.0)
+
+Swift `Bithuman.Runtime` and Kotlin `ai.bithuman.sdk.Runtime` both
+expose `pushAudio` (O(n_new) append) + `pullFrame` (O(1) BGR pull) +
+`ticksAvailable` + `resetStream`. Replaces the legacy batched API that
+grew O(n²) past ~10 s of conversation. The Python wheel is still on
+the legacy batched API; `py-v1.16.0` publish is queued.
 
 ## Use cases
 
@@ -228,7 +236,7 @@ Swift Package (XCFramework). Same billing model as the Python SDK.
 Install:
 
   .package(url: "https://github.com/bithuman-product/bithuman-sdk-public.git",
-           from: "0.8.1")
+           from: "1.16.0")
 
 The package wraps a pre-compiled XCFramework — every dep (MLX,
 HuggingFace, Tokenizers, …) is statically linked, so consumers

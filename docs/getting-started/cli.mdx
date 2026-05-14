@@ -56,11 +56,13 @@ mix and match freely.
 
 | Mode      | Pros                                                                       | Cons                                                       |
 | --------- | -------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Cloud (default) | Instant startup, no model downloads. Streams to OpenAI Realtime / Chat. | Requires `OPENAI_API_KEY` and network connectivity.        |
+| Cloud (default) | Instant startup, no model downloads. Streams to OpenAI Realtime (GA) — default model `gpt-realtime-mini` (cost-efficient tier). | Requires `OPENAI_API_KEY` and network connectivity.        |
 | `--local` | Fully offline, private, air-gap-friendly. Sub-50 ms turn latency on M3+.   | First run downloads ~5–7 GB of weights to `~/.cache/`.     |
 
 Local mode runs `whisper.cpp` ASR + Gemma 3 1B LLM + Piper TTS on-device.
 After the first download it operates entirely offline.
+
+Override the cloud model with `--model gpt-realtime` (or any other GA Realtime model id) when you want the higher-tier voice.
 
 ## Subcommands
 

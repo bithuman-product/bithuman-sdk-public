@@ -34,12 +34,12 @@ This page covers the **Python SDK** path (Essence on CPU, self-hosted). If you'r
 
 ## 2. Install
 
-Pick your channel — all four ship from the same `libessence-v1.12.0` source tag.
+Pick your channel. Swift, Kotlin, and the CLI ship from the `libessence-v1.16.0` source tag with the new streaming push/pull API; the Python wheel is still on `libessence-v1.12.4` (legacy batched API) while the `py-v1.16.0` publish is queued.
 
 <Tabs>
   <Tab title="pip (Python)">
     ```bash
-    pip install bithuman --upgrade   # 1.12.0
+    pip install bithuman --upgrade   # 1.12.4 (legacy batched API)
     ```
     macOS arm64, Linux x86_64, Linux aarch64. Python 3.10 – 3.13.
   </Tab>
@@ -47,7 +47,7 @@ Pick your channel — all four ship from the same `libessence-v1.12.0` source ta
     ```swift
     .package(
         url: "https://github.com/bithuman-product/bithuman-sdk",
-        from: "libessence-v1.12.0"
+        from: "libessence-v1.16.0"
     )
     ```
     macOS arm64 + iOS device + iOS simulator slices in one xcframework.
@@ -55,14 +55,14 @@ Pick your channel — all four ship from the same `libessence-v1.12.0` source ta
   <Tab title="Maven (Android)">
     ```kotlin
     dependencies {
-        implementation("ai.bithuman:sdk:1.12.0")
+        implementation("ai.bithuman:sdk:1.16.0")
     }
     ```
     `arm64-v8a`, minSdk 29. AAR ships from Maven Central.
   </Tab>
   <Tab title="brew (CLI)">
     ```bash
-    brew install bithuman-product/bithuman/bithuman   # 1.12.0
+    brew install bithuman-product/bithuman/bithuman   # 1.16.0
     ```
     Cross-platform CLI binary. See [the CLI page](/swift-sdk/cli).
   </Tab>
