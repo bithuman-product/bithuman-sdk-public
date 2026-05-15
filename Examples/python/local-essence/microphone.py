@@ -123,7 +123,7 @@ async def main():
 
     fps = FPSController(target_fps=25)
     try:
-        async for frame in runtime.run(idle_timeout=0.5):
+        async for frame in runtime.run():
             sleep_time = fps.wait_next_frame(sleep=False)
             if sleep_time > 0:
                 await asyncio.sleep(sleep_time)

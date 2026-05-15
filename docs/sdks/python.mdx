@@ -19,9 +19,10 @@ Python 3.9+ (3.9–3.14 wheels). Wheels: macOS arm64, Linux x86_64, Linux aarch6
 Windows x86_64.
 
 <Note>
-The wheel pulls `opencv-python-headless`. Don't also install full
-`opencv-python` — it conflicts with PyAV and triggers FFmpeg warnings
-on macOS.
+The SDK returns frames as numpy BGR arrays and needs **no** OpenCV
+itself. Only the example scripts that *display* a window
+(`quickstart.py`, `conversation.py`) need `opencv-python` — it's in
+each example's `requirements.txt`.
 </Note>
 
 Auth: export `BITHUMAN_API_SECRET`. Get a secret at
@@ -75,9 +76,11 @@ adds OpenCV display + speaker playback on top of this loop.
 
 ## No-code render
 
-For one-shot or batch video, skip the SDK entirely:
+For one-shot or batch video, skip the SDK entirely. `generate` needs an
+`.imx` and a WAV (`bithuman tts` can make the WAV):
 
 ```bash
+bithuman tts "Hello from bitHuman." --output speech.wav
 bithuman generate avatar.imx --audio speech.wav --output demo.mp4
 ```
 
@@ -88,7 +91,7 @@ For a real-time WebRTC voice agent with an avatar, use the
 the runtime yourself:
 
 ```bash
-pip install "bithuman[agent]"     # pulls livekit-plugins-bithuman
+pip install livekit-plugins-bithuman   # pulls bithuman + livekit-agents
 ```
 
 ```python

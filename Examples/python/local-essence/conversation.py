@@ -133,7 +133,7 @@ async def main():
     bithuman_task = asyncio.create_task(push_to_bithuman())
 
     try:
-        async for frame in runtime.run(idle_timeout=0.5):
+        async for frame in runtime.run():
             if frame.has_image:
                 cv2.imshow("bitHuman", frame.bgr_image)
                 if cv2.waitKey(1) & 0xFF == ord("q"):
