@@ -62,16 +62,9 @@
             "pages": [
               "introduction",
               "getting-started/quickstart",
-              "getting-started/models"
-            ]
-          },
-          {
-            "group": "Guides",
-            "pages": [
+              "getting-started/models",
               "getting-started/authentication",
-              "getting-started/pricing",
-              "guides/building-avatars",
-              "guides/deployment"
+              "getting-started/pricing"
             ]
           },
           {
@@ -96,10 +89,22 @@
             ]
           },
           {
-            "group": "Reference",
+            "group": "Guides",
+            "pages": [
+              "guides/building-avatars",
+              "guides/deployment"
+            ]
+          },
+          {
+            "group": "Concepts",
             "pages": [
               "getting-started/architecture",
-              "getting-started/device-matrix",
+              "getting-started/device-matrix"
+            ]
+          },
+          {
+            "group": "Changelog",
+            "pages": [
               "changelog"
             ]
           }

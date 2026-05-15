@@ -52,25 +52,31 @@ If the device loses connectivity mid-session, the SDK has a **5-minute offline g
 ## Check your balance
 
 ```bash
-curl -X GET https://api.bithuman.ai/v2/credit-summaries \
+curl https://api.bithuman.ai/v2/credit-summaries \
   -H "api-secret: $BITHUMAN_API_SECRET"
 ```
 
 Response:
 ```json
 {
-  "balance": 1842,
-  "plan": "creator",
-  "renews_at": "2026-05-15T00:00:00Z",
-  "estimated_minutes": {
-    "essence_cloud": 921,
-    "expression_cloud": 460,
-    "expression_on_device": 921
+  "success": true,
+  "data": {
+    "balance": 5240,
+    "plan_credits": 240,
+    "topup_credits": 5000,
+    "minutes_estimate": {
+      "voice_chat": 524,
+      "video_chat": 174,
+      "standard_avatar_cloud": 2620,
+      "standard_avatar_self_hosted": 5240,
+      "advanced_avatar_cloud": 1310,
+      "advanced_avatar_self_hosted": 2620
+    }
   }
 }
 ```
 
-See [`/api-reference/credit-summaries`](/api-reference/overview) for the full schema.
+See [Credits & Billing](/api-reference/rate-limits) for the full schema.
 
 ## What's NOT billed
 

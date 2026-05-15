@@ -1,32 +1,96 @@
 ---
 title: "Examples"
-description: "Runnable bitHuman examples — one per surface. Clone, set your API secret, run."
+description: "Runnable bitHuman projects, grouped by what you're building. Every one is open-source — clone, set your API secret, run."
 icon: "book-open"
 ---
 
-Every example is open-source under
+Every project below is open-source under
 [bithuman-sdk-public/Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples).
-Pick the one closest to what you're building.
+Find the row that matches what you're building and start there.
+
+<Note>
+New here? The fastest end-to-end demo is the
+[CLI — Hello, avatar](/examples/cli-hello): one `brew install`, one
+command, a talking avatar in your browser. No code, ~2 minutes.
+</Note>
+
+## Start here — no code
 
 <CardGroup cols={2}>
-  <Card title="CLI — no code" icon="terminal" href="/examples/cli-hello">
-    `brew install` → `bithuman avatar`. Full demo, zero code. Start here.
+  <Card title="CLI — Hello, avatar" icon="terminal" href="/examples/cli-hello">
+    Install, `bithuman doctor`, `bithuman avatar`. Full demo, zero code.
   </Card>
+  <Card title="Quickstart project" icon="rocket" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/quickstart">
+    The smallest scripted path — credentials, a model, your first render.
+  </Card>
+</CardGroup>
+
+## Backend & voice agents — Python
+
+The streaming runtime and LiveKit voice agents. Each repo project ships
+an `.env.example`, `requirements.txt`, and a `docker compose` stack.
+
+<CardGroup cols={2}>
   <Card title="Python — Hello, avatar" icon="python" href="/examples/python-hello">
-    Minimal `AsyncBithuman` streaming loop, ~20 lines.
+    The minimal `AsyncBithuman` streaming loop, ~20 lines.
   </Card>
+  <Card title="AI voice chat" icon="comments" href="/examples/ai-conversation">
+    OpenAI Realtime voice in, lip-synced avatar out. No server.
+  </Card>
+  <Card title="cloud-essence" icon="cloud" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-essence">
+    Essence on bitHuman cloud + LiveKit + web UI. Start here for agents.
+  </Card>
+  <Card title="local-essence" icon="server" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence">
+    Essence on your own CPU box. Includes a no-LiveKit `quickstart.py`.
+  </Card>
+  <Card title="cloud-expression" icon="cloud" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-expression">
+    Expression on bitHuman cloud — a custom face per session.
+  </Card>
+  <Card title="local-expression-gpu" icon="microchip" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-gpu">
+    Expression on your own NVIDIA GPU, local LiveKit + Redis.
+  </Card>
+</CardGroup>
+
+## Native apps — Swift & Kotlin
+
+<CardGroup cols={2}>
   <Card title="Swift / iOS — Hello, avatar" icon="apple" href="/examples/swift-ios-hello">
     Minimal SwiftUI `bitHumanKit` integration, ~40 lines.
   </Card>
   <Card title="Kotlin / Android — Hello, avatar" icon="android" href="/examples/kotlin-android-hello">
     Maven AAR + `Avatar.load` in a fresh Android Studio project.
   </Card>
-  <Card title="AI conversation" icon="comments" href="/examples/ai-conversation">
-    OpenAI Realtime voice chat → talking avatar. The full loop.
+  <Card title="swift/macos-avatar" icon="apple" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/swift/macos-avatar">
+    Full macOS voice agent with an on-device Expression avatar.
+  </Card>
+  <Card title="swift/macos-voice" icon="microphone" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/swift/macos-voice">
+    Voice-only on-device agent — no avatar, no API key, fully offline.
+  </Card>
+  <Card title="swift/essence-playback" icon="apple" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/swift/essence-playback">
+    SwiftUI Essence playback on macOS / iPad — audio-driven lip sync.
+  </Card>
+  <Card title="Flutter plugin" icon="mobile" href="/integrations/flutter">
+    One Dart codebase across macOS, iOS, and Android.
   </Card>
 </CardGroup>
 
-Building elsewhere? The [Flutter plugin](/integrations/flutter) and
-[REST API](/api-reference/overview) have their own end-to-end samples
-in the repo. For deployment shapes (LiveKit, GPU, embed) see
-[Deployment](/guides/deployment).
+## Web & other languages
+
+<CardGroup cols={2}>
+  <Card title="integrations/nextjs-ui" icon="react" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/nextjs-ui">
+    A polished Next.js video-chat UI over LiveKit.
+  </Card>
+  <Card title="integrations/gradio-web" icon="globe" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/gradio-web">
+    Talk to an avatar in the browser via Gradio + FastRTC.
+  </Card>
+  <Card title="integrations/java-websocket" icon="java" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/java-websocket">
+    Stream audio to an avatar server from Java over WebSocket.
+  </Card>
+  <Card title="rest-api" icon="code" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/rest-api">
+    `curl` and Python scripts for every REST endpoint.
+  </Card>
+</CardGroup>
+
+For deployment shapes (LiveKit cloud, self-hosted GPU, embed widget)
+see [Deployment](/guides/deployment). For the REST contract see the
+[API reference](/api-reference/overview).
