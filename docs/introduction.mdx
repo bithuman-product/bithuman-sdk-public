@@ -152,6 +152,7 @@ pip install livekit-plugins-bithuman
 ```bash Self-hosted GPU (Expression, NVIDIA + Docker)
 docker run --gpus all -p 8089:8089 \
     -e BITHUMAN_API_SECRET=your_api_secret \
+<!-- TODO(infra): migrate from `sgubithuman` (personal Docker Hub namespace) to `ghcr.io/bithuman-product/expression-avatar` or a properly-owned `bithuman` org Docker Hub namespace before this doc goes external. -->
     docker.io/sgubithuman/expression-avatar:latest
 # Point a LiveKit agent at http://localhost:8089/launch
 # See /deployment/self-hosted-gpu for the full wiring.

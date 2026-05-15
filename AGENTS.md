@@ -9,6 +9,7 @@ bitHuman is a real-time avatar animation platform. You push audio in, and get li
 | Web app, fastest demo | Cloud Essence (LiveKit plugin) | `pip install livekit-plugins-bithuman` | `Examples/python/cloud-essence/` |
 | Web app, custom face image | Cloud Expression (LiveKit plugin) | `pip install livekit-plugins-bithuman` | `Examples/python/cloud-expression/` |
 | Kiosk / 24-7 / edge box | Self-hosted Essence (CPU) | `pip install bithuman` | `Examples/python/local-essence/` |
+<!-- TODO(infra): migrate from `sgubithuman` (personal Docker Hub namespace) to `ghcr.io/bithuman-product/expression-avatar` or a properly-owned `bithuman` org Docker Hub namespace before this doc goes external. -->
 | On-prem NVIDIA GPU | Self-hosted Expression (Docker) | `docker pull sgubithuman/expression-avatar:latest` | `Examples/python/local-expression-gpu/` |
 | macOS / iPad / iPhone app | Swift SDK (on-device) | SwiftPM `bithuman-sdk-public` >= 0.8.1 | `Examples/swift/` |
 | Mac, no code | CLI (Homebrew) | `brew install bithuman-cli` | `Examples/cli/` |
