@@ -4,12 +4,29 @@ description: "The unified bitHuman command-line tool — one binary for on-devic
 icon: "terminal"
 ---
 
-`bithuman` is **Layer 2** of the bitHuman SDK: a single Rust binary that
-drives the on-device AI avatar runtime. Same semantics on macOS, Linux,
-and (soon) Windows. It links the `libessence` engine statically, serves
-the avatar in your browser over `127.0.0.1`, and bundles optional
-on-device ASR / LLM / TTS for fully private voice conversations. One
-binary, one `doctor` command, zero language toolchain.
+`bithuman` is a **Layer 3** end-user surface of the bitHuman SDK: a single
+Rust binary that drives the on-device avatar runtime + optional cloud
+OpenAI Realtime. Same semantics on macOS, Linux, and Windows. It links
+the `libessence` engine statically, serves the avatar in your browser over
+`127.0.0.1`, and bundles optional on-device ASR / LLM / TTS for fully
+private voice conversations. One binary, one `doctor` command, zero
+language toolchain.
+
+The CLI is the most powerful and least intimidating entry point — fast
+"see what this is", scriptable for batch / CI / shell pipelines, and
+itself a working integration example. Replaces the previous Swift
+`bithuman-cli` (retired in v1.17.0).
+
+<Note>
+**Both Essence and Expression `.imx` models are wired through this one binary.**
+`bithuman avatar --identity <agent.imx>` peeks the `model_type` field in
+the manifest and dispatches to the right runtime automatically — Essence
+streams via libessence in-process; Expression spawns the on-device MLX
+daemon (Apple Silicon) or routes to a self-hosted GPU server. Just download
+any showcase model from your bitHuman dashboard and run it; no
+model-specific flag needed. For Expression with a runtime portrait swap,
+pass `--image <portrait.jpg>`.
+</Note>
 
 This page is the high-level introduction. The canonical reference is
 [`docs/CLI.md`](https://github.com/bithuman-product/bithuman-sdk/blob/main/docs/CLI.md)
@@ -25,9 +42,11 @@ in the `bithuman-sdk` repo — read it for every flag of every subcommand.
 | Building a Python service, agent, or web backend        | **Python SDK** (`pip install bithuman`)                  |
 | Building a Mac / iPad / iPhone app                      | **Swift SDK** (SwiftPM `Bithuman`)                       |
 | Building an Android app                                 | **Kotlin SDK** (`ai.bithuman:sdk` AAR)                   |
+| Building one Dart codebase for mac / iOS / Android      | **Flutter plugin** (`flutter pub add bithuman`)          |
+| Calling the cloud REST API from any language            | **REST API** (`api.bithuman.ai`)                         |
 
-The CLI is for users / scripts / CI. The Layer 3 language SDKs are for
-app developers who want to embed the engine in their own process.
+The CLI is for users / scripts / CI. The Layer 2 language bindings are
+for app developers who want to embed the engine in their own process.
 
 ## Install
 
@@ -38,8 +57,8 @@ brew install bithuman-product/bithuman/bithuman
 # macOS — curl-pipe alternative (no Homebrew).
 curl -fsSL https://github.com/bithuman-product/bithuman-sdk/releases/latest/download/install.sh | sh
 
-# Linux — tarballs tracked for v0.2.x; build from source today via cpp/bindings/rust/scripts/build-all.sh.
-# Windows — .zip via GitHub Releases (CMake portability gate WINDOWS_CMAKE_PORTED in progress).
+# Linux — manylinux x86_64 + aarch64 tarballs on GitHub Releases.
+# Windows — x86_64 .zip on GitHub Releases.
 ```
 
 Verify:
@@ -49,20 +68,56 @@ bithuman doctor      # host capability check + API key presence
 bithuman version     # libessence semver + ABI version + CLI build version
 ```
 
-## Cloud vs `--local`
+## Cloud vs `--local` (auto-picked)
 
-`voice` and `text` both have two backends. You pick per-invocation —
-mix and match freely.
+`voice` and `text` both have two backends. The CLI auto-picks at startup
+based on environment:
 
-| Mode      | Pros                                                                       | Cons                                                       |
-| --------- | -------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Cloud (default) | Instant startup, no model downloads. Streams to OpenAI Realtime (GA) — default model `gpt-realtime-mini` (cost-efficient tier). | Requires `OPENAI_API_KEY` and network connectivity.        |
-| `--local` | Fully offline, private, air-gap-friendly. Sub-50 ms turn latency on M3+.   | First run downloads ~5–7 GB of weights to `~/.cache/`.     |
+- **Cloud** (OpenAI Realtime / Chat Completions) — chosen when
+  `OPENAI_API_KEY` is set. Instant startup, no model downloads. Default
+  Realtime model is `gpt-realtime-mini` (cheapest tier on the GA
+  endpoint); override with `--model gpt-realtime` (or any other GA
+  Realtime model id) for the higher-quality voice.
+- **`--local`** — chosen when `OPENAI_API_KEY` is unset, or forced with
+  the `--local` flag. Fully offline, private, air-gap-friendly.
+  Sub-50 ms turn latency on M3+. First run downloads ~5–7 GB of weights
+  to `~/.cache/`.
 
+Explicit `--openai` / `--local` flags always win over the auto-pick.
 Local mode runs `whisper.cpp` ASR + Gemma 3 1B LLM + Piper TTS on-device.
 After the first download it operates entirely offline.
 
-Override the cloud model with `--model gpt-realtime` (or any other GA Realtime model id) when you want the higher-tier voice.
+### Voice TUI
+
+When `bithuman voice` runs on a TTY it now renders a
+[ratatui](https://github.com/ratatui-org/ratatui) UI: a status pill, a
+🎙 mic-level meter, a 🔊 bot-level meter, and a scrolling transcript.
+Press Ctrl-C to exit.
+
+Set `BITHUMAN_NO_TUI=1` to fall back to plain stdout output (CI, log
+capture, headless servers, piped invocations).
+
+## `bithuman avatar` modes
+
+The `avatar` subcommand auto-detects the model from the `.imx` manifest
+(Essence vs Expression) and exposes two transport modes — the user picks
+the transport per invocation:
+
+| Mode | Command | What it does |
+| ---- | ------- | ------------ |
+| **Browser-served** *(default)* | `bithuman avatar [--identity <agent.imx>]` | Spins up an HTTP avatar runtime on `http://127.0.0.1:8080`. Browser captures the mic; lip-synced MJPEG streams back. Audio engine + cloud LLM/TTS or `--local` stack runs in the browser session. Works for both Essence and Expression `.imx` models. |
+| **Server-side OpenAI Realtime** *(v1.17.0)* | `bithuman avatar --openai [--identity <agent.imx>]` | cpal mic captures locally → streamed to OpenAI Realtime → cpal speaker plays the bot reply locally → bot audio is teed into the avatar lipsync ring. The user opens the printed `http://127.0.0.1:…` URL in a browser to see the avatar; mic + speaker stay on the host. Default Realtime model `gpt-realtime-mini`. Works for both Essence and Expression. |
+
+`--openai` is the right mode when you want the OpenAI Realtime voice
+loop on a workstation but don't want to run the audio inside a browser
+tab.
+
+For Expression with a runtime portrait swap, pass `--image
+<portrait.jpg>` alongside `--identity <expression.imx>`. For Essence
+the avatar identity is baked into the `.imx` — no `--image` needed.
+
+If you omit `--identity`, the CLI uses the bundled `sample-avatar.imx`
+(Essence) and downloads it to `~/.cache/bithuman/models/` on first run.
 
 ## Subcommands
 
@@ -73,17 +128,17 @@ All 13 subcommands accept `--help` for full flag listings.
 | `bithuman doctor`   | Host capability check — OS, RAM, libessence ABI, API keys, cache sizes.         |
 | `bithuman cleanup`  | Wipe regenerable model caches under `~/.cache/bithuman/`.                       |
 | `bithuman version`  | Print libessence semver + ABI version + CLI build version.                      |
-| `bithuman voice`    | Interactive voice chat (`--openai` cloud or `--local` on-device).               |
-| `bithuman text`     | Non-interactive text chat — reads stdin, streams stdout, exits.                 |
+| `bithuman voice`    | Interactive voice chat with ratatui TUI; auto-picks cloud or `--local`. Override with `--openai` / `--local`. |
+| `bithuman text`     | Non-interactive text chat — reads stdin, streams stdout, exits. Same auto-pick rule. |
 | `bithuman asr`      | Transcribe a 16 kHz mono WAV file with whisper.cpp (Metal-accelerated on Mac).  |
 | `bithuman tts`      | Synthesize text to a 24 kHz mono WAV via Piper, fully offline after first run.  |
-| `bithuman avatar`   | Local avatar runtime — browser-driven (default) **or** `--openai` for terminal-launched OpenAI Realtime voice loop with the avatar's mouth tracking the bot's voice. |
+| `bithuman avatar`   | Local avatar runtime — browser-served (default) **or** `--openai` for server-side OpenAI Realtime with the host's mic + speaker and a browser-rendered avatar. |
 | `bithuman info`     | Print `.imx` metadata — sample rate, frame size, cluster count, TOC layout.     |
 | `bithuman generate` | Offline batch render an MP4 from a model + WAV at 1280×720 (configurable).      |
 | `bithuman stream`   | HTTP avatar server driven by POSTed audio (instead of local mic).               |
 | `bithuman speak`    | POST a WAV file to a running `bithuman stream` server.                          |
 | `bithuman action`   | POST a named animation trigger (e.g. `wave`, `nod`) to a stream server.         |
-| `bithuman imx`      | IMX inspection / packing subtree (currently stubbed — use `bithuman info`).     |
+| `bithuman models list` / `pull` | Browse and download showcase avatars from the manifest.                                |
 
 ## Cache layout
 

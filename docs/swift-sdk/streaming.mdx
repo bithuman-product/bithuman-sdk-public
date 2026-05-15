@@ -7,8 +7,9 @@ icon: "bolt"
 
 The streaming push/pull API on `Bithuman.Runtime` is the recommended
 shape for any conversation that runs longer than a few seconds. It
-lands in SwiftPM `Bithuman` at tag `libessence-v1.16.0` (C ABI v6) and
-is bit-exact vs the legacy batched API.
+landed in SwiftPM `Bithuman` at v1.16.0 (C ABI v6) and tracks the
+engine through the current `from: "1.17.0"` pin. Bit-exact vs the
+legacy batched API.
 
 <Note>
 **Why this exists.** The legacy batched API required passing the entire
@@ -119,7 +120,7 @@ buffer cap.
   <Card title="Kotlin streaming API" icon="bolt" href="/kotlin-sdk/streaming">
     Same shape on `ai.bithuman.sdk.Runtime`
   </Card>
-  <Card title="Changelog v1.16.0" icon="clock-rotate-left" href="/changelog">
-    Release notes for the streaming-first refactor
+  <Card title="Changelog" icon="clock-rotate-left" href="/changelog">
+    Release notes for v1.17.0 + the streaming-first refactor
   </Card>
 </CardGroup>

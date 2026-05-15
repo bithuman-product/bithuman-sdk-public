@@ -10,6 +10,22 @@ This page tracks **product-level** changes (platform, web, agent runtime). For p
 
 ## May 2026
 
+### v1.17.0 — server-side avatar Realtime + ratatui voice TUI (2026-05-14)
+
+CLI gets a fully-fledged terminal UX and a server-side OpenAI Realtime mode for the avatar. Plus a Flutter plugin rename and removal of a now-orphaned Swift transport library.
+
+What shipped:
+
+- **`bithuman avatar --openai`** — server-side OpenAI Realtime mode for the local avatar runtime. cpal mic captures locally → streamed to OpenAI Realtime → cpal speaker plays the bot reply locally → bot audio is teed into the avatar lipsync ring. The user opens the printed `http://127.0.0.1:…` URL in a browser to see the avatar; mic + speaker stay on the host. Default Realtime model is `gpt-realtime-mini` (cheapest tier); override with `--model gpt-realtime` for higher quality.
+- **Auto-pick backend for `voice` / `text`.** Both subcommands now infer the backend at startup: cloud (OpenAI) when `OPENAI_API_KEY` is set, on-device (`--local`) otherwise. Explicit `--openai` / `--local` flags still win.
+- **ratatui voice TUI.** When `bithuman voice` runs on a TTY it now renders a status pill, a 🎙 mic-level bar, a 🔊 bot-level bar, and a scrolling transcript. Set `BITHUMAN_NO_TUI=1` to fall back to the previous plain stdout output (CI, log capture, headless servers).
+- **`BithumanRealtimeOpenAI` Swift library removed.** Its only consumer was the deleted Swift `bithuman-cli`; the canonical OpenAI Realtime path is now the Rust CLI's `bithuman voice --openai` and `bithuman avatar --openai` modes. SwiftPM consumers depending on `BithumanRealtimeOpenAI` should remove the product dependency.
+- **Flutter plugin renamed `bithuman_avatar` → `bithuman`.** One Dart codebase covers macOS + iOS + Android. macOS + iOS use a WebSocket Realtime through the plugin's VP-IO `RealtimeAudioIO` (Apple hardware AEC); Android uses flutter_webrtc's libwebrtc native pipeline (libwebrtc native AEC). A single `AvatarScreen` Dart UI selects the right transport per platform via `RealtimeTransport`. Settings sheet supports live prompt updates that propagate to the running session via `session.update`. pub.dev publish is queued; install via `path:` dep or git URL until then.
+- **Reference apps update.** Expression and Essence both have first-class reference apps: native macOS Swift Expression (`bithuman-apps/expression/mac/`, on-device LLM/TTS via MLX, Sparkle DMG); native iPadOS Swift Expression (`bithuman-apps/expression/ipad/`, Stage Manager + Picture-in-Picture, **revived this release**); cross-platform Essence Flutter (`bithuman-apps/flutter/bithuman/example/`, one Dart codebase across macOS / iOS / Android). The iPhone Expression target stays archived while the memory budget firms up — iPhone today is Essence-only on-device. The Rust `bithuman` CLI replaces the previous Swift `bithuman-cli` and handles both Essence and Expression `.imx` automatically (`--identity <agent.imx>` peeks the `model_type` field).
+- **Same `libessence` engine.** Layer-1 still ships the C ABI v6 streaming push/pull surface from v1.16.0. Swift `Bithuman` (SwiftPM, `from: "1.17.0"`) and Kotlin `ai.bithuman:sdk:1.17.0` (Maven Central) bump to track the engine.
+
+The Python wheel `bithuman` remains on the legacy 1.12.4 batched API; the streaming wheel is queued behind the unified Rust + PyO3 build.
+
 ### v1.16.0 — streaming-first ABI (2026-05-14)
 
 Streaming-first refactor of the engine ABI. The legacy "pass the entire accumulated audio buffer on every tick" pattern grew O(n²) over a long session and missed the 40 ms render budget after ~10 s of conversation; the new push/pull split keeps every tick O(1) regardless of session length, bit-exact vs the legacy batched API.

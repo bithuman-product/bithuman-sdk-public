@@ -31,7 +31,7 @@ Or in `Package.swift`:
 ```swift
 dependencies: [
     .package(url: "https://github.com/bithuman-product/bithuman-sdk-public.git",
-             from: "1.16.0")
+             from: "0.8.1")
 ],
 targets: [
     .target(
@@ -43,8 +43,10 @@ targets: [
 ]
 ```
 
-The library product is `bitHumanKit`. `import bitHumanKit` and
-you're in.
+The library product is `bitHumanKit` (legacy on-device voice-chat
+orchestrator). `import bitHumanKit` and you're in. For the unified
+`Bithuman` engine binding (`from: "1.17.0"` against
+`bithuman-product/bithuman-sdk`) see [Install](/getting-started/install#swift--swiftpm).
 
 ## Boot a voice agent
 

@@ -122,11 +122,23 @@ Open [agents-playground.livekit.io](https://agents-playground.livekit.io) and ta
 
 ---
 
-## Avatar Modes
+## Avatar Modes — Essence and Expression are both first-class
 
-### Essence Model (CPU) — Default
+Both models run through the **same** `bithuman.AvatarSession` plugin
+against the same managed cloud (or your own self-hosted endpoint — set
+`api_url`). Pick by use case, not by "default":
 
-Pre-built avatars with full body support, animal mode, and fast response times.
+- **Essence** if you want lower-cost-per-stream, higher concurrency, and
+  custom gestures (wave/nod/laugh). Pre-built avatars; avatar identity
+  baked into the `.imx`.
+- **Expression** if you want custom portraits per session and dynamic
+  facial micro-expression. Identity comes from the agent's portrait
+  (or any face image you pass at runtime).
+
+### Essence — by Agent ID
+
+Pre-built `.imx` avatars with custom gestures, full body / animal mode,
+no idle timeout.
 
 ```python
 avatar = bithuman.AvatarSession(
@@ -135,9 +147,10 @@ avatar = bithuman.AvatarSession(
 )
 ```
 
-### Expression Model — Agent ID
+### Expression — by Agent ID
 
-Higher-fidelity face animation for platform-created agents.
+Higher-fidelity diffusion-driven face animation for platform-created
+Expression agents.
 
 ```python
 avatar = bithuman.AvatarSession(
@@ -147,9 +160,11 @@ avatar = bithuman.AvatarSession(
 )
 ```
 
-### Expression Model — Custom Image
+### Expression — Custom Image
 
-Create an avatar from any face image on-the-fly.
+Create an avatar from any face image on-the-fly. (Essence requires the
+identity to be baked into an `.imx` — for that workflow, generate an
+agent on [bithuman.ai](https://www.bithuman.ai) first.)
 
 ```python
 from PIL import Image
@@ -163,17 +178,33 @@ avatar = bithuman.AvatarSession(
 
 ### Model Comparison
 
-| Feature | Essence (CPU) | Expression |
+| Feature | Essence | Expression |
 |---------|--------------|------------------|
-| Personalities | Pre-trained | Dynamic |
+| Personalities | Pre-trained per `.imx` | Dynamic per portrait |
 | Response time | Faster (~2s) | Standard (~4s) |
 | Body support | Full body + animal mode | Face and shoulders |
 | Animal mode | Yes | No |
-| Custom images | No | Yes |
+| Custom portrait per session | No (bake into `.imx`) | Yes |
+| Custom gestures (wave/nod/laugh) | Yes | No |
+| Idle timeout | None | 10 min idle (server-side) |
+| Per-stream cost | Lower (CPU rendering) | Higher (GPU rendering) |
+| Best for | Kiosks, high-concurrency, mobile, edge | Custom portraits, close-up consumer apps |
 
 <Tip>
-The Expression model runs on bitHuman Cloud (default), your own NVIDIA GPU ([Self-Hosted GPU](/deployment/self-hosted-gpu)), or natively on Apple Silicon M3+ ([Expression on macOS](/examples/apple-expression)).
+Both models run on **bitHuman Cloud (managed)**, your own
+**[self-hosted server](/deployment/avatar-sessions#self-hosted-cpu)** (Essence
+via the Python SDK / `essence-server`; Expression via the
+[GPU container](/deployment/self-hosted-gpu)), or **natively on Apple Silicon
+M3+** (Expression via the Swift / Python SDK; Essence via the Swift /
+Kotlin / Flutter / CLI bindings).
 </Tip>
+
+### Self-host the same plugin
+
+The `bithuman.AvatarSession` plugin works against your own endpoints —
+set `api_url` to your server-side `essence-server` (Essence) or
+`expression-avatar` GPU container (Expression). Both Essence and
+Expression run self-hosted in production.
 
 ---
 

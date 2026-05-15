@@ -9,12 +9,21 @@ icon: "gpu-card"
 </Info>
 
 <Tip>
+**Self-hosting Essence instead?** The Essence model is equally self-hostable
+— no GPU required. Use the [Python SDK](/getting-started/quickstart) directly,
+the [LiveKit plugin](/deployment/livekit-cloud-plugin) pointed at your own
+`essence-server`, or the [Rust CLI](/getting-started/cli). Choose **Expression**
+if you need custom portraits per session; choose **Essence** for
+lower-cost-per-stream + higher concurrency on CPU.
+</Tip>
+
+<Tip>
 **On Apple Silicon?** The Expression model also runs natively on macOS with M3+ chips — no Docker or NVIDIA GPU needed. See [Expression on macOS](/examples/apple-expression).
 </Tip>
 
 ## Overview
 
-The self-hosted GPU avatar container (`docker.io/sgubithuman/expression-avatar:latest`) enables production-grade avatar generation on your own GPU infrastructure.
+The self-hosted GPU avatar container (`docker.io/sgubithuman/expression-avatar:latest`) enables production-grade Expression avatar generation on your own GPU infrastructure. (For self-hosted **Essence** — no GPU needed — see the [Python SDK quickstart](/getting-started/quickstart) or the [LiveKit Cloud Plugin](/deployment/livekit-cloud-plugin) `api_url` override.)
 
 - **Full Control** — Complete control over deployment, scaling, and configuration
 - **Cost Optimization** — Pay only for the GPU resources you use

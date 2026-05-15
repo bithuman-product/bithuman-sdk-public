@@ -39,20 +39,36 @@ Run the runtime on your own hardware.
 
 Python SDK quickstart: **[/getting-started/quickstart](/getting-started/quickstart)** · GPU container: **[/deployment/self-hosted-gpu](/deployment/self-hosted-gpu)**.
 
-## On-device Apple Silicon
+## On-device — both Essence and Expression
 
-Everything runs on the user's Mac, iPad, or iPhone — only the billing heartbeat goes out.
+Everything runs on the user's Mac, iPad, iPhone, or Android device — only the billing heartbeat goes out. Both model families have first-class example apps.
+
+### Expression on-device (Apple Silicon)
 
 | Example | Surface | What it does | Source |
 |---------|---------|--------------|--------|
-| **[Expression on macOS (on-device)](/examples/apple-expression)** | Swift SDK | Floating avatar window, drag-drop face swap, Sparkle DMG | bithuman-apps/expression/mac |
-| **iPad reference app** | Swift SDK | Stage Manager 320×320 panel, Picture-in-Picture, PhotosPicker portrait swap | bithuman-apps/expression/ipad |
-| **iPhone reference app** | Swift SDK | Full-screen avatar, tap-to-collapse 120 pt PiP | bithuman-apps/archive/iPhone |
-| **[Apple Local Agent](/examples/apple-local)** | Python | 100% offline on macOS (Siri + Ollama, Essence) | [integrations/offline-mac/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/offline-mac) |
-| **[bitHuman Halo](/examples/halo-macos)** | Signed DMG | Free macOS desktop app — floating avatar, local STT + LLM + TTS | [Install guide](/examples/halo-macos) |
-| **bithuman-cli** | CLI (Homebrew) | `brew install bithuman-cli` — voice / video / text modes | [/swift-sdk/cli](/swift-sdk/cli) |
+| **[Expression on macOS (Python SDK)](/examples/apple-expression)** | Python SDK | `pip install bithuman` + bundled `bithuman-expression-daemon`. Render any portrait + WAV → MP4. | [integrations/offline-mac/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/offline-mac) |
+| **Mac reference app** | Native Swift app | Floating avatar window, drag-drop face swap, on-device LLM/TTS via MLX, Sparkle DMG | [`bithuman-apps/expression/mac/`](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/mac) |
+| **iPad reference app** | Native Swift app | Stage Manager 320×320 panel, Picture-in-Picture, PhotosPicker portrait swap | [`bithuman-apps/expression/ipad/`](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/ipad) |
+| **iPhone reference app** | Native Swift app | Parked in `archive/` while the per-app memory budget firms up — iPhone today is Essence-only on-device. | `bithuman-apps/archive/iPhone` |
 
-Swift SDK overview: **[/swift-sdk/overview](/swift-sdk/overview)** · Quickstart: **[/swift-sdk/quickstart](/swift-sdk/quickstart)** · CLI reference: **[/swift-sdk/cli](/swift-sdk/cli)**.
+### Essence on-device (mac · iOS · iPadOS · Android)
+
+| Example | Surface | What it does | Source |
+|---------|---------|--------------|--------|
+| **[Flutter `bithuman` plugin example](/integrations/flutter)** | Flutter (one Dart codebase) | The canonical Essence cross-platform demo — runs on macOS, iOS, and Android from one codebase. WebSocket Realtime via Apple VP-IO on mac/iOS; libwebrtc native pipeline on Android. | [`bithuman-apps/flutter/bithuman/example/`](https://github.com/bithuman-product/bithuman-apps/tree/main/flutter/bithuman/example) |
+| **[Essence on Swift](/swift-sdk/essence)** | Swift SDK | 720p+ Essence playback on Mac M3+ and iPad Pro M4+ (Phase 1) | bithuman-sdk SwiftPM |
+| **[Kotlin / Android Hello World](/examples/kotlin-android-hello)** | Kotlin SDK | Maven Central AAR, Essence streaming on `arm64-v8a` | bithuman-sdk Kotlin AAR |
+| **[Apple Local Agent](/examples/apple-local)** | Python | 100% offline on macOS (Siri + Ollama, Essence) | [integrations/offline-mac/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/offline-mac) |
+| **[bitHuman Halo](/examples/halo-macos)** | Signed DMG | Free macOS desktop app — floating avatar, local STT + LLM + TTS (Essence) | [Install guide](/examples/halo-macos) |
+
+### CLI (both models)
+
+| Example | Surface | What it does | Source |
+|---------|---------|--------------|--------|
+| **[CLI Hello World](/examples/cli-hello)** | Rust CLI (Homebrew) | `brew install bithuman` — handles both Essence and Expression `.imx` automatically via `--identity <agent.imx>`. Voice / text / avatar modes. | [/getting-started/cli](/getting-started/cli) |
+
+Swift SDK overview: **[/swift-sdk/overview](/swift-sdk/overview)** · Kotlin SDK overview: **[/kotlin-sdk/overview](/kotlin-sdk/overview)** · Flutter plugin: **[/integrations/flutter](/integrations/flutter)** · CLI reference: **[/getting-started/cli](/getting-started/cli)**.
 
 ## Web & framework integrations
 

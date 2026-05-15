@@ -1,23 +1,25 @@
 ---
 title: "Install"
-description: "All four bitHuman SDK install channels — pip, SwiftPM, Maven Central, Homebrew — on one page."
+description: "Every bitHuman SDK install channel — pip, SwiftPM, Maven Central, Homebrew, Flutter pub — on one page."
 icon: "download"
 ---
 
-bitHuman ships from one source tag (`libessence-v1.16.0`) into four package
+bitHuman ships from one source tag (`libessence-v1.17.0`) into multiple package
 registries. Pick the channel that matches your target platform.
 
 | Channel | Coord | Platforms |
 | ------- | ----- | --------- |
 | pip (Python) | `bithuman` 1.12.4 | macOS arm64, Linux x86_64, Linux aarch64 |
-| SwiftPM (Apple) | `Bithuman` @ `libessence-v1.16.0` | macOS arm64, iOS device, iOS simulator |
-| Maven Central (Android) | `ai.bithuman:sdk:1.16.0` | Android `arm64-v8a`, minSdk 29 |
-| Homebrew (CLI) | `bithuman` 1.16.0 | macOS arm64 |
+| SwiftPM (Apple) | `Bithuman` (`from: "1.17.0"`) | macOS arm64, iOS device, iOS simulator |
+| Maven Central (Android) | `ai.bithuman:sdk:1.17.0` | Android `arm64-v8a`, minSdk 29 |
+| Homebrew (CLI) | `bithuman` 1.17.0 | macOS arm64 |
+| GitHub Releases (CLI) | `bithuman` 1.17.0 tarballs | Linux x86_64, Linux aarch64, Windows x86_64 |
+| Flutter pub | `bithuman` (renamed from `bithuman_avatar`) | macOS · iOS · Android — pub.dev publish queued |
 
 <Note>
 The Python wheel is still on the legacy 1.12.4 batched API while the
-`py-v1.16.0` publish is queued. Swift, Kotlin, and the engine's C ABI
-expose the new [streaming push/pull API](/getting-started/architecture#streaming-api-c-abi-v6)
+streaming wheel is queued behind the unified Rust + PyO3 build. Swift, Kotlin,
+the Rust crate, and the engine's C ABI expose the [streaming push/pull API](/getting-started/architecture#streaming-api-c-abi-v6)
 introduced in v1.16.0.
 </Note>
 
@@ -54,7 +56,7 @@ In `Package.swift`:
 dependencies: [
     .package(
         url: "https://github.com/bithuman-product/bithuman-sdk",
-        from: "libessence-v1.16.0"
+        from: "1.17.0"
     ),
 ],
 targets: [
@@ -68,7 +70,7 @@ targets: [
 ```
 
 In Xcode: **File → Add Package Dependencies…** → paste the repo URL → pick
-the latest `libessence-v*` tag.
+`1.17.0` (or the latest tagged version).
 
 ```swift
 import Bithuman
@@ -96,7 +98,7 @@ android {
 }
 
 dependencies {
-    implementation("ai.bithuman:sdk:1.16.0")
+    implementation("ai.bithuman:sdk:1.17.0")
 }
 ```
 
@@ -126,9 +128,13 @@ to work unchanged.
 
 ```sh
 bithuman doctor          # verify host setup + API key presence
-bithuman avatar          # browser-served local avatar on :8080
-bithuman voice --openai  # spoken conversation via OpenAI Realtime
+bithuman avatar          # browser-served local avatar on :8080 (default)
+bithuman avatar --openai # server-side OpenAI Realtime + browser avatar (v1.17.0)
+bithuman voice           # auto-picks cloud (OPENAI_API_KEY) or --local
+bithuman text            # same auto-pick rule, non-interactive stdin → stdout
 ```
+
+`voice` and `text` infer the backend at startup: cloud (OpenAI Realtime / Chat Completions) when `OPENAI_API_KEY` is set, on-device (`--local`) otherwise. Explicit `--openai` / `--local` flags still win. On a TTY, `voice` renders a ratatui status pill + 🎙 mic / 🔊 bot level bars + scrolling transcript; set `BITHUMAN_NO_TUI=1` to fall back to plain stdout.
 
 No-Homebrew alternative (curl-pipe):
 
@@ -142,7 +148,44 @@ You'll still need the runtime dylibs the CLI links against:
 brew install onnxruntime hdf5 jpeg-turbo webp ffmpeg
 ```
 
-Full guide: [CLI reference](/swift-sdk/cli).
+Full guide: [CLI reference](/getting-started/cli).
+
+## Flutter — `pub`
+
+The cross-platform Flutter plugin (renamed from `bithuman_avatar` →
+`bithuman` in v1.17.0) wraps the Swift and Kotlin bindings under one
+Dart codebase covering macOS + iOS + Android.
+
+```yaml
+# pubspec.yaml
+dependencies:
+  bithuman: ^1.17.0
+```
+
+```bash
+flutter pub get
+```
+
+<Note>
+Pub.dev publish is queued. Until then, install via path / git dep:
+
+```yaml
+dependencies:
+  bithuman:
+    git:
+      url: https://github.com/bithuman-product/bithuman-apps.git
+      path: flutter/bithuman
+```
+</Note>
+
+The plugin auto-selects the right Realtime transport per platform:
+macOS + iOS use a WebSocket Realtime through the plugin's VP-IO
+`RealtimeAudioIO` (Apple hardware AEC); Android uses flutter_webrtc's
+libwebrtc native pipeline (libwebrtc native AEC). Single
+`AvatarScreen` Dart UI; live prompt updates propagate to the running
+session via `session.update`.
+
+Full guide: [Flutter plugin](/integrations/flutter).
 
 ## Authentication
 

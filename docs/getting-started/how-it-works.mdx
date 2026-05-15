@@ -36,7 +36,7 @@ All of this happens fast enough for a natural conversation — 25 FPS with under
 
     **Essence** uses a pre-built `.imx` model file. Build it once from a photo or video on [bithuman.ai](https://www.bithuman.ai/#explore), then run it on-device anywhere — any CPU on Linux (x86_64 or ARM64), macOS, or Windows. No GPU required. Runs on hardware as small as a Raspberry Pi 4B+. Supports gestures, animal mode, and full body. Ideal for edge kiosks, IoT deployments, and 24/7 displays.
 
-    **Expression** generates facial animation from any face image at runtime — no `.imx` step. Runs on-device on NVIDIA GPUs (via Docker container), Apple Silicon M3+ Macs (via Python or Swift SDK), iPad Pro M4+, and iPhone 16 Pro+ (via Swift SDK). All inference is local — no audio or video data leaves the device. Ideal for dynamic faces and consumer apps.
+    **Expression** generates facial animation from any face image at runtime — no `.imx` step. Runs on NVIDIA GPUs (via Docker container or the managed cloud), and on-device on Apple Silicon M3+ Macs and iPad Pro M4+ (via Python or Swift SDK). On the GPU container or on-device, all inference is local — no audio or video data leaves the device. iPhone Expression is parked while the per-app memory budget firms up — for iPhone, use Essence. Ideal for dynamic faces and consumer apps.
 
     Side-by-side comparison: **[Essence vs Expression →](/getting-started/models)**.
   </Accordion>
@@ -83,22 +83,26 @@ All of this happens fast enough for a natural conversation — 25 FPS with under
 
 ## The full matrix
 
-bitHuman's two models map onto three runtime surfaces. On-device local inference is the default for every surface except the managed bitHuman Cloud. Find your row, then follow the links.
+bitHuman's two models — **both production-ready, both first-class** — map onto three runtime surfaces. On-device local inference is the default for every surface except the managed bitHuman Cloud. Find your row, then follow the links.
 
-| | **bitHuman Cloud** | **Self-hosted server** | **On-device (Apple Silicon)** |
+| | **bitHuman Cloud** | **Self-hosted server** | **On-device** |
 |---|---|---|---|
-| **Essence** (CPU, `.imx`) | [Cloud Plugin](/deployment/livekit-cloud-plugin) — `avatar_id` + API secret | [Python SDK](/getting-started/quickstart) — `pip install bithuman`, run `.imx` locally | — |
-| **Expression** (GPU / M3+) | [Cloud Plugin](/deployment/livekit-cloud-plugin) — `avatar_id` or any face image, `model="expression"` | [Docker container](/deployment/self-hosted-gpu) — Linux + NVIDIA, dynamic face from any image | [Swift SDK](/swift-sdk/overview) + [bithuman-cli](/swift-sdk/cli) — Mac/iPad/iPhone, all inference on-device |
-| **Direct REST control** (any model) | [REST API](/api-reference/overview) — `api.bithuman.ai/v1/...` for agent generation, speak, dynamics, embed tokens | Same REST API works against your hosted agents | n/a |
+| **Essence** (CPU streaming, `.imx`) | [Cloud Plugin](/deployment/livekit-cloud-plugin) — `avatar_id` + API secret | [Python SDK](/getting-started/quickstart) — `pip install bithuman`, run `.imx` locally; or self-hosted `essence-server` via [LiveKit plugin](/deployment/livekit-cloud-plugin) (`api_url` override) | [Swift](/swift-sdk/essence) (Mac · iPad · iPhone) · [Kotlin](/kotlin-sdk/overview) (Android) · [Flutter plugin](/integrations/flutter) (one Dart codebase) · [Rust CLI](/getting-started/cli) (mac · Linux · Windows) |
+| **Expression** (DiT, custom portraits) | [Cloud Plugin](/deployment/livekit-cloud-plugin) — `avatar_id` or any face image, `model="expression"` | [Docker container](/deployment/self-hosted-gpu) — Linux + NVIDIA, dynamic face from any image | [Swift SDK](/swift-sdk/overview) (Mac M3+ · iPad Pro M4+) · [Python SDK on Apple Silicon](/examples/apple-expression) (auto-spawns `bithuman-expression-daemon`) · [Rust CLI](/getting-started/cli) (`--image <portrait.jpg>`) |
+| **Direct REST control** (either model) | [REST API](/api-reference/overview) — `api.bithuman.ai/v1/...` for agent generation, speak, dynamics, embed tokens | Same REST API works against your hosted agents | n/a |
 
 ### Which approach should I use?
 
 Start here:
 
-- **Building a Mac/iPad/iPhone app?** → [Apple Silicon Swift SDK](/swift-sdk/overview) — runs on the user's device, no infra.
-- **Building a website or web app?** → [Cloud Plugin](/deployment/livekit-cloud-plugin) — fastest, scales for you.
+- **Building a Mac / iPad app and want close-up dynamic faces?** → [Apple Silicon Swift SDK + Expression](/swift-sdk/overview) — runs on the user's device, no infra.
+- **Building one Dart codebase for mac + iOS + Android?** → [Flutter `bithuman` plugin (Essence)](/integrations/flutter).
+- **Building an Android app?** → [Kotlin SDK (Essence)](/kotlin-sdk/overview) or the Flutter plugin.
+- **Building an iPhone app?** → [Swift SDK (Essence)](/swift-sdk/essence) or the Flutter plugin. (Expression on iPhone is parked while the per-app memory budget firms up.)
+- **Building a website or web app?** → [Cloud Plugin](/deployment/livekit-cloud-plugin) — fastest, scales for you. Both Essence and Expression supported.
 - **Need a 24/7 kiosk on a tiny CPU box?** → [Self-Hosted CPU (Essence)](/deployment/avatar-sessions#self-hosted-cpu) — no GPU, no idle timeout.
 - **Need dynamic faces + on-prem privacy?** → [Self-Hosted GPU (Expression)](/deployment/self-hosted-gpu) — Docker on your NVIDIA box.
+- **Just want to try it on a Mac/Linux/Windows?** → [Rust CLI](/getting-started/cli) — `brew install bithuman`; handles both Essence and Expression `.imx` automatically.
 - **Just calling endpoints from a backend?** → [REST API](/api-reference/overview) — `curl` against `api.bithuman.ai`, any language.
 
 ### Side-by-side

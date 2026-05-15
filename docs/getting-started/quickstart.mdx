@@ -4,12 +4,14 @@ description: "Install the bitHuman Python SDK, create your first talking avatar,
 icon: "rocket"
 ---
 
-This page covers the **Python SDK** path (Essence on CPU, self-hosted). If you're building somewhere else, jump straight to:
+This page covers the **Python SDK** path. The Python wheel handles **both Essence (CPU, any host) and Expression (Apple Silicon M3+ on-device via the bundled `bithuman-expression-daemon`, or via the [self-hosted GPU container](/deployment/self-hosted-gpu) on Linux + NVIDIA)**. If you're building somewhere else, jump straight to:
 
 - **Mac / iPad / iPhone app** → [Swift SDK quickstart](/swift-sdk/quickstart) (10 min, on-device)
 - **Android app** → [Kotlin SDK quickstart](/kotlin-sdk/quickstart) (10 min, on-device)
-- **No code, just try it on a Mac** → [bithuman CLI](/swift-sdk/cli) (`brew install bithuman`)
-- **Web app with LiveKit** → [Cloud Plugin guide](/deployment/livekit-cloud-plugin) (cloud-hosted avatar)
+- **One Dart codebase, mac + iOS + Android** → [Flutter `bithuman` plugin](/integrations/flutter)
+- **No code, just try it on a Mac/Linux/Windows** → [bithuman CLI](/getting-started/cli) (`brew install bithuman` — handles both Essence and Expression `.imx`)
+- **Expression on macOS via Python (any portrait + WAV → MP4)** → [Expression on macOS](/examples/apple-expression)
+- **Web app with LiveKit (Essence or Expression)** → [Cloud Plugin guide](/deployment/livekit-cloud-plugin)
 - **Backend, any language** → [REST API overview](/api-reference/overview) (`curl` against `api.bithuman.ai`)
 
 ## 1. Get Credentials

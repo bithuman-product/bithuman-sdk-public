@@ -60,7 +60,7 @@ attach it to your app's target.
 ```swift
 dependencies: [
     .package(url: "https://github.com/bithuman-product/bithuman-sdk-public.git",
-             from: "1.16.0")
+             from: "0.8.1")
 ],
 targets: [
     .target(
@@ -71,6 +71,10 @@ targets: [
     )
 ]
 ```
+
+<Note>
+The `bitHumanKit` Swift Package is the **legacy** Swift binary distribution (Mac/iPad/iPhone voice-chat + Expression engine), distributed from `bithuman-sdk-public` and still pinned to `0.8.1`. New cross-platform integrations should target the unified `Bithuman` SwiftPM product (`from: "1.17.0"`) — see [Streaming API](/swift-sdk/streaming) and [Install](/getting-started/install#swift--swiftpm). The two tracks coexist; `bitHumanKit` covers the high-level voice-chat orchestrator with on-device LLM/TTS, `Bithuman` exposes the streaming engine binding bit-exact across mac/iOS/Android.
+</Note>
 
 ## 2. Permissions and entitlements
 

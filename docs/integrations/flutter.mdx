@@ -1,8 +1,63 @@
 ---
 title: "Flutter + bitHuman: Mobile Avatar App"
-description: "Build a real-time video chat app with AI-powered avatars using Flutter, LiveKit, and Python. Full-stack example with iOS, Android, and web deployment."
+description: "Two paths — the Flutter `bithuman` plugin (one Dart codebase, on-device Essence on macOS + iOS + Android) or a Flutter + LiveKit + Python stack."
 icon: "mobile"
 ---
+
+There are two ways to ship a bitHuman avatar with Flutter:
+
+1. **[Flutter `bithuman` plugin](#flutter-bithuman-plugin-recommended)** — `flutter pub add bithuman`. One Dart codebase, on-device Essence avatar, three platforms (macOS · iOS · Android). Renamed from `bithuman_avatar` in v1.17.0. **This is the canonical Essence cross-platform demo.**
+2. **[LiveKit + Python agent stack](#flutter--livekit--python-stack)** — Flutter UI subscribes to a LiveKit room; a Python agent runs the avatar (Essence or Expression) on a server you control. Use this when the avatar needs to be cloud-hosted or shared between participants.
+
+---
+
+## Flutter `bithuman` plugin (recommended)
+
+The plugin wraps the Swift and Kotlin bindings under a single Dart
+codebase. macOS + iOS render via the bundled WebSocket Realtime through
+`RealtimeAudioIO` (Apple VP-IO hardware AEC); Android renders via
+flutter_webrtc's libwebrtc native pipeline (libwebrtc native AEC). One
+`AvatarScreen` UI — the right transport is auto-selected per platform.
+
+```yaml
+# pubspec.yaml
+dependencies:
+  bithuman: ^1.17.0
+```
+
+<Note>
+Pub.dev publish is queued. Until then, install via path / git dep:
+
+```yaml
+dependencies:
+  bithuman:
+    git:
+      url: https://github.com/bithuman-product/bithuman-apps.git
+      path: flutter/bithuman
+```
+</Note>
+
+```dart
+import 'package:bithuman/bithuman.dart';
+
+void main() => runApp(const MaterialApp(home: AvatarScreen()));
+```
+
+The example app at [`bithuman-apps/flutter/bithuman/example/`](https://github.com/bithuman-product/bithuman-apps/tree/main/flutter/bithuman/example) is the
+canonical Essence cross-platform demo — settings sheet supports live prompt
+updates that propagate to the running session via `session.update`.
+
+For Expression on Apple Silicon, use the [native Swift Mac](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/mac) / [iPad](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/ipad) reference apps —
+Flutter today covers the Essence cross-platform path.
+
+---
+
+## Flutter + LiveKit + Python stack
+
+Below is the alternative architecture for cases where the avatar runs on
+a server you control and the Flutter app is a subscriber. Both Essence
+and Expression are valid choices for the Python agent — see the
+[LiveKit Cloud Plugin](/deployment/livekit-cloud-plugin) guide.
 
 ## Architecture
 

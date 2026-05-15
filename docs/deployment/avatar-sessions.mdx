@@ -14,12 +14,17 @@ An **AvatarSession** is how you bring a bitHuman avatar into a LiveKit room. Thi
 
 ## Choose Your Approach
 
-| Approach | Best For | Model Files | GPU Required | Internet Required |
-|----------|----------|-------------|--------------|-------------------|
-| [Cloud Plugin](#cloud-plugin) | Getting started, web apps | No | No | Yes |
-| [Self-Hosted CPU](#self-hosted-cpu) | Privacy, edge devices | Yes (.imx) | No | Only for auth |
-| [Self-Hosted GPU](#self-hosted-gpu) | Dynamic faces, custom images | No (uses images) | Yes | Only for auth |
-| [On-Device macOS](/examples/apple-expression) | Apple Silicon, privacy-first | No (uses images) | No (Apple M3+) | Only for auth |
+Both **Essence** and **Expression** ship to every approach below. Pick by
+deployment shape first, then model:
+
+| Approach | Best For | Model Files | GPU Required | Internet Required | Models |
+|----------|----------|-------------|--------------|-------------------|--------|
+| [Cloud Plugin](#cloud-plugin) | Getting started, web apps | No | No | Yes | Essence + Expression |
+| [Self-Hosted CPU](#self-hosted-cpu) | Privacy, edge devices, high concurrency | Yes (.imx) | No | Only for auth | Essence |
+| [Self-Hosted GPU](#self-hosted-gpu) | Dynamic faces, custom images per session | No (uses images) | Yes | Only for auth | Expression |
+| [On-Device Apple Silicon](#on-device-apple-silicon) | Apple Silicon, privacy-first, native apps | `.imx` (Essence) or weights bundle (Expression) | No (Apple M3+) | Only for auth | Essence + Expression |
+| [On-Device Android / cross-platform](#on-device-android--flutter) | Mobile / cross-platform via Kotlin or Flutter | `.imx` (Essence) | No | Only for auth | Essence |
+| [Rust CLI](/getting-started/cli) | Terminal, scripts, CI; mac · Linux · Windows | `.imx` (auto-detected) | No (NVIDIA optional for Expression server) | Optional | Essence + Expression |
 
 ---
 
@@ -332,7 +337,18 @@ For detailed GPU container setup, see [Self-Hosted GPU Container](/deployment/se
 
 ## On-Device Apple Silicon
 
-Run the **Expression** model entirely on the end-user's Apple Silicon device — no LiveKit, no AvatarSession, no server. The Swift SDK bundles speech recognition, an on-device LLM, TTS, and the lip-sync engine. The only network traffic is a 1-request-per-minute billing heartbeat to `api.bithuman.ai`.
+Run **either Essence or Expression** entirely on the end-user's Apple
+Silicon device — no LiveKit, no AvatarSession, no server. The Swift SDK
+bundles speech recognition, an on-device LLM, TTS, and the lip-sync
+engine. The only network traffic is a 1-request-per-minute billing
+heartbeat to `api.bithuman.ai`.
+
+- **Essence on-device** — `Bithuman` SwiftPM package on Mac / iPad / iPhone
+  via the streaming push/pull API. See [Essence on Swift](/swift-sdk/essence)
+  and [Streaming API](/swift-sdk/streaming).
+- **Expression on-device** — `bitHumanKit` SwiftPM package on Mac M3+ /
+  iPad Pro M4+ via MLX. iPhone Expression is parked while the per-app
+  memory budget firms up; iPhone today is Essence-only on-device.
 
 ### Vanilla integration (audio + avatar)
 
@@ -357,11 +373,16 @@ try await chat.start()
 
 ### Hardware floor
 
+For **Expression** on-device:
+
 | Platform | Minimum |
 |---|---|
 | **macOS** | M3+ Apple Silicon, macOS 26 (Tahoe) |
 | **iPad** | iPad Pro M4+, 16 GB unified memory, iPadOS 26 |
-| **iPhone** | iPhone 16 Pro+ (A18 Pro), iOS 26 |
+| **iPhone** | Not supported in v1.17.0 — iPhone Expression is parked. Use [Essence on Swift](/swift-sdk/essence) instead. |
+
+For **Essence** on-device — supported across the full Apple lineup
+(Mac M3+, iPad Pro M4+, iPhone 17 Pro+) plus Android `arm64-v8a`.
 
 `HardwareCheck.evaluate()` gates this at runtime — under-spec devices see a polite refusal screen.
 
@@ -374,6 +395,21 @@ bithuman-cli video        # voice + lip-synced floating avatar window
 ```
 
 Full guide: **[Swift SDK overview →](/swift-sdk/overview)**, **[10-minute quickstart →](/swift-sdk/quickstart)**, **[bithuman-cli reference →](/swift-sdk/cli)**.
+
+---
+
+## On-Device Android / Flutter
+
+Run **Essence** on Android (`arm64-v8a`, Android 10+) via the Kotlin SDK
+or the Flutter `bithuman` plugin. Same engine, same `.imx`, pixel-identical
+output vs the Apple bindings.
+
+- **Native Android** — `ai.bithuman:sdk:1.17.0` from Maven Central. See [Kotlin SDK overview](/kotlin-sdk/overview) + [Streaming API](/kotlin-sdk/streaming).
+- **Cross-platform Flutter** — `flutter pub add bithuman` (renamed from `bithuman_avatar` in v1.17.0). One Dart codebase covers macOS + iOS + Android. See [Flutter plugin](/integrations/flutter).
+
+Expression on Android is not in the supported matrix; use Essence.
+
+The reference app at [`bithuman-apps/flutter/bithuman/example/`](https://github.com/bithuman-product/bithuman-apps/tree/main/flutter/bithuman/example) is the canonical Essence cross-platform demo.
 
 ---
 
@@ -449,11 +485,12 @@ Once your avatar session is running, explore these features:
 
 Understanding how sessions behave helps you build reliable integrations.
 
-| Behavior | Essence (CPU) | Expression (GPU server) | Expression (on-device) |
+| Behavior | Essence (CPU / on-device) | Expression (GPU server) | Expression (on-device, Apple Silicon) |
 |----------|--------------|-------------------------|------------------------|
 | **Idle timeout** | None — sessions run indefinitely | 10 minutes of inactivity | None — runs while app is open |
 | **Gestures** | Supported | Not supported | Not supported |
-| **Use case** | Kiosks, always-on displays | Interactive conversations | Native consumer apps |
+| **Custom portrait per session** | Bake into `.imx` once | Yes (any face image) | Yes (any face image) |
+| **Use case** | Kiosks, always-on displays, mobile, edge | Interactive conversations with custom portraits | Native consumer apps with custom portraits |
 
 <Info>
 Essence sessions are designed for 24/7 deployments like museum kiosks and lobby displays. They run until the client disconnects — there is no idle timeout. Expression sessions automatically close after 10 minutes of inactivity to free GPU resources.

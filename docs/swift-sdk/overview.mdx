@@ -34,10 +34,14 @@ heartbeat to `api.bithuman.ai`; audio-only mode runs unmetered.
 
 ```swift
 .package(url: "https://github.com/bithuman-product/bithuman-sdk",
-         from: "libessence-v1.16.0")
+         from: "1.17.0")
 ```
 
-The package ships a single `Bithuman` product wrapping a 3-slice xcframework (macOS arm64 + iOS device arm64 + iOS simulator arm64). Static link of `libessence` — zero transitive SwiftPM dependencies. The legacy `bitHumanKit` package distributed via `bithuman-sdk-public` continues to work for existing consumers; new integrations should target the unified `Bithuman` module above.
+The package ships a single `Bithuman` product wrapping a 3-slice xcframework (macOS arm64 + iOS device arm64 + iOS simulator arm64). Static link of `libessence` — zero transitive SwiftPM dependencies. The legacy `bitHumanKit` package distributed via `bithuman-sdk-public` (`from: "0.8.1"`) continues to work for existing consumers; new integrations should target the unified `Bithuman` module above.
+
+<Note>
+The `BithumanRealtimeOpenAI` SwiftPM product was removed in v1.17.0. Its only consumer was the deleted Swift `bithuman-cli`; the canonical OpenAI Realtime path is now the Rust CLI's `bithuman voice --openai` and `bithuman avatar --openai` modes (`brew install bithuman`).
+</Note>
 
 ## What you get
 
@@ -52,11 +56,17 @@ The package ships a single `Bithuman` product wrapping a 3-slice xcframework (ma
 
 ## Hardware floor
 
-| Platform | Minimum |
-|---|---|
-| **macOS** | M3+ Apple Silicon, macOS 26 (Tahoe) |
-| **iPad** | iPad Pro M4+, 16 GB unified memory, iPadOS 26 |
-| **iPhone** | iPhone 16 Pro+ (A18 Pro), iOS 26 |
+For **Expression** on-device (DiT pipeline):
+
+| Platform | Minimum | Notes |
+|---|---|---|
+| **macOS** | M3+ Apple Silicon, macOS 26 (Tahoe) | int4 DiT @ 384², ~750 MB resident |
+| **iPad** | iPad Pro M4+, 16 GB unified memory, iPadOS 26 | Stage Manager + Picture-in-Picture in [`expression/ipad/`](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/ipad) |
+| **iPhone** | Not supported in v1.17.0 | Expression DiT exceeds the per-app memory cap on a single conversation turn. iPhone today is **Essence-only** — see [Essence on Swift](/swift-sdk/essence). |
+
+For **Essence** on-device (libessence streaming) — supported across the
+full Apple lineup (Mac M3+, iPad Pro M4+, iPhone 17 Pro+). See
+[Essence on Swift](/swift-sdk/essence) for details.
 
 `HardwareCheck.evaluate()` gates this at runtime — under-spec
 devices see a polite refusal screen instead of a half-loaded engine.

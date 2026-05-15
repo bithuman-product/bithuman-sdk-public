@@ -19,11 +19,47 @@ keywords:
 <img src="/images/bithuman-banner.jpg" alt="bitHuman Avatars" className="block dark:hidden" style={{ borderRadius: '12px', width: '100%' }} />
 <img src="/images/bitHuman_banner_black.jpg" alt="bitHuman Avatars" className="hidden dark:block" style={{ borderRadius: '12px', width: '100%' }} />
 
-bitHuman runs real-time lip-synced avatars **on any device** — from a $35 Raspberry Pi to an iPhone to an NVIDIA data center GPU. **No cloud required.** All inference runs locally on the device: push audio in, get animated video out at 25 FPS with under 200ms latency. Whether you are building an edge kiosk, a native mobile app, or a cloud-scale web service, bitHuman runs where your users are.
+bitHuman runs real-time lip-synced avatars **on any device** — from a $35 Raspberry Pi to an iPhone to an NVIDIA data center GPU. **No cloud required for the engine.** All inference runs locally on the device: push audio in, get animated video out at 25 FPS with under 200ms latency. Whether you are building an edge kiosk, a native mobile app, or a cloud-scale web service, bitHuman runs where your users are.
 
 <Note>
-**v1.16.0 is streaming-first.** The new C ABI v6 splits the runtime into a cheap `pushAudio` append and a constant-time `pullFrame` pull, replacing the legacy "pass the entire accumulated buffer per tick" loop that grew O(n²) and missed the 40 ms render budget after ~10 s. Surfaced today in the [Swift](/swift-sdk/streaming) and [Kotlin](/kotlin-sdk/streaming) bindings; the Python wheel `bithuman` is still on the legacy 1.12.4 batched API.
+**Two product properties drive every design decision: on-device + cross-platform.** One C++ engine (`libessence`) compiles to mac, iOS, Android, Linux, Windows. Four idiomatic language bindings (Python / Swift / Kotlin / Rust) wrap that engine, all bit-exact. v1.17.0 adds a server-side OpenAI Realtime mode for the `bithuman avatar` CLI and a Flutter plugin (renamed `bithuman_avatar` → `bithuman`) so one Dart codebase ships to all three mobile-class platforms.
 </Note>
+
+## Three layers, one engine
+
+bitHuman ships in three layers — almost everything below is documentation of how each layer is consumed:
+
+```
+Layer 3 — End-user surfaces  (CLI · Flutter plugin · reference apps)
+                ▼ build on
+Layer 2 — Language bindings  (Python · Swift · Kotlin · Rust)
+                ▼ link
+Layer 1 — libessence engine  (one C++ source, six platforms, ABI v6 streaming)
+```
+
+**Layer 1 — the engine.** A portable C++17 core (~12 k LoC) that turns 16 kHz mono PCM into 25 fps BGR avatar frames. Compiles to macOS arm64, iOS device + simulator, Android arm64-v8a, Linux x86_64 + aarch64, and Windows x86_64 from one source tree. C ABI v6 is streaming-first: `be_runtime_push_audio` (O(n_new) append) + `be_runtime_pull_frame` (O(1) pull) + `be_runtime_ticks_available` + `be_runtime_reset_stream`. Per-tick cost ~1.5 ms on Apple M5, ~1.4 ms on Snapdragon 8 Gen 2; ~465 MB peak RSS for one conversation.
+
+**Layer 2 — language bindings.**
+
+| Binding | Platforms | Distribution | Status |
+|---|---|---|---|
+| Python | macOS arm64, Linux x86_64 + aarch64 | PyPI [`bithuman`](https://pypi.org/project/bithuman/) | 1.12.4 (legacy batched API); streaming wheel queued |
+| Swift  | iOS device + simulator, macOS arm64 | SwiftPM `Bithuman` (`from: "1.17.0"`) | full streaming API |
+| Kotlin | Android `arm64-v8a` | Maven Central `ai.bithuman:sdk:1.17.0` | full streaming API |
+| Rust   | macOS, Linux, Windows | Cargo crate (not yet published) | full streaming API |
+
+All four speak the same `.imx` model format, produce pixel-identical output, and statically link `libessence` — zero transitive deps for the consumer.
+
+**Layer 3 — end-user surfaces.**
+
+| Surface | What | Install |
+|---|---|---|
+| `bithuman` Rust CLI | Voice / text / avatar terminal — auto-picks cloud (OpenAI Realtime) or on-device backend per `OPENAI_API_KEY` presence. New ratatui TUI on a TTY shows mic + bot level bars + transcript. New `bithuman avatar --openai` mode runs server-side OpenAI Realtime; the avatar renders in any browser. | `brew install bithuman` (mac); manylinux + Windows tarballs on GH Releases |
+| Flutter `bithuman` plugin | One Dart codebase, three platforms (mac + iOS + Android). macOS + iOS use VP-IO + WebSocket Realtime; Android uses flutter_webrtc + libwebrtc native AEC. | `flutter pub add bithuman` (renamed from `bithuman_avatar` in v1.17.0; pub.dev publish queued — install via path/git dep until then) |
+| `expression/mac` reference app | Native Swift macOS .app with on-device LLM/TTS via MLX. Sparkle DMG, drag-drop face swap. | `bithuman-apps/expression/mac/` |
+| `expression/ipad` reference app | iPadOS variant: Stage Manager + Picture-in-Picture. | `bithuman-apps/expression/ipad/` |
+
+iPhone Expression is parked in `archive/` while the per-app memory budget firms up; iPhone today is Essence-only via the Flutter plugin.
 
 ## Runs everywhere — on-device, no cloud required
 
@@ -31,13 +67,14 @@ bitHuman is the only avatar SDK that runs high-quality real-time lip-sync on-dev
 
 | Platform | Models | Runtime | Min Hardware |
 |---|---|---|---|
-| **Linux x86_64** | Essence | Python SDK | Any CPU, 4 GB RAM |
+| **Linux x86_64** | Essence | Python SDK · Rust CLI | Any CPU, 4 GB RAM |
 | **Linux ARM64** | Essence | Python SDK | Raspberry Pi 4B+ |
 | **macOS Intel** | Essence | Python SDK | Any Intel Mac |
-| **macOS Apple Silicon** | Essence + Expression | Python + Swift SDK | M3+ for Expression |
-| **Windows x86_64** | Essence | Python SDK | Any CPU, 4 GB RAM |
-| **iPadOS** | Expression + Essence | Swift SDK | iPad Pro M4+ |
-| **iOS** | Expression | Swift SDK | iPhone 16 Pro+ (A18 Pro) |
+| **macOS Apple Silicon** | Essence + Expression | Swift SDK · Rust CLI · Flutter plugin · Python SDK | M3+ for Expression |
+| **Windows x86_64** | Essence | Python SDK · Rust CLI | Any CPU, 4 GB RAM |
+| **iPadOS** | Expression + Essence | Swift SDK · Flutter plugin | iPad Pro M4+ |
+| **iOS** | Essence | Swift SDK · Flutter plugin | iPhone 17 Pro+ |
+| **Android** | Essence | Kotlin SDK · Flutter plugin | `arm64-v8a`, Android 10+ |
 | **NVIDIA GPU (Docker)** | Expression | Docker container | 8 GB+ VRAM |
 | **bitHuman Cloud** | Essence + Expression | REST API / LiveKit | API key only |
 
@@ -47,24 +84,33 @@ Every on-device surface performs local inference — audio processing, lip-sync 
 
 ## Pick your path
 
-bitHuman ships **two models** and **three runtime surfaces**. Your choice depends on what you are shipping (web, server, or native app) and which avatar style fits.
+bitHuman ships **two models** and **multiple runtime surfaces**. Your choice depends on what you're shipping (terminal / mobile app / desktop app / web service) and which avatar style fits.
 
-### Two models
+### Two models — both production-ready, both on every surface
 
-| Model | What it is | Avatar source | Compute | Best for |
-|---|---|---|---|---|
-| **[Essence](/getting-started/models#essence)** | CPU-only pre-rendered animations with real-time lip-sync | `.imx` model file built from a photo or video on [bithuman.ai](https://www.bithuman.ai/#explore) | CPU (any laptop, Raspberry Pi, edge box) | Kiosks, 24/7 displays, full body + animal mode, custom gestures |
-| **[Expression](/getting-started/models#expression)** | AI-generated facial animation from a single image | Any face image — no avatar generation step | NVIDIA GPU **or** Apple Silicon M3+ (on-device) | Dynamic conversations, custom faces, native consumer apps |
-
-### Three runtime surfaces
-
-| Surface | What it is | Models supported | Best for |
+| Model | What it is | Where it runs | Best for |
 |---|---|---|---|
-| **[bitHuman Cloud](/deployment/livekit-cloud-plugin)** | Managed runtime on `api.bithuman.ai`. Use via the LiveKit plugin (`pip install livekit-plugins-bithuman`) or the [REST API](/api-reference/overview) directly. | Essence, Expression | Web apps, fastest setup, no infra. |
-| **[Self-hosted server](/deployment/avatar-sessions)** | Run on your own hardware. Python SDK (`pip install bithuman`) for Essence on CPU, or [Docker container](/deployment/self-hosted-gpu) for Expression on Linux + NVIDIA. | Essence (CPU), Expression (GPU) | On-prem privacy, edge devices, high volume. |
-| **[On-device Apple Silicon](/swift-sdk/overview)** | `bitHumanKit` Swift Package + `bithuman-cli` Homebrew tool. All inference (STT, LLM, TTS, lip-sync) runs locally; only a 1-req/min billing heartbeat goes out. | Expression (M3+ Mac, M4+ iPad Pro, A18 Pro+ iPhone) | Native consumer / pro-sumer apps where everything must run locally. |
+| **[Essence](/getting-started/models#essence)** | Real-time lip-sync over pre-rendered base movement; identity baked into `.imx` | CPU (Linux · macOS · Windows · Raspberry Pi); on-device on macOS · iOS · iPadOS · Android; cloud REST + LiveKit; Rust CLI | Kiosks, 24/7 displays, full body + animal mode, custom gestures, mobile + edge, high-concurrency self-hosted |
+| **[Expression](/getting-started/models#expression)** | Diffusion-driven facial animation from any portrait image at runtime | NVIDIA GPU (self-hosted Docker or cloud); Apple Silicon M3+ on-device (Mac · iPad); cloud REST + LiveKit; Rust CLI | Dynamic conversations, custom portraits per session, native consumer apps with close-up faces |
 
-The full matrix and decision tree: **[How it works →](/getting-started/how-it-works)** · **[Essence vs Expression →](/getting-started/models)**.
+Both ship to every surface listed above; the CLI auto-detects which model lives in the `.imx` you give it. iPhone Expression is parked while the per-app memory budget firms up — iPhone today is Essence-only on-device.
+
+### Surfaces by integration shape
+
+Both Essence and Expression run on every surface that lists them. The CLI auto-detects the model from any `.imx` you pass — no model-specific flag.
+
+| Surface | Models | Best for |
+|---|---|---|
+| **[Rust `bithuman` CLI](/getting-started/cli)** (`brew install bithuman`) | Essence + Expression | Fastest possible "see what this is", scripts, CI, terminal voice/text/avatar chat with auto-picked cloud or on-device backend. `--identity <agent.imx>` peeks the manifest and dispatches. |
+| **[Flutter `bithuman` plugin](/integrations/flutter)** (`flutter pub add bithuman`) | Essence | One Dart codebase covering macOS + iOS + Android. |
+| **[Swift SDK](/swift-sdk/overview)** (SwiftPM `Bithuman` / `bitHumanKit`) | Essence + Expression | Native Mac / iPad / iPhone apps; on-device DiT on M3+. |
+| **[Kotlin SDK](/kotlin-sdk/overview)** (`ai.bithuman:sdk`) | Essence | Native Android apps on `arm64-v8a`. |
+| **[Python SDK](/getting-started/quickstart)** (`pip install bithuman`) | Essence (CPU) + Expression (Apple Silicon on-device or via `bithuman-expression-daemon`) | Linux/macOS servers, edge boxes, scripted batch jobs. |
+| **[bitHuman Cloud (LiveKit Plugin / REST API)](/deployment/livekit-cloud-plugin)** | Essence + Expression | Managed runtime — no infra. `agent_code` selects the model. |
+| **[Self-hosted server (LiveKit plugin pointed at your endpoint)](/deployment/avatar-sessions#self-hosted-cpu)** | Essence + Expression | Essence on CPU via the Python SDK / `essence-server`; Expression on NVIDIA via the GPU container. |
+| **[Self-hosted GPU container](/deployment/self-hosted-gpu)** | Expression | On-prem Expression on Linux + NVIDIA, ~9 sessions/GPU on H100. |
+
+The full matrix and decision tree: **[How it works →](/getting-started/how-it-works)** · **[Essence and Expression →](/getting-started/models)**.
 
 ## 5-minute quickstart
 
@@ -72,18 +118,71 @@ Pick the surface that matches what you're building:
 
 <CodeGroup>
 
-```bash Cloud (Docker stack)
-git clone https://github.com/bithuman-product/bithuman-sdk-public.git
-cd bithuman-sdk-public/Examples/python/cloud-essence
+```sh CLI (no code)
+brew install bithuman-product/bithuman/bithuman   # mac arm64
 
-cp .env.example .env
-# Edit .env: set BITHUMAN_API_SECRET, BITHUMAN_AGENT_ID, OPENAI_API_KEY
+# Auto-picks cloud (OpenAI) when OPENAI_API_KEY is set, on-device otherwise.
+bithuman voice                # spoken conversation in the terminal (TUI)
+bithuman text                 # piped stdin → stdout chat
 
-docker compose up
-# Open http://localhost:4202
+# Browser-served avatar runtime (default).
+bithuman avatar               # opens http://127.0.0.1:8080
+
+# v1.17.0: server-side OpenAI Realtime + browser avatar.
+bithuman avatar --openai      # default model: gpt-realtime-mini
+
+# Full reference: /getting-started/cli
 ```
 
-```python Self-hosted Python (Essence, CPU)
+```dart Flutter (mac + iOS + Android)
+// pubspec.yaml: dependencies: bithuman: ^1.17.0   (pub.dev publish queued)
+import 'package:bithuman/bithuman.dart';
+
+void main() => runApp(const MaterialApp(home: AvatarScreen()));
+// AvatarScreen handles the per-platform Realtime transport for you:
+// macOS + iOS  → WebSocket Realtime via VP-IO RealtimeAudioIO (Apple AEC)
+// Android      → flutter_webrtc native pipeline (libwebrtc native AEC)
+```
+
+```swift Swift SDK (Mac / iPad / iPhone)
+import Bithuman
+
+let fixture = try Bithuman.loadEssenceFixture(modelPath: imxURL)
+let runtime = try fixture.createRuntime()
+
+// On every audio chunk arriving from the mic / TTS / WebRTC track:
+try runtime.pushAudio(audioPCM: pcmChunk)
+
+// Drain composed BGR frames at 25 fps.
+while runtime.ticksAvailable > 0 {
+    try runtime.pullFrame(frameIdxHint: -1, frameOut: &frameOut)
+    renderer.present(bgr: frameOut, ...)
+}
+// Full integration: /swift-sdk/quickstart · /swift-sdk/streaming
+```
+
+```kotlin Kotlin SDK (Android arm64-v8a)
+// build.gradle.kts: implementation("ai.bithuman:sdk:1.17.0")
+import ai.bithuman.sdk.Fixture
+import ai.bithuman.sdk.Runtime
+
+Fixture(modelPath).use { fx ->
+    val rt = Runtime(fx)
+    val info = fx.info()
+    val frameOut = ByteArray(info.frameWidth * info.frameHeight * 3)
+
+    fun onAudio(pcm: ShortArray) {
+        rt.pushAudio(pcm)
+        while (rt.ticksAvailable > 0) {
+            rt.pullFrame(frameOut, frameIdxHint = -1)
+            renderer.present(frameOut, info.frameWidth, info.frameHeight)
+        }
+    }
+}
+// Full integration: /kotlin-sdk/quickstart · /kotlin-sdk/streaming
+```
+
+```python Python (Linux / macOS, Essence on CPU)
 # pip install bithuman
 import asyncio, os
 from bithuman import AsyncBithuman
@@ -113,48 +212,28 @@ async def main():
 asyncio.run(main())
 ```
 
-```bash Self-hosted GPU (Expression, NVIDIA)
-docker run --gpus all -p 8089:8089 \
-    -e BITHUMAN_API_SECRET=your_api_secret \
-    docker.io/sgubithuman/expression-avatar:latest
-
-# Then point a LiveKit agent at http://localhost:8089/launch
-# See /deployment/self-hosted-gpu for the full wiring.
-```
-
-```swift Swift SDK (Mac/iPad/iPhone)
-import bitHumanKit
-
-var config = VoiceChatConfig()
-config.systemPrompt = "You are a calm assistant. One sentence per turn."
-config.voice = .preset("Aiden")
-
-// Optional: attach the avatar — requires BITHUMAN_API_KEY.
-let weights = try await ExpressionWeights.ensureAvailable()
-config.avatar = AvatarConfig(modelPath: weights, portraitPath: portraitURL)
-config.apiKey = ProcessInfo.processInfo.environment["BITHUMAN_API_KEY"]
-
-let chat = VoiceChat(config: config)
-try await chat.start()
-// Full 10-minute integration: /swift-sdk/quickstart
-```
-
-```sh CLI (Mac, no code)
-brew tap bithuman-product/bithuman
-brew install bithuman-cli
-bithuman-cli video        # voice + lip-synced floating avatar window
-bithuman-cli text         # type to chat
-bithuman-cli              # voice mode (default)
-# Full reference: /swift-sdk/cli
-```
-
-```bash REST API (any language)
-# Make a hosted Essence agent speak — no SDK required.
+```bash REST API (any language, cloud)
+# Make a hosted agent speak — no SDK required.
 curl -X POST https://api.bithuman.ai/v1/agent/A78WKV4515/speak \
   -H "api-secret: $BITHUMAN_API_SECRET" \
   -H "content-type: application/json" \
   -d '{"text": "Hello from the REST API."}'
 # Full endpoint reference: /api-reference/overview
+```
+
+```bash LiveKit Cloud Plugin (Python, cloud)
+pip install livekit-plugins-bithuman
+# Then in your LiveKit agent worker:
+#   bithuman.AvatarSession(avatar_id=..., api_secret=...)
+# Full guide: /deployment/livekit-cloud-plugin
+```
+
+```bash Self-hosted GPU (Expression, NVIDIA + Docker)
+docker run --gpus all -p 8089:8089 \
+    -e BITHUMAN_API_SECRET=your_api_secret \
+    docker.io/sgubithuman/expression-avatar:latest
+# Then point a LiveKit agent at http://localhost:8089/launch
+# See /deployment/self-hosted-gpu for the full wiring.
 ```
 
 </CodeGroup>
@@ -189,17 +268,26 @@ Each tab maps to a working example in [Examples/](https://github.com/bithuman-pr
 ## Developer guides
 
 <CardGroup cols={3}>
-  <Card title="Quickstart" icon="rocket" href="/getting-started/quickstart">
-    Python SDK in 5 minutes
+  <Card title="bithuman CLI" icon="terminal" href="/getting-started/cli">
+    Voice / text / avatar in one binary; auto-picks cloud or on-device
   </Card>
   <Card title="Swift SDK" icon="apple" href="/swift-sdk/overview">
-    On-device for Mac/iPad/iPhone
+    On-device for Mac / iPad / iPhone
   </Card>
-  <Card title="REST API" icon="code" href="/api-reference/overview">
-    Agent generation, speak, dynamics
+  <Card title="Kotlin SDK" icon="android" href="/kotlin-sdk/overview">
+    On-device for Android arm64-v8a
   </Card>
-  <Card title="Avatar Sessions" icon="book-open" href="/deployment/avatar-sessions">
-    LiveKit Cloud, CPU, GPU — every mode
+  <Card title="Python quickstart" icon="rocket" href="/getting-started/quickstart">
+    `pip install bithuman` for self-hosted Essence
+  </Card>
+  <Card title="Cloud REST API" icon="code" href="/api-reference/overview">
+    Agent generation, speak, dynamics — no SDK
+  </Card>
+  <Card title="LiveKit Cloud Plugin" icon="cloud" href="/deployment/livekit-cloud-plugin">
+    Managed avatar runtime in 5 minutes
+  </Card>
+  <Card title="Self-hosted GPU" icon="server" href="/deployment/self-hosted-gpu">
+    Expression on Linux + NVIDIA, ~9 sessions/GPU
   </Card>
   <Card title="Examples" icon="book-open" href="/examples/overview">
     Working examples for every surface
@@ -246,8 +334,9 @@ bitHuman performs on-device local inference on every major platform. No cloud ro
 | **Linux ARM64** | Full Support | Essence (CPU) | Raspberry Pi 4B+, edge kiosks, IoT |
 | **macOS Apple Silicon** | Full Support | Essence + Expression (on-device) | M3+ for Expression; any Apple Silicon for Essence |
 | **macOS Intel** | Full Support | Essence (CPU) | Development, legacy hardware |
-| **iPadOS** | Full Support | Expression + Essence (on-device) | iPad Pro M4+ via Swift SDK |
-| **iOS** | Full Support | Expression (on-device) | iPhone 16 Pro+ (A18 Pro) via Swift SDK |
+| **iPadOS** | Full Support | Expression + Essence (on-device) | iPad Pro M4+ via Swift SDK or Flutter plugin |
+| **iOS** | Full Support | Essence (on-device) | iPhone 17 Pro+ via Swift SDK or Flutter plugin; Expression on iPhone is parked while the per-app memory budget firms up |
+| **Android** | Full Support | Essence (on-device) | `arm64-v8a`, Android 10+ via Kotlin SDK or Flutter plugin |
 | **Windows x86_64** | Full Support | Essence (CPU) | Native wheels for Python 3.9-3.14, or WSL |
 | **NVIDIA GPU (Docker)** | Full Support | Expression | Linux + Docker, 8 GB+ VRAM, dynamic face from any image |
 | **bitHuman Cloud** | Full Support | Essence + Expression (managed) | REST API / LiveKit, no local hardware needed |
