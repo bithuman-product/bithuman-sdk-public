@@ -2,7 +2,7 @@
 
 Requires the expression-avatar Docker container running on your GPU.
 Start it first:
-    docker run --gpus all -p 8089:8089 -e BITHUMAN_API_SECRET=... sgubithuman/expression-avatar:latest
+    docker run --gpus all -p 8089:8089 -e BITHUMAN_API_SECRET=... bithuman/expression-avatar:latest
 
 Usage:
     python quickstart.py --avatar-image face.jpg --audio-file speech.wav
@@ -75,7 +75,7 @@ async def main():
         api_secret=args.api_secret,
     )
 
-    width, height = runtime.get_frame_size()
+    width, height = runtime.frame_width, runtime.frame_height
     cv2.namedWindow("bitHuman", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("bitHuman", width, height)
 

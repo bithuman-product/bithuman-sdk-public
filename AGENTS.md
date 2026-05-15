@@ -9,10 +9,9 @@ bitHuman is a real-time avatar animation platform. You push audio in, and get li
 | Web app, fastest demo | Cloud Essence (LiveKit plugin) | `pip install livekit-plugins-bithuman` | `Examples/python/cloud-essence/` |
 | Web app, custom face image | Cloud Expression (LiveKit plugin) | `pip install livekit-plugins-bithuman` | `Examples/python/cloud-expression/` |
 | Kiosk / 24-7 / edge box | Self-hosted Essence (CPU) | `pip install bithuman` | `Examples/python/local-essence/` |
-<!-- TODO(infra): migrate from `sgubithuman` (personal Docker Hub namespace) to `ghcr.io/bithuman-product/expression-avatar` or a properly-owned `bithuman` org Docker Hub namespace before this doc goes external. -->
-| On-prem NVIDIA GPU | Self-hosted Expression (Docker) | `docker pull sgubithuman/expression-avatar:latest` | `Examples/python/local-expression-gpu/` |
+| On-prem NVIDIA GPU | Self-hosted Expression (Docker) | `docker pull bithuman/expression-avatar:latest` | `Examples/python/local-expression-gpu/` |
 | macOS / iPad / iPhone app | Swift SDK (on-device) | SwiftPM `bithuman-sdk-public` >= 0.8.1 | `Examples/swift/` |
-| Mac, no code | CLI (Homebrew) | `brew install bithuman-cli` | `Examples/cli/` |
+| Mac, no code | CLI | `curl -fsSL https://github.com/bithuman-product/bithuman-sdk-public/releases/latest/download/install.sh \| sh` | `Examples/cli/` |
 | Any language, HTTP only | REST API | `curl https://api.bithuman.ai/v1/...` | `Examples/rest-api/` |
 | 100% offline Mac | Ollama + Apple Speech + bitHuman | -- | `Examples/integrations/offline-mac/` |
 | Browser embed (iframe) | Embed widget | `bithuman-chat-widget-v5.js` | See docs: [embed](https://docs.bithuman.ai/integrations/embed) |
@@ -30,7 +29,7 @@ import asyncio, os
 from bithuman import AsyncBithuman
 async def main():
     rt = await AsyncBithuman.create(model_path='avatar.imx', api_secret=os.environ['BITHUMAN_API_SECRET'])
-    await rt.start(); await rt.stop()
+    await rt.stop()
 asyncio.run(main())
 "
 ```
@@ -57,9 +56,13 @@ import bitHumanKit
 ### CLI (no code)
 
 ```bash
-brew tap bithuman-product/bithuman && brew install bithuman-cli
-bithuman-cli video
-# Or via pip: pip install bithuman && bithuman demo
+# Universal installer (macOS + Linux)
+curl -fsSL https://github.com/bithuman-product/bithuman-sdk-public/releases/latest/download/install.sh | sh
+# Or macOS Homebrew
+brew install bithuman-product/bithuman/bithuman
+
+bithuman avatar      # browser-served avatar at http://127.0.0.1:8080
+bithuman voice       # spoken conversation in the terminal
 ```
 
 ### REST API
@@ -79,7 +82,6 @@ curl -X POST https://api.bithuman.ai/v1/agent/A91XMB7113/speak \
 |---|---|
 | `AsyncBithuman.create(model_path, api_secret)` | Create async runtime (Essence or Expression) |
 | `Bithuman.create(model_path, api_secret)` | Create sync/threaded runtime |
-| `runtime.start()` | Initialize and begin frame loop |
 | `runtime.push_audio(pcm_bytes, sample_rate)` | Push int16 PCM audio (any sample rate, auto-resampled) |
 | `runtime.flush()` | Signal end of current audio segment |
 | `runtime.interrupt()` | Cancel current playback immediately |
@@ -131,16 +133,19 @@ All requests require `api-secret: YOUR_SECRET` header.
 | POST | `/v1/dynamics/generate` | Create gesture animations |
 | GET | `/v1/dynamics/{agent_id}` | List available gestures |
 
-### CLI (`bithuman` after `pip install bithuman`)
+### CLI (`bithuman` — install via `curl|sh` or Homebrew, not pip)
 
 | Command | Purpose |
 |---|---|
-| `bithuman demo` | Zero-arg hello world (downloads demo model) |
-| `bithuman generate <model> --audio <file>` | Render lip-synced MP4 |
-| `bithuman stream <model>` | Start local streaming server on :3001 |
-| `bithuman speak <audio>` | Send audio to running stream server |
-| `bithuman info <model>` | Show model metadata |
-| `bithuman validate <path>` | Check model file integrity |
+| `bithuman doctor` | Verify host + API key |
+| `bithuman avatar` | Browser-served avatar at `http://127.0.0.1:8080` |
+| `bithuman voice` | Spoken conversation in the terminal |
+| `bithuman text` | Text chat, stdin → stdout |
+| `bithuman generate <model> --audio <file> -o out.mp4` | Render lip-synced MP4 |
+| `bithuman stream <model>` | Start local HTTP streaming server |
+| `bithuman speak <audio>` | Send audio to a running stream server |
+| `bithuman info <model>` | Show `.imx` model metadata |
+| `bithuman models list` | List downloadable showcase avatars |
 
 ## Common Patterns
 
@@ -297,8 +302,7 @@ bithuman-sdk-public/
 
 ## What NOT To Do
 
-- **Do NOT clone `bithuman-kit.git`** -- that is a private repo. Use `bithuman-sdk-public.git` for Swift SPM.
-- **Do NOT clone Swift SDK source** or reference apps -- both are private.
+- **The SDK internals are closed-source.** Consume the binary distributions only: SwiftPM `bithuman-sdk-public` for Swift, `pip install bithuman` for Python, Maven `ai.bithuman:sdk` for Kotlin, the CLI installer for the binary. Do not attempt to fetch SDK source.
 - **Do NOT hardcode API keys** in source files. Always use environment variables (`BITHUMAN_API_SECRET` for Python/REST/CLI, `BITHUMAN_API_KEY` for Swift).
 - **Do NOT pin Swift SDK below 0.8.1** -- earlier versions have breaking API changes.
 - **Do NOT use `figure_id`** -- it is deprecated. Use `agent_code` everywhere.

@@ -21,7 +21,7 @@ services:
   # Model weights (~5 GB) download automatically on first run.
   # They are cached in the 'bithuman-models' Docker volume.
   expression-avatar:
-    image: docker.io/sgubithuman/expression-avatar:latest
+    image: docker.io/bithuman/expression-avatar:latest
     restart: unless-stopped
     init: true   # PID 1 reaps zombie processes; complements dumb-init in image
     dns:
@@ -96,7 +96,7 @@ services:
         condition: service_healthy
 
   frontend:
-    image: docker.io/sgubithuman/bithuman-webui:latest
+    image: docker.io/bithuman/bithuman-webui:latest
     restart: always
     ports:
       - "4202:4202"

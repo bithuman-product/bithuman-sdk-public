@@ -55,8 +55,7 @@ If you just want the GPU container (no agent, no frontend):
 docker run --gpus all -p 8089:8089 \
     -e BITHUMAN_API_SECRET=your_secret \
     -v bithuman-models:/data/models \
-<!-- TODO(infra): migrate from `sgubithuman` (personal Docker Hub namespace) to `ghcr.io/bithuman-product/expression-avatar` or a properly-owned `bithuman` org Docker Hub namespace before this doc goes external. -->
-    sgubithuman/expression-avatar:latest
+    bithuman/expression-avatar:latest
 ```
 
 Verify it works (once you see `Avatar Worker Ready` in the logs):

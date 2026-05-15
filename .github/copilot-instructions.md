@@ -103,7 +103,7 @@ import bitHumanKit
 ```
 
 Hardware floor: macOS M3+, iPad Pro M4+, iPhone 16 Pro+ (A18 Pro).
-Do NOT pin below 0.8.1. Do NOT reference private `bithuman-kit.git`.
+Do NOT pin below 0.8.1. The SDK internals are closed-source — consume the binary via `bithuman-sdk-public`.
 
 ## REST API Quick Reference
 
@@ -138,7 +138,7 @@ bithuman info avatar.imx                          # model metadata
 bithuman validate avatar.imx                      # check integrity
 ```
 
-Homebrew alternative: `brew tap bithuman-product/bithuman && brew install bithuman-cli`
+Homebrew alternative: `brew install bithuman-product/bithuman/bithuman`
 
 ## Two Models
 
@@ -176,7 +176,7 @@ Homebrew alternative: `brew tap bithuman-product/bithuman && brew install bithum
 
 ## Common Mistakes to Avoid
 
-- Do not reference private repos (`bithuman-kit`, `bithuman-product/platform`).
+- The SDK internals are closed-source; consume only the published binaries.
 - Do not hardcode API secrets. Use environment variables.
 - Do not use deprecated `figure_id`. Use `agent_code`.
 - Do not pin Swift SDK below 0.8.1.

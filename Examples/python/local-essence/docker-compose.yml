@@ -43,7 +43,7 @@ services:
         condition: service_started
 
   frontend:
-    image: docker.io/sgubithuman/bithuman-webui:latest
+    image: docker.io/bithuman/bithuman-webui:latest
     restart: always
     ports:
       - "4202:4202"

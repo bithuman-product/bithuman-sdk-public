@@ -93,12 +93,12 @@ For production:
 - **DMG distribution** — bundle the key into your `.app`'s Info.plist via a build script that runs `sed` on a placeholder. Source stays clean; only the compiled artifact has the key. See the Mac reference app's `build-mac-app.sh` for the canonical pattern.
 - **App Store** — fetch from your own backend via Keychain on first launch. Don't bundle.
 
-### bithuman-cli (Homebrew)
+### CLI
 
 ```bash
-brew install bithuman-cli
-export BITHUMAN_API_KEY="your_key"
-bithuman-cli video
+brew install bithuman-product/bithuman/bithuman
+export BITHUMAN_API_SECRET="your_api_secret"
+bithuman avatar      # browser-served avatar at http://127.0.0.1:8080
 ```
 
 ## 3. Audio-only Swift mode is unmetered

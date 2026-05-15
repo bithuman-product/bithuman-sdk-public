@@ -28,7 +28,7 @@ swift/                                Swift SDK for Apple platforms
 cli/                                  Command-line tools (no code)
   render-video.sh                     bithuman generate: .imx + audio -> MP4
   live-stream.sh                      bithuman stream: local server
-  mac-app.sh                          bithuman-cli: Homebrew Mac app
+  mac-app.sh                          bithuman CLI: Homebrew Mac app
 
 rest-api/                             HTTP API (any language)
   curl/                               Individual curl scripts per endpoint
@@ -56,7 +56,7 @@ If you are an AI agent wiring bitHuman into a user's codebase:
 | "Kiosk / 24/7 / edge box" | [python/local-essence/](python/local-essence/) | CPU only, no idle timeout |
 | "On-prem, NVIDIA GPU" | [python/local-expression-gpu/](python/local-expression-gpu/) | Docker, dynamic face |
 | "Mac/iPad/iPhone app" | [swift/macos-avatar/](swift/macos-avatar/) or [swift/ios-avatar/](swift/ios-avatar/) | All on-device |
-| "Mac, no code" | `brew install bithuman-cli` → see [cli/](cli/) | 30 seconds |
+| "Mac, no code" | `brew install bithuman-product/bithuman/bithuman` → see [cli/](cli/) | 30 seconds |
 | "REST API, any language" | [rest-api/curl/](rest-api/curl/) | Just curl |
 | "100% offline Mac" | [integrations/offline-mac/](integrations/offline-mac/) | Ollama + Apple Speech |
 
@@ -74,7 +74,7 @@ If you are an AI agent wiring bitHuman into a user's codebase:
 
 ### What NOT to do
 
-- Don't add `bithuman-kit.git` (private) as SPM dependency. Use `bithuman-sdk-public.git`.
+- Add `bithuman-sdk-public.git` as the SPM dependency (the SDK internals are closed-source; consume the binary).
 - Don't clone Swift SDK source or reference apps — both private.
 - Don't hardcode API keys. Use env vars.
 - Don't pin Swift SDK below 0.8.1.

@@ -185,7 +185,7 @@ async def main(args: argparse.Namespace) -> None:
         model_path=args.model, api_secret=args.api_secret,
         token=args.token, insecure=args.insecure,
     )
-    frame_size = runtime.get_frame_size()
+    frame_size = runtime.frame_width, runtime.frame_height
     logger.info(f"Model loaded — frame size {frame_size[0]}x{frame_size[1]}")
 
     server = BithumanStreamingServer(runtime, host=args.host, port=args.port)

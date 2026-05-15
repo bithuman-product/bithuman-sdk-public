@@ -13,7 +13,7 @@ The Swift SDK source and Python SDK compiled internals are in private repos. Thi
 | `AGENTS.md` | Full AI agent discovery guide (decision tree, API surface, patterns) |
 | `README.md` | Human-facing overview, install instructions, quick start |
 | `python/README.md` | Python SDK detailed docs (API surface, CLI, env vars, Expression) |
-| `docs/llms.txt` | Machine-readable index of all documentation pages |
+| `docs/docs.json` | Mintlify nav tree, theme, SEO, redirects |
 | `docs/api-reference/openapi.yaml` | OpenAPI 3.1 spec for the REST API |
 | `Examples/AGENTS.md` | Examples-specific agent guide with decision tree |
 | `Package.swift` | Swift SDK binary target and hardware requirements |
@@ -32,14 +32,16 @@ Examples/               -- Runnable examples for every integration path
   quickstart/           -- 2-minute try-it path
 docs/                   -- docs.bithuman.ai source (Mintlify MDX)
   api-reference/        -- REST API docs + openapi.yaml
-  getting-started/      -- Quickstart, models, auth, pricing, use cases
-  deployment/           -- Avatar sessions, cloud plugin, self-hosted GPU
-  swift-sdk/            -- Swift SDK guides (macOS, iOS, CLI, troubleshooting)
+  getting-started/      -- Quickstart, models, auth, pricing
+  guides/               -- Building avatars, deployment
+  sdks/                 -- Python, Swift, Kotlin SDK pages
   examples/             -- Doc pages for each example category
-  integrations/         -- Embed, webhooks, Flutter
-  llms.txt              -- LLM-oriented doc index
-  llms-full.txt         -- Full LLM-oriented doc content
+  integrations/         -- Flutter plugin
+  docs.json             -- Mintlify nav, theme, SEO, redirects
 ```
+
+`llms.txt` / `llms-full.txt` / `sitemap.xml` are Mintlify-generated at
+build time (served at docs.bithuman.ai, not committed source files).
 
 ## How to Run Examples
 
@@ -97,7 +99,7 @@ cd docs && npx mintlify@latest dev
 - To validate examples: run them with a real API secret and a valid `.imx` model file.
 - To validate docs: `cd docs && npx mintlify@latest dev` and check for build errors.
 - To validate REST API calls: use the curl scripts in `Examples/rest-api/curl/` against `https://api.bithuman.ai`.
-- Use `bithuman validate <path>` to check `.imx` model file integrity.
+- Use `bithuman info <path>` to inspect `.imx` model metadata.
 - Use `POST /v1/validate` to verify an API secret is valid.
 
 ## Key Technical Facts
@@ -114,7 +116,7 @@ cd docs && npx mintlify@latest dev
 
 ## What NOT to Do
 
-- Do not reference or clone private repos (`bithuman-kit`, `bithuman-product/platform`).
+- The SDK internals are closed-source; consume only the published binaries (SwiftPM / pip / Maven / CLI).
 - Do not hardcode API secrets in any file.
 - Do not use `figure_id` (deprecated, returns 400).
 - Do not pin Swift SDK below 0.8.1.

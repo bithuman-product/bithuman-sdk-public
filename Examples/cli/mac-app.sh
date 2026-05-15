@@ -25,8 +25,7 @@ case "$ACTION" in
   install)
     echo "Installing bithuman-cli via Homebrew..."
     echo ""
-    brew tap bithuman-product/bithuman
-    brew install bithuman-cli
+    brew install bithuman-product/bithuman/bithuman
     echo ""
     echo "Done. Run: bithuman-cli --help"
     ;;

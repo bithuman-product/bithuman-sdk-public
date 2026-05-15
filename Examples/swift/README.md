@@ -56,9 +56,8 @@ Then `import bitHumanKit` in your source files.
 For quick testing without writing code, install the CLI via Homebrew:
 
 ```bash
-brew tap bithuman-product/bithuman
-brew install bithuman-cli
-bithuman-cli video
+brew install bithuman-product/bithuman/bithuman
+bithuman avatar
 ```
 
 See [docs.bithuman.ai/getting-started/cli](https://docs.bithuman.ai/getting-started/cli) for usage.

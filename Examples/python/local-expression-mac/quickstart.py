@@ -67,7 +67,7 @@ async def generate_video(
         api_secret=api_secret,
         identity=identity,  # None → bundle's baked-in face
     )
-    w, h = runtime.get_frame_size()
+    w, h = runtime.frame_width, runtime.frame_height
     print(f"[ready] {w}x{h}, identity={'override' if identity else 'default'}")
 
     pcm, sr = load_audio(audio_path)

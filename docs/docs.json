@@ -148,15 +148,13 @@
   },
   "seo": {
     "metatags": {
-      "canonical": "https://docs.bithuman.ai",
       "og:site_name": "bitHuman Docs",
       "og:type": "website",
       "og:image": "https://docs.bithuman.ai/images/bithuman-banner.jpg",
       "twitter:card": "summary_large_image",
       "twitter:site": "@bithuman_ai",
       "twitter:image": "https://docs.bithuman.ai/images/bithuman-banner.jpg",
-      "description": "bitHuman SDK — real-time on-device AI avatar runtime for iOS, iPadOS, Android, macOS, Linux, and Windows. Private, low-latency lip-sync for interactive conversational agents on-device or on-edge. Sub-200ms latency, offline-capable, self-hosted. Python, Swift, Kotlin, and CLI from one runtime.",
-      "keywords": "AI avatar, virtual avatar, on-device avatar, on-edge AI, edge AI avatar, private AI avatar, offline avatar, self-hosted avatar, real-time lip sync, lip-synced avatar, low-latency avatar, interactive avatar, conversational AI avatar, iPhone avatar, iPad avatar, Android avatar, Mac avatar, Linux avatar, Apple Silicon avatar, Raspberry Pi avatar, NVIDIA GPU avatar, cross-platform avatar SDK, talking avatar API, AI digital human, on-device AI inference, private deployment, LiveKit avatar plugin, Essence Expression model, bithuman CLI, Python SDK, Swift SDK, Kotlin SDK, ARM64 avatar, edge deployment, IoT avatar, kiosk avatar, AI agent avatar SDK, LLM avatar integration"
+      "keywords": "AI avatar SDK, on-device avatar, real-time lip sync, talking avatar API, edge AI avatar, private avatar runtime, conversational AI avatar, cross-platform avatar SDK, bithuman"
     },
     "indexing": "navigable"
   },

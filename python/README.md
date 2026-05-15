@@ -70,7 +70,6 @@ async def main():
         model_path="avatar.imx",
         api_secret=os.environ["BITHUMAN_API_SECRET"],
     )
-    await runtime.start()
 
     pcm, sr = load_audio("speech.wav")
     pcm = float32_to_int16(pcm)
@@ -99,7 +98,7 @@ asyncio.run(main())
 Expression bundles a diffusion-based animator that renders any face image in real time. Same API — just point at an Expression `.imx`.
 
 ```bash
-bithuman demo --model expression.imx --audio speech.wav         # CLI one-shot
+bithuman generate expression.imx --audio speech.wav -o out.mp4   # CLI one-shot
 ```
 
 ```python
@@ -160,18 +159,31 @@ Full reference: [docs.bithuman.ai](https://docs.bithuman.ai).
 
 ## CLI
 
+The `bithuman` CLI is a **separate binary**, not part of this pip
+package. Install it independently:
+
+```bash
+# macOS + Linux — universal installer
+curl -fsSL https://github.com/bithuman-product/bithuman-sdk-public/releases/latest/download/install.sh | sh
+# Or macOS Homebrew
+brew install bithuman-product/bithuman/bithuman
+```
+
 Every command reads `$BITHUMAN_API_SECRET` by default.
 
-| Command | Works with | Description |
-|---------|-----------|-------------|
-| `bithuman generate <model> --audio <file>` | Essence + Expression | Render a lip-synced MP4 |
-| `bithuman stream <model>` | Essence + Expression | Live streaming server at `localhost:3001` |
-| `bithuman speak <audio>` | — | Send audio to a running `stream` server |
-| `bithuman demo --model <imx> [--audio <file>]` | Expression (macOS M3+) | Zero-friction Expression demo with a bundled sample clip |
-| `bithuman convert <model>` | Essence | Convert legacy TAR `.imx` to IMX v2 (smaller, 1000× faster load) |
-| `bithuman pack …` | Expression | Pack an Expression bundle from raw animator + encoder + renderer weights |
-| `bithuman info <model>` | Essence + Expression | Show model metadata |
-| `bithuman validate <path>` | Essence + Expression | Sanity-check a model file |
+| Command | Description |
+|---------|-------------|
+| `bithuman doctor` | Verify host + API key |
+| `bithuman avatar` | Browser-served avatar at `http://127.0.0.1:8080` |
+| `bithuman voice` | Spoken conversation in the terminal |
+| `bithuman text` | Text chat, stdin → stdout |
+| `bithuman generate <model> --audio <file> -o out.mp4` | Render a lip-synced MP4 |
+| `bithuman stream <model>` | Local HTTP streaming server |
+| `bithuman speak <audio>` | Send audio to a running `stream` server |
+| `bithuman info <model>` | Show `.imx` model metadata |
+| `bithuman models list` | List downloadable showcase avatars |
+
+Full reference: [docs.bithuman.ai/getting-started/cli](https://docs.bithuman.ai/getting-started/cli)
 
 ## Environment variables
 

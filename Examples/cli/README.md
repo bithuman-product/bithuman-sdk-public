@@ -68,8 +68,7 @@ A native Mac application for interactive voice, text, and video conversations wi
 ### Install via Homebrew
 
 ```bash
-brew tap bithuman-product/bithuman
-brew install bithuman-cli
+brew install bithuman-product/bithuman/bithuman
 ```
 
 ### Requirements

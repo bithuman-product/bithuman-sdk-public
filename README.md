@@ -31,7 +31,7 @@ You get **99 free credits per month** (about 50 minutes of avatar time). No cred
 | **See it work immediately** | Python or CLI | 5 min | [Examples/quickstart/](Examples/quickstart/) |
 | **Build with Python** (web app, server, Raspberry Pi) | `pip install bithuman` | 10 min | [Examples/python/](Examples/python/) |
 | **Build a native Apple app** (Mac, iPad, iPhone) | Swift SDK | 15 min | [Examples/swift/](Examples/swift/) |
-| **Use the command line** (no code at all) | `bithuman-cli` | 2 min | [Examples/cli/](Examples/cli/) |
+| **Use the command line** (no code at all) | `bithuman` CLI | 2 min | [Examples/cli/](Examples/cli/) |
 | **Call from any language** (Java, Go, JS, etc.) | REST API | 5 min | [Examples/rest-api/](Examples/rest-api/) |
 
 If you're unsure, start with **[Examples/quickstart/](Examples/quickstart/)**.
@@ -72,9 +72,13 @@ Requires Apple Silicon M3 or newer. See [swift/README.md](swift/README.md) for d
 ### CLI (Mac, no code needed)
 
 ```bash
-brew tap bithuman-product/bithuman
-brew install bithuman
-bithuman video    # starts a voice + avatar window
+# Universal installer (macOS + Linux)
+curl -fsSL https://github.com/bithuman-product/bithuman-sdk-public/releases/latest/download/install.sh | sh
+# Or macOS Homebrew
+brew install bithuman-product/bithuman/bithuman
+
+bithuman avatar    # browser-served avatar at http://127.0.0.1:8080
+bithuman voice     # spoken conversation in the terminal
 ```
 
 100% on-device — runs locally on Apple Silicon, no API key needed for the audio-only mode.
@@ -92,7 +96,6 @@ async def main():
         model_path="avatar.imx",                          # your .imx file
         api_secret=os.environ["BITHUMAN_API_SECRET"],     # from bithuman.ai
     )
-    await runtime.start()
 
     # 2. Push audio — the avatar will lip-sync to it
     pcm, sr = load_audio("speech.wav")

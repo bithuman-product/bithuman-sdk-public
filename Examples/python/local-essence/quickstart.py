@@ -68,7 +68,7 @@ async def main() -> None:
         raise SystemExit("Set BITHUMAN_API_SECRET")
 
     runtime = await AsyncBithuman.create(model_path=args.model, api_secret=args.api_secret)
-    w, h = runtime.get_frame_size()
+    w, h = runtime.frame_width, runtime.frame_height
     cv2.namedWindow("bitHuman", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("bitHuman", w, h)
 

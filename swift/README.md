@@ -91,9 +91,8 @@ Sign in at [www.bithuman.ai](https://www.bithuman.ai) → Developer → API Keys
 ## CLI (no code)
 
 ```bash
-brew tap bithuman-product/bithuman
-brew install bithuman-cli
-bithuman-cli video        # voice + lip-synced floating avatar window
+brew install bithuman-product/bithuman/bithuman
+bithuman avatar           # voice + lip-synced avatar in your browser
 bithuman-cli text         # type to chat
 bithuman-cli              # voice mode (default)
 ```

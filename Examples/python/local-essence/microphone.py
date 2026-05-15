@@ -78,7 +78,7 @@ async def main():
         model_path=args.model, api_secret=args.api_secret, input_buffer_size=5,
     )
 
-    width, height = runtime.get_frame_size()
+    width, height = runtime.frame_width, runtime.frame_height
     cv2.namedWindow("bitHuman", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("bitHuman", width, height)
 
