@@ -140,13 +140,10 @@ The integration is identical to macOS, but you'll typically host
 the `AvatarRendererView` (UIView on iOS) inside a custom SwiftUI
 tree rather than the bundled `AvatarRootView` (which is macOS-only).
 
-Reference patterns (source in the private [bithuman-apps](https://github.com/bithuman-product/bithuman-apps) repo — apps consume the SDK via the published SwiftPM binary package, the same way any external developer would):
-- **iPad widget-style window** — Stage Manager 320×320 floating panel,
-  250 pt avatar circle, Picture-in-Picture, PhotosPicker portrait swap.
-- **iPhone full-screen with PiP collapse** — full-screen avatar,
-  tap-to-collapse 120 pt PiP, single-sheet TabView for customisation.
+Reference layouts that work well on iPadOS and iOS:
 
-Both apps' Sources are concise (~200 lines each) and annotated.
+- **iPad widget-style window** — Stage Manager 320×320 floating panel, 250 pt avatar circle, Picture-in-Picture, PhotosPicker portrait swap.
+- **iPhone full-screen with PiP collapse** — full-screen avatar, tap-to-collapse 120 pt PiP, single-sheet TabView for customization.
 
 ## TestFlight checklist
 
@@ -181,17 +178,14 @@ Add to `Info.plist`:
 </array>
 ```
 
-See `AvatarPiPController` in the iPad reference app
-(in [bithuman-apps](https://github.com/bithuman-product/bithuman-apps)) for the canonical wiring.
+Fan the rendered frames into both the on-screen renderer and an `AVSampleBufferDisplayLayer` driven by `AVPictureInPictureController` to enable PiP.
 
 ## Distribution
 
 - **App Store** — standard archive flow via Xcode. The reference
   apps' bundle IDs are `ai.bithuman.app.ipad` and
   `ai.bithuman.app.ios`.
-- **TestFlight** — same. `Bithuman{Pad,Phone}/Scripts/build-*-app.sh`
-  in the [bithuman-apps](https://github.com/bithuman-product/bithuman-apps) repo show a fully-automated upload via
-  App Store Connect API.
+- **TestFlight** — same archive flow; automate uploads via the App Store Connect API.
 - **Enterprise** — supported via the standard enterprise
   distribution. The hardware gate is the same; the entitlements
   are the same.
@@ -210,4 +204,4 @@ See `AvatarPiPController` in the iPad reference app
 - [Quickstart](/swift-sdk/quickstart) — 10-minute integration
 - [Cookbook](/swift-sdk/quickstart) — agent swap, custom voice, PhotosPicker
 - [API reference](https://docs.bithuman.ai/swift-sdk/overview) — DocC
-- Reference apps (iPad + iPhone) — source in [bithuman-apps](https://github.com/bithuman-product/bithuman-apps), distributed via the App Store
+- [iOS hello-world example](/examples/swift-ios-hello) — minimal SwiftUI integration

@@ -22,15 +22,7 @@ dependencies:
 ```
 
 <Note>
-Pub.dev publish is pending. Until then, install via git dep:
-
-```yaml
-dependencies:
-  bithuman:
-    git:
-      url: https://github.com/bithuman-product/bithuman-apps.git
-      path: flutter/bithuman
-```
+Pub.dev publish is pending. While the package is finalized, request early access on [Discord](https://discord.gg/ES953n7bPA) or watch the [bithuman-sdk-public releases](https://github.com/bithuman-product/bithuman-sdk-public/releases) for the publish announcement.
 </Note>
 
 ```dart
@@ -39,9 +31,7 @@ import 'package:bithuman/bithuman.dart';
 void main() => runApp(const MaterialApp(home: AvatarScreen()));
 ```
 
-The example app at [`bithuman-apps/flutter/bithuman/example/`](https://github.com/bithuman-product/bithuman-apps/tree/main/flutter/bithuman/example) is the canonical cross-platform Essence demo, including a settings sheet that hot-updates the system prompt mid-session.
-
-For Expression on Apple Silicon, use the native Swift [Mac](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/mac) or [iPad](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/ipad) reference apps — the Flutter plugin covers the Essence cross-platform path.
+The plugin ships with a cross-platform example app demonstrating settings, prompt hot-reload, and the full Essence pipeline. For Expression on Apple Silicon (Mac and iPad), pair the plugin with the native Swift [Expression on Swift](/swift-sdk/essence) guide — the Flutter plugin itself covers the Essence cross-platform path today.
 
 ---
 

@@ -7,7 +7,9 @@ icon: "message"
 Send real-time messages to agents deployed on the [www.bithuman.ai](https://www.bithuman.ai) platform. Make agents speak proactively or inject background knowledge to improve their responses.
 
 <Note>
-This API is for agents created on the bitHuman platform, not for local SDK agents.
+This API is for agents created on the bitHuman platform with an active session. It's not for local SDK agents.
+
+**Need credentials?** Get your agent code by [generating an agent](/api-reference/agent-generation) or from your [Library](https://www.bithuman.ai/#library). Get your API secret from [Developer → API Keys](https://www.bithuman.ai/#developer).
 </Note>
 
 ## Make Agent Speak
@@ -37,22 +39,36 @@ Triggers the agent to speak a message to users in the session.
 
 **Example**
 
-```python
-import requests
+<CodeGroup>
+
+```bash curl
+curl -X POST https://api.bithuman.ai/v1/agent/A12345678/speak \
+  -H "Content-Type: application/json" \
+  -H "api-secret: $BITHUMAN_API_SECRET" \
+  -d '{
+    "message": "We have a 20% discount available today.",
+    "room_id": "customer_session_1"
+  }'
+```
+
+```python Python
+import os, requests
 
 response = requests.post(
     "https://api.bithuman.ai/v1/agent/A12345678/speak",
     headers={
         "Content-Type": "application/json",
-        "api-secret": "YOUR_API_SECRET"
+        "api-secret": os.environ["BITHUMAN_API_SECRET"],
     },
     json={
         "message": "We have a 20% discount available today.",
-        "room_id": "customer_session_1"
-    }
+        "room_id": "customer_session_1",
+    },
 )
 print(response.json())
 ```
+
+</CodeGroup>
 
 ---
 

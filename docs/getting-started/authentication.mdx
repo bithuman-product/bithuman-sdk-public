@@ -4,12 +4,16 @@ description: "Get an API secret or API key, set it for the right SDK, and verify
 icon: "key"
 ---
 
+<Tip>
+**You only need an API key when an avatar is rendering.** Audio-only voice agents — and the local CLI `bithuman voice` / `bithuman text` flows — run fully offline without one. If that's your path, skip this page.
+</Tip>
+
 bitHuman uses a single shared credential per account that authenticates every SDK and the REST API. There are two equivalent ways to refer to it depending on which SDK you're using:
 
-- **`BITHUMAN_API_SECRET`** — used by Python SDK, REST API, and LiveKit plugin (everything server-side).
-- **`BITHUMAN_API_KEY`** — used by the Swift SDK on Apple Silicon. Same value, different env var name to match Apple-platform conventions.
+- **`BITHUMAN_API_SECRET`** — used by the Python SDK, REST API, LiveKit plugin, Kotlin SDK, and CLI.
+- **`BITHUMAN_API_KEY`** — used by the Swift SDK on Apple platforms. Same value, different env var name to match Apple convention.
 
-The credential never leaves your control. Heartbeats use it to mint short-lived runtime tokens that expire in minutes; no long-lived credentials end up in any avatar process.
+The credential never sits in process memory. On runtime startup the SDK exchanges it for a short-lived runtime token that auto-renews on a one-request-per-minute billing heartbeat.
 
 ## 1. Get a key
 

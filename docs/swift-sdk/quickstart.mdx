@@ -5,9 +5,17 @@ description: "Ship a working on-device voice agent in your Mac/iPad/iPhone app i
 
 Get a working on-device voice agent running in your Mac, iPad, or iPhone app in under 10 minutes. All inference runs locally — the only network calls are the first-launch weights download and the metered billing heartbeat for avatar mode.
 
+<Note>
+**Two API surfaces** — both ship in the same `bitHumanKit` package:
+
+- **`VoiceChat`** (this page) — the high-level voice agent. Built-in speech recognition, language model, and TTS. The fastest way to ship a talking on-device assistant.
+- **`Bithuman.createRuntime` + `EssenceRuntime.frames()`** — the low-level streaming API. Push your own PCM, pull `CGImage` frames. Use this when you bring your own audio source (WebRTC, custom TTS, etc.). See [Streaming API](/swift-sdk/streaming) and the [iOS hello-world example](/examples/swift-ios-hello).
+</Note>
+
 ## Prerequisites
 
 - **Xcode 26+** — older Xcodes don't recognize some Swift 6 concurrency syntax `bitHumanKit` uses.
+- **Minimum deployment targets**: macOS 26, iOS 26, iPadOS 26.
 - **Apple Silicon Mac (M3+)** for development.
 - **Apple Developer account** if targeting iOS / iPadOS on real devices. Free is fine for sideloaded builds; paid is required for App Store and the increased-memory entitlement.
 - **A target device that meets the [hardware floor](/swift-sdk/overview#hardware-floor)** — under-spec devices are refused at runtime.

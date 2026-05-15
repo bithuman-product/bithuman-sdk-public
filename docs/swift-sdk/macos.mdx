@@ -167,22 +167,16 @@ Sandboxed apps additionally need the audio-input entitlement:
 
 Mac apps consuming bitHumanKit ship via the standard channels:
 
-- **Direct DMG** with Sparkle auto-update (the bitHuman Mac
-  reference app uses this; see the
-  [bithuman-apps](https://github.com/bithuman-product/bithuman-apps) repo).
+- **Direct DMG** with Sparkle auto-update — the [bitHuman Halo](/examples/halo-macos) Mac app demonstrates this pattern end-to-end.
 - **Mac App Store** — same app, archived through Xcode.
-- **Homebrew Cask** — for CLI / dev tools (see
-  [bitHuman CLI](/getting-started/cli) for the canonical example).
+- **Homebrew Cask** — for CLI / dev tools (see [bitHuman CLI](/getting-started/cli) for the canonical example).
 
 ## Reference apps
 
-Reference apps (Mac, iPad, iPhone) live in the private [bithuman-apps](https://github.com/bithuman-product/bithuman-apps) repo. They consume the SDK via the published SwiftPM binary package — the same way any external developer would.
+Mac, iPad, and iPhone reference apps consume `bitHumanKit` via the published SwiftPM binary — the same path an external developer takes. Highlights:
 
-- **bithuman-mac** (in bithuman-apps) —
-  full Mac app with floating avatar window, agent picker, voice
-  gallery, drag-drop face swap, Sparkle DMG packaging. Annotated
-  source designed to be cloned and adapted.
-- **[bitHuman CLI](/getting-started/cli)** — same runtime, CLI shell. Voice / text / avatar modes. `brew install bithuman-product/bithuman/bithuman`.
+- **Native Mac app** — floating avatar window, agent picker, voice gallery, drag-drop face swap, Sparkle DMG packaging. The closest publicly-available analog is the signed [bitHuman Halo](/examples/halo-macos) Mac app.
+- **[bitHuman CLI](/getting-started/cli)** — same runtime, terminal shell. Voice / text / avatar modes. `brew install bithuman-product/bithuman/bithuman`.
 
 ## Troubleshooting
 
