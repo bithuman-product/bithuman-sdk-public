@@ -1,106 +1,68 @@
 ---
 title: "Kotlin SDK overview"
-description: "On-device avatar runtime for Android — JNI binding over the libessence C++ engine, shipped via Maven Central."
+description: "On-device avatar runtime for Android — shipped via Maven Central as a self-contained AAR."
 ---
 
-`ai.bithuman:sdk` is an Android AAR that drops the bitHuman avatar
-runtime into a Kotlin or Java app. Audio in (16 kHz mono PCM), 25 fps
-BGR frames out. All inference runs on-device; the avatar pipeline is
-metered through a 1-request-per-minute heartbeat to `api.bithuman.ai`.
-
-This is the **Kotlin flavor of Layer 3** in the
-[3-layer architecture](/getting-started/architecture) — a thin JNI shim
-over the cross-platform [`libessence`](/getting-started/architecture#layer-1--libessence-engine) engine.
+`ai.bithuman:sdk` is an Android AAR that drops the bitHuman avatar runtime into a Kotlin or Java app. Audio in (16 kHz mono PCM), 25 FPS video frames out. All inference runs on-device; the avatar pipeline is metered via a one-request-per-minute billing heartbeat.
 
 <CardGroup cols={2}>
   <Card title="Kotlin quickstart" icon="rocket" href="/kotlin-sdk/quickstart">
-    Maven coord + 10-line code example
+    Maven coord and a 10-line example
   </Card>
   <Card title="Streaming API" icon="bolt" href="/kotlin-sdk/streaming">
-    `pushAudio` / `pullFrame` — O(1) tick on `ai.bithuman.sdk.Runtime`.
+    Push audio, pull frames — for long-running conversations
   </Card>
   <Card title="Architecture" icon="diagram-project" href="/getting-started/architecture">
-    How libessence + the AAR fit together
+    How the AAR fits with the other SDKs
+  </Card>
+  <Card title="Examples" icon="book-open" href="/examples/kotlin-android-hello">
+    Hello-world Android project
   </Card>
 </CardGroup>
 
 ## Compatibility
 
 | Field | Value |
-| ----- | ----- |
-| Maven coord | `ai.bithuman:sdk:1.16.0` (Maven Central) |
-| ABI | `arm64-v8a` only |
-| Min SDK | 29 (Android 10) |
-| Compile SDK | 35 |
-| NDK | 28.0.13004108 |
-| libessence ABI | v6 (streaming push/pull) |
-| AAR size | ~14 MB |
+|---|---|
+| **Maven coord** | `ai.bithuman:sdk:1.17.1` |
+| **ABI** | `arm64-v8a` only |
+| **Min SDK** | 29 (Android 10) |
+| **Compile SDK** | 35 |
+| **NDK** | 28.0.13004108 |
+| **AAR size** | ~40 MB |
 
-The AAR bundles three native libraries:
-
-| Library | Size | Role |
-| ------- | ---- | ---- |
-| `libessence_jni.so` | ~11 MB | engine + JNI shim + OpenSSL 3.4 + libcurl 8.10 statically linked |
-| `libonnxruntime.so` | ~27 MB | ONNX Runtime (CPU EP) |
-| `libc++_shared.so` | ~1.2 MB | NDK C++ runtime |
-
-Auth heartbeat is live (vendored OpenSSL + libcurl) — no stub mode. Set
-`BITHUMAN_UNMETERED=1` for dev / parity-test runs against an audio-only
-pipeline.
+The AAR bundles all native libraries — your app doesn't need to add ONNX Runtime, OpenSSL, or any other system dependency separately.
 
 ## Public API
 
 All public types live in `ai.bithuman.sdk`:
 
 | Tier | Types | Use when… |
-| ---- | ----- | --------- |
-| High-level | `Avatar`, `ComposedFrame` | Single conversation, one fixture in scope |
-| Low-level | `Fixture`, `FixtureInfo`, `Runtime`, `ComposeResult` | Multi-conversation host — one fixture, many runtimes |
-| Streaming | `Runtime.pushAudio` / `pullFrame` / `ticksAvailable` / `resetStream` | Long live conversations — see [streaming page](/kotlin-sdk/streaming) |
-| Config | `ExecutionProvider` | EP hint (`CPU` / `AUTO` / `NNAPI` / `QNN`) |
-| Errors | `BithumanException` | Single exception type with typed error codes |
-| Auth | `BithumanAuth`, `AuthState` | Direct heartbeat control (rarely needed) |
-| Version | `Fixture.libraryVersion()` / `Fixture.abiVersion()` | Linked libessence info |
+|---|---|---|
+| **High-level** | `Avatar`, `ComposedFrame` | Single conversation, one model file in scope |
+| **Low-level** | `Fixture`, `FixtureInfo`, `Runtime`, `ComposeResult` | Multi-conversation host — share one model file across many sessions |
+| **Streaming** | `Runtime.pushAudio` / `frames()` / `resetStream` | Long live conversations — see [Streaming API](/kotlin-sdk/streaming) |
+| **Config** | `ExecutionProvider` | Backend hint (`CPU` / `AUTO` / `NNAPI` / `QNN`) |
+| **Errors** | `BithumanException` | Single exception type with typed error codes |
+| **Auth** | `BithumanAuth`, `AuthState` | Direct heartbeat control (rarely needed) |
 
-The `Avatar` facade wraps `Fixture + Runtime` for the single-conversation
-case. For multi-conversation hosting share one `Fixture` (~344 MB resident
-on a typical 1248×704 model) across many `Runtime` instances (~36 MB
-delta each) — at N=10 concurrent runtimes the memory efficiency is ~5.6×
-vs naive per-conversation loads.
+The `Avatar` facade is the simplest path — one avatar, one conversation. For hosts that run many concurrent sessions, share one `Fixture` across many `Runtime` instances to amortize the model load.
 
-## Hardware floor
+## Hardware
 
-The library targets `arm64-v8a` Android devices on modern silicon.
-Reference benchmark numbers from `bench/` on **Snapdragon 8 Gen 2**
-(Galaxy Z Fold 5), Essence v1, CPU EP, intra-op threads = 1:
-
-| Metric | Value |
-| ------ | ----- |
-| Tight-loop mean / tick | 3.96 ms |
-| Sustained FPS | 252 |
-| Peak RSS (PSS) | 139 MB |
-
-That's ~10× headroom over the 25 fps / 40 ms tick budget. Older arm64
-chips (e.g. SD865-era) have not been characterized; treat them as
-unsupported for production until measured.
+`arm64-v8a` only. Runs on modern Android silicon (Snapdragon 8 Gen 1+, Tensor G2+, similar). Older arm64 chips haven't been characterized — treat them as unsupported for production until measured.
 
 ## Authentication
 
+```bash
+export BITHUMAN_API_SECRET=...
 ```
-BITHUMAN_API_SECRET    # Android env / Application.onCreate System.setProperty
-```
 
-Sign in at [www.bithuman.ai → Developer → API Keys](https://www.bithuman.ai/#developer)
-to fetch a secret. The library never holds the long-lived secret —
-it exchanges it for a short-lived runtime token on first compose, then
-auto-renews on a 1-request-per-minute heartbeat (5-min offline grace).
-Full flow: [Authentication](/getting-started/authentication).
+Sign in at [www.bithuman.ai → Developer → API Keys](https://www.bithuman.ai/#developer) to fetch a secret. The library exchanges the secret for a short-lived runtime token at startup and auto-renews on the billing heartbeat (5-minute offline grace). Full flow: [Authentication](/getting-started/authentication).
 
-## ABI roadmap
+## Roadmap
 
-- `arm64-v8a` — shipped today.
-- `armeabi-v7a`, `x86_64` — deferred. The C++ core builds for both but
-  the AAR pipeline + ONNX Runtime prebuilts are wired only for arm64.
+`armeabi-v7a` and `x86_64` are not currently supported. Open a request on the [GitHub issue tracker](https://github.com/bithuman-product/bithuman-sdk-public/issues) if you need them.
 
 ## See also
 
@@ -108,13 +70,13 @@ Full flow: [Authentication](/getting-started/authentication).
   <Card title="Kotlin quickstart" icon="rocket" href="/kotlin-sdk/quickstart">
     Maven coord + 10-line example
   </Card>
-  <Card title="Install matrix" icon="download" href="/getting-started/install">
-    All four channels on one page
-  </Card>
-  <Card title="Architecture" icon="diagram-project" href="/getting-started/architecture">
-    libessence engine + binding layers
+  <Card title="Install" icon="download" href="/getting-started/install">
+    All install channels on one page
   </Card>
   <Card title="Swift SDK" icon="apple" href="/swift-sdk/overview">
-    Same engine, Apple platforms
+    Same runtime on Apple platforms
+  </Card>
+  <Card title="Flutter plugin" icon="layer-group" href="/integrations/flutter">
+    Cross-platform Dart wrapper
   </Card>
 </CardGroup>

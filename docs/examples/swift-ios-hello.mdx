@@ -1,106 +1,112 @@
 ---
-title: "Swift / iOS Hello World"
-description: "Render an on-device AI avatar on iPhone or iPad in ~30 lines of SwiftUI — SwiftPM package, on-device lip-sync, no cloud."
+title: "Swift / iOS — Hello, avatar"
+description: "Render a real-time on-device bitHuman avatar on iPhone or iPad in ~40 lines of SwiftUI."
 icon: "apple"
 ---
 
-This page is the minimum runnable iOS program that drives the bitHuman
-avatar runtime on-device. Real-time lip-sync compositing on Apple
-Silicon iPhones and iPads with sub-50 ms latency, no cloud inference,
-fully private.
+The smallest runnable iOS program that drives a bitHuman avatar on-device. Sub-200ms latency, no cloud round-trip for rendering.
 
 ## Prerequisites
 
 - **Xcode 16+**, iOS 26.0+ deployment target.
-- An iPhone 16 Pro or newer (A18 Pro), or an iPad Pro M4+ for on-device
-  Expression. Essence works on a wider Apple Silicon set — see
-  [device matrix](/getting-started/device-matrix).
-- A `.imx` model file added to your app bundle as a resource.
-- A bitHuman API key exposed to the app process via `BITHUMAN_API_KEY`
-  (Apple convention) or your secret store.
+- An iPhone 17 Pro+ or iPad Pro M4+ for on-device Essence. (Expression on iPhone is not supported yet — use Essence.)
+- A `.imx` model file in your app bundle.
+- A bitHuman API key exposed as `BITHUMAN_API_KEY` (Apple convention).
+
+For the full hardware floor, see [device matrix](/getting-started/device-matrix).
 
 ## 1. Add the SwiftPM dependency
 
-In `Package.swift` or via **Xcode → File → Add Package Dependencies…**:
+In `Package.swift`:
 
 ```swift
 dependencies: [
     .package(
-        url: "https://github.com/bithuman-product/bithuman-sdk",
-        from: "libessence-v1.16.0"
+        url: "https://github.com/bithuman-product/bithuman-sdk-public.git",
+        from: "0.8.1"
     ),
 ],
 targets: [
     .target(
-        name: "BithumanHello",
+        name: "MyApp",
         dependencies: [
-            .product(name: "Bithuman", package: "bithuman-sdk"),
+            .product(name: "bitHumanKit", package: "bithuman-sdk-public"),
         ]
     )
 ]
 ```
 
-The xcframework is fat — macOS arm64 + iOS device + iOS simulator — and
-links `libessence` statically. Zero transitive SwiftPM dependencies.
+Or in Xcode: **File → Add Package Dependencies…** → paste the URL → pick `0.8.1` or later.
 
 ## 2. Minimal SwiftUI view
 
-Load an `.imx` from the app bundle, compose frames from a bundled WAV,
-display them via `Image(uiImage:)`. The whole pipeline is on-device.
-
 ```swift
-// ContentView.swift — load model, compose frames, render in SwiftUI
+// ContentView.swift
 import SwiftUI
-import Bithuman
+import bitHumanKit
 
-struct ContentView: View {
-    @State private var frame: UIImage?
+@MainActor
+final class AvatarVM: ObservableObject {
+    @Published var currentFrame: CGImage?
 
-    var body: some View {
-        Group {
-            if let frame { Image(uiImage: frame).resizable().scaledToFit() }
-            else         { ProgressView() }
-        }
-        .task { await run() }
-    }
+    private var essence: EssenceRuntime?
 
-    private func run() async {
-        // .imx + .wav shipped as bundle resources.
-        guard let model = Bundle.main.url(forResource: "sample-avatar", withExtension: "imx"),
-              let audio = Bundle.main.url(forResource: "speech",        withExtension: "wav")
-        else { return }
+    func start() async {
+        guard let imxURL = Bundle.main.url(forResource: "avatar", withExtension: "imx") else { return }
 
         do {
-            let avatar = try Avatar(modelPath: model)
-            try avatar.compose(audioFile: audio) { composed in
-                // ~25 fps callback on a background queue.
-                if let img = composed.uiImage() {
-                    Task { @MainActor in self.frame = img }
+            let runtime = try await Bithuman.createRuntime(modelPath: imxURL)
+            if case .essence(let essence) = runtime {
+                self.essence = essence
+                for await frame in essence.frames() {
+                    if let frame { self.currentFrame = frame }
                 }
             }
         } catch {
-            print("compose failed: \(error)")
+            print("createRuntime failed: \(error)")
         }
+    }
+
+    /// Push 16 kHz mono PCM in as audio arrives (mic, TTS, WebRTC).
+    func push(_ pcm: Data) async {
+        try? await essence?.pushAudio(pcm)
+    }
+}
+
+struct ContentView: View {
+    @StateObject private var vm = AvatarVM()
+
+    var body: some View {
+        Group {
+            if let cg = vm.currentFrame {
+                Image(uiImage: UIImage(cgImage: cg))
+                    .resizable().scaledToFit()
+            } else {
+                ProgressView("Loading…")
+            }
+        }
+        .task { await vm.start() }
     }
 }
 ```
 
-That's the whole loop: bundled audio in, lip-synced `UIImage`s on the
-main actor at 25 fps, fully on-device.
+That's the whole pipeline: bundled `.imx` in, `CGImage` frames at 25 fps on the main actor, fully on-device. Wire `vm.push(pcm)` to your audio source (mic, TTS, WebRTC) to make it lip-sync.
+
+A complete reference is at [Examples/swift/essence-playback](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/swift/essence-playback).
 
 ## Where to go next
 
 <CardGroup cols={2}>
   <Card title="Swift quickstart" icon="rocket" href="/swift-sdk/quickstart">
-    Full Swift / SwiftUI walkthrough.
+    Full SwiftUI walkthrough.
   </Card>
   <Card title="Swift iOS guide" icon="mobile" href="/swift-sdk/ios">
-    Background mode, PiP, lifecycle integration.
+    Background mode, Picture-in-Picture, lifecycle.
   </Card>
   <Card title="Apple-local example" icon="laptop" href="/examples/apple-local">
-    Offline macOS conversation (Siri + Ollama + Essence).
+    Offline macOS voice agent.
   </Card>
   <Card title="Device matrix" icon="microchip" href="/getting-started/device-matrix">
-    iPhone / iPad / Mac performance numbers.
+    Supported devices.
   </Card>
 </CardGroup>

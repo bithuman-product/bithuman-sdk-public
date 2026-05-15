@@ -1,49 +1,46 @@
 ---
 title: "Install"
-description: "Every bitHuman SDK install channel — pip, SwiftPM, Maven Central, Homebrew, Flutter pub — on one page."
+description: "Install bitHuman on every platform — pip, SwiftPM, Maven Central, Homebrew, Flutter pub. Versions, prerequisites, and smoke-test snippets in one place."
 icon: "download"
 ---
 
-bitHuman ships from one source tag (`libessence-v1.17.0`) into multiple package
-registries. Pick the channel that matches your target platform.
+Pick the channel that matches your target platform.
 
-| Channel | Coord | Platforms |
-| ------- | ----- | --------- |
-| pip (Python) | `bithuman` 1.12.4 | macOS arm64, Linux x86_64, Linux aarch64 |
-| SwiftPM (Apple) | `Bithuman` (`from: "1.17.0"`) | macOS arm64, iOS device, iOS simulator |
-| Maven Central (Android) | `ai.bithuman:sdk:1.17.0` | Android `arm64-v8a`, minSdk 29 |
-| Homebrew (CLI) | `bithuman` 1.17.0 | macOS arm64 |
-| GitHub Releases (CLI) | `bithuman` 1.17.0 tarballs | Linux x86_64, Linux aarch64, Windows x86_64 |
-| Flutter pub | `bithuman` (renamed from `bithuman_avatar`) | macOS · iOS · Android — pub.dev publish queued |
+| Channel | Coordinate | Platforms |
+| --- | --- | --- |
+| **pip (Python)** | `bithuman` 1.17.2 | macOS arm64, Linux x86_64, Linux aarch64, Windows x86_64 |
+| **SwiftPM (Apple)** | `bitHumanKit` (`from: "0.8.1"`) | macOS arm64, iOS device, iOS simulator |
+| **Maven Central (Android)** | `ai.bithuman:sdk:1.17.1` | Android `arm64-v8a`, minSdk 29 |
+| **Homebrew (CLI)** | `bithuman-product/bithuman/bithuman` | macOS arm64 |
+| **GitHub Releases (CLI)** | `bithuman` tarballs | Linux x86_64, Linux aarch64, Windows x86_64 |
+| **Flutter pub** | `bithuman` (publish pending — install via git dep) | macOS · iOS · Android |
 
-<Note>
-The Python wheel is still on the legacy 1.12.4 batched API while the
-streaming wheel is queued behind the unified Rust + PyO3 build. Swift, Kotlin,
-the Rust crate, and the engine's C ABI expose the [streaming push/pull API](/getting-started/architecture#streaming-api-c-abi-v6)
-introduced in v1.16.0.
-</Note>
-
-For the underlying architecture (Layer 1/2/3, the role of `libessence`),
-see [Architecture](/getting-started/architecture).
+Every channel reads the same `.imx` model format and produces identical output. All third-party dependencies are bundled inside the SDK — your app needs only the dependency above.
 
 ## Python — `pip`
 
 ```bash
-pip install bithuman --upgrade   # 1.12.4 (legacy batched API)
+pip install bithuman --upgrade
 ```
 
-- Python 3.10 – 3.13 (CPython).
-- Wheels: macOS arm64, Linux x86_64 (`manylinux_2_28`), Linux aarch64 (`manylinux_2_28`).
-- Windows wheels are tracked for a follow-up release.
+- Python 3.10 – 3.13.
+- Wheels: macOS arm64, Linux x86_64, Linux aarch64, Windows x86_64.
 
-Smoke-test in one line:
+Smoke test:
 
 ```python
-from bithuman import Avatar
-with Avatar.load("model.imx") as avatar:
-    for frame in avatar.compose("speech.wav"):
-        # frame.bgr is (H, W, 3) uint8 BGR
-        ...
+import asyncio, os
+from bithuman import AsyncBithuman
+
+async def main():
+    runtime = await AsyncBithuman.create(
+        model_path="avatar.imx",
+        api_secret=os.environ["BITHUMAN_API_SECRET"],
+    )
+    print("frame size:", runtime.frame_width, "x", runtime.frame_height)
+    await runtime.stop()
+
+asyncio.run(main())
 ```
 
 Full guide: [Python quickstart](/getting-started/quickstart).
@@ -55,35 +52,39 @@ In `Package.swift`:
 ```swift
 dependencies: [
     .package(
-        url: "https://github.com/bithuman-product/bithuman-sdk",
-        from: "1.17.0"
+        url: "https://github.com/bithuman-product/bithuman-sdk-public.git",
+        from: "0.8.1"
     ),
 ],
 targets: [
     .target(
         name: "MyApp",
         dependencies: [
-            .product(name: "Bithuman", package: "bithuman-sdk"),
+            .product(name: "bitHumanKit", package: "bithuman-sdk-public"),
         ]
     )
 ]
 ```
 
-In Xcode: **File → Add Package Dependencies…** → paste the repo URL → pick
-`1.17.0` (or the latest tagged version).
+In Xcode: **File → Add Package Dependencies…** → paste `https://github.com/bithuman-product/bithuman-sdk-public.git` → pick `0.8.1` (or the latest tag).
+
+Smoke test:
 
 ```swift
-import Bithuman
+import bitHumanKit
 
-let avatar = try Avatar(modelPath: modelURL)
-try avatar.compose(audioFile: speechURL) { frame in
-    if let cg = frame.cgImage() { /* hand to SwiftUI / UIKit / AppKit */ }
+let runtime = try await Bithuman.createRuntime(modelPath: modelURL)
+switch runtime {
+case .essence(let essence):
+    print("frame size:", essence.resolution)
+case .expression:
+    break
 }
 ```
 
-The package ships a 3-slice xcframework (macOS arm64 + iOS arm64 device + iOS
-arm64 simulator). Static link of `libessence` — zero transitive SwiftPM
-dependencies. Full guide: [Swift quickstart](/swift-sdk/quickstart).
+The SDK is distributed as a binary XCFramework (macOS arm64 + iOS device arm64 + iOS simulator arm64). Zero transitive SwiftPM dependencies.
+
+Full guide: [Swift quickstart](/swift-sdk/quickstart).
 
 ## Kotlin / Android — Maven Central
 
@@ -98,68 +99,51 @@ android {
 }
 
 dependencies {
-    implementation("ai.bithuman:sdk:1.17.0")
+    implementation("ai.bithuman:sdk:1.17.1")
 }
 ```
+
+Smoke test:
 
 ```kotlin
-import ai.bithuman.sdk.Avatar
+import ai.bithuman.sdk.Bithuman
 
-Avatar.load("/path/to/model.imx").use { avatar ->
-    avatar.composeFromFile("/path/to/speech.wav").forEach { frame ->
-        // frame.bgr is width*height*3 packed BGR uint8
-    }
-}
+val runtime = Bithuman.createRuntime("/path/to/avatar.imx")
+println("frame size: ${runtime.frameWidth} x ${runtime.frameHeight}")
+runtime.close()
 ```
 
-AAR is ~14 MB. `arm64-v8a` only (other ABIs deferred). Full guide:
-[Kotlin quickstart](/kotlin-sdk/quickstart).
+AAR ships `arm64-v8a` only. Full guide: [Kotlin quickstart](/kotlin-sdk/quickstart).
 
 ## CLI — Homebrew
 
 ```sh
-brew tap bithuman-product/bithuman
-brew install bithuman
+brew install bithuman-product/bithuman/bithuman
 ```
 
-The canonical formula is `bithuman`. `bithuman-cli` is kept as a tap alias
-for back-compat — existing scripts using `brew install bithuman-cli` continue
-to work unchanged.
-
 ```sh
-bithuman doctor          # verify host setup + API key presence
-bithuman avatar          # browser-served local avatar on :8080 (default)
-bithuman avatar --openai # server-side OpenAI Realtime + browser avatar (v1.17.0)
-bithuman voice           # auto-picks cloud (OPENAI_API_KEY) or --local
-bithuman text            # same auto-pick rule, non-interactive stdin → stdout
+bithuman doctor          # verify host setup + API key
+bithuman avatar          # local avatar in your browser at :8080
+bithuman voice           # spoken conversation in the terminal
+bithuman text            # text-only chat, stdin → stdout
 ```
 
-`voice` and `text` infer the backend at startup: cloud (OpenAI Realtime / Chat Completions) when `OPENAI_API_KEY` is set, on-device (`--local`) otherwise. Explicit `--openai` / `--local` flags still win. On a TTY, `voice` renders a ratatui status pill + 🎙 mic / 🔊 bot level bars + scrolling transcript; set `BITHUMAN_NO_TUI=1` to fall back to plain stdout.
+`voice` and `text` auto-select cloud (OpenAI) when `OPENAI_API_KEY` is set, on-device otherwise. Explicit `--openai` / `--local` flags override the auto-pick.
 
-No-Homebrew alternative (curl-pipe):
-
-```sh
-curl -fsSL https://github.com/bithuman-product/bithuman-sdk/releases/latest/download/install.sh | sh
-```
-
-You'll still need the runtime dylibs the CLI links against:
+No-Homebrew alternative (Linux, manual macOS install):
 
 ```sh
-brew install onnxruntime hdf5 jpeg-turbo webp ffmpeg
+curl -fsSL https://github.com/bithuman-product/bithuman-sdk-public/releases/latest/download/install.sh | sh
 ```
 
 Full guide: [CLI reference](/getting-started/cli).
 
 ## Flutter — `pub`
 
-The cross-platform Flutter plugin (renamed from `bithuman_avatar` →
-`bithuman` in v1.17.0) wraps the Swift and Kotlin bindings under one
-Dart codebase covering macOS + iOS + Android.
-
 ```yaml
 # pubspec.yaml
 dependencies:
-  bithuman: ^1.17.0
+  bithuman: ^1.0.0
 ```
 
 ```bash
@@ -167,7 +151,7 @@ flutter pub get
 ```
 
 <Note>
-Pub.dev publish is queued. Until then, install via path / git dep:
+Pub.dev publish is pending. Until then, install via git dep:
 
 ```yaml
 dependencies:
@@ -178,41 +162,32 @@ dependencies:
 ```
 </Note>
 
-The plugin auto-selects the right Realtime transport per platform:
-macOS + iOS use a WebSocket Realtime through the plugin's VP-IO
-`RealtimeAudioIO` (Apple hardware AEC); Android uses flutter_webrtc's
-libwebrtc native pipeline (libwebrtc native AEC). Single
-`AvatarScreen` Dart UI; live prompt updates propagate to the running
-session via `session.update`.
-
-Full guide: [Flutter plugin](/integrations/flutter).
+The Flutter plugin gives you one Dart codebase covering macOS, iOS, and Android. Built-in echo cancellation per platform. Full guide: [Flutter plugin](/integrations/flutter).
 
 ## Authentication
 
-Every channel reads the same credential under one of two equivalent env-var
-names (platform convention determines which):
+Every channel reads the same credential. Platform convention determines the variable name:
 
 ```sh
 export BITHUMAN_API_SECRET=...   # Python, Kotlin, REST API, CLI
-export BITHUMAN_API_KEY=...      # Swift (Apple-platform convention)
+export BITHUMAN_API_KEY=...      # Swift (Apple convention)
 ```
 
-Sign in at [www.bithuman.ai → Developer → API Keys](https://www.bithuman.ai/#developer)
-to fetch a secret. Full auth flow: [Authentication](/getting-started/authentication).
+Sign in at [www.bithuman.ai → Developer → API Keys](https://www.bithuman.ai/#developer) to fetch a secret. Full auth flow: [Authentication](/getting-started/authentication).
 
 ## Where to go next
 
 <CardGroup cols={2}>
-  <Card title="Architecture" icon="diagram-project" href="/getting-started/architecture">
-    The 3-layer model behind every channel
-  </Card>
-  <Card title="Python quickstart" icon="rocket" href="/getting-started/quickstart">
-    `pip install bithuman` end-to-end
+  <Card title="Quickstart" icon="rocket" href="/getting-started/quickstart">
+    Get a first avatar running in 5 minutes
   </Card>
   <Card title="Swift quickstart" icon="apple" href="/swift-sdk/quickstart">
-    SwiftPM `Bithuman` in 10 minutes
+    SwiftPM `bitHumanKit` in 10 minutes
   </Card>
   <Card title="Kotlin quickstart" icon="android" href="/kotlin-sdk/quickstart">
     `ai.bithuman:sdk` in 10 minutes
+  </Card>
+  <Card title="Models" icon="circle-info" href="/getting-started/models">
+    Essence vs Expression — which one to pick
   </Card>
 </CardGroup>

@@ -32,13 +32,13 @@ android {
 }
 
 dependencies {
-    implementation("ai.bithuman:sdk:1.16.0")   // Maven Central
+    implementation("ai.bithuman:sdk:1.17.1")   // Maven Central
 }
 ```
 
 ## 2. Compose frames into an `ImageView`
 
-The canonical snippet from the [Kotlin SDK README](https://github.com/bithuman-product/bithuman-sdk/blob/main/cpp/bindings/kotlin/README.md):
+The canonical snippet:
 
 ```kotlin
 // MainActivity.kt — load model, compose frames, display them
@@ -88,6 +88,6 @@ That's the whole loop: 16 kHz mono PCM in, lip-synced `Bitmap`s out at
     Which phones, tablets, and SoCs have been benched.
   </Card>
   <Card title="Architecture" icon="diagram-project" href="/getting-started/architecture">
-    How the AAR sits on top of libessence.
+    How the AAR fits with the other SDKs.
   </Card>
 </CardGroup>

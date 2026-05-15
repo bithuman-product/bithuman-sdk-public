@@ -3,64 +3,42 @@ title: "Swift SDK quickstart"
 description: "Ship a working on-device voice agent in your Mac/iPad/iPhone app in under 10 minutes."
 ---
 
-
-Ship a working on-device voice agent in your Mac/iPad/iPhone app in
-under 10 minutes. The on-device runtime makes no network calls
-(other than the first-launch weights download); all inference
-runs locally.
-
-<Tip>
-**Want a working app right now?** Reference apps (Mac, iPad, iPhone) live in the private [bithuman-apps](https://github.com/bithuman-product/bithuman-apps) repo. They consume the SDK via the published SwiftPM binary package — the same way any external developer would. Walk through this page if you're integrating the SDK into an existing project; request access to bithuman-apps if you want to read finished code.
-</Tip>
+Get a working on-device voice agent running in your Mac, iPad, or iPhone app in under 10 minutes. All inference runs locally — the only network calls are the first-launch weights download and the metered billing heartbeat for avatar mode.
 
 ## Prerequisites
 
-- **Xcode 26+** — older Xcodes don't recognise some Swift 6
-  concurrency syntax bitHumanKit uses.
-- **An Apple Silicon Mac (M3+) for development** — the SDK builds
-  for both `swift build` and Xcode targets, but compilation
-  requires Apple Silicon.
-- **An Apple Developer account** if you're targeting iOS / iPadOS
-  on real devices (free is fine for sideloaded builds; paid is
-  required for App Store + the memory entitlements).
-- **A target device that meets the
-  [hardware floor](/swift-sdk/overview#hardware-floor)** — under-spec devices
-  are refused at runtime via `HardwareCheck.evaluate()`.
+- **Xcode 26+** — older Xcodes don't recognize some Swift 6 concurrency syntax `bitHumanKit` uses.
+- **Apple Silicon Mac (M3+)** for development.
+- **Apple Developer account** if targeting iOS / iPadOS on real devices. Free is fine for sideloaded builds; paid is required for App Store and the increased-memory entitlement.
+- **A target device that meets the [hardware floor](/swift-sdk/overview#hardware-floor)** — under-spec devices are refused at runtime.
 
-### If you've never used Swift Package Manager
+### New to Swift Package Manager?
 
-You have two on-ramps:
+Two on-ramps:
 
-1. **You already have an Xcode project / app.** Skip to
-   [Step 1: Add the package](#1-add-the-package). You'll add
-   bitHumanKit as a Swift Package dependency through Xcode's UI.
-2. **You're starting from scratch.** Open Xcode → **File → New →
-   Project** → pick "App" (macOS, iOS, or iPadOS) → name it →
-   create. Once the project is open, follow Step 1 below.
+1. **Existing Xcode project** — skip to [Step 1](#1-add-the-package). You'll add `bitHumanKit` through Xcode's UI.
+2. **Starting from scratch** — Xcode → **File → New → Project** → pick "App" (macOS / iOS / iPadOS) → name it → create. Then follow Step 1.
 
-If you're integrating into an existing project that uses a
-top-level `Package.swift` instead of an Xcode project (e.g. a
-command-line tool), the Step 1 snippet below shows what to add to
-your `dependencies` and `targets` arrays.
+For a command-line tool or SPM-only project, edit `Package.swift` directly (Step 1 has the snippet).
 
 ## 1. Add the package
 
-**In an Xcode project**: **File → Add Package Dependencies →**
-paste the URL → click "Add Package":
+**In Xcode**: **File → Add Package Dependencies** → paste the URL → click "Add Package":
 
 ```
 https://github.com/bithuman-product/bithuman-sdk-public.git
 ```
 
-When Xcode asks which products to add, pick `bitHumanKit` and
-attach it to your app's target.
+When Xcode asks which products to add, pick `bitHumanKit` and attach it to your app's target.
 
-**In a `Package.swift`** (SPM-only project):
+**In `Package.swift`**:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/bithuman-product/bithuman-sdk-public.git",
-             from: "0.8.1")
+    .package(
+        url: "https://github.com/bithuman-product/bithuman-sdk-public.git",
+        from: "0.8.1"
+    )
 ],
 targets: [
     .target(
@@ -71,10 +49,6 @@ targets: [
     )
 ]
 ```
-
-<Note>
-The `bitHumanKit` Swift Package is the **legacy** Swift binary distribution (Mac/iPad/iPhone voice-chat + Expression engine), distributed from `bithuman-sdk-public` and still pinned to `0.8.1`. New cross-platform integrations should target the unified `Bithuman` SwiftPM product (`from: "1.17.0"`) — see [Streaming API](/swift-sdk/streaming) and [Install](/getting-started/install#swift--swiftpm). The two tracks coexist; `bitHumanKit` covers the high-level voice-chat orchestrator with on-device LLM/TTS, `Bithuman` exposes the streaming engine binding bit-exact across mac/iOS/Android.
-</Note>
 
 ## 2. Permissions and entitlements
 
@@ -87,29 +61,24 @@ The `bitHumanKit` Swift Package is the **legacy** Swift binary distribution (Mac
 <string>Recognise what you say so the assistant can respond.</string>
 ```
 
-Without these, `chat.start()` fails silently when iOS / macOS
-prompts the user — the OS denies the request and remembers the
-denial for the rest of the session.
+Without these, `chat.start()` fails silently — the OS denies the request and remembers the denial for the rest of the session.
 
-### macOS-only — sandboxed apps
+### macOS only — sandboxed apps
 
-If your Mac app is sandboxed (default for App Store distribution),
-also add to your `.entitlements`:
+If your Mac app is sandboxed (default for App Store distribution), also add to your `.entitlements`:
 
 ```xml
 <key>com.apple.security.device.audio-input</key>
 <true/>
 ```
 
-Direct DMG / Homebrew distribution doesn't need the entitlement —
-just the Info.plist keys above.
+Direct DMG / Homebrew distribution doesn't need the entitlement — only the `Info.plist` keys above.
 
-### iOS-only — memory entitlements (REQUIRED)
+### iOS only — memory entitlements (required)
 
-> ⚠️ **Without these your app will be terminated by iOS
-> mid-conversation** when memory exceeds the default ~3 GB
-> ceiling (~30 s into a live turn). Request approval BEFORE you
-> start development — Apple takes 1–3 business days.
+<Warning>
+Without these, iOS will terminate your app mid-conversation when memory exceeds the default ~3 GB ceiling (typically ~30 s into a live turn). Request approval **before** development starts — Apple typically takes 1–3 business days.
+</Warning>
 
 ```xml
 <key>com.apple.developer.kernel.increased-memory-limit</key>
@@ -118,11 +87,9 @@ just the Info.plist keys above.
 <true/>
 ```
 
-Request approval at developer.apple.com → **Account → Membership
-→ Request Additional Capabilities**. The provisioning profile
-updates automatically once Apple replies via email.
+Request approval at developer.apple.com → **Account → Membership → Request Additional Capabilities**. The provisioning profile updates automatically once Apple replies.
 
-## 3. Boot a voice chat (audio-only)
+## 3. Boot a voice chat (audio-only, unmetered)
 
 ```swift
 import SwiftUI
@@ -170,24 +137,15 @@ struct ContentView: View {
 }
 ```
 
-**Run it.** Say "hello." The bot transcribes, thinks, replies via
-TTS through the speakers. That's the entire integration for an
-audio-only voice agent.
+Run it. Say "hello." The bot transcribes, thinks, replies via TTS through the speakers. That's the entire integration for an audio-only voice agent — no API key required, fully offline.
 
-## 4. Add the lip-synced avatar (video mode)
+## 4. Add the lip-synced avatar (metered)
 
-> 💳 **Avatar mode is metered.** The pipeline charges 2 credits
-> per active minute against your bitHuman developer account, via
-> a 1-request-per-minute heartbeat to `api.bithuman.ai`. **Get an
-> API key first**: [https://www.bithuman.ai](https://www.bithuman.ai) → Developer → API Keys.
-> Then either set `VoiceChatConfig.apiKey` or export
-> `BITHUMAN_API_KEY` before `chat.start()`. Audio-only mode
-> (Step 3 above) doesn't require a key and isn't metered.
+<Info>
+Avatar mode charges 2 credits per active minute against your bitHuman account. Audio-only (Step 3) is unmetered. Get an API key at [www.bithuman.ai → Developer → API Keys](https://www.bithuman.ai/#developer) and set `VoiceChatConfig.apiKey` or export `BITHUMAN_API_KEY` before calling `chat.start()`.
+</Info>
 
-The avatar pipeline downloads ~1.6 GB of weights on first launch
-(sha256 verified + cached for next time). On a slow network this
-takes a few minutes — wire up a progress callback or your app
-will look frozen.
+First launch downloads ~1.6 GB of avatar weights. Surface progress to the UI — silent hang is a reliable way to lose users.
 
 ```swift
 import Foundation
@@ -212,10 +170,6 @@ final class AvatarLifecycle: ObservableObject {
 
     func start() async {
         do {
-            // 1. Download/verify the universal weights bundle.
-            //    Surface progress to the UI — first launch can take
-            //    minutes on a slow network and silent hang is a
-            //    reliable way to lose users.
             phase = .downloading(0)
             let weights = try await ExpressionWeights.ensureAvailable { event in
                 Task { @MainActor in
@@ -226,24 +180,17 @@ final class AvatarLifecycle: ObservableObject {
             }
             phase = .warming
 
-            // 2. Pick a bundled agent for the first run. Swap later
-            //    via coordinator.applyAgent(_:) or the AgentPickerView.
             let agent = AgentCatalog.defaultAgent
             let portrait = AgentCatalog.thumbnailURL(for: agent)!
 
-            // 3. Configure + boot. The apiKey here is required for
-            //    the avatar pipeline; it's resolved from
-            //    BITHUMAN_API_KEY automatically if you leave the
-            //    field empty, but explicit-in-config is clearer.
             var config = VoiceChatConfig()
             config.systemPrompt = agent.systemPrompt
             config.avatar = AvatarConfig(modelPath: weights, portraitPath: portrait)
             config.apiKey = ProcessInfo.processInfo.environment["BITHUMAN_API_KEY"]
             let chat = VoiceChat(config: config)
-            try await chat.start()  // throws .missingAPIKey / .authenticationFailed
+            try await chat.start()
             await chat.setVoicePreset(agent.voicePreset)
 
-            // 4. Bind the coordinator + render stack.
             guard let bh = chat.bithuman else {
                 phase = .error("avatar engine failed to initialise")
                 return
@@ -260,8 +207,7 @@ final class AvatarLifecycle: ObservableObject {
             coord.framePump = pump
             chat.onBargeIn = { [weak pump] in pump?.buffer.flushSpeech() }
 
-            // 5. Hold strong refs so SwiftUI doesn't deinit them on
-            //    re-render — this is the most common first-try bug.
+            // Hold strong refs so SwiftUI doesn't deinit them on re-render.
             self.chat = chat
             self.pump = pump
             self.renderer = renderer
@@ -274,13 +220,7 @@ final class AvatarLifecycle: ObservableObject {
 }
 ```
 
-Host the renderer in your SwiftUI tree. The representables below
-are explicit struct types because `NSViewRepresentable` /
-`UIViewRepresentable` are protocols — they don't take a closure.
-Returning the **same** instance from `makeXxxView` and
-`updateXxxView` is essential; SwiftUI may rebuild the parent view
-many times per second, but the renderer must persist or the
-avatar disappears.
+Host the renderer in your SwiftUI tree. The representables are explicit struct types because `NSViewRepresentable` / `UIViewRepresentable` are protocols — they don't take a closure. Returning the **same** renderer instance from both `makeXxxView` and `updateXxxView` is essential; SwiftUI may rebuild the parent many times per second, but the renderer must persist or the avatar disappears.
 
 ```swift
 #if canImport(AppKit)
@@ -327,13 +267,12 @@ struct MyApp: App {
 
 ## What just happened
 
-You've integrated a real-time conversational AI that runs entirely
-on the device. Speech recognition, language model, voice synthesis,
-animated face — none of it touches the network.
+You integrated a real-time conversational AI that runs entirely on the device — speech recognition, language model, voice synthesis, and animated face all execute locally.
 
 ## Next
 
-- **Reference apps** — Mac, iPad, and iPhone apps in the private [bithuman-apps](https://github.com/bithuman-product/bithuman-apps) repo. They consume the SDK via the published SwiftPM binary package. Drag-drop face swap, PiP, Stage Manager widget, all wired up.
-- **[Platform-specific guides](/swift-sdk/macos)** — entitlements, distribution, and host-specific patterns for [macOS](/swift-sdk/macos) and [iOS / iPadOS](/swift-sdk/ios).
-- **[CLI](/swift-sdk/cli)** — `brew install bithuman-cli` for a no-code Mac terminal app built on the same SDK.
-- **[Troubleshooting](/swift-sdk/troubleshooting)** — every error pattern with the fix.
+- **[Streaming API](/swift-sdk/streaming)** — push PCM and pull frames directly, for advanced integrations with external audio sources.
+- **[macOS guide](/swift-sdk/macos)** — entitlements, distribution, host-specific patterns.
+- **[iOS / iPadOS guide](/swift-sdk/ios)** — background mode, Picture-in-Picture, lifecycle.
+- **[bitHuman CLI](/getting-started/cli)** — a no-code Mac terminal tool built on the same SDK.
+- **[Troubleshooting](/swift-sdk/troubleshooting)** — error patterns and fixes.

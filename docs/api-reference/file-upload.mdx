@@ -37,7 +37,7 @@ Download a file from a URL.
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `file_url` | string | URL of the file to download |
-| `file_type` | string | Type of file (`pdf`, `image`, `audio`, `video`, `auto`) |
+| `file_type` | string | Type of file. One of `auto`, `image`, `video`, `audio`, `document`. |
 
 ```python
 import requests
@@ -72,7 +72,7 @@ Upload base64-encoded file data directly.
 |-----------|------|-------------|
 | `file_data` | string | Base64 encoded file data |
 | `file_name` | string | Original filename |
-| `file_type` | string | Type of file (`pdf`, `image`, `audio`, `video`, `auto`) |
+| `file_type` | string | Type of file. One of `auto`, `image`, `video`, `audio`, `document`. |
 
 ```python
 import requests

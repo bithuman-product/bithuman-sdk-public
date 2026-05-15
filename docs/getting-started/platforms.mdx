@@ -1,247 +1,162 @@
 ---
-title: "Platform Support — Every Device, Every OS"
-description: "bitHuman runs real-time lip-synced avatars on-device across every major platform — from a $35 Raspberry Pi to an iPhone to an NVIDIA data center GPU. No cloud required. Full platform matrix with benchmarks, minimum hardware, and per-platform examples."
+title: "Platform support"
+description: "Every platform bitHuman runs on — from Raspberry Pi to iPhone to NVIDIA GPU. Hardware floors, install commands, and example links."
 icon: "microchip"
 keywords:
   - on-device avatar
-  - edge AI avatar
-  - local inference
+  - cross-platform avatar SDK
   - Raspberry Pi avatar
   - iPhone avatar
   - Apple Silicon avatar
+  - Android avatar
   - NVIDIA GPU avatar
-  - cross-platform avatar SDK
-  - no cloud required
-  - offline avatar
 ---
 
-## On-device, everywhere
+bitHuman runs on every major platform. Inference happens on the device — only a one-request-per-minute billing heartbeat touches the network, and audio-only mode is fully offline.
 
-bitHuman is designed for on-device local inference. Every supported platform runs the avatar model directly on local hardware — no cloud round-trip for rendering. Audio processing, lip-sync model execution, and frame generation all happen on the device in front of the user.
+That means:
+- **Low latency** — frames render in under 200 ms end-to-end.
+- **Privacy** — audio and video never leave the device.
+- **No cloud dependency** — sessions continue through intermittent connectivity.
+- **Predictable cost** — flat per-minute credit rate, no variable compute charges.
 
-The only network call during an on-device session is a lightweight billing heartbeat (1 request per minute, under 1 KB). Audio-only mode on Apple Silicon requires zero network calls and works fully offline.
+## Full matrix
 
-This means:
-- **Lower latency** — no cloud round-trip; frames render in under 200 ms end-to-end
-- **Full privacy** — audio and video never leave the device
-- **No cloud dependency** — sessions run even when connectivity is intermittent or absent
-- **Predictable cost** — no variable cloud compute charges; pay only the flat per-minute credit rate
-
----
-
-## Full platform matrix
-
-| Platform | Model | Runtime | Min Hardware | Performance | Example |
-|---|---|---|---|---|---|
-| **Linux x86_64** | Essence | Python SDK · Rust CLI | Any CPU, 4 GB RAM | 25 FPS, 1-2 CPU cores | Server, Docker, CI pipelines |
-| **Linux ARM64** | Essence | Python SDK | Raspberry Pi 4B+, 4 GB RAM | 25 FPS, 1-2 CPU cores | Edge kiosk, IoT gateway, digital signage |
-| **macOS Intel** | Essence | Python SDK | Any Intel Mac | 25 FPS, 1-2 CPU cores | Development, legacy fleet |
-| **macOS Apple Silicon** | Essence + Expression | Python SDK · Swift SDK · Rust CLI · Flutter plugin | Any Apple Silicon for Essence; M3+ for Expression | 25 FPS, under 200 ms latency | Mac app, development, Halo desktop app |
-| **Windows x86_64** | Essence | Python SDK · Rust CLI | Any CPU, 4 GB RAM | 25 FPS, 1-2 CPU cores | Desktop app, development, enterprise |
-| **iPadOS** | Expression + Essence | Swift SDK · Flutter plugin | iPad Pro M4+ for Expression; Apple Silicon iPad for Essence | 25 FPS, on-device Neural Engine | Tablet app, point-of-sale, reception desk |
-| **iOS** | Essence | Swift SDK · Flutter plugin | iPhone 17 Pro+ for Essence on-device. Expression on iPhone is parked while the per-app memory budget firms up. | 25 FPS, on-device Neural Engine | Phone app, consumer AI companion |
-| **Android** | Essence | Kotlin SDK · Flutter plugin | `arm64-v8a`, Android 10+ (Snapdragon 8 Gen 2 reference) | 25 FPS, on-device CPU | Phone app, consumer AI companion |
-| **NVIDIA GPU (Docker)** | Expression | Docker container | Linux + 8 GB+ VRAM (e.g. RTX 4070, T4, A10, H100) | 25 FPS, up to 9 concurrent sessions per GPU | Cloud deployment, on-prem data center, high volume |
-| **bitHuman Cloud** | Essence + Expression | REST API / LiveKit plugin | API key only — no local hardware | 25 FPS, managed scaling | Web app, any platform, fastest setup |
-
----
-
-## Performance benchmarks
-
-| Metric | Essence (CPU) | Expression (Apple Silicon) | Expression (NVIDIA GPU) |
+| Platform | Models | SDKs | Minimum hardware |
 |---|---|---|---|
-| **Frame rate** | 25 FPS | 25 FPS | 25 FPS |
-| **Audio-to-frame latency** | under 200 ms | under 200 ms | under 200 ms |
-| **CPU cores used** | 1-2 | 2-4 (GPU + Neural Engine offload) | minimal (GPU handles rendering) |
-| **RAM usage** | ~500 MB per session | ~2 GB per session | ~5-8 GB VRAM per session |
-| **Concurrent sessions** | 1 per process (scale with containers) | 1 per device | Up to 9 per GPU |
-| **Network during session** | Billing heartbeat only (1 req/min) | Billing heartbeat only (1 req/min) | Billing heartbeat only (1 req/min) |
-| **Fully offline mode** | No (heartbeat required) | Yes (audio-only mode, no API key needed) | No (heartbeat required) |
+| **iOS** | Essence | Swift, Flutter | iPhone 17 Pro+ |
+| **iPadOS** | Essence + Expression | Swift, Flutter | iPad Pro M4+ |
+| **macOS Apple Silicon** | Essence + Expression | Python, Swift, Flutter, CLI | Any Apple Silicon for Essence · M3+ for Expression |
+| **macOS Intel** | Essence | Python | Any Intel Mac |
+| **Android** | Essence | Kotlin, Flutter | `arm64-v8a`, Android 10+ |
+| **Linux x86_64** | Essence | Python, CLI | Any modern CPU, 4 GB RAM |
+| **Linux ARM64** | Essence | Python, CLI | Raspberry Pi 4B+, 4 GB RAM |
+| **Windows x86_64** | Essence | Python, CLI | Any modern CPU, 4 GB RAM |
+| **NVIDIA GPU (Docker)** | Expression | Docker container | 8 GB+ VRAM, Linux |
+| **bitHuman Cloud** | Essence + Expression | REST API · LiveKit plugin | API key only |
 
----
+Every platform delivers 25 FPS at the model's native resolution.
 
 ## Platform details
 
-### Linux x86_64 — servers and containers
+### iOS / iPadOS
 
-The most common deployment target for production workloads. Essence runs on bare metal or in Docker with no GPU. Expression runs in the official Docker container on any NVIDIA GPU with 8 GB+ VRAM.
+Native Swift apps via [`bitHumanKit`](/swift-sdk/overview), or one Dart codebase via the [Flutter plugin](/integrations/flutter).
+
+- **iPhone** runs Essence on iPhone 17 Pro+. Expression on iPhone isn't currently supported — use Essence.
+- **iPad** runs both Essence and Expression on iPad Pro M4+.
+
+Audio-only mode runs without an API key, fully offline.
+
+**Examples:** [iOS guide](/swift-sdk/ios) · [Swift quickstart](/swift-sdk/quickstart) · [Essence on Swift](/swift-sdk/essence) · [Flutter plugin](/integrations/flutter).
+
+### macOS
+
+Three integration paths:
+
+- **Python SDK** — `pip install bithuman` (Intel and Apple Silicon, Essence; Expression on M3+).
+- **Swift SDK** — `bitHumanKit` for native Mac apps.
+- **bitHuman CLI** — `brew install bithuman-product/bithuman/bithuman` (Apple Silicon).
 
 ```bash
-# Essence on CPU — any Linux server
-pip install bithuman
-python your_agent.py
+pip install bithuman           # Essence + Expression on M3+
+brew install bithuman-product/bithuman/bithuman
+```
 
-# Expression on NVIDIA GPU — Docker container
-docker run --gpus all -p 8089:8089 \
-    -e BITHUMAN_API_SECRET=your_api_secret \
+**Examples:** [Expression on macOS](/examples/apple-expression) · [Apple Local agent](/examples/apple-local) · [Halo Desktop App](/examples/halo-macos).
+
+### Android
+
+Native Kotlin via [`ai.bithuman:sdk`](/kotlin-sdk/overview), or Dart via the [Flutter plugin](/integrations/flutter). `arm64-v8a` only, Android 10+. Expression on Android isn't supported — use Essence.
+
+**Examples:** [Kotlin quickstart](/kotlin-sdk/quickstart) · [Flutter plugin](/integrations/flutter).
+
+### Linux x86_64
+
+The default production target. Essence runs anywhere via the Python SDK or Rust CLI. Expression runs in a Docker container on any NVIDIA GPU with 8 GB+ VRAM.
+
+```bash
+pip install bithuman                                       # Essence on CPU
+docker run --gpus all -p 8089:8089 \                       # Expression on GPU
+    -e BITHUMAN_API_SECRET=$BITHUMAN_API_SECRET \
     docker.io/sgubithuman/expression-avatar:latest
 ```
 
-All inference runs locally. No audio or video data is sent to bitHuman servers.
+**Examples:** [Audio Clip](/examples/audio-clip) · [Self-hosted GPU](/deployment/self-hosted-gpu) · [AI Conversation](/examples/ai-conversation).
 
-**Examples:** [Local Essence](/examples/audio-clip) | [Self-Hosted GPU](/examples/self-hosted-plugin) | [AI Conversation](/examples/ai-conversation)
+### Linux ARM64 (Raspberry Pi)
 
-### Linux ARM64 — Raspberry Pi and edge devices
-
-Essence runs natively on ARM64 Linux, including Raspberry Pi 4B+ with 4 GB RAM. Ideal for edge kiosks, museum displays, digital signage, and IoT deployments where the device runs 24/7 with no cloud dependency.
+Essence runs natively on Raspberry Pi 4B+ via the Python SDK. Ideal for kiosks, museum displays, signage, and IoT — no idle timeout, no cloud dependency.
 
 ```bash
-# On a Raspberry Pi 4B+ running Raspberry Pi OS (64-bit)
 pip install bithuman
-# Download your .imx model, then run
 python kiosk_agent.py
 ```
 
-On-device local inference means the kiosk operates even when network connectivity is intermittent. The Essence model has no idle timeout, supporting continuous 24/7 operation.
-
-**Example:** [Raspberry Pi deployment with systemd auto-start](/examples/raspberry-pi)
-
-### macOS — Intel and Apple Silicon
-
-Essence runs on any Mac via the Python SDK. Expression runs on-device on Apple Silicon M3+ via the Swift SDK (`bitHumanKit`) or the Python SDK (which delegates to the bundled Swift runtime automatically).
-
-```bash
-# Essence on any Mac
-pip install bithuman
-
-# Expression on Apple Silicon M3+ (Python SDK auto-delegates to Swift runtime)
-pip install bithuman
-python expression_demo.py
-
-# Expression via Swift SDK
-import bitHumanKit
-```
-
-The `bithuman-cli` Homebrew tool and the bitHuman Halo desktop app both run fully on-device on Apple Silicon — STT, LLM, TTS, and lip-synced avatar all execute locally.
-
-**Examples:** [Expression on macOS](/examples/apple-expression) | [Apple Local](/examples/apple-local) | [Halo Desktop App](/examples/halo-macos)
+**Example:** [Raspberry Pi deployment](/examples/raspberry-pi).
 
 ### Windows x86_64
 
-Essence runs natively on Windows via Python wheels for Python 3.9-3.14. No WSL required for Essence. For Expression on GPU, use WSL2 with the Docker container.
+Essence runs natively. For Expression on GPU, use WSL2 + the Docker container.
 
 ```bash
-# Essence on Windows (native)
 pip install bithuman
 python your_agent.py
 ```
 
-**Example:** Same Python examples as Linux — [Audio Clip](/examples/audio-clip) | [Microphone](/examples/microphone)
+### NVIDIA GPU (Docker)
 
-### iOS and iPadOS — Swift SDK or Flutter plugin
-
-Both **Essence** and **Expression** ship to Apple mobile, with platform-specific gating:
-
-- **Essence on-device** runs on iPhone 17 Pro+ and Apple Silicon iPad Pro / Air via the `Bithuman` SwiftPM package or the [Flutter `bithuman` plugin](/integrations/flutter). Streaming push/pull API; ~1.26 ms / frame and ~59 MB peak RSS on iPhone 17 Pro.
-- **Expression on-device** runs on Mac M3+ and iPad Pro M4+ via `bitHumanKit`. iPhone Expression is parked while the per-app memory budget firms up.
-
-Pick **Essence** for iPhone today; pick either on iPad Pro depending on whether you need custom portraits per session.
-
-```swift
-// Essence streaming API on Apple platforms (Mac · iPad · iPhone)
-import Bithuman
-
-let fixture = try Bithuman.loadEssenceFixture(modelPath: imxURL)
-let runtime = try fixture.createRuntime()
-try runtime.pushAudio(audioPCM: pcmChunk)
-while runtime.ticksAvailable > 0 {
-    try runtime.pullFrame(frameIdxHint: -1, frameOut: &frameOut)
-    renderer.present(bgr: frameOut, ...)
-}
-```
-
-```swift
-// Expression on-device (bitHumanKit, Mac M3+ / iPad Pro M4+)
-import bitHumanKit
-
-var config = VoiceChatConfig()
-config.systemPrompt = "You are a helpful assistant."
-let weights = try await ExpressionWeights.ensureAvailable()
-config.avatar = AvatarConfig(modelPath: weights, portraitPath: portraitURL)
-config.apiKey = ProcessInfo.processInfo.environment["BITHUMAN_API_KEY"]
-
-let chat = VoiceChat(config: config)
-try await chat.start()
-```
-
-Audio-only mode (no avatar) works without an API key and is fully offline and unmetered.
-
-**Examples:** [iOS Avatar](/swift-sdk/ios) | [Essence on Swift](/swift-sdk/essence) | [Swift SDK Quickstart](/swift-sdk/quickstart) | [Flutter plugin](/integrations/flutter)
-
-### Android — Kotlin SDK or Flutter plugin
-
-**Essence** runs on-device on `arm64-v8a` Android devices (Android 10+) via the `ai.bithuman:sdk` Maven Central AAR or the [Flutter `bithuman` plugin](/integrations/flutter). Reference benchmark on Snapdragon 8 Gen 2 (Galaxy Z Fold 5): ~3.10 ms / frame, ~322 FPS sustained, ~139 MB peak PSS. Expression on Android is not in the supported matrix; use Essence.
-
-```kotlin
-import ai.bithuman.sdk.Fixture
-import ai.bithuman.sdk.Runtime
-
-Fixture(modelPath).use { fx ->
-    val rt = Runtime(fx)
-    val info = fx.info()
-    val frameOut = ByteArray(info.frameWidth * info.frameHeight * 3)
-
-    fun onAudio(pcm: ShortArray) {
-        rt.pushAudio(pcm)
-        while (rt.ticksAvailable > 0) {
-            rt.pullFrame(frameOut, frameIdxHint = -1)
-            renderer.present(frameOut, info.frameWidth, info.frameHeight)
-        }
-    }
-}
-```
-
-**Examples:** [Kotlin SDK quickstart](/kotlin-sdk/quickstart) | [Flutter plugin](/integrations/flutter)
-
-### NVIDIA GPU — Docker container
-
-The Expression model runs on any NVIDIA GPU with 8 GB+ VRAM via an official Docker container. Supports up to 9 concurrent avatar sessions per GPU. All inference runs on your infrastructure — no audio or video data leaves your network.
+Expression runs on any NVIDIA GPU with 8 GB+ VRAM via an official Docker container. Inference runs on your hardware — audio and video never leave your network.
 
 ```bash
 docker run --gpus all -p 8089:8089 \
-    -e BITHUMAN_API_SECRET=your_api_secret \
+    -e BITHUMAN_API_SECRET=$BITHUMAN_API_SECRET \
     docker.io/sgubithuman/expression-avatar:latest
 ```
 
 Tested GPU tiers: RTX 4070 (8 GB), T4 (16 GB), A10 (24 GB), A100 (40/80 GB), H100 (80 GB).
 
-**Example:** [Self-Hosted GPU deployment](/deployment/self-hosted-gpu)
+**Example:** [Self-hosted GPU](/deployment/self-hosted-gpu).
 
-### bitHuman Cloud — managed runtime
+### bitHuman Cloud
 
-For teams that prefer managed infrastructure, bitHuman Cloud runs both Essence and Expression on bitHuman's servers. Use the LiveKit plugin or REST API from any platform — no local GPU or model files required.
+Managed runtime. Hit the [REST API](/api-reference/overview) or use the [LiveKit plugin](/deployment/livekit-cloud-plugin) — no local hardware, no model files to manage. This is the only path where inference doesn't run on your hardware.
 
 ```bash
 pip install livekit-plugins-bithuman
 ```
 
-This is the only surface where inference does not run on your hardware. All other surfaces perform on-device local inference.
-
-**Example:** [Cloud Plugin](/deployment/livekit-cloud-plugin)
-
----
-
 ## Choosing the right platform
 
-| Your use case | Recommended platform | Model | Why |
-|---|---|---|---|
-| Web app, fastest setup | bitHuman Cloud | Either | No infrastructure to manage; both models work |
-| Edge kiosk, 24/7 display | Linux ARM64 (Raspberry Pi) or Linux x86_64 | Essence | On-device, no idle timeout, no cloud dependency |
-| Native iPad app, custom portraits | Swift SDK on iPad Pro M4+ | Expression | Per-session portrait swap; on-device DiT via MLX |
-| Native iPad app, kiosk / always-on | Swift SDK or Flutter plugin on iPad | Essence | No idle timeout, lower memory footprint |
-| Native iPhone app | Swift SDK or Flutter plugin | Essence | Expression on iPhone is parked; iPhone is Essence-only today |
-| Native Android app | Kotlin SDK or Flutter plugin | Essence | `arm64-v8a`, Android 10+ |
-| One Dart codebase, mac + iOS + Android | Flutter `bithuman` plugin | Essence | Single UI; auto-selected transport per platform |
-| Native macOS app, custom portraits | Swift SDK + Expression on Mac M3+ | Expression | DiT on-device via MLX; drag-drop face swap |
-| Native macOS app, kiosk / multi-instance | Swift SDK or Python SDK | Essence | Lower per-stream cost; ~5.6× memory efficiency at N=10 instances |
-| On-prem enterprise, data sovereignty | Self-hosted GPU (Docker) or Self-hosted CPU | Either | No data leaves your network |
-| High-volume custom-portrait avatars | Self-hosted GPU (Docker) | Expression | Up to 9 sessions per GPU on H100; any face image |
-| High-concurrency self-hosted avatars | Self-hosted CPU + Essence | Essence | Lower cost-per-stream; pre-built `.imx` |
-| Windows desktop app | Python SDK or Rust CLI | Essence | Native wheels / Rust binary; no WSL needed |
-| IoT / embedded | Linux ARM64 | Essence | Runs on 4 GB RAM, 1-2 CPU cores |
+| Your use case | Pick | Why |
+|---|---|---|
+| Fastest setup, no infra | bitHuman Cloud | Both models, API key only |
+| Edge kiosk, 24/7 display | Linux ARM64 (Raspberry Pi) | Essence has no idle timeout |
+| Native iPad app, custom portraits | Swift SDK + Expression | On-device dynamic faces |
+| Native iPhone app | Swift SDK + Essence | Expression on iPhone not yet supported |
+| Native Android app | Kotlin SDK or Flutter plugin | Essence on `arm64-v8a` |
+| Cross-platform mobile/desktop | Flutter plugin | One Dart codebase, three platforms |
+| Native macOS, kiosk / multi-instance | Swift or Python SDK + Essence | Lower memory, no idle timeout |
+| Native macOS, dynamic faces | Swift SDK + Expression | M3+ on-device |
+| On-prem, data sovereignty | Self-hosted GPU or CPU | No data leaves your network |
+| High-concurrency self-hosted | Linux + Essence | Lower cost per stream |
+| Custom-portrait avatars at scale | Self-hosted GPU + Expression | Multiple concurrent sessions per GPU |
+| Windows desktop | Python SDK or Rust CLI | Native wheels, no WSL needed |
+| IoT / embedded | Linux ARM64 + Essence | Runs on 4 GB RAM, 1–2 CPU cores |
 
----
+## Where to go next
 
-## Key takeaway
-
-bitHuman is the only real-time avatar SDK that runs high-quality lip-synced avatars on-device across this range of hardware — from a $35 Raspberry Pi to an iPhone to an NVIDIA data center GPU. No cloud required for any platform except the managed bitHuman Cloud surface. Local inference is the default, not the exception.
+<CardGroup cols={2}>
+  <Card title="Models" icon="circle-info" href="/getting-started/models">
+    Essence vs Expression — which to pick
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/getting-started/quickstart">
+    First avatar in 5 minutes
+  </Card>
+  <Card title="Device matrix" icon="microchip" href="/getting-started/device-matrix">
+    Detailed per-device support
+  </Card>
+  <Card title="Examples" icon="book-open" href="/examples/overview">
+    Working examples for every platform
+  </Card>
+</CardGroup>

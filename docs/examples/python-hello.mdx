@@ -1,85 +1,86 @@
 ---
-title: "Python Hello World"
-description: "Get a real-time on-device AI avatar rendering in 30 lines of Python — Essence runtime, CPU-only, fully private."
+title: "Python — Hello, avatar"
+description: "Get a real-time on-device bitHuman avatar rendering in under 20 lines of Python."
 icon: "python"
 ---
 
-This page is the minimum runnable Python program that drives the bitHuman
-avatar runtime. Audio in, lip-synced BGR frames out, all on-device.
-No cloud roundtrip. Linux x86_64, Linux aarch64, and macOS arm64 are
-supported.
+The smallest runnable Python program that drives a bitHuman avatar. Audio in, lip-synced video frames out, all on-device. Linux x86_64, Linux aarch64, macOS arm64, and Windows x86_64.
 
 ## Prerequisites
 
 - Python 3.10 – 3.13.
-- A bitHuman API secret. Sign in at
-  [www.bithuman.ai → Developer → API Keys](https://www.bithuman.ai/#developer).
-- A `.imx` model file. The CLI's `bithuman doctor` will fetch the sample
-  avatar to `~/.cache/bithuman/models/sample-avatar.imx`, or grab any
-  model from your dashboard.
+- A bitHuman API secret — get one at [Developer → API Keys](https://www.bithuman.ai/#developer).
+- A `.imx` model file — download one from [Explore](https://www.bithuman.ai/#explore).
 
 ```bash
 pip install bithuman --upgrade
 export BITHUMAN_API_SECRET=your_secret
 ```
 
-## Sync — `Avatar.compose`
-
-Write composed BGR frames to stdout, one per `.tick`. Frames are
-`(H, W, 3)` `uint8` NumPy arrays at 25 fps.
+## Minimal example
 
 ```python
-# hello.py — minimal on-device avatar render loop
-import sys
-from bithuman import Avatar
+# hello.py — minimal avatar render loop
+import asyncio, os
+from bithuman import AsyncBithuman
+from bithuman.audio import float32_to_int16, load_audio
 
-# Load fixture once, stream tick-by-tick from a 16 kHz WAV file.
-with Avatar.load("sample-avatar.imx") as avatar:
-    for frame in avatar.compose("speech.wav"):
-        # frame.bgr is (H, W, 3) uint8 BGR — pipe to ffmpeg, MJPEG, etc.
-        sys.stdout.buffer.write(frame.bgr.tobytes())
+async def main():
+    runtime = await AsyncBithuman.create(
+        model_path="avatar.imx",
+        api_secret=os.environ["BITHUMAN_API_SECRET"],
+    )
+    await runtime.start()
+
+    pcm, sr = load_audio("speech.wav")
+    pcm = float32_to_int16(pcm)
+    chunk = sr // 100  # 10 ms per chunk
+    for i in range(0, len(pcm), chunk):
+        await runtime.push_audio(
+            pcm[i : i + chunk].tobytes(), sr, last_chunk=False,
+        )
+    await runtime.flush()
+
+    try:
+        async for frame in runtime.run():
+            if frame.has_image:
+                bgr = frame.bgr_image            # (H, W, 3) uint8 numpy array
+                # Encode it, display it, push it to a video sink — your choice.
+            if frame.end_of_speech:
+                break
+    finally:
+        await runtime.stop()
+
+asyncio.run(main())
 ```
 
 Run it:
 
 ```bash
-python hello.py > frames.bgr
-# Then encode with ffmpeg if you want an MP4:
-ffmpeg -f rawvideo -pix_fmt bgr24 -s 1280x720 -r 25 -i frames.bgr out.mp4
+python hello.py
 ```
 
-## Async — `AsyncAvatar`
+To **see** the frames live (OpenCV display + speaker playback), copy the canonical example:
 
-Same surface, awaitable, lets you interleave network audio (LLM TTS,
-WebRTC) with the compose loop without blocking.
-
-```python
-# hello_async.py — async on-device avatar render loop
-import asyncio
-from bithuman import AsyncAvatar
-
-async def main() -> None:
-    async with AsyncAvatar.load("sample-avatar.imx") as avatar:
-        async for frame in avatar.compose("speech.wav"):
-            # frame.bgr ready for your video sink (cv2, WebRTC, asyncio queue).
-            pass
-
-asyncio.run(main())
+```bash
+git clone https://github.com/bithuman-product/bithuman-sdk-public.git
+cd bithuman-sdk-public/Examples/python/local-essence
+python quickstart.py --model /path/to/avatar.imx --audio-file speech.wav
 ```
 
 ## Where to go next
 
 <CardGroup cols={2}>
   <Card title="Audio clip example" icon="play" href="/examples/audio-clip">
-    Same idea, but with on-screen OpenCV display.
+    Same idea, with OpenCV display and speaker playback wired up.
   </Card>
   <Card title="Live microphone" icon="microphone" href="/examples/microphone">
-    Real-time mic input, sub-50 ms lip-sync.
+    Real-time mic input, low-latency lip-sync.
   </Card>
   <Card title="AI conversation" icon="comments" href="/examples/ai-conversation">
     OpenAI Realtime voice chat driving the avatar.
   </Card>
   <Card title="Python quickstart" icon="rocket" href="/getting-started/quickstart">
-    Deeper Python walkthrough.
+    Deeper Python walkthrough with troubleshooting.
   </Card>
 </CardGroup>

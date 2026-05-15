@@ -10,56 +10,37 @@ This page tracks **product-level** changes (platform, web, agent runtime). For p
 
 ## May 2026
 
-### v1.17.0 — server-side avatar Realtime + ratatui voice TUI (2026-05-14)
+### v1.17.x — server-side avatar Realtime + Flutter rename (2026-05-14)
 
-CLI gets a fully-fledged terminal UX and a server-side OpenAI Realtime mode for the avatar. Plus a Flutter plugin rename and removal of a now-orphaned Swift transport library.
-
-What shipped:
-
-- **`bithuman avatar --openai`** — server-side OpenAI Realtime mode for the local avatar runtime. cpal mic captures locally → streamed to OpenAI Realtime → cpal speaker plays the bot reply locally → bot audio is teed into the avatar lipsync ring. The user opens the printed `http://127.0.0.1:…` URL in a browser to see the avatar; mic + speaker stay on the host. Default Realtime model is `gpt-realtime-mini` (cheapest tier); override with `--model gpt-realtime` for higher quality.
+- **`bithuman avatar --openai`** — new CLI mode that runs OpenAI Realtime on your workstation while the browser displays the avatar. Mic captures and speakers play locally; the avatar renders in any browser. Default Realtime model is `gpt-realtime-mini`; override with `--model gpt-realtime` for higher quality.
 - **Auto-pick backend for `voice` / `text`.** Both subcommands now infer the backend at startup: cloud (OpenAI) when `OPENAI_API_KEY` is set, on-device (`--local`) otherwise. Explicit `--openai` / `--local` flags still win.
-- **ratatui voice TUI.** When `bithuman voice` runs on a TTY it now renders a status pill, a 🎙 mic-level bar, a 🔊 bot-level bar, and a scrolling transcript. Set `BITHUMAN_NO_TUI=1` to fall back to the previous plain stdout output (CI, log capture, headless servers).
-- **`BithumanRealtimeOpenAI` Swift library removed.** Its only consumer was the deleted Swift `bithuman-cli`; the canonical OpenAI Realtime path is now the Rust CLI's `bithuman voice --openai` and `bithuman avatar --openai` modes. SwiftPM consumers depending on `BithumanRealtimeOpenAI` should remove the product dependency.
-- **Flutter plugin renamed `bithuman_avatar` → `bithuman`.** One Dart codebase covers macOS + iOS + Android. macOS + iOS use a WebSocket Realtime through the plugin's VP-IO `RealtimeAudioIO` (Apple hardware AEC); Android uses flutter_webrtc's libwebrtc native pipeline (libwebrtc native AEC). A single `AvatarScreen` Dart UI selects the right transport per platform via `RealtimeTransport`. Settings sheet supports live prompt updates that propagate to the running session via `session.update`. pub.dev publish is queued; install via `path:` dep or git URL until then.
-- **Reference apps update.** Expression and Essence both have first-class reference apps: native macOS Swift Expression (`bithuman-apps/expression/mac/`, on-device LLM/TTS via MLX, Sparkle DMG); native iPadOS Swift Expression (`bithuman-apps/expression/ipad/`, Stage Manager + Picture-in-Picture, **revived this release**); cross-platform Essence Flutter (`bithuman-apps/flutter/bithuman/example/`, one Dart codebase across macOS / iOS / Android). The iPhone Expression target stays archived while the memory budget firms up — iPhone today is Essence-only on-device. The Rust `bithuman` CLI replaces the previous Swift `bithuman-cli` and handles both Essence and Expression `.imx` automatically (`--identity <agent.imx>` peeks the `model_type` field).
-- **Same `libessence` engine.** Layer-1 still ships the C ABI v6 streaming push/pull surface from v1.16.0. Swift `Bithuman` (SwiftPM, `from: "1.17.0"`) and Kotlin `ai.bithuman:sdk:1.17.0` (Maven Central) bump to track the engine.
+- **Interactive terminal UI for `voice`.** On a TTY, `bithuman voice` shows live mic and bot level meters plus a scrolling transcript. Set `BITHUMAN_NO_TUI=1` to fall back to plain stdout.
+- **Flutter plugin renamed `bithuman_avatar` → `bithuman`.** One Dart codebase covers macOS, iOS, and Android, with built-in echo cancellation per platform. The settings sheet hot-updates the system prompt mid-session. Pub.dev publish is pending; install via git dep until then.
+- **`BithumanRealtimeOpenAI` Swift library removed.** Its only consumer was the retired Swift `bithuman-cli`; the canonical OpenAI Realtime path is now `bithuman voice --openai` / `bithuman avatar --openai` via the Rust CLI.
+- **Reference apps:** native macOS Expression app, iPadOS Expression app (revived this release with Picture-in-Picture), and cross-platform Essence Flutter example. iPhone Expression remains parked while the per-app memory budget firms up — use Essence on iPhone.
 
-The Python wheel `bithuman` remains on the legacy 1.12.4 batched API; the streaming wheel is queued behind the unified Rust + PyO3 build.
+### v1.16.0 — streaming API on Swift and Kotlin (2026-05-14)
 
-### v1.16.0 — streaming-first ABI (2026-05-14)
+Streaming-first refactor for the Swift and Kotlin SDKs. Long sessions stay smooth — per-tick cost is now flat regardless of how much audio has accumulated.
 
-Streaming-first refactor of the engine ABI. The legacy "pass the entire accumulated audio buffer on every tick" pattern grew O(n²) over a long session and missed the 40 ms render budget after ~10 s of conversation; the new push/pull split keeps every tick O(1) regardless of session length, bit-exact vs the legacy batched API.
-
-What shipped:
-
-- **C ABI v6 streaming API.** `be_runtime_push_audio(r, pcm, n)` (O(n_new) append to mel cache), `be_runtime_pull_frame(r, hint, out, cap, result)` (O(1) composed BGR pull), plus `be_runtime_ticks_available(r)` and `be_runtime_reset_stream(r)`.
-- **Swift binding** — new methods on `Bithuman.Runtime`: `pushAudio(audioPCM:)`, `pullFrame(frameIdxHint:frameOut:)`, `ticksAvailable: Int`, `resetStream()`. SwiftPM tag `libessence-v1.16.0`.
-- **Kotlin binding** — new methods on `ai.bithuman.sdk.Runtime`: `pushAudio(audioPCM, offset, length)`, `pullFrame(frameOut, frameIdxHint)`, `ticksAvailable: Long`, `resetStream()`. Maven `ai.bithuman:sdk:1.16.0`.
-- **CLI** — Rust `bithuman` binary (Homebrew) now defaults to OpenAI Realtime model `gpt-realtime-mini` (cost-efficient tier) on the GA Realtime endpoint.
-- **Reference apps consolidating to Flutter.** One Flutter codebase covers macOS + iOS + Android. The native Mac / iPad / iPhone Swift reference apps are being archived.
-
-The Python wheel `bithuman` is still on the legacy 1.12.4 batched API; a `py-v1.16.0` PyPI publish is queued. Existing `AsyncBithuman.push_audio` / `runtime.run()` usage continues to work unchanged.
+- **Swift** — `pushAudio` / `frames()` / `resetStream()` on `EssenceRuntime`.
+- **Kotlin** — `pushAudio` / `pullFrame` / `ticksAvailable` / `resetStream()` on `ai.bithuman.sdk.Runtime`. Maven `ai.bithuman:sdk:1.16.0+`.
+- **CLI** — default OpenAI Realtime model is `gpt-realtime-mini` (cost-efficient tier).
 
 ### v1.12.0 — unified SDK release (2026-05-12)
 
-First unified release of the new monorepo: one `libessence-v1.12.0` source tag fans out to PyPI, Maven Central, SwiftPM, and Homebrew. The legacy `bithuman` (PyPI 1.11.3) is superseded; install matrix:
+First unified release across all SDKs from a single source. Install matrix:
 
-- `pip install bithuman` → **1.12.0** (macOS arm64 + Linux x86_64 + Linux aarch64 wheels)
-- SwiftPM `Bithuman` package, tag `libessence-v1.12.0` — 3-slice xcframework (macOS + iOS device + iOS simulator)
+- `pip install bithuman` → **1.12.0** (macOS arm64, Linux x86_64, Linux aarch64 wheels)
+- SwiftPM `bitHumanKit` from `bithuman-sdk-public`
 - Maven `ai.bithuman:sdk:1.12.0` — first publish on Maven Central, `arm64-v8a`, minSdk 29
-- `brew install bithuman` → 1.12.0 (canonical name; `bithuman-cli` kept as alias)
-- `curl -fsSL https://github.com/bithuman-product/bithuman-sdk/releases/latest/download/install.sh | sh`
+- `brew install bithuman-product/bithuman/bithuman`
 
-What shipped:
+Highlights:
 
-- **Single C++ engine, four bindings.** `libessence` ABI v4 powers Python, Swift, Kotlin, and the Rust CLI — same source, pixel-identical output on every target (max-abs diff ≤ 18 LSB vs Python golden).
-- **Maven Central, first publish.** `ai.bithuman:sdk:1.12.0` AAR with vendored OpenSSL + libcurl for the auth heartbeat.
-- **3-slice xcframework.** macOS arm64 + iOS arm64 device + iOS arm64 simulator in one binary target.
-- **Linux wheels.** `manylinux_2_28` x86_64 and aarch64 across cp310 – cp313 (8 wheels) with auditwheel-bundled deps.
-- **M5 self-hosted CI.** Apple Silicon builds run on a dedicated M5 self-hosted runner (xcframework + macOS arm64 wheel + Homebrew bottle).
-- **Architecture refactor.** [3-layer model](/getting-started/architecture): libessence engine → bithuman CLI → platform bindings. App developers integrate at Layer 3; the engine is internal.
-
-The previous legacy `bithuman` PyPI 1.11.3 and Swift `bitHumanKit` 0.8.x continue to be available for existing integrations.
+- **Same runtime, four SDKs.** Python, Swift, Kotlin, and the Rust CLI all produce identical output.
+- **Maven Central, first publish.** `ai.bithuman:sdk:1.12.0` AAR with bundled native dependencies.
+- **Linux + Windows wheels.** Native wheels for all supported Python versions, no WSL needed.
 
 ---
 

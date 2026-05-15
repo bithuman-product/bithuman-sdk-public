@@ -12,7 +12,7 @@ The four production showcase agents — **Nova**, **Captain Quizbeard**, **Lena*
 
 ## On-device — consumer apps on Apple Silicon
 
-The Apple Silicon target (Mac M3+, iPad Pro M4+, iPhone 17 Pro) is the densest combination of "fast CPU + GPU + NPU" in any consumer hardware. The Swift SDK ships an xcframework with libessence statically linked — zero transitive dependencies for the host app.
+The Apple Silicon target (Mac M3+, iPad Pro M4+, iPhone 17 Pro) is the densest combination of fast CPU, GPU, and Neural Engine in any consumer hardware. The Swift SDK ships a single binary XCFramework with everything bundled — no transitive dependencies for the host app.
 
 ### Avatar chat assistant
 
@@ -70,7 +70,7 @@ Good for retail and museum installations where Wi-Fi is unreliable.
 
 ## On-edge — single-board and small-form-factor Linux
 
-The Linux arm64 and x86_64 wheels carry the same libessence engine. CPU-only inference at 25 FPS is realistic for Essence on modern single-board hardware.
+The Linux arm64 and x86_64 wheels share the same runtime as every other platform. CPU-only inference at 25 FPS is realistic for Essence on modern single-board hardware.
 
 ### Receptionist / lobby kiosk on Raspberry Pi 5
 

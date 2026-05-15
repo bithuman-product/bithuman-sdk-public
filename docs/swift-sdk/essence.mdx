@@ -12,13 +12,7 @@ inspects the file you pass and hands back the right runtime.
 
 ## What is Essence on Swift?
 
-Essence on Swift is a 720p+ on-device avatar runtime. It plays back
-the pre-rendered base movement baked into your `.imx` model and
-applies real-time, audio-driven lip patches to it. The heavy lifting
-runs on **CPU + ANE**: a small audio encoder runs on the Neural Engine
-through Metal (MLX), and the renderer composites lip patches over the
-decoded base movement on CPU. There is no on-device DiT — only a
-compact lip-patch model.
+Essence on Swift is a 720p+ on-device avatar runtime. It plays back the pre-rendered base motion baked into your `.imx` model and applies real-time, audio-driven lip patches to it. The pipeline runs efficiently on Apple Silicon — a small audio encoder on the Neural Engine, and the renderer compositing lip patches over the base motion on CPU.
 
 That makes Essence on Swift a different shape from Expression on Swift:
 
@@ -29,7 +23,7 @@ That makes Essence on Swift a different shape from Expression on Swift:
 | **Resolution** | 720p+ | 384×384 |
 | **Custom gestures** | Baked into the `.imx` | No |
 | **Runtime cost** | 1 cr/min on-device | 2 cr/min on-device |
-| **Memory footprint** | Lower — no DiT in memory | Higher — DiT weights resident |
+| **Memory footprint** | Lower | Higher |
 | **Best for** | Branded characters, kiosks, polished playback | Dynamic faces, drag-drop swap, conversational micro-expression |
 
 Different trade-offs — pick the one that matches your app. You can

@@ -43,10 +43,7 @@ targets: [
 ]
 ```
 
-The library product is `bitHumanKit` (legacy on-device voice-chat
-orchestrator). `import bitHumanKit` and you're in. For the unified
-`Bithuman` engine binding (`from: "1.17.0"` against
-`bithuman-product/bithuman-sdk`) see [Install](/getting-started/install#swift--swiftpm).
+The library product is `bitHumanKit`. `import bitHumanKit` and you're in. See [Install](/getting-started/install#swift--swiftpm) for the full list of channels.
 
 ## Boot a voice agent
 
@@ -175,7 +172,7 @@ Mac apps consuming bitHumanKit ship via the standard channels:
   [bithuman-apps](https://github.com/bithuman-product/bithuman-apps) repo).
 - **Mac App Store** — same app, archived through Xcode.
 - **Homebrew Cask** — for CLI / dev tools (see
-  [bithuman-cli](/swift-sdk/cli) for the canonical example).
+  [bitHuman CLI](/getting-started/cli) for the canonical example).
 
 ## Reference apps
 
@@ -185,8 +182,7 @@ Reference apps (Mac, iPad, iPhone) live in the private [bithuman-apps](https://g
   full Mac app with floating avatar window, agent picker, voice
   gallery, drag-drop face swap, Sparkle DMG packaging. Annotated
   source designed to be cloned and adapted.
-- **[bithuman-cli](/swift-sdk/cli)** — same SDK, CLI shell. Three modes
-  (text / voice / video). Available via Homebrew (`brew install bithuman-cli`).
+- **[bitHuman CLI](/getting-started/cli)** — same runtime, CLI shell. Voice / text / avatar modes. `brew install bithuman-product/bithuman/bithuman`.
 
 ## Troubleshooting
 
@@ -208,4 +204,4 @@ The most common Mac-specific issues:
 - [iOS / iPadOS deployment](/swift-sdk/ios)
 - [Cookbook](/swift-sdk/quickstart) — copy-paste recipes
 - [API reference](https://docs.bithuman.ai/swift-sdk/overview) — DocC, every public type
-- [bithuman-cli](/swift-sdk/cli) — what you can do without writing code
+- [bitHuman CLI](/getting-started/cli) — what you can do without writing code

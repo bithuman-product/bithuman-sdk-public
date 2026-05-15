@@ -1,0 +1,92 @@
+---
+title: "Choose your SDK"
+description: "A 5-question decision tree to pick the right bitHuman SDK for your stack."
+icon: "compass"
+---
+
+bitHuman ships SDKs for Python, Swift, Kotlin, a cross-platform Flutter plugin, a Rust CLI, and a REST API. Pick once and skip the deep dive on the others.
+
+## Quick decision
+
+| What you're building | Pick |
+|---|---|
+| Try it in 5 minutes, no code | **[bitHuman CLI](/getting-started/cli)** |
+| Backend service / batch job / AI agent (Python) | **[Python SDK](/getting-started/quickstart)** |
+| Native iOS / iPadOS / macOS app | **[Swift SDK](/swift-sdk/overview)** |
+| Native Android app | **[Kotlin SDK](/kotlin-sdk/overview)** |
+| One Dart codebase across Mac, iOS, Android | **[Flutter plugin](/integrations/flutter)** |
+| Backend in any language calling cloud | **[REST API](/api-reference/overview)** |
+| LiveKit voice agent with avatar in the cloud | **[LiveKit Cloud Plugin](/deployment/livekit-cloud-plugin)** |
+| On-prem Expression on your own NVIDIA GPU | **[Self-hosted GPU](/deployment/self-hosted-gpu)** |
+| Drop a chat avatar into a website | **[Embed widget](/integrations/embed)** |
+
+## Decision tree
+
+**Q1. Are you writing code at all?**
+
+- **No** — install the [bitHuman CLI](/getting-started/cli) and run `bithuman avatar`. Done.
+- **Yes** — Q2.
+
+**Q2. Where does the avatar render — on your user's device, or your server?**
+
+- **User's device** (mobile app, desktop app, Flutter app) — Q3.
+- **Your server** (LiveKit room, web app, batch jobs) — Q4.
+
+**Q3. Which device platform?**
+
+- **iOS, iPadOS, or macOS** — [Swift SDK](/swift-sdk/overview). Native, on-device.
+- **Android** — [Kotlin SDK](/kotlin-sdk/overview).
+- **Mac + iOS + Android, one codebase** — [Flutter plugin](/integrations/flutter).
+- **Linux / Windows desktop** — [Python SDK](/getting-started/quickstart) or [CLI](/getting-started/cli).
+
+**Q4. How is your server hosted?**
+
+- **Don't want to manage infrastructure** — [LiveKit Cloud Plugin](/deployment/livekit-cloud-plugin). Managed runtime.
+- **Have a Linux server, Essence is enough** — [Python SDK](/getting-started/quickstart) (`pip install bithuman`).
+- **Have NVIDIA GPUs, need Expression** — [self-hosted GPU container](/deployment/self-hosted-gpu).
+- **Already have a backend in another language** — [REST API](/api-reference/overview) (`curl` against `api.bithuman.ai`).
+- **Just want a chat widget on a webpage** — [Embed widget](/integrations/embed).
+
+## Side-by-side comparison
+
+| SDK | Install | Platforms | Models supported |
+|---|---|---|---|
+| **Python** | `pip install bithuman` | macOS, Linux, Windows | Essence + Expression (Apple Silicon M3+, NVIDIA GPU) |
+| **Swift** | SwiftPM `bitHumanKit` | iOS, iPadOS, macOS | Essence + Expression (Mac M3+, iPad Pro M4+) |
+| **Kotlin** | Maven `ai.bithuman:sdk` | Android `arm64-v8a` | Essence |
+| **Flutter** | `flutter pub add bithuman` | Mac, iOS, Android | Essence |
+| **Rust CLI** | `brew install …/bithuman` | macOS, Linux, Windows | Essence + Expression |
+| **REST API** | API key only | Any (network) | Essence + Expression (cloud) |
+
+## You can mix paths
+
+The SDKs aren't mutually exclusive. Common combinations:
+
+- Build the avatar on bithuman.ai → ship to a Flutter mobile app **and** embed the same avatar on your marketing site via the iframe widget.
+- Run a Python backend with the LiveKit plugin → consumers connect via a Flutter / web frontend; same avatar, two delivery paths.
+- Use the CLI in development to iterate on prompts → switch to the Python or Swift SDK for production.
+
+## Where to go next
+
+Once you've picked your SDK, jump straight to its quickstart:
+
+<CardGroup cols={3}>
+  <Card title="Python quickstart" icon="rocket" href="/getting-started/quickstart">
+    `pip install bithuman` in 5 minutes
+  </Card>
+  <Card title="Swift quickstart" icon="apple" href="/swift-sdk/quickstart">
+    `bitHumanKit` in 10 minutes
+  </Card>
+  <Card title="Kotlin quickstart" icon="android" href="/kotlin-sdk/quickstart">
+    `ai.bithuman:sdk` in 10 minutes
+  </Card>
+  <Card title="Flutter quickstart" icon="layer-group" href="/integrations/flutter">
+    `bithuman` plugin, three platforms
+  </Card>
+  <Card title="CLI" icon="terminal" href="/getting-started/cli">
+    Zero code, fastest setup
+  </Card>
+  <Card title="REST API" icon="code" href="/api-reference/overview">
+    Cloud avatars, any language
+  </Card>
+</CardGroup>

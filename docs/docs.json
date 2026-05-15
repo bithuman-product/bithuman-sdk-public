@@ -46,20 +46,22 @@
         "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Get started",
             "pages": [
               "introduction",
-              "getting-started/install",
               "getting-started/quickstart",
-              "getting-started/cli",
-              "getting-started/architecture",
-              "getting-started/device-matrix",
-              "getting-started/use-cases",
-              "getting-started/how-it-works",
+              "getting-started/choose-your-sdk",
+              "getting-started/authentication",
               "getting-started/models",
               "getting-started/platforms",
-              "getting-started/authentication",
-              "getting-started/pricing",
+              "getting-started/cli",
+              "getting-started/install",
+              "getting-started/pricing"
+            ]
+          },
+          {
+            "group": "Build avatars",
+            "pages": [
               "getting-started/prompts",
               "getting-started/media-guide",
               "getting-started/animal-mode"
@@ -74,7 +76,6 @@
               "swift-sdk/essence",
               "swift-sdk/macos",
               "swift-sdk/ios",
-              "swift-sdk/cli",
               "swift-sdk/troubleshooting"
             ]
           },
@@ -87,25 +88,47 @@
             ]
           },
           {
-            "group": "Deployment",
+            "group": "Flutter plugin",
             "pages": [
-              "deployment/avatar-sessions",
-              "deployment/livekit-cloud-plugin",
-              "deployment/self-hosted-gpu"
-            ]
-          },
-          {
-            "group": "Integrations",
-            "pages": [
-              "integrations/embed",
-              "integrations/webhooks",
-              "integrations/events",
               "integrations/flutter"
             ]
           },
           {
-            "group": "Changelog",
+            "group": "Deployment & ops",
             "pages": [
+              "deployment/avatar-sessions",
+              "deployment/livekit-cloud-plugin",
+              "deployment/self-hosted-gpu",
+              "integrations/embed",
+              "integrations/webhooks",
+              "integrations/events"
+            ]
+          },
+          {
+            "group": "Examples",
+            "pages": [
+              "examples/overview",
+              "examples/python-hello",
+              "examples/kotlin-android-hello",
+              "examples/swift-ios-hello",
+              "examples/cli-hello",
+              "examples/audio-clip",
+              "examples/microphone",
+              "examples/ai-conversation",
+              "examples/apple-local",
+              "examples/apple-expression",
+              "examples/halo-macos",
+              "examples/raspberry-pi",
+              "examples/self-hosted-plugin"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "getting-started/networking-and-offline",
+              "getting-started/architecture",
+              "getting-started/device-matrix",
+              "getting-started/use-cases",
               "changelog"
             ]
           }
@@ -138,29 +161,6 @@
             ]
           }
         ]
-      },
-      {
-        "tab": "Examples",
-        "groups": [
-          {
-            "group": "Examples",
-            "pages": [
-              "examples/overview",
-              "examples/python-hello",
-              "examples/kotlin-android-hello",
-              "examples/swift-ios-hello",
-              "examples/cli-hello",
-              "examples/audio-clip",
-              "examples/microphone",
-              "examples/ai-conversation",
-              "examples/apple-local",
-              "examples/apple-expression",
-              "examples/halo-macos",
-              "examples/raspberry-pi",
-              "examples/self-hosted-plugin"
-            ]
-          }
-        ]
       }
     ]
   },
@@ -184,8 +184,8 @@
       "twitter:card": "summary_large_image",
       "twitter:site": "@bithuman_ai",
       "twitter:image": "https://docs.bithuman.ai/images/bithuman-banner.jpg",
-      "description": "bitHuman SDK — real-time on-device AI avatar runtime for iOS, iPadOS, Android, macOS, and Linux. Private, low-latency lip-sync compositing for interactive conversational agents on-device or on-edge. Sub-50 ms turn latency, offline-capable, self-hosted. Python, Swift, Kotlin, and Rust CLI shipped from one libessence engine.",
-      "keywords": "AI avatar, virtual avatar, on-device avatar, on-edge AI, edge AI avatar, private AI avatar, offline avatar, self-hosted avatar, real-time lip sync, lip-synced avatar, low-latency avatar, sub-50ms avatar, interactive avatar, conversational AI avatar, iPhone avatar, iPad avatar, Android avatar, Mac avatar, Linux avatar, Apple Silicon avatar, Raspberry Pi avatar, NVIDIA GPU avatar, cross-platform avatar SDK, talking avatar API, AI digital human, on-device AI inference, private deployment, LiveKit avatar plugin, Essence Expression model, bitHumanKit, bithuman CLI, libessence, Python SDK, Swift SDK, Kotlin SDK, ARM64 avatar, edge deployment, IoT avatar, kiosk avatar, AI agent avatar SDK, LLM avatar integration"
+      "description": "bitHuman SDK — real-time on-device AI avatar runtime for iOS, iPadOS, Android, macOS, Linux, and Windows. Private, low-latency lip-sync for interactive conversational agents on-device or on-edge. Sub-200ms latency, offline-capable, self-hosted. Python, Swift, Kotlin, and CLI from one runtime.",
+      "keywords": "AI avatar, virtual avatar, on-device avatar, on-edge AI, edge AI avatar, private AI avatar, offline avatar, self-hosted avatar, real-time lip sync, lip-synced avatar, low-latency avatar, interactive avatar, conversational AI avatar, iPhone avatar, iPad avatar, Android avatar, Mac avatar, Linux avatar, Apple Silicon avatar, Raspberry Pi avatar, NVIDIA GPU avatar, cross-platform avatar SDK, talking avatar API, AI digital human, on-device AI inference, private deployment, LiveKit avatar plugin, Essence Expression model, bithuman CLI, Python SDK, Swift SDK, Kotlin SDK, ARM64 avatar, edge deployment, IoT avatar, kiosk avatar, AI agent avatar SDK, LLM avatar integration"
     },
     "indexing": "navigable"
   },
@@ -223,6 +223,14 @@
     {
       "source": "/swift-sdk/index",
       "destination": "/swift-sdk/overview"
+    },
+    {
+      "source": "/swift-sdk/cli",
+      "destination": "/getting-started/cli"
+    },
+    {
+      "source": "/getting-started/how-it-works",
+      "destination": "/getting-started/models"
     }
   ]
 }

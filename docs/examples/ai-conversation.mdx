@@ -1,29 +1,27 @@
 ---
-title: "Example: AI Voice Chat with Avatar (OpenAI + LiveKit)"
-description: "Build a ChatGPT-style voice conversation with a bitHuman avatar using LiveKit and OpenAI. Browser-based WebRTC."
+title: "AI voice chat with avatar"
+description: "Talk to an OpenAI Realtime voice agent and watch a bitHuman avatar lip-sync the response in real time."
 icon: "comments"
 ---
 
-Complete chatbot with avatar that users can talk to on the web.
+A full voice-driven conversation: your mic feeds OpenAI Realtime, the AI's spoken reply drives a bitHuman avatar that lip-syncs in real time. Runs locally — no LiveKit server, no browser, no extra infrastructure.
 
-## Quick Start
+## Quick start
 
 <Steps>
   <Step title="Install">
     ```bash
     pip install bithuman --upgrade openai sounddevice loguru
     ```
-    <Note>The SDK includes `opencv-python-headless` automatically. Do **not** install `opencv-python` (full) separately.</Note>
+    <Note>The SDK pulls in `opencv-python-headless` automatically. Don't install full `opencv-python` separately.</Note>
   </Step>
   <Step title="Get accounts">
-    - **bitHuman**: [www.bithuman.ai](https://www.bithuman.ai)
-    - **OpenAI**: [openai.com](https://openai.com)
-    - **LiveKit**: [livekit.io](https://livekit.io) (free)
+    - **bitHuman** — [www.bithuman.ai](https://www.bithuman.ai)
+    - **OpenAI** — [openai.com](https://openai.com)
   </Step>
   <Step title="Set environment">
     ```bash
     export BITHUMAN_API_SECRET="your_secret"
-    export BITHUMAN_MODEL_PATH="/path/to/model.imx"
     export OPENAI_API_KEY="your_openai_key"
     ```
   </Step>
@@ -31,71 +29,60 @@ Complete chatbot with avatar that users can talk to on the web.
     ```bash
     git clone https://github.com/bithuman-product/bithuman-sdk-public.git
     cd bithuman-sdk-public/Examples/python/local-essence
-    python conversation.py --model /path/to/model.imx
+    python conversation.py --model /path/to/avatar.imx
     ```
-    [View source code on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence)
+    Speak into your mic. The AI responds, the avatar lip-syncs in real time. Press `Q` to quit.
 
-    Speak into your microphone. The AI responds via OpenAI Realtime and the avatar lip-syncs in real time. Press `Q` to quit.
+    [View source on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/blob/main/Examples/python/local-essence/conversation.py)
   </Step>
 </Steps>
 
----
+## What it does
 
-## What It Does
+1. Captures audio from your microphone via `sounddevice`.
+2. Streams it to **OpenAI Realtime API** for AI conversation.
+3. Pipes the AI's spoken reply into the bitHuman runtime.
+4. Avatar lip-syncs and appears in an OpenCV window.
 
-1. Captures audio from your microphone
-2. Sends speech to OpenAI Realtime API for AI conversation
-3. Receives AI response audio and feeds it to the avatar
-4. Avatar lip-syncs in real time — no LiveKit server needed
+No LiveKit, no browser, no server-side WebRTC — everything runs on your machine.
 
-**Built with:**
-- **OpenAI Realtime API** for voice conversation
-- **bitHuman SDK** for avatar animation
-- **sounddevice** for mic capture and speaker output
-
-<Tip>
-For a full web-based setup with LiveKit and a browser UI, see the [Docker example](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) — run `docker compose up` and open `http://localhost:4202`.
-</Tip>
-
----
-
-## Customization
-
-Change the agent's personality by editing the `instructions`:
+## Customize the personality
 
 ```python
-agent=Agent(
+agent = Agent(
     instructions=(
-        "You are a helpful customer service assistant. "
+        "You are a helpful customer-service assistant. "
         "Be friendly, professional, and solve problems quickly."
     )
 )
 ```
 
-**Example personalities:**
-- **Tech Support**: "You are a patient tech expert who explains things simply"
-- **Sales Assistant**: "You are an enthusiastic product advisor"
-- **Teacher**: "You are an encouraging tutor who makes learning fun"
+Suggestions:
 
----
+- **Tech support** — "You are a patient tech expert who explains things simply."
+- **Sales** — "You are an enthusiastic product advisor."
+- **Teacher** — "You are an encouraging tutor who makes learning fun."
 
-## Common Issues
+## Common issues
 
-| Problem | Solution |
-|---------|----------|
-| Agent won't start | Check all API keys are set |
-| No audio in browser | Allow microphone permissions, try Chrome |
-| Can't connect | Check LiveKit URL format: `wss://your-project.livekit.cloud` |
+| Problem | Fix |
+|---|---|
+| Script won't start | Check `BITHUMAN_API_SECRET` and `OPENAI_API_KEY` are both set in the same shell. |
+| No mic input | Grant the terminal mic permission in System Settings → Privacy & Security → Microphone. |
+| Avatar shows but doesn't lip-sync | Check the WAV / mic format — `conversation.py` expects 24 kHz PCM from OpenAI Realtime. |
+| OpenAI rate limit | Your OpenAI account is throttled. Wait, retry, or upgrade your tier. |
 
----
+## Want it in the browser?
 
-## Next Steps
+For a full web-based setup with LiveKit + a browser UI, run the [Docker Compose stack](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-essence) and open `http://localhost:4202`.
+
+## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Apple Local Agent" icon="apple" href="/examples/apple-local">
-    Full privacy — speech never leaves your Mac
+  <Card title="Apple-local agent" icon="apple" href="/examples/apple-local">
+    Full privacy — speech never leaves your Mac.
   </Card>
   <Card title="Raspberry Pi" icon="microchip" href="/examples/raspberry-pi">
-    Edge deployment on IoT devices
+    Edge deployment on IoT devices.
   </Card>
 </CardGroup>

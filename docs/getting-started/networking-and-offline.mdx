@@ -1,0 +1,65 @@
+---
+title: "Networking and offline mode"
+description: "What network calls bitHuman makes, when it works offline, and how to plan for intermittent connectivity."
+icon: "wifi"
+---
+
+bitHuman is on-device by design. Inference runs locally — your audio and video never leave the device. This page is the single source of truth for **what** still touches the network, **when**, and how to plan around it.
+
+## What goes over the network
+
+| Call | When | Frequency | What it carries |
+|---|---|---|---|
+| **Runtime token request** | At session start | Once per `AsyncBithuman.create()` / `Bithuman.createRuntime(…)` | Your API secret → a short-lived runtime token |
+| **Billing heartbeat** | While the avatar is active | One request per minute | Token + session metadata; no audio or video |
+| **Model download** | First use of a new `.imx` | Once per model file | The avatar file (cached locally afterwards) |
+| **Weight download** | First launch of Expression on-device | Once | Expression model weights (~1.6 GB) |
+| **CLI on-device weights** | First `bithuman voice --local` run | Once | Speech + language model weights (~5–7 GB) |
+
+None of those carry your user's audio, video, or transcripts.
+
+## Offline modes
+
+| Mode | Network required? |
+|---|---|
+| **Audio-only voice agent** (no avatar attached) | No — fully offline after first launch, unmetered. |
+| **Avatar mode** | Heartbeat once per minute. A **5-minute offline grace window** keeps sessions running through brief network outages; after that the avatar pauses. |
+| **First launch** | Yes — to download model files. After that, model files are cached locally. |
+| **CLI `--local` mode** | Yes for the initial weight download. After that, fully offline. |
+
+## How the heartbeat works
+
+The SDK never holds your long-lived API secret in process memory. On runtime creation it exchanges the secret for a short-lived runtime token at `https://api.bithuman.ai/v1/runtime-tokens/request`. The token is renewed automatically on a one-request-per-minute heartbeat — payload is small (well under 1 KB), no audio is uploaded.
+
+If the heartbeat fails (network blip, firewall, captive portal), the SDK retries silently for up to 5 minutes. After that, the avatar pauses and `runtime.run()` surfaces a token error.
+
+## Planning for intermittent connectivity
+
+Kiosks, edge devices, and mobile apps often see brief network outages. The 5-minute grace window means short blips are invisible to your users.
+
+For deployments with longer expected outages:
+
+- **24/7 kiosks** — wire a network watchdog into your supervisor (systemd, Docker `--restart`) so a flaky link bounces the runtime instead of leaving it paused.
+- **Mobile apps** — fall back to audio-only mode when the heartbeat fails; resume avatar when connectivity returns.
+- **Air-gapped / sensitive deployments** — use audio-only mode (unmetered, no heartbeat) plus the on-device language and speech models from the CLI's `--local` mode.
+
+## Self-hosting
+
+If you can't tolerate any outbound call to `api.bithuman.ai`, ask about the on-prem licensing path. Both the cloud REST API and the heartbeat endpoint can be served from your own infrastructure under a separate agreement — get in touch via [Discord](https://discord.gg/ES953n7bPA).
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/getting-started/authentication">
+    API secrets, runtime tokens, env vars
+  </Card>
+  <Card title="Pricing" icon="credit-card" href="/getting-started/pricing">
+    What's metered, what's free
+  </Card>
+  <Card title="Self-hosted GPU" icon="server" href="/deployment/self-hosted-gpu">
+    Run Expression on your own NVIDIA GPU
+  </Card>
+  <Card title="Architecture" icon="diagram-project" href="/getting-started/architecture">
+    How the runtime is built
+  </Card>
+</CardGroup>

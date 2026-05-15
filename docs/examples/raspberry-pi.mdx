@@ -1,100 +1,70 @@
 ---
-title: "Example: Avatar on Raspberry Pi (Edge / IoT / Kiosk)"
-description: "Deploy a bitHuman avatar agent on Raspberry Pi 4B for kiosks, IoT, and edge deployments. Systemd auto-start, performance tuning."
+title: "Raspberry Pi deployment"
+description: "Deploy a bitHuman Essence avatar on Raspberry Pi 4B for kiosks, signage, and edge / IoT scenarios."
 icon: "microchip"
 ---
 
 <img src="/images/example-raspberry-pi-device.jpg" alt="Raspberry Pi Device" style={{ borderRadius: '8px' }} />
 
-## Quick Start
+The Essence avatar runs on a Raspberry Pi 4B via the same Python SDK that runs on any Linux server. This page walks through hardware, setup, an auto-start systemd unit, and the optimizations that matter for sustained 24/7 operation.
+
+<Note>
+Expression isn't supported on Raspberry Pi — CPU-only diffusion exceeds the real-time budget by an order of magnitude. Use **Essence** here.
+</Note>
+
+## Quick start
 
 <Steps>
-  <Step title="Hardware needed">
-    - Raspberry Pi 4B (8GB RAM recommended)
-    - microSD card (32GB+, Class 10)
+  <Step title="Hardware">
+    - Raspberry Pi 4B (8 GB RAM recommended)
+    - microSD card (32 GB+, Class 10) — or USB SSD for faster model loads
     - USB microphone
-    - Stable internet connection
-    - **Separate computer** for web interface (recommended)
+    - Stable internet connection (ethernet preferred)
+    - **Separate computer** to host the web UI (recommended; running UI on the Pi alongside the agent causes slowdown)
   </Step>
   <Step title="Install OS">
-    Use **Raspberry Pi OS (64-bit)** with Raspberry Pi Imager.
+    Use **Raspberry Pi OS (64-bit)** via Raspberry Pi Imager.
   </Step>
-  <Step title="Setup Pi">
+  <Step title="Set up Python">
     ```bash
     sudo apt update && sudo apt upgrade -y
-    sudo apt install python3.11 python3.11-venv -y
+    sudo apt install python3.11 python3.11-venv portaudio19-dev -y
     python3.11 -m venv bithuman-env
     source bithuman-env/bin/activate
     ```
   </Step>
-  <Step title="Install dependencies">
+  <Step title="Install bitHuman">
     ```bash
     pip install bithuman --upgrade livekit-agents openai
-    sudo apt install portaudio19-dev -y
     ```
   </Step>
-  <Step title="Set environment">
+  <Step title="Configure">
     ```bash
     export BITHUMAN_API_SECRET="your_secret"
-    export BITHUMAN_MODEL_PATH="/home/pi/model.imx"
+    export BITHUMAN_MODEL_PATH="/home/pi/avatar.imx"
+    export OPENAI_API_KEY="your_openai_key"
+    # If using LiveKit:
     export LIVEKIT_API_KEY="your_livekit_key"
     export LIVEKIT_API_SECRET="your_livekit_secret"
     export LIVEKIT_URL="wss://your-project.livekit.cloud"
-    export OPENAI_API_KEY="your_openai_key"
-    export LOADING_MODE="SYNC"  # Important for Pi performance
     ```
   </Step>
-  <Step title="Run agent">
+  <Step title="Run">
     ```bash
     git clone https://github.com/bithuman-product/bithuman-sdk-public.git
     cd bithuman-sdk-public/Examples/python/local-essence
+    python quickstart.py --model "$BITHUMAN_MODEL_PATH" --audio-file speech.wav
     ```
-    [View source code on GitHub](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence)
-
-    <CodeGroup>
-
-    ```bash Docker (recommended)
-    cp .env.example .env
-    # Edit .env with your credentials
-    docker compose up
-    ```
-
-    ```bash Terminal quickstart
-    python quickstart.py --model /home/pi/model.imx --audio-file speech.wav
-    ```
-
-    </CodeGroup>
+    For a LiveKit-driven agent, see the same directory's `agent.py`.
   </Step>
 </Steps>
 
-<Warning>
-For best results, run the web interface on a **separate computer**. Running both agent and web UI on the same Pi causes significant slowdown.
-</Warning>
+## Auto-start with systemd
 
----
+Make the agent run automatically on boot:
 
-## What It Does
-
-1. Runs avatar agent optimized for Raspberry Pi
-2. Uses `SYNC` loading mode for memory efficiency
-3. Connects to web browsers via LiveKit
-4. Suited for always-on edge applications
-
-<img src="/images/example-raspberry-pi-ui.jpg" alt="Raspberry Pi UI" style={{ borderRadius: '8px' }} />
-
-**Pi-specific optimizations:**
-- Synchronous model loading (`LOADING_MODE="SYNC"`)
-- Lower memory limits (1500MB warning threshold)
-- Single process mode for stability
-- Extended initialization timeout (120s)
-
----
-
-## Auto-start Service
-
-Make it run automatically on boot:
-
-```ini /etc/systemd/system/bithuman-agent.service
+```ini
+# /etc/systemd/system/bithuman-agent.service
 [Unit]
 Description=bitHuman Avatar Agent
 After=network.target
@@ -102,11 +72,9 @@ After=network.target
 [Service]
 Type=simple
 User=pi
-WorkingDirectory=/home/pi
-Environment=LOADING_MODE=SYNC
-Environment=BITHUMAN_API_SECRET=your_secret
-Environment=BITHUMAN_MODEL_PATH=/home/pi/model.imx
-ExecStart=/home/pi/bithuman-env/bin/python examples/python/local-essence/agent.py start
+WorkingDirectory=/home/pi/bithuman-sdk-public/Examples/python/local-essence
+EnvironmentFile=/home/pi/.bithuman.env
+ExecStart=/home/pi/bithuman-env/bin/python agent.py start
 Restart=always
 RestartSec=10
 
@@ -114,59 +82,61 @@ RestartSec=10
 WantedBy=multi-user.target
 ```
 
+Where `/home/pi/.bithuman.env` is a `chmod 600` file with your secrets:
+
 ```bash
+BITHUMAN_API_SECRET=...
+BITHUMAN_MODEL_PATH=/home/pi/avatar.imx
+OPENAI_API_KEY=...
+```
+
+Enable and start:
+
+```bash
+sudo systemctl daemon-reload
 sudo systemctl enable bithuman-agent
 sudo systemctl start bithuman-agent
 sudo systemctl status bithuman-agent
+journalctl -u bithuman-agent -f      # follow logs
 ```
 
----
-
-## Performance Tips
+## Performance tips
 
 ```bash
-# Enable performance governor
+# Pin CPU governor to performance.
 echo 'performance' | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 
-# Disable unnecessary services
+# Trim background services if you don't need them.
 sudo systemctl disable bluetooth
-sudo systemctl disable wifi  # if using ethernet
+# sudo systemctl disable wifi        # only if you're on ethernet
 ```
 
-- Use swap file for extra memory
-- Store models on USB SSD if possible
-- Monitor with `htop` or `free -h`
+- Add a swap file: `sudo dphys-swapfile swapon`.
+- Store the `.imx` on a USB SSD — model load is the slowest step on a microSD.
+- Monitor with `htop` and `vcgencmd measure_temp`; throttle at ~80°C affects sustained FPS.
 
----
+## Common issues
 
-## Common Issues
+| Symptom | Fix |
+|---|---|
+| Out of memory | Use the 8 GB Pi 4B and enable swap. |
+| Slow performance | Switch to ethernet; check CPU temperature. |
+| No audio input | `arecord -l` to list devices; `arecord -d 5 test.wav` to verify the mic. |
+| Slow first-run load | First load converts `.imx` and warms the runtime. Subsequent loads are fast. |
 
-| Problem | Solution |
-|---------|----------|
-| Out of memory | Use Pi 4B 8GB, enable swap: `sudo dphys-swapfile swapon` |
-| Slow performance | Use ethernet, check CPU temp: `vcgencmd measure_temp` |
-| Audio problems | Check USB mic: `arecord -l`, test: `arecord -d 5 test.wav` |
-| Model loading timeout | Ensure `LOADING_MODE="SYNC"`, use faster storage |
+## Where to go next
 
----
-
-## Hardware Add-ons
-
-```python
-import board
-import adafruit_dht
-
-# Add environmental awareness
-dht = adafruit_dht.DHT22(board.D4)
-temperature = dht.temperature
-humidity = dht.humidity
-```
-
----
-
-## Next Steps
-
-- **Add sensors** — Integrate environmental awareness
-- **Add camera** — Use Pi camera for visual context
-- **Scale up** — Deploy multiple Pi devices
-- **Go local** — Replace OpenAI with local LLM
+<CardGroup cols={2}>
+  <Card title="Audio Clip example" icon="play" href="/examples/audio-clip">
+    The simplest Essence runner — driving the avatar from a WAV.
+  </Card>
+  <Card title="AI Conversation" icon="comments" href="/examples/ai-conversation">
+    Full voice loop with OpenAI Realtime.
+  </Card>
+  <Card title="Self-hosted plugin" icon="server" href="/examples/self-hosted-plugin">
+    LiveKit cloud + your Pi as the avatar host.
+  </Card>
+  <Card title="Pricing" icon="credit-card" href="/getting-started/pricing">
+    Credits, plans, what's metered.
+  </Card>
+</CardGroup>

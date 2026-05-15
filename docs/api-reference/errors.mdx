@@ -25,12 +25,13 @@ All error responses follow a consistent format:
 | Status | Meaning | Common Cause |
 |--------|---------|-------------|
 | `200` | Success | Request completed |
-| `400` | Bad Request | Invalid parameters or missing required fields |
+| `400` | Bad Request | Malformed JSON or unexpected payload shape |
 | `401` | Unauthorized | Invalid or missing `api-secret` header |
+| `402` | Payment Required | Insufficient credits — top up to continue |
 | `404` | Not Found | Agent, resource, or endpoint doesn't exist |
 | `413` | Payload Too Large | File exceeds size limit |
 | `415` | Unsupported Media Type | File type not supported |
-| `422` | Validation Error | Parameters are present but invalid |
+| `422` | Validation Error | Body parsed but failed schema validation (e.g. missing required field) |
 | `429` | Rate Limited | Too many requests — see [Rate Limits](/api-reference/rate-limits) |
 | `500` | Internal Error | Server-side error — retry or contact support |
 | `503` | Service Unavailable | All workers busy — retry with backoff |
@@ -51,10 +52,9 @@ All error responses follow a consistent format:
 | Code | HTTP | Message | Resolution |
 |------|------|---------|------------|
 | `AGENT_NOT_FOUND` | 404 | Agent not found | Check the agent code. Use `POST /v1/validate` to verify your API secret has access. |
-| `AGENT_PROCESSING` | 409 | Agent is still generating | Wait for generation to complete. Poll `/v1/agent/status/{id}`. |
 | `AGENT_FAILED` | 400 | Agent generation failed | Check generation logs. Retry with different parameters. |
-| `VALIDATION_ERROR` | 422 | prompt is required | Include all required fields. See endpoint documentation. |
-| `NO_ACTIVE_ROOMS` | 404 | No active rooms for agent | The agent must be in an active LiveKit session for `/speak` and `/add-context`. |
+| `VALIDATION_ERROR` | 422 | Body parsed but failed schema validation | Include all required fields. See endpoint documentation. |
+| `NO_ACTIVE_ROOMS` | 404 | No active rooms for agent | The agent must be in an active session before you can `/speak` or `/add-context`. |
 
 ### File Operations
 
@@ -69,7 +69,6 @@ All error responses follow a consistent format:
 | Code | HTTP | Message | Resolution |
 |------|------|---------|------------|
 | `DYNAMICS_NOT_FOUND` | 404 | No dynamics for agent | Generate dynamics first with `POST /v1/dynamics/generate`. |
-| `DYNAMICS_PROCESSING` | 409 | Dynamics still generating | Wait for generation to complete. |
 
 ### Session & Infrastructure
 
@@ -109,18 +108,6 @@ else:
     print(f"Error {error.get('code')}: {error.get('message')}")
 ```
 
-## GPU Container Errors
+## Self-hosted GPU container errors
 
-The self-hosted GPU container returns its own error responses:
-
-| Endpoint | Error | Resolution |
-|----------|-------|------------|
-| `GET /health` | Connection refused | Container not started or still initializing |
-| `GET /ready` | `503 Not Ready` | Model still loading (~50s cold start) or all session slots full |
-| `POST /launch` | `401 Unauthorized` | Invalid `BITHUMAN_API_SECRET` in container env |
-| `POST /launch` | `400 No face detected` | Image has no detectable face. Use a clear front-facing photo. |
-| `POST /launch` | `503 No capacity` | All session slots in use. Wait or add more containers. |
-
-<Tip>
-For GPU container troubleshooting, see [Self-Hosted GPU](/deployment/self-hosted-gpu#troubleshooting).
-</Tip>
+If you run the self-hosted Expression GPU container, it returns its own error responses on its local endpoints. See [Self-Hosted GPU → Troubleshooting](/deployment/self-hosted-gpu#troubleshooting) for the full list.

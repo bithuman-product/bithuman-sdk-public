@@ -1,23 +1,13 @@
 ---
 title: "Streaming API (Kotlin)"
 sidebarTitle: "Streaming API"
-description: "Push 16 kHz PCM as it arrives, pull composed BGR frames at 25 fps — O(1) per tick on ai.bithuman.sdk.Runtime."
+description: "Push audio as it arrives, pull video frames at 25 FPS — the integration shape for long-running conversations on Android."
 icon: "bolt"
 ---
 
-The streaming push/pull API on `ai.bithuman.sdk.Runtime` is the
-recommended shape for any conversation that runs longer than a few
-seconds. It lands in `ai.bithuman:sdk:1.16.0` (Maven Central) on top of
-libessence C ABI v6, and is bit-exact vs the legacy batched API.
+The streaming push/pull API on `ai.bithuman.sdk.Runtime` is the right shape for conversations that run longer than a few seconds, or for any integration where audio arrives incrementally (microphone, WebRTC sink, TTS stream).
 
-<Note>
-**Why this exists.** The legacy batched API required passing the entire
-accumulated audio buffer on every tick, which grew O(n) per tick in
-cumulative audio length. Past ~10 s of conversation a single tick blew
-the 40 ms render budget. The streaming API splits that into an O(n_new)
-append (`pushAudio`) and an O(1) pull (`pullFrame`), so cost is flat
-regardless of session length.
-</Note>
+Each push is constant cost; each pull returns one composed frame. Session length doesn't degrade per-tick performance.
 
 ## API surface
 
@@ -25,25 +15,21 @@ regardless of session length.
 package ai.bithuman.sdk
 
 class Runtime {
-    /** Append PCM to the runtime's mel cache. O(n_new). */
+    /** Append PCM to the runtime. */
     fun pushAudio(audioPCM: ShortArray, offset: Int = 0, length: Int = audioPCM.size)
 
-    /** Pull the next composed BGR frame into the caller's buffer. O(1).
-     *  `frameOut` must be sized to width * height * 3.
+    /** Pull the next composed frame into the caller's buffer.
+     *  `frameOut` must be sized to width * height * 3 (packed BGR).
      *  `frameIdxHint = -1` lets the runtime advance internally. */
     fun pullFrame(frameOut: ByteArray, frameIdxHint: Int = -1)
 
     /** How many composed frames are ready to drain right now. */
     val ticksAvailable: Long
 
-    /** Drop cached audio + per-stream counters at end of utterance. */
+    /** Drop cached audio at end of utterance. */
     fun resetStream()
 }
 ```
-
-The legacy methods (`Avatar.composeFromFile`, `Avatar.composeAsBitmaps`,
-`Runtime.tick(...)`) continue to work unchanged for existing
-integrations.
 
 ## Minimal driver
 
@@ -60,7 +46,6 @@ Fixture(modelPath).use { fx ->
     fun onAudio(pcm: ShortArray) {
         rt.pushAudio(pcm)
 
-        // Drain composed frames at 25 fps.
         while (rt.ticksAvailable > 0) {
             rt.pullFrame(frameOut, frameIdxHint = -1)
             renderer.present(frameOut, info.frameWidth, info.frameHeight)
@@ -72,42 +57,31 @@ Fixture(modelPath).use { fx ->
 }
 ```
 
-`pushAudio` and `pullFrame` are independent — push as audio arrives,
-pull on a 40 ms display tick. Back-pressure is the caller's choice:
-either drain everything in `ticksAvailable` whenever new audio comes
-in, or pace the pull on a `Choreographer` callback and let
-`ticksAvailable` rise transiently.
+`pushAudio` and `pullFrame` are independent — push as audio arrives, pull on a 40 ms display tick. Back-pressure is your choice: drain everything in `ticksAvailable` whenever new audio comes in, or pace pulls on a `Choreographer` callback.
 
 ## Threading
 
-A single `Runtime` instance is **not** internally synchronised — pin
-the push/pull pair to one thread (typically a dedicated background
-worker), or wrap calls in your own mutex. Multi-conversation hosts
-should still share **one `Fixture`** across many `Runtime` instances;
-each runtime is independent.
+A single `Runtime` instance is **not** internally synchronized — pin the push/pull pair to one thread (typically a dedicated background worker), or wrap calls in your own mutex.
+
+Multi-conversation hosts should still share **one `Fixture`** across many `Runtime` instances; each runtime is independent.
 
 ## When to call `resetStream()`
 
-Reset at the boundary between user turns: barge-in, end-of-utterance
-detection, agent switch, or any time the cached audio history is no
-longer relevant. Skipping the reset doesn't break correctness, but
-keeps the mel cache growing across turns and trims the maximum
-session length you can run before hitting the per-runtime audio
-buffer cap.
+Reset at boundaries between user turns: barge-in, end-of-utterance detection, agent switch, or any time the cached audio history is no longer relevant.
 
 ## See also
 
 <CardGroup cols={2}>
-  <Card title="Kotlin SDK quickstart" icon="rocket" href="/kotlin-sdk/quickstart">
-    Maven coord + 10-line code example
+  <Card title="Kotlin quickstart" icon="rocket" href="/kotlin-sdk/quickstart">
+    Maven coord + 10-line example
   </Card>
-  <Card title="Architecture" icon="diagram-project" href="/getting-started/architecture#streaming-api-c-abi-v6">
-    The C ABI v6 contract under the binding
+  <Card title="Overview" icon="book" href="/kotlin-sdk/overview">
+    Full API surface
   </Card>
   <Card title="Swift streaming API" icon="bolt" href="/swift-sdk/streaming">
-    Same shape on `Bithuman.Runtime`
+    Same shape on Apple platforms
   </Card>
-  <Card title="Changelog v1.16.0" icon="clock-rotate-left" href="/changelog">
-    Release notes for the streaming-first refactor
+  <Card title="Authentication" icon="key" href="/getting-started/authentication">
+    API keys, runtime tokens, offline grace
   </Card>
 </CardGroup>

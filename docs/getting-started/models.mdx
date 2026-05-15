@@ -1,139 +1,132 @@
 ---
-title: "Essence and Expression"
-description: "The two production-ready bitHuman avatar models — what each does, where each runs, and how to choose. Both ship to every surface (cloud REST · LiveKit plugin · self-hosted · CLI · on-device · example apps)."
+title: "Essence vs Expression"
+description: "The two bitHuman avatar models — what each does, where each runs, and which one to pick."
 icon: "code-compare"
 ---
 
-bitHuman ships two production-ready avatar models. **Both are first-class** —
-both run on the same `.imx` container format, both render pixel-identical
-output across every binding, both ship to every surface (cloud REST,
-LiveKit plugin, self-hosted, CLI, on-device, example apps). Pick the one
-that fits your use case; you don't have to choose a "default."
+bitHuman ships two avatar models. Both are first-class, both work with the same `.imx` file format, both expose the same SDK methods. The choice depends on what you're building.
 
-## Surface coverage matrix
+## At a glance
 
-The CLI (`bithuman avatar --identity <agent.imx>`) auto-detects the
-`model_type` field in the `.imx` manifest and dispatches to the right
-runtime — same binary, no model-specific flag needed.
-
-| Model | On-device | Self-hosted | Cloud REST | Rust CLI | Example app |
-|---|---|---|---|---|---|
-| **Expression** (full DiT, custom portraits, ~7 GB working set) | macOS M3+ · iPad Pro M4+ via MLX (iPhone parked while memory budget firms up) | Yes — [Python SDK](/getting-started/quickstart), [LiveKit plugin](/deployment/livekit-cloud-plugin), [GPU container](/deployment/self-hosted-gpu) | Yes — `agent_code` selects model in [REST API](/api-reference/overview) | `bithuman avatar --identity <expression.imx>` or `--image <portrait.jpg>` | [`expression/mac/`](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/mac) + [`expression/ipad/`](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/ipad) |
-| **Essence** (libessence streaming, ~465 MB peak, lip-sync over pre-rendered base) | macOS · iOS · iPadOS · Android · Linux · Windows | Yes — [Python SDK](/getting-started/quickstart) on CPU, [LiveKit plugin](/deployment/livekit-cloud-plugin) (server-side `essence-server`) | Yes — `agent_code` selects model | `bithuman avatar --identity <essence.imx>` (or `bithuman avatar --openai` for the server-side OpenAI Realtime mode) | [`flutter/bithuman/example/`](https://github.com/bithuman-product/bithuman-apps/tree/main/flutter/bithuman/example) — one Dart codebase across mac · iOS · Android |
-
-## Side-by-side comparison
-
-| | Essence | Expression |
+| | **Essence** | **Expression** |
 |---|---|---|
-| **What it does** | Real-time lip-sync over pre-rendered base movement | Diffusion-generated facial animation from any portrait |
-| **Avatar source** | `.imx` model file (built once from your photo/video) | Any face image — pass at runtime, no build step |
-| **Runs on** | Any CPU; libessence streaming binding on macOS · iOS · iPadOS · Android · Linux · Windows | NVIDIA GPU (server) **or** Apple Silicon M3+ (on-device via MLX) |
-| **Lip-sync** | Yes | Yes |
+| **What it does** | Pre-built avatar identity packaged in an `.imx` file. Real-time lip-sync. | Dynamic facial animation from any portrait image at runtime. |
+| **Avatar source** | `.imx` you build once from a photo or video. | Any face image — provide at runtime, no build step. |
 | **Custom gestures** | Yes (wave, nod, laugh, etc.) | No |
-| **Idle animations** | Pre-recorded (natural movement loops) | AI-generated micro-movements |
-| **Working memory** | ~465 MB peak (mac M5; ~59 MB on iPhone 17 Pro) | ~750 MB int4 DiT @ 384² on Apple Silicon; ~6 GB VRAM on NVIDIA |
-| **Session timeout** | None — runs 24/7 | 10 min idle (server-side GPU protection); none on-device |
-| **Best for** | Kiosks, always-on displays, consistent branding, mobile + edge | Dynamic conversations, custom portraits per session, close-up native consumer apps |
-| **Pricing** | 1 cr/min (self-hosted) · 2 cr/min (cloud) | 2 cr/min (self-hosted & on-device) · 4 cr/min (cloud) |
+| **Idle animation** | Pre-recorded natural movement | AI-generated micro-movements |
+| **Compute needed** | Any modern CPU | Apple Silicon M3+ or NVIDIA GPU |
+| **Memory footprint** | Low | Higher |
+| **Best for** | Kiosks, mobile, edge, 24/7 deployments, high concurrency | Close-up native consumer apps, custom faces per session |
+| **Pricing** | 1 credit/min self-hosted · 2 credits/min cloud | 2 credits/min self-hosted · 4 credits/min cloud |
 
-Both models ship the same `Avatar.compose(audio)` shape across every binding.
-Internally the CLI peeks the `.imx` manifest and dispatches; the Python /
-Swift / Kotlin / Rust bindings expose dedicated `EssenceRuntime` and
-`Expression` types when you want to hold the runtime explicitly.
+Both ship to every surface — SDKs, REST API, LiveKit plugin, CLI, on-device, embed widget. The same `.imx` file works everywhere.
+
+## Where each model runs
+
+| Surface | Essence | Expression |
+|---|---|---|
+| **iOS / iPadOS** | ✅ iPhone 17 Pro+, iPad Pro M4+ | ✅ iPad Pro M4+ only |
+| **macOS** | ✅ Any Apple Silicon | ✅ M3+ |
+| **Android** | ✅ `arm64-v8a`, Android 10+ | — |
+| **Linux / Windows** | ✅ Any modern CPU | ✅ via NVIDIA GPU (Docker) |
+| **Raspberry Pi** | ✅ Pi 4B+ | — |
+| **bitHuman Cloud** | ✅ Managed | ✅ Managed |
+| **Self-hosted CPU** | ✅ Python SDK / LiveKit plugin | — |
+| **Self-hosted GPU** | — | ✅ Docker container |
+
+iPhone Expression is not currently supported — use Essence on iPhone.
 
 ## Essence
 
-The **Essence** model uses real-time lip-sync over pre-rendered base
-movement. You create an agent on [bithuman.ai](https://bithuman.ai) from a
-photo or video; the platform produces an `.imx` model containing the base
-movement, gesture video clips, and the lip-sync conditioning needed to
-patch the mouth region per audio frame.
+Essence packages a complete avatar identity (face, body, gestures) into an `.imx` file. At runtime, the SDK plays back pre-rendered base motion and patches the mouth region in real time to match incoming audio.
 
-**Strengths:**
-- Runs on **CPU**, mobile NPUs, and embedded devices. Same source compiles
-  to mac · iOS · iPadOS · Android · Linux · Windows. ~1.5 ms / frame on
-  Apple M5; ~1.4 ms on Snapdragon 8 Gen 2.
-- Supports **custom gestures** (wave, nod, laugh) triggered by keywords or
-  API.
-- **No idle timeout** — sessions run indefinitely. Ideal for 24/7 museum
-  kiosks and lobby displays.
-- Consistent, predictable avatar behavior with smooth transitions between
-  states.
-- Lower per-stream cost — the right pick for high-concurrency
-  self-hosted deployments.
+**Strengths**
 
-**Where to deploy:**
-- [bitHuman Cloud (LiveKit Plugin)](/deployment/livekit-cloud-plugin) — zero infrastructure, bitHuman hosts the avatar worker
-- Self-hosted server-side `essence-server` via the same [LiveKit plugin](/deployment/livekit-cloud-plugin) pointed at your endpoint
-- [Self-hosted Python SDK](/getting-started/quickstart) — `pip install bithuman`, run `.imx` on your CPU
-- [On-device Apple Silicon Swift](/swift-sdk/essence) — 720p+ playback on Mac M3+ and iPad Pro M4+
-- [On-device Android Kotlin](/kotlin-sdk/overview) — `arm64-v8a`, Android 10+
-- [Flutter `bithuman` plugin](/integrations/flutter) — one Dart codebase, mac · iOS · Android
-- [Rust `bithuman` CLI](/getting-started/cli) — `bithuman avatar --identity <essence.imx>` on mac · Linux · Windows
-- [REST API](/api-reference/overview) — `curl` against `api.bithuman.ai/v1/agent/{code}/speak`
-- [Website Embed](/integrations/embed) — drop-in iframe or chat widget
+- Runs on virtually any modern CPU — Mac, iOS, iPad, Android, Linux, Windows, Raspberry Pi.
+- Supports custom gestures (wave, nod, laugh) triggered by keywords or API.
+- No idle timeout — sessions can run 24/7. Reliable for unattended kiosks and lobby displays.
+- Predictable, consistent behavior. Lower per-stream cost — the right pick for high-concurrency self-hosted deployments.
+
+**How to ship it**
+
+- [**Python SDK**](/getting-started/quickstart) — self-host on Linux/macOS/Windows.
+- [**Swift SDK**](/swift-sdk/essence) — native Mac, iPad, iPhone apps.
+- [**Kotlin SDK**](/kotlin-sdk/overview) — native Android apps.
+- [**Flutter plugin**](/integrations/flutter) — one Dart codebase across Mac, iOS, Android.
+- [**bitHuman CLI**](/getting-started/cli) — no code, terminal or browser.
+- [**REST API**](/api-reference/overview) — backend integration in any language.
+- [**Cloud LiveKit plugin**](/deployment/livekit-cloud-plugin) — managed, no infrastructure.
+- [**Embed widget**](/integrations/embed) — drop-in iframe for websites.
 
 ## Expression
 
-The **Expression** model generates real-time facial expressions using a
-diffusion pipeline (DiT). It takes any face image as the per-session
-identity and produces dynamic lip-sync, eye movement, and emotional
-expressions — the portrait can change between sessions or even mid-session.
+Expression generates real-time facial animation directly from a portrait image. The face can change between sessions or even mid-session — no avatar build step is required.
 
-**Strengths:**
-- Works with **any face image** — no avatar generation step required.
-  Drag-and-drop swap supported in the reference apps.
-- AI-driven expressions respond to speech content and context.
+**Strengths**
+
+- Works with any face image — drag-and-drop swap, photo, video frame, anything.
+- AI-driven expressions adapt to speech content and emotional context.
 - Higher visual fidelity for close-up conversational interactions.
-- Runs **on-device** on Apple Silicon M3+ via MLX — no GPU server, no
-  per-turn network round-trip. int4 DiT at 384² is visually on par with
-  fp16 and fits ~750 MB resident.
-- Runs in production on NVIDIA GPUs via the [self-hosted GPU container](/deployment/self-hosted-gpu)
-  (~9 sessions/GPU on H100) or via the managed cloud.
+- Runs on-device on Apple Silicon M3+ (no GPU server, no per-turn network round-trip), or on NVIDIA GPUs server-side.
 
-**Deployment options:**
-- [Cloud Plugin](/deployment/livekit-cloud-plugin) — bitHuman hosts the GPU worker (`model="expression"`)
-- [Self-Hosted GPU](/deployment/self-hosted-gpu) — run the Docker container on your own NVIDIA GPU
-- [On-Device macOS](/examples/apple-expression) — run natively on Apple Silicon M3+ via `pip install bithuman` (auto-spawns the bundled `bithuman-expression-daemon`)
-- [Native Mac reference app](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/mac) — Sparkle DMG, drag-drop face swap, on-device LLM/TTS via MLX
-- [Native iPad reference app](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/ipad) — Stage Manager + Picture-in-Picture
-- [Rust `bithuman` CLI](/getting-started/cli) — `bithuman avatar --identity <expression.imx>` or `--image <portrait.jpg>`
-- [REST API](/api-reference/overview) — `curl` against `api.bithuman.ai/v1/agent/{code}/speak` (same endpoint, model selected per agent)
+**How to ship it**
+
+- [**Cloud LiveKit plugin**](/deployment/livekit-cloud-plugin) — bitHuman hosts the GPU worker (set `model="expression"`).
+- [**Self-hosted GPU**](/deployment/self-hosted-gpu) — your own NVIDIA GPU via the Docker container.
+- [**On-device macOS / iPadOS**](/examples/apple-expression) — Apple Silicon M3+, via the Python or Swift SDK.
+- [**Mac reference app**](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/mac) — native macOS app, drag-drop face swap.
+- [**iPad reference app**](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/ipad) — iPadOS, Picture-in-Picture support.
+- [**bitHuman CLI**](/getting-started/cli) — `bithuman avatar --image portrait.jpg`.
+- [**REST API**](/api-reference/overview) — same endpoint as Essence; the model is selected per agent.
 
 ## Which should I use?
 
 <AccordionGroup>
-  <Accordion title="I want a 24/7 kiosk or always-on display">
-    Use **Essence**. It has no idle timeout and runs on CPU, making it reliable for unattended deployments.
+  <Accordion title="24/7 kiosk or always-on display">
+    **Essence.** No idle timeout, runs on CPU, predictable for unattended deployments.
   </Accordion>
-  <Accordion title="I want the quickest setup with any face photo">
-    Use **Expression** with the Cloud Plugin. Just pass `avatar_image=Image.open("face.jpg")` — no generation step.
+  <Accordion title="Cross-platform mobile/desktop in one codebase">
+    **Essence** via the [Flutter plugin](/integrations/flutter). Same UI on Mac, iOS, Android.
   </Accordion>
-  <Accordion title="I'm building a Mac or iPad app and want close-up dynamic faces">
-    Use **Expression on-device** via the [Swift SDK](/swift-sdk/overview) or the [`expression/mac/`](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/mac) / [`expression/ipad/`](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/ipad) reference apps.
+  <Accordion title="iPhone app">
+    **Essence.** Expression on iPhone isn't currently supported — iPad and Mac are the on-device Expression hosts.
   </Accordion>
-  <Accordion title="I'm building one Dart codebase for mac + iOS + Android">
-    Use **Essence** via the [Flutter `bithuman` plugin](/integrations/flutter). Same UI, same engine, three platforms.
+  <Accordion title="Android app">
+    **Essence** via the [Kotlin SDK](/kotlin-sdk/overview) or [Flutter plugin](/integrations/flutter).
   </Accordion>
-  <Accordion title="I'm building an iPhone app">
-    Use **Essence** today (Swift SDK or Flutter plugin). Expression on iPhone is parked while the per-app memory budget firms up — iPad and Mac are the supported on-device Expression hosts.
+  <Accordion title="Native Mac or iPad app with close-up dynamic faces">
+    **Expression on-device** via the [Swift SDK](/swift-sdk/overview) or the Mac/iPad reference apps.
   </Accordion>
-  <Accordion title="I'm building an Android app">
-    Use **Essence** via the [Kotlin SDK](/kotlin-sdk/overview) or the Flutter plugin. Expression on Android is not in the supported matrix.
+  <Accordion title="Need custom gestures (wave, nod, laugh)">
+    **Essence.** Expression doesn't support gesture triggers.
   </Accordion>
-  <Accordion title="I need custom gestures (wave, nod, laugh)">
-    Use **Essence**. Expression doesn't support gesture triggers.
+  <Accordion title="Quickest setup with any face photo">
+    **Expression** via the Cloud Plugin. Pass the image at session start — no build step.
   </Accordion>
-  <Accordion title="I'm building a voice agent with LiveKit and need maximum concurrency per host">
-    Use **Essence** — lower per-stream cost on the self-hosted `essence-server` makes it the right pick for high-concurrency deployments. Use **Expression** if your product needs the per-session custom-portrait story.
+  <Accordion title="Voice agent on LiveKit with maximum concurrency">
+    **Essence.** Lower per-stream cost makes it the right pick for high-concurrency deployments.
   </Accordion>
-  <Accordion title="I'm self-hosting and need to pick one">
-    Both run self-hosted. Choose **Expression** if you need custom portraits per session (NVIDIA GPU container or on-device Apple Silicon). Choose **Essence** if you want lower-cost-per-stream + higher concurrency on CPU.
+  <Accordion title="Edge hardware (Raspberry Pi, low-power laptop)">
+    **Essence.** Runs on 1–2 CPU cores at 25 FPS.
   </Accordion>
-  <Accordion title="I'm deploying on edge hardware (Raspberry Pi, laptop)">
-    Use **Essence**. It runs on CPU with 1–2 cores at 25 FPS.
-  </Accordion>
-  <Accordion title="I need the highest visual quality for video generation">
-    Use **Expression** with `quality="high"`. Best for offline video generation, not real-time streaming.
+  <Accordion title="Highest visual quality for offline video generation">
+    **Expression** with `quality="high"`. Best for offline batch jobs rather than real-time streaming.
   </Accordion>
 </AccordionGroup>
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/getting-started/quickstart">
+    Get your first avatar running in 5 minutes
+  </Card>
+  <Card title="Platforms" icon="desktop" href="/getting-started/platforms">
+    Full per-platform support matrix
+  </Card>
+  <Card title="Pricing" icon="credit-card" href="/getting-started/pricing">
+    Credits, tiers, and what's metered
+  </Card>
+  <Card title="Examples" icon="book-open" href="/examples/overview">
+    Working examples for both models
+  </Card>
+</CardGroup>
