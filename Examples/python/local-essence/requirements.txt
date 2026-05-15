@@ -5,4 +5,5 @@ livekit-plugins-bithuman>=1.4
 openai>=1.0
 loguru>=0.7.0
 sounddevice>=0.4
+opencv-python>=4.8
 numpy>=1.24

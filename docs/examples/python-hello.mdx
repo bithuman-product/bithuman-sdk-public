@@ -8,14 +8,24 @@ The smallest runnable Python program that drives a bitHuman avatar. Audio in, li
 
 ## Prerequisites
 
-- Python 3.9+ (3.9–3.14 wheels).
+- Python 3.9+ (3.9–3.14 wheels). Use a virtualenv.
 - A bitHuman API secret — get one at [Developer → API Keys](https://www.bithuman.ai/#developer).
-- A `.imx` model file — download one from [Explore](https://www.bithuman.ai/#explore).
 
 ```bash
+python3 -m venv .venv && source .venv/bin/activate
 pip install bithuman --upgrade
 export BITHUMAN_API_SECRET=your_secret
 ```
+
+You also need two input files the script below references by name:
+
+- **`avatar.imx`** — an avatar model. Download one from
+  [Explore](https://www.bithuman.ai/#explore), or run `bithuman avatar`
+  once (the [CLI](/getting-started/cli) caches a sample at
+  `~/.cache/bithuman/models/sample-avatar.imx` — copy it next to your
+  script as `avatar.imx`).
+- **`speech.wav`** — any speech clip. Make one with the CLI:
+  `bithuman tts "Hello from bitHuman." --output speech.wav`.
 
 ## Minimal example
 
@@ -59,12 +69,19 @@ Run it:
 python hello.py
 ```
 
-To **see** the frames live (OpenCV display + speaker playback), copy the canonical example:
+This program **prints nothing and exits 0** — it renders frames into
+`frame.bgr_image` but doesn't display them. That's expected; it's the
+minimal loop. To actually *see* the avatar, use the canonical example,
+which adds an OpenCV window + speaker playback:
 
 ```bash
 git clone https://github.com/bithuman-product/bithuman-sdk-public.git
 cd bithuman-sdk-public/Examples/python/local-essence
-python quickstart.py --model /path/to/avatar.imx --audio-file speech.wav
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt      # incl. opencv — not bundled with the SDK
+python quickstart.py \
+  --model ~/.cache/bithuman/models/sample-avatar.imx \
+  --audio-file speech.wav            # this example dir ships a speech.wav
 ```
 
 ## Where to go next

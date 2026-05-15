@@ -10,12 +10,6 @@ A full voice-driven conversation: your mic feeds OpenAI Realtime, the AI's spoke
 ## Quick start
 
 <Steps>
-  <Step title="Install">
-    ```bash
-    pip install bithuman --upgrade openai sounddevice loguru
-    ```
-    <Note>The SDK pulls in `opencv-python-headless` automatically. Don't install full `opencv-python` separately.</Note>
-  </Step>
   <Step title="Get accounts">
     - **bitHuman** — [www.bithuman.ai](https://www.bithuman.ai)
     - **OpenAI** — [openai.com](https://openai.com)
@@ -26,11 +20,23 @@ A full voice-driven conversation: your mic feeds OpenAI Realtime, the AI's spoke
     export OPENAI_API_KEY="your_openai_key"
     ```
   </Step>
-  <Step title="Run">
+  <Step title="Get the code + install deps">
     ```bash
     git clone https://github.com/bithuman-product/bithuman-sdk-public.git
     cd bithuman-sdk-public/Examples/python/local-essence
-    python conversation.py --model /path/to/avatar.imx
+    python3 -m venv .venv && source .venv/bin/activate
+    pip install -r requirements.txt        # bithuman, openai, opencv, …
+    ```
+    Use a virtualenv — the example's `requirements.txt` pulls everything
+    it needs (the SDK itself ships no OpenCV; the display window does).
+  </Step>
+  <Step title="Run">
+    You need an avatar `.imx`. Easiest: run `bithuman avatar` once (it
+    caches a sample at `~/.cache/bithuman/models/sample-avatar.imx`), or
+    download one from [Explore](https://www.bithuman.ai/#explore).
+
+    ```bash
+    python conversation.py --model ~/.cache/bithuman/models/sample-avatar.imx
     ```
     Speak into your mic. The AI responds, the avatar lip-syncs in real time. Press `Q` to quit.
 
