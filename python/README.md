@@ -164,7 +164,7 @@ package. Install it independently:
 
 ```bash
 # macOS + Linux — universal installer
-curl -fsSL https://github.com/bithuman-product/bithuman-sdk-public/releases/latest/download/install.sh | sh
+curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
 # Or macOS Homebrew
 brew install bithuman-product/bithuman/bithuman
 ```

@@ -73,7 +73,7 @@ Requires Apple Silicon M3 or newer. See [swift/README.md](swift/README.md) for d
 
 ```bash
 # Universal installer (macOS + Linux)
-curl -fsSL https://github.com/bithuman-product/bithuman-sdk-public/releases/latest/download/install.sh | sh
+curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
 # Or macOS Homebrew
 brew install bithuman-product/bithuman/bithuman
 
@@ -165,7 +165,7 @@ Don't have an `.imx` file? Download one from [bithuman.ai → Explore](https://w
 | Topic | Link |
 |-------|------|
 | Python getting started | [docs.bithuman.ai/getting-started/quickstart](https://docs.bithuman.ai/getting-started/quickstart) |
-| Swift SDK | [docs.bithuman.ai/swift-sdk/overview](https://docs.bithuman.ai/swift-sdk/overview) |
+| Swift SDK | [docs.bithuman.ai/sdks/swift](https://docs.bithuman.ai/sdks/swift) |
 | REST API reference | [docs.bithuman.ai/api-reference/overview](https://docs.bithuman.ai/api-reference/overview) |
 | How authentication works | [docs.bithuman.ai/getting-started/authentication](https://docs.bithuman.ai/getting-started/authentication) |
 | Pricing and credits | [docs.bithuman.ai/getting-started/pricing](https://docs.bithuman.ai/getting-started/pricing) |
