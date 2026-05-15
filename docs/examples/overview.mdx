@@ -1,81 +1,114 @@
 ---
-title: "bitHuman Code Examples: Audio, Microphone, AI Chat & More"
-description: "Working examples for every pathway — Cloud REST, Cloud Plugin (LiveKit), Self-hosted Python (CPU), Self-hosted GPU (NVIDIA), On-device Apple Silicon, and CLI."
+title: "Examples gallery"
+description: "Runnable examples covering every bitHuman integration path — cloud, self-hosted CPU, self-hosted GPU, on-device, and CLI."
 icon: "book-open"
 ---
 
-<img src="/images/example-agent-images.jpg" alt="Example Agent Variety" style={{ borderRadius: '8px', width: '100%' }} />
+<img src="/images/example-agent-images.jpg" alt="Example avatars" style={{ borderRadius: '12px', width: '100%' }} />
 
-Every example below is open source in [bithuman-product/bithuman-sdk-public/Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples). The Swift / Apple Silicon examples live in bitHuman reference apps (private).
+Every example below is open-source under [bithuman-product/bithuman-sdk-public/Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples). Pick the path closest to what you're building and clone it.
 
----
+## Quick start (everyone starts here)
 
-## bitHuman Cloud (managed)
+<CardGroup cols={3}>
+  <Card title="Render an audio clip" icon="play" href="/examples/audio-clip">
+    Play a `.wav` through a bitHuman avatar with OpenCV display.<br/>**Python · Essence · 5 min**
+  </Card>
+  <Card title="Stream from the microphone" icon="microphone" href="/examples/microphone">
+    Real-time mic input drives the avatar locally.<br/>**Python · Essence · 10 min**
+  </Card>
+  <Card title="Wire up a full voice agent" icon="comments" href="/examples/ai-conversation">
+    OpenAI Realtime voice chat → talking avatar.<br/>**Python · Essence · 15 min**
+  </Card>
+</CardGroup>
 
-No local runtime — call the REST API or use the LiveKit plugin.
+## Hello-world examples (per SDK)
 
-| Example | Model | What it does | Source |
-|---------|-------|--------------|--------|
-| **Agent Management** | — | Validate credentials, get/update agents | [rest-api/python/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/rest-api/python) |
-| **Agent Generation** | — | Create agents from prompt, poll status | [rest-api/python/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/rest-api/python) |
-| **Dynamics** | Essence | Generate gestures, list available gestures | [rest-api/python/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/rest-api/python) |
-| **Essence + Cloud Plugin** | Essence (CPU) | LiveKit avatar with hosted Essence agent | [python/cloud-essence/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-essence) |
-| **Expression + Cloud Plugin** | Expression (GPU) | LiveKit avatar with hosted Expression agent or any face image | [python/cloud-expression/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-expression) |
+<CardGroup cols={2}>
+  <Card title="Python — Hello, avatar" icon="python" href="/examples/python-hello">
+    Minimal `AsyncBithuman` loop. ~20 lines of code.
+  </Card>
+  <Card title="Swift / iOS — Hello, avatar" icon="apple" href="/examples/swift-ios-hello">
+    Minimal SwiftUI integration with `bitHumanKit`. ~40 lines.
+  </Card>
+  <Card title="Kotlin / Android — Hello, avatar" icon="android" href="/examples/kotlin-android-hello">
+    Maven AAR + `Avatar.load` in a fresh Android Studio project.
+  </Card>
+  <Card title="Run the CLI" icon="terminal" href="/examples/cli-hello">
+    `brew install` and `bithuman avatar` — zero code, full demo.
+  </Card>
+</CardGroup>
 
-REST API reference: **[/api-reference/overview](/api-reference/overview)** · LiveKit plugin guide: **[/deployment/livekit-cloud-plugin](/deployment/livekit-cloud-plugin)**.
+## On-device deployments
 
-## Self-hosted server
+<CardGroup cols={2}>
+  <Card title="Expression on macOS (Python)" icon="image" href="/examples/apple-expression">
+    `pip install bithuman` on Apple Silicon — render any portrait + WAV to MP4.
+  </Card>
+  <Card title="Offline Apple Local agent" icon="lock" href="/examples/apple-local">
+    100% on-device voice agent on macOS — Siri ASR + Ollama LLM + Essence avatar.
+  </Card>
+  <Card title="bitHuman Halo (signed DMG)" icon="laptop" href="/examples/halo-macos">
+    Free macOS desktop app — floating avatar, drag-drop face swap, Sparkle auto-update.
+  </Card>
+  <Card title="Raspberry Pi deployment" icon="microchip" href="/examples/raspberry-pi">
+    Edge / kiosk install on Raspberry Pi 4B+ with systemd auto-start.
+  </Card>
+  <Card title="iPad / iPhone integration" icon="mobile" href="/swift-sdk/ios">
+    Picture-in-Picture, Stage Manager panels, PhotosPicker portrait swap.
+  </Card>
+  <Card title="Cross-platform via Flutter" icon="layer-group" href="/integrations/flutter">
+    One Dart codebase across Mac, iOS, and Android.
+  </Card>
+</CardGroup>
 
-Run the runtime on your own hardware.
+## Server deployments
 
-| Example | Model | What it does | Source |
-|---------|-------|--------------|--------|
-| **[Essence + Self-Hosted](/examples/audio-clip)** | Essence (CPU) | Python SDK — push audio, render avatar locally | [python/local-essence/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) |
-| **[Audio Clip](/examples/audio-clip)** | Essence (CPU) | Play a `.wav` through an avatar with OpenCV display | [python/local-essence/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) |
-| **[Live Microphone](/examples/microphone)** | Essence (CPU) | Real-time mic input → avatar | [python/local-essence/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) |
-| **[AI Conversation](/examples/ai-conversation)** | Essence (CPU) | OpenAI voice chat → avatar | [python/local-essence/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) |
-| **[Raspberry Pi](/examples/raspberry-pi)** | Essence (CPU) | Edge deployment on Raspberry Pi | — |
-| **Expression + Self-Hosted GPU** | Expression (GPU) | Linux + NVIDIA Docker, dynamic face from any image | [python/local-expression-gpu/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-gpu) |
+<CardGroup cols={2}>
+  <Card title="LiveKit Cloud plugin" icon="cloud" href="/deployment/livekit-cloud-plugin">
+    Managed avatar runtime — no infra, no GPU.<br/>**Essence + Expression**
+  </Card>
+  <Card title="Self-hosted CPU (Python SDK)" icon="server" href="/deployment/avatar-sessions#self-hosted-cpu">
+    Run Essence on your own Linux box.<br/>**Essence · CPU only**
+  </Card>
+  <Card title="Self-hosted GPU container" icon="microchip" href="/deployment/self-hosted-gpu">
+    Run Expression on your own NVIDIA GPUs.<br/>**Expression · 8 GB+ VRAM**
+  </Card>
+  <Card title="Self-hosted LiveKit plugin" icon="network-wired" href="/examples/self-hosted-plugin">
+    Point the LiveKit plugin at your own avatar endpoint.
+  </Card>
+</CardGroup>
 
-Python SDK quickstart: **[/getting-started/quickstart](/getting-started/quickstart)** · GPU container: **[/deployment/self-hosted-gpu](/deployment/self-hosted-gpu)**.
+## REST API recipes
 
-## On-device — both Essence and Expression
+<CardGroup cols={2}>
+  <Card title="Validate, generate, manage agents" icon="code" href="/api-reference/overview">
+    Curl + Python scripts hitting `api.bithuman.ai`.
+  </Card>
+  <Card title="Generate gestures (dynamics)" icon="person-running" href="/api-reference/dynamics">
+    Add wave / nod / smile / laugh to any Essence agent.
+  </Card>
+  <Card title="Receive webhooks" icon="webhook" href="/integrations/webhooks">
+    HMAC-verified `room.join` / `chat.push` events.
+  </Card>
+  <Card title="Embed a chat widget" icon="comments" href="/integrations/embed">
+    Drop a floating text / voice / video avatar onto any website.
+  </Card>
+</CardGroup>
 
-Everything runs on the user's Mac, iPad, iPhone, or Android device — only the billing heartbeat goes out. Both model families have first-class example apps.
+## Web and framework integrations
 
-### Expression on-device (Apple Silicon)
-
-| Example | Surface | What it does | Source |
-|---------|---------|--------------|--------|
-| **[Expression on macOS (Python SDK)](/examples/apple-expression)** | Python SDK | `pip install bithuman` and render any portrait + WAV → MP4 on Apple Silicon. | [integrations/offline-mac/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/offline-mac) |
-| **[Mac signed app (Halo)](/examples/halo-macos)** | Signed DMG | Floating avatar window, drag-drop face swap, on-device LLM/TTS, Sparkle auto-update. | [Install guide](/examples/halo-macos) |
-| **[iPad / iPhone integration](/swift-sdk/ios)** | Swift SDK | Stage Manager floating panels, Picture-in-Picture, PhotosPicker portrait swap. iPhone supports Essence today. | [Swift iOS guide](/swift-sdk/ios) |
-
-### Essence on-device (mac · iOS · iPadOS · Android)
-
-| Example | Surface | What it does | Source |
-|---------|---------|--------------|--------|
-| **[Flutter `bithuman` plugin example](/integrations/flutter)** | Flutter (one Dart codebase) | The canonical Essence cross-platform demo — runs on macOS, iOS, and Android from one codebase. Built-in echo cancellation per platform. | [Flutter plugin guide](/integrations/flutter) |
-| **[Essence on Swift](/swift-sdk/essence)** | Swift SDK | 720p+ Essence playback on Mac M3+ and iPad Pro M4+ (Phase 1) | bithuman-sdk SwiftPM |
-| **[Kotlin / Android Hello World](/examples/kotlin-android-hello)** | Kotlin SDK | Maven Central AAR, Essence streaming on `arm64-v8a` | bithuman-sdk Kotlin AAR |
-| **[Apple Local Agent](/examples/apple-local)** | Python | 100% offline on macOS (Siri + Ollama, Essence) | [integrations/offline-mac/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/offline-mac) |
-| **[bitHuman Halo](/examples/halo-macos)** | Signed DMG | Free macOS desktop app — floating avatar, local STT + LLM + TTS (Essence) | [Install guide](/examples/halo-macos) |
-
-### CLI (both models)
-
-| Example | Surface | What it does | Source |
-|---------|---------|--------------|--------|
-| **[CLI Hello World](/examples/cli-hello)** | Rust CLI (Homebrew) | `brew install bithuman` — handles both Essence and Expression `.imx` automatically via `--identity <agent.imx>`. Voice / text / avatar modes. | [/getting-started/cli](/getting-started/cli) |
-
-Swift SDK overview: **[/swift-sdk/overview](/swift-sdk/overview)** · Kotlin SDK overview: **[/kotlin-sdk/overview](/kotlin-sdk/overview)** · Flutter plugin: **[/integrations/flutter](/integrations/flutter)** · CLI reference: **[/getting-started/cli](/getting-started/cli)**.
-
-## Web & framework integrations
-
-| Example | What it does | Source |
-|---------|--------------|--------|
-| **Web UI** | Browser-based Gradio interface | [integrations/gradio-web/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/gradio-web) |
-| **Java Client** | WebSocket streaming from Java | [integrations/java-websocket/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/java-websocket) |
-| **Next.js UI** | Drop-in LiveKit web interface | [integrations/nextjs-ui/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/nextjs-ui) |
+<CardGroup cols={3}>
+  <Card title="Next.js UI" icon="react" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/nextjs-ui">
+    Drop-in LiveKit web interface with a talking avatar tile.
+  </Card>
+  <Card title="Java WebSocket client" icon="java" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/java-websocket">
+    Stream PCM into bitHuman from any JVM client.
+  </Card>
+  <Card title="Gradio web demo" icon="browser" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/gradio-web">
+    Browser-based gradio interface for prototyping.
+  </Card>
+</CardGroup>
 
 ---
 
@@ -85,4 +118,4 @@ Swift SDK overview: **[/swift-sdk/overview](/swift-sdk/overview)** · Kotlin SDK
 
 ---
 
-**New to bitHuman?** Start with [Essence + Cloud](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-essence) — the simplest setup with no models to download. Building a Mac/iPad/iPhone app instead? Jump to the [Swift SDK quickstart](/swift-sdk/quickstart).
+**New to bitHuman?** Start with [Render an audio clip](/examples/audio-clip) — the simplest setup, no GPU, no LiveKit. Building a Mac / iPad / iPhone app instead? Jump to the [Swift SDK quickstart](/swift-sdk/quickstart).

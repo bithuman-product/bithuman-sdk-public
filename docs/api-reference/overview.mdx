@@ -6,7 +6,29 @@ icon: "code"
 
 The bitHuman API lets you create, manage, and interact with avatar agents from any programming language. Use it when you don't need a native SDK — backends, CI scripts, or platforms where Python / Swift / Kotlin aren't a fit.
 
-## Base URL
+```mermaid
+flowchart LR
+    A[Your backend<br/>any language] -->|HTTPS + api-secret| B[api.bithuman.ai/v1]
+    B --> C[Agent generation]
+    B --> D[Agent context<br/>speak / add-context]
+    B --> E[Dynamics<br/>gestures]
+    B --> F[File upload]
+    C & D & E & F --> G[(Hosted avatars<br/>in LiveKit rooms)]
+```
+
+<CardGroup cols={3}>
+  <Card title="Status" icon="signal">
+    Live API status at [status.bithuman.ai](https://status.bithuman.ai).
+  </Card>
+  <Card title="Versioning" icon="code-branch">
+    `v1` endpoints are general availability. Breaking changes ship under new path prefixes.
+  </Card>
+  <Card title="Changelog" icon="clock-rotate-left" href="/changelog">
+    Product-level release notes and API changes.
+  </Card>
+</CardGroup>
+
+## Where to send requests
 
 ```
 https://api.bithuman.ai
@@ -23,7 +45,7 @@ curl -X POST https://api.bithuman.ai/v1/validate \
 
 A `200` response means your secret is valid. Any other status is an authentication or networking problem — see the [Error Reference](/api-reference/errors).
 
-## Authentication
+## How to authenticate every call
 
 Every request needs the `api-secret` header. Get yours at [Developer → API Keys](https://www.bithuman.ai/#developer).
 
@@ -33,7 +55,7 @@ api-secret: YOUR_API_SECRET
 
 Treat the secret like a password — never check it into source control, never embed it in client apps. For browser-side embeds, use the [embed token flow](/integrations/embed) instead.
 
-## Agent identifiers
+## How agents are identified
 
 Every endpoint identifies an agent by its **agent code** — a short string like `A91XMB7113`.
 
@@ -43,7 +65,7 @@ You receive an agent code when you [generate an agent](/api-reference/agent-gene
 Different endpoint paths use slightly different parameter names for the same value: `{code}`, `{agent_code}`, or sometimes `{agent_id}`. They all expect the same string — the agent code shown in your Library.
 </Note>
 
-## Available APIs
+## What you can call
 
 <CardGroup cols={2}>
   <Card title="Agent Generation" icon="wand-magic-sparkles" href="/api-reference/agent-generation">
@@ -66,11 +88,11 @@ Different endpoint paths use slightly different parameter names for the same val
   </Card>
 </CardGroup>
 
-## OpenAPI spec
+## Generate a client from the OpenAPI spec
 
 The complete API contract is published as OpenAPI 3.1 at [`api-reference/openapi.yaml`](https://github.com/bithuman-product/bithuman-sdk-public/blob/main/docs/api-reference/openapi.yaml). Use it to generate clients in any language.
 
-## Error format
+## What errors look like
 
 All errors follow the same structure:
 

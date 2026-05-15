@@ -1,6 +1,7 @@
 ---
-title: "Avatar Sessions: Cloud, CPU & GPU Deployment Guide"
-description: "Complete guide to creating bitHuman avatar sessions — cloud plugin, self-hosted CPU (.imx), and self-hosted GPU (any face image). Working code examples for each."
+title: "Run avatar sessions on cloud, CPU, or GPU"
+sidebarTitle: "Avatar sessions"
+description: "Bring a bitHuman avatar into a LiveKit room. Cloud plugin, self-hosted CPU, self-hosted GPU, or on-device — with a working code example for each."
 icon: "book-open"
 ---
 
@@ -12,7 +13,7 @@ An **AvatarSession** is how you bring a bitHuman avatar into a LiveKit room. Thi
 
 ---
 
-## Choose Your Approach
+## Pick a deployment mode
 
 Both **Essence** and **Expression** ship to every approach below. Pick by
 deployment shape first, then model:
@@ -47,11 +48,11 @@ docker run --rm -p 7880:7880 -p 7881:7881 -p 7882:7882/udp \
 
 ---
 
-## Cloud Plugin
+## Cloud plugin
 
-The cloud plugin runs the avatar on bitHuman's servers. You just provide an Agent ID and API secret — no model files, no GPU.
+The cloud plugin runs the avatar on bitHuman's servers. Provide an agent code and API secret — no model files, no GPU.
 
-### Complete Working Example
+### Working example
 
 ```python
 import asyncio
@@ -67,87 +68,78 @@ from livekit.agents import (
 )
 from livekit.plugins import openai, silero, bithuman
 
-# 1. Define your AI agent
 class MyAgent(Agent):
     def __init__(self):
         super().__init__(
-            instructions="""You are a helpful and friendly assistant.
-            Keep responses concise — 1-2 sentences.""",
+            instructions=(
+                "You are a helpful and friendly assistant. "
+                "Keep responses concise — 1-2 sentences."
+            ),
         )
 
-# 2. Set up the session when a user connects
 async def entrypoint(ctx: JobContext):
     await ctx.connect()
-
-    # Wait for a user to join the room
     await ctx.wait_for_participant()
 
-    # Create the avatar session (cloud-hosted)
     avatar = bithuman.AvatarSession(
         avatar_id=os.getenv("BITHUMAN_AGENT_ID"),    # e.g. "A78WKV4515"
         api_secret=os.getenv("BITHUMAN_API_SECRET"),
     )
 
-    # Create the agent session with AI components
     session = AgentSession(
-        stt=openai.STT(),                 # Speech-to-text
-        llm=openai.LLM(),                 # AI language model
-        tts=openai.TTS(),                 # Text-to-speech
-        vad=silero.VAD.load(),            # Voice activity detection
+        stt=openai.STT(),
+        llm=openai.LLM(),
+        tts=openai.TTS(),
+        vad=silero.VAD.load(),
     )
 
-    # Start everything — avatar joins the room automatically
     await avatar.start(session, room=ctx.room)
-
     await session.start(
         agent=MyAgent(),
         room=ctx.room,
         room_output_options=RoomOutputOptions(audio_enabled=False),
     )
 
-# 3. Launch
 if __name__ == "__main__":
     cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint))
 ```
 
-### Environment Variables
+### Environment variables
 
 ```bash
-# Required
-export BITHUMAN_API_SECRET="your_api_secret"          # From www.bithuman.ai/#developer
-export BITHUMAN_AGENT_ID="A78WKV4515"           # Your agent's ID
+export BITHUMAN_API_SECRET="your_api_secret"     # From www.bithuman.ai/#developer
+export BITHUMAN_AGENT_ID="A78WKV4515"            # Your agent code
 export OPENAI_API_KEY="sk-..."                   # For STT, LLM, TTS
 
-# LiveKit connection
+# LiveKit
 export LIVEKIT_URL="wss://your-project.livekit.cloud"
 export LIVEKIT_API_KEY="APIxxxxxxxx"
 export LIVEKIT_API_SECRET="xxxxxxxx"
 ```
 
-### Run It
+### Run it
 
 ```bash
 python agent.py dev
 ```
 
-Then open [agents-playground.livekit.io](https://agents-playground.livekit.io) to connect and talk to your avatar.
+Open [agents-playground.livekit.io](https://agents-playground.livekit.io) to connect and talk to your avatar.
 
-### How It Works Behind the Scenes
+### What happens under the hood
 
-When `avatar.start()` and `session.start()` run:
+When `avatar.start()` and `session.start()` fire:
 
-1. The plugin sends a request to bitHuman's cloud API
-2. A cloud avatar worker receives the request
-3. The worker downloads the avatar model (cached after first time)
-4. The worker joins your LiveKit room as a participant named `bithuman-avatar-agent`
-5. As your agent produces TTS audio, the worker generates animated video frames
-6. Video is published to the room — users see the avatar speaking
+1. The plugin requests a session from bitHuman's cloud API.
+2. A cloud avatar worker picks it up and downloads the model (cached afterwards).
+3. The worker joins your LiveKit room as a participant named `bithuman-avatar-agent`.
+4. As your agent produces TTS audio, the worker generates animated video frames.
+5. Video publishes to the room — users see the avatar speaking.
 
 <Tip>
-**Essence vs Expression model:** By default, the cloud plugin uses the **Essence** (CPU) model, which works with pre-built `.imx` avatars. Add `model="expression"` to use the **Expression** (GPU) model, which supports custom face images.
+**Essence or Expression?** The cloud plugin uses **Essence** (pre-built `.imx`) by default. Pass `model="expression"` to use **Expression** (any face image at runtime).
 </Tip>
 
-### Using Expression Model (GPU) with Custom Image
+### Use Expression with a custom face image
 
 ```python
 from PIL import Image
@@ -161,11 +153,11 @@ avatar = bithuman.AvatarSession(
 
 ---
 
-## Self-Hosted CPU
+## Self-hosted CPU
 
-Run the avatar entirely on your own machine using a downloaded `.imx` model file. Great for privacy and offline use.
+Run the avatar entirely on your own machine using a downloaded `.imx` model file. Right for privacy and offline use.
 
-### Complete Working Example
+### Working example
 
 ```python
 import asyncio
@@ -216,44 +208,43 @@ if __name__ == "__main__":
     cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint))
 ```
 
-### Environment Variables
+### Environment variables
 
 ```bash
-# Required
 export BITHUMAN_API_SECRET="your_api_secret"
 export BITHUMAN_MODEL_PATH="/path/to/avatar.imx"
 export OPENAI_API_KEY="sk-..."
 
-# LiveKit connection
+# LiveKit
 export LIVEKIT_URL="wss://your-project.livekit.cloud"
 export LIVEKIT_API_KEY="APIxxxxxxxx"
 export LIVEKIT_API_SECRET="xxxxxxxx"
 ```
 
-### How It Differs from Cloud
+### How self-hosted CPU differs from cloud
 
-| Aspect | Cloud | Self-Hosted CPU |
-|--------|-------|-----------------|
+| Aspect | Cloud | Self-hosted CPU |
+|---|---|---|
 | Model location | bitHuman's servers | Your machine |
 | Avatar parameter | `avatar_id="A78WKV4515"` | `model_path="/path/to/avatar.imx"` |
 | Internet needed | Yes (always) | Only for authentication |
 | First frame latency | 2-4 seconds | ~20 seconds (model load) |
 | Privacy | Audio sent to cloud | Audio stays local |
 
-### System Requirements
+### System requirements
 
-- **CPU:** 1–2 cores sustain 25 FPS on modern chips; 4+ is comfortable for headroom
-- **RAM:** 4 GB minimum, 8 GB recommended
-- **Disk:** ~500 MB per `.imx` model
-- **OS:** Linux (x86_64 / ARM64), macOS 13+ (Intel or Apple Silicon), or Windows 10+
+- **CPU:** 1–2 cores sustain 25 FPS on modern chips; 4+ is comfortable for headroom.
+- **RAM:** 4 GB minimum, 8 GB recommended.
+- **Disk:** ~500 MB per `.imx` model.
+- **OS:** Linux (x86_64 / ARM64), macOS 13+ (Intel or Apple Silicon), or Windows 10+.
 
 ---
 
-## Self-Hosted GPU
+## Self-hosted GPU
 
 Use a GPU container that generates avatars from any face image — no pre-built models needed.
 
-### Complete Working Example
+### Working example
 
 ```python
 import asyncio
@@ -305,7 +296,7 @@ if __name__ == "__main__":
     cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint))
 ```
 
-### Start the GPU Container First
+### Start the GPU container first
 
 ```bash
 # Pull and run the GPU avatar container
@@ -316,27 +307,26 @@ docker run --gpus all -p 8089:8089 \
     docker.io/sgubithuman/expression-avatar:latest
 ```
 
-### Environment Variables
+### Environment variables
 
 ```bash
-# Required
 export BITHUMAN_API_SECRET="your_api_secret"
 export CUSTOM_GPU_URL="http://localhost:8089/launch"
 export OPENAI_API_KEY="sk-..."
 
-# LiveKit connection
+# LiveKit
 export LIVEKIT_URL="wss://your-project.livekit.cloud"
 export LIVEKIT_API_KEY="APIxxxxxxxx"
 export LIVEKIT_API_SECRET="xxxxxxxx"
 ```
 
 <Note>
-For detailed GPU container setup, see [Self-Hosted GPU Container](/deployment/self-hosted-gpu).
+For full GPU container setup, see [Self-hosted GPU](/deployment/self-hosted-gpu).
 </Note>
 
 ---
 
-## On-Device Apple Silicon
+## On-device Apple Silicon
 
 Run **either Essence or Expression** entirely on the end-user's Apple
 Silicon device — no LiveKit, no AvatarSession, no server. The Swift SDK
@@ -348,8 +338,8 @@ heartbeat to `api.bithuman.ai`.
   via the streaming push/pull API. See [Essence on Swift](/swift-sdk/essence)
   and [Streaming API](/swift-sdk/streaming).
 - **Expression on-device** — `bitHumanKit` SwiftPM package on Mac M3+ /
-  iPad Pro M4+ via MLX. iPhone Expression is parked while the per-app
-  memory budget firms up; iPhone today is Essence-only on-device.
+  iPad Pro M4+ via MLX. iPhone runs Essence only — Expression needs
+  iPad Pro M4+ or Mac M3+.
 
 ### Vanilla integration (audio + avatar)
 
@@ -380,14 +370,14 @@ For **Expression** on-device:
 |---|---|
 | **macOS** | M3+ Apple Silicon, macOS 26 (Tahoe) |
 | **iPad** | iPad Pro M4+, 16 GB unified memory, iPadOS 26 |
-| **iPhone** | Not supported in v1.17.0 — iPhone Expression is parked. Use [Essence on Swift](/swift-sdk/essence) instead. |
+| **iPhone** | Essence only — Expression needs iPad Pro M4+ or Mac M3+. See [Essence on Swift](/swift-sdk/essence). |
 
 For **Essence** on-device — supported across the full Apple lineup
 (Mac M3+, iPad Pro M4+, iPhone 17 Pro+) plus Android `arm64-v8a`.
 
 `HardwareCheck.evaluate()` gates this at runtime — under-spec devices see a polite refusal screen.
 
-### Try without writing code
+### Try it without writing code
 
 ```bash
 brew tap bithuman-product/bithuman
@@ -399,7 +389,7 @@ Full guide: **[Swift SDK overview →](/swift-sdk/overview)**, **[10-minute quic
 
 ---
 
-## On-Device Android / Flutter
+## On-device Android and Flutter
 
 Run **Essence** on Android (`arm64-v8a`, Android 10+) via the Kotlin SDK
 or the Flutter `bithuman` plugin. Same engine, same `.imx`, pixel-identical
@@ -414,7 +404,7 @@ A Flutter example app is published with the plugin — see the [Flutter plugin g
 
 ---
 
-## What's Next
+## Add gestures, dynamics, and REST control
 
 Once your avatar session is running, explore these features:
 
@@ -482,7 +472,7 @@ Once your avatar session is running, explore these features:
 
 ---
 
-## Session Lifecycle
+## How sessions start, run, and end
 
 Understanding how sessions behave helps you build reliable integrations.
 
@@ -499,7 +489,7 @@ Essence sessions are designed for 24/7 deployments like museum kiosks and lobby 
 
 ---
 
-## Billing & Credits
+## What a session costs
 
 Avatar sessions consume credits based on the deployment mode and session duration.
 

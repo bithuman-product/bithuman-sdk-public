@@ -5,6 +5,13 @@ description: "On-device avatar runtime for Android — shipped via Maven Central
 
 `ai.bithuman:sdk` is an Android AAR that drops the bitHuman avatar runtime into a Kotlin or Java app. Audio in (16 kHz mono PCM), 25 FPS video frames out. All inference runs on-device; the avatar pipeline is metered via a one-request-per-minute billing heartbeat.
 
+```mermaid
+flowchart LR
+    A[Your app<br/>AudioRecord / WebRTC sink] -->|16 kHz PCM| B[ai.bithuman:sdk]
+    B -->|25 FPS Bitmap / BGR bytes| C[ImageView / SurfaceView]
+    B -.->|once per minute| D[(api.bithuman.ai<br/>billing heartbeat)]
+```
+
 <CardGroup cols={2}>
   <Card title="Kotlin quickstart" icon="rocket" href="/kotlin-sdk/quickstart">
     Maven coord and a 10-line example
@@ -19,6 +26,43 @@ description: "On-device avatar runtime for Android — shipped via Maven Central
     Hello-world Android project
   </Card>
 </CardGroup>
+
+## Install and run
+
+<CodeGroup>
+
+```kotlin build.gradle.kts
+android {
+    defaultConfig {
+        ndk { abiFilters += setOf("arm64-v8a") }
+        minSdk = 29
+    }
+}
+
+dependencies {
+    implementation("ai.bithuman:sdk:1.17.1")
+}
+```
+
+```kotlin Hello.kt
+import ai.bithuman.sdk.Bithuman
+
+val runtime = Bithuman.createRuntime("/path/to/avatar.imx")
+println("frame size: ${runtime.frameWidth} x ${runtime.frameHeight}")
+
+// Push 16 kHz mono PCM as it arrives, drain frames on a Choreographer tick.
+runtime.pushAudio(pcmShortArray)
+val frameOut = ByteArray(runtime.frameWidth * runtime.frameHeight * 3)
+while (runtime.ticksAvailable > 0) {
+    runtime.pullFrame(frameOut, frameIdxHint = -1)
+    renderer.present(frameOut)
+}
+runtime.close()
+```
+
+</CodeGroup>
+
+The AAR is self-contained — no extra system dependencies. `arm64-v8a` only.
 
 ## Compatibility
 

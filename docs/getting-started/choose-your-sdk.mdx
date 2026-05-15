@@ -1,12 +1,41 @@
 ---
 title: "Choose your SDK"
-description: "A short decision tree to pick the right bitHuman SDK for your stack."
+description: "Six SDKs, one decision. Pick the right bitHuman path for your stack in under a minute."
 icon: "compass"
 ---
 
 bitHuman ships SDKs for Python, Swift, Kotlin, a cross-platform Flutter plugin, a Rust CLI, and a REST API. Pick once and skip the deep dive on the others.
 
-## Quick decision
+## The six paths
+
+<CardGroup cols={2}>
+  <Card title="Python SDK" icon="python" href="/getting-started/quickstart">
+    **Most popular.** Backend services, batch jobs, AI agents, edge boxes. macOS / Linux / Windows.<br/>
+    `pip install bithuman`
+  </Card>
+  <Card title="Swift SDK" icon="apple" href="/swift-sdk/overview">
+    Native Mac / iPad / iPhone apps. Apple Silicon only.<br/>
+    SwiftPM `bitHumanKit`
+  </Card>
+  <Card title="Kotlin SDK" icon="android" href="/kotlin-sdk/overview">
+    Native Android apps. `arm64-v8a`, Android 10+.<br/>
+    Maven `ai.bithuman:sdk:1.17.1`
+  </Card>
+  <Card title="Flutter plugin" icon="layer-group" href="/integrations/flutter">
+    One Dart codebase across Mac, iOS, Android.<br/>
+    `flutter pub add bithuman`
+  </Card>
+  <Card title="bitHuman CLI" icon="terminal" href="/getting-started/cli">
+    No code. Voice / text / avatar in your terminal.<br/>
+    `brew install bithuman-product/bithuman/bithuman`
+  </Card>
+  <Card title="REST API" icon="code" href="/api-reference/overview">
+    Backend in any language. Managed avatars in the cloud.<br/>
+    `curl` against `api.bithuman.ai`
+  </Card>
+</CardGroup>
+
+## Or pick by what you're building
 
 | What you're building | Pick |
 |---|---|
@@ -15,22 +44,22 @@ bitHuman ships SDKs for Python, Swift, Kotlin, a cross-platform Flutter plugin, 
 | Native iOS / iPadOS / macOS app | **[Swift SDK](/swift-sdk/overview)** |
 | Native Android app | **[Kotlin SDK](/kotlin-sdk/overview)** |
 | One Dart codebase across Mac, iOS, Android | **[Flutter plugin](/integrations/flutter)** |
-| Backend in any language calling cloud | **[REST API](/api-reference/overview)** |
+| Backend in any language, cloud-managed | **[REST API](/api-reference/overview)** |
 | LiveKit voice agent with avatar in the cloud | **[LiveKit Cloud Plugin](/deployment/livekit-cloud-plugin)** |
 | On-prem Expression on your own NVIDIA GPU | **[Self-hosted GPU](/deployment/self-hosted-gpu)** |
-| Drop a chat avatar into a website | **[Embed widget](/integrations/embed)** |
+| Drop a chat avatar onto a website | **[Embed widget](/integrations/embed)** |
 
-## Decision tree
+## Walk the decision tree
 
 **Q1. Are you writing code at all?**
 
 - **No** — install the [bitHuman CLI](/getting-started/cli) and run `bithuman avatar`. Done.
-- **Yes** — Q2.
+- **Yes** — continue to Q2.
 
 **Q2. Where does the avatar render — on your user's device, or your server?**
 
-- **User's device** (mobile app, desktop app, Flutter app) — Q3.
-- **Your server** (LiveKit room, web app, batch jobs) — Q4.
+- **User's device** (mobile app, desktop app, Flutter app) — continue to Q3.
+- **Your server** (LiveKit room, web app, batch jobs) — continue to Q4.
 
 **Q3. Which device platform?**
 
@@ -42,9 +71,9 @@ bitHuman ships SDKs for Python, Swift, Kotlin, a cross-platform Flutter plugin, 
 **Q4. How is your server hosted?**
 
 - **Don't want to manage infrastructure** — [LiveKit Cloud Plugin](/deployment/livekit-cloud-plugin). Managed runtime.
-- **Have a Linux server, Essence is enough** — [Python SDK](/getting-started/quickstart) (`pip install bithuman`).
+- **Have a Linux server, Essence is enough** — [Python SDK](/getting-started/quickstart).
 - **Have NVIDIA GPUs, need Expression** — [self-hosted GPU container](/deployment/self-hosted-gpu).
-- **Already have a backend in another language** — [REST API](/api-reference/overview) (`curl` against `api.bithuman.ai`).
+- **Already have a backend in another language** — [REST API](/api-reference/overview).
 - **Just want a chat widget on a webpage** — [Embed widget](/integrations/embed).
 
 ## Side-by-side comparison
@@ -55,7 +84,7 @@ bitHuman ships SDKs for Python, Swift, Kotlin, a cross-platform Flutter plugin, 
 | **Swift** | SwiftPM `bitHumanKit` | iOS, iPadOS, macOS | Essence + Expression (Mac M3+, iPad Pro M4+) |
 | **Kotlin** | Maven `ai.bithuman:sdk` | Android `arm64-v8a` | Essence |
 | **Flutter** | `flutter pub add bithuman` | Mac, iOS, Android | Essence |
-| **Rust CLI** | `brew install …/bithuman` | macOS, Linux, Windows | Essence + Expression |
+| **CLI** | `brew install bithuman-product/bithuman/bithuman` | macOS, Linux, Windows | Essence + Expression |
 | **REST API** | API key only | Any (network) | Essence + Expression (cloud) |
 
 ## You can mix paths
@@ -68,25 +97,25 @@ The SDKs aren't mutually exclusive. Common combinations:
 
 ## Where to go next
 
-Once you've picked your SDK, jump straight to its quickstart:
+Once you've picked, jump straight to its quickstart:
 
 <CardGroup cols={3}>
-  <Card title="Python quickstart" icon="rocket" href="/getting-started/quickstart">
+  <Card title="Render a first avatar in Python" icon="rocket" href="/getting-started/quickstart">
     `pip install bithuman` in 5 minutes
   </Card>
-  <Card title="Swift quickstart" icon="apple" href="/swift-sdk/quickstart">
+  <Card title="Ship a Mac / iOS / iPad app" icon="apple" href="/swift-sdk/quickstart">
     `bitHumanKit` in 10 minutes
   </Card>
-  <Card title="Kotlin quickstart" icon="android" href="/kotlin-sdk/quickstart">
+  <Card title="Ship an Android app" icon="android" href="/kotlin-sdk/quickstart">
     `ai.bithuman:sdk` in 10 minutes
   </Card>
-  <Card title="Flutter quickstart" icon="layer-group" href="/integrations/flutter">
+  <Card title="Build cross-platform in Dart" icon="layer-group" href="/integrations/flutter">
     `bithuman` plugin, three platforms
   </Card>
-  <Card title="CLI" icon="terminal" href="/getting-started/cli">
+  <Card title="Run the CLI" icon="terminal" href="/getting-started/cli">
     Zero code, fastest setup
   </Card>
-  <Card title="REST API" icon="code" href="/api-reference/overview">
+  <Card title="Call the REST API" icon="code" href="/api-reference/overview">
     Cloud avatars, any language
   </Card>
 </CardGroup>

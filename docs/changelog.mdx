@@ -17,7 +17,7 @@ This page tracks **product-level** changes (platform, web, agent runtime). For p
 - **Interactive terminal UI for `voice`.** On a TTY, `bithuman voice` shows live mic and bot level meters plus a scrolling transcript. Set `BITHUMAN_NO_TUI=1` to fall back to plain stdout.
 - **Flutter plugin renamed `bithuman_avatar` → `bithuman`.** One Dart codebase covers macOS, iOS, and Android, with built-in echo cancellation per platform. The settings sheet hot-updates the system prompt mid-session. Pub.dev publish is pending; install via git dep until then.
 - **`BithumanRealtimeOpenAI` Swift library removed.** Its only consumer was the retired Swift `bithuman-cli`; the canonical OpenAI Realtime path is now `bithuman voice --openai` / `bithuman avatar --openai` via the Rust CLI.
-- **Reference apps:** native macOS Expression app, iPadOS Expression app (revived this release with Picture-in-Picture), and cross-platform Essence Flutter example. iPhone Expression remains parked while the per-app memory budget firms up — use Essence on iPhone.
+- **Reference apps:** native macOS Expression app, iPadOS Expression app (revived this release with Picture-in-Picture), and cross-platform Essence Flutter example. iPhone runs Essence only — Expression needs iPad Pro M4+ or Mac M3+.
 
 ### v1.16.0 — streaming API on Swift and Kotlin (2026-05-14)
 

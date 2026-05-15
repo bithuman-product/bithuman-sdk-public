@@ -7,6 +7,13 @@ description: "On-device real-time avatar SDK for iOS, iPadOS, and macOS. Apple S
 
 A lightweight billing heartbeat (one request per minute) keeps the avatar pipeline metered; audio-only mode is unmetered.
 
+```mermaid
+flowchart LR
+    A[Your app<br/>mic / TTS / WebRTC] -->|16 kHz PCM| B[bitHumanKit]
+    B -->|25 FPS CGImage| C[SwiftUI view]
+    B -.->|once per minute| D[(api.bithuman.ai<br/>billing heartbeat)]
+```
+
 <CardGroup cols={2}>
   <Card title="macOS" icon="apple" href="/swift-sdk/macos">
     Embed in a Mac app — DMG, App Store, or Homebrew distribution.
@@ -28,22 +35,47 @@ A lightweight billing heartbeat (one request per minute) keeps the avatar pipeli
   </Card>
 </CardGroup>
 
-## Install
+## Install and run
 
-```swift
-.package(
-    url: "https://github.com/bithuman-product/bithuman-sdk-public.git",
-    from: "0.8.1"
-)
+<CodeGroup>
+
+```swift Package.swift
+dependencies: [
+    .package(
+        url: "https://github.com/bithuman-product/bithuman-sdk-public.git",
+        from: "0.8.1"
+    )
+],
+targets: [
+    .target(
+        name: "MyApp",
+        dependencies: [
+            .product(name: "bitHumanKit", package: "bithuman-sdk-public")
+        ]
+    )
+]
 ```
 
-```swift
-.product(name: "bitHumanKit", package: "bithuman-sdk-public")
-```
-
-```swift
+```swift Hello bitHumanKit.swift
 import bitHumanKit
+
+let imxURL = Bundle.main.url(forResource: "avatar", withExtension: "imx")!
+let runtime = try await Bithuman.createRuntime(modelPath: imxURL)
+
+guard case .essence(let essence) = runtime else { return }
+
+// Drain CGImage frames at 25 fps and present them in your SwiftUI view.
+Task {
+    for await frame in essence.frames() {
+        if let frame { renderer.present(frame) }
+    }
+}
+
+// Push 16 kHz mono PCM as audio arrives from mic / TTS / WebRTC:
+try await essence.pushAudio(pcmChunk)
 ```
+
+</CodeGroup>
 
 The package ships a single binary XCFramework (macOS arm64 + iOS device arm64 + iOS simulator arm64). All dependencies are bundled — your app's `Package.swift` needs only this one entry.
 

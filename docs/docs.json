@@ -16,6 +16,18 @@
   "navbar": {
     "links": [
       {
+        "label": "Pricing",
+        "href": "https://docs.bithuman.ai/getting-started/pricing"
+      },
+      {
+        "label": "Changelog",
+        "href": "https://docs.bithuman.ai/changelog"
+      },
+      {
+        "label": "Discord",
+        "href": "https://discord.gg/ES953n7bPA"
+      },
+      {
         "label": "Status",
         "href": "https://status.bithuman.ai"
       }
@@ -231,6 +243,18 @@
     {
       "source": "/getting-started/how-it-works",
       "destination": "/getting-started/models"
+    },
+    {
+      "source": "/quickstart",
+      "destination": "/getting-started/quickstart"
+    },
+    {
+      "source": "/install",
+      "destination": "/getting-started/install"
+    },
+    {
+      "source": "/cli",
+      "destination": "/getting-started/cli"
     }
   ]
 }

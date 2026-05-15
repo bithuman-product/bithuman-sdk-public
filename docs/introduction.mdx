@@ -1,5 +1,6 @@
 ---
-title: "bitHuman — Real-Time AI Avatars, On Every Device"
+title: "Audio in, talking video out — at 25 FPS, on every device"
+sidebarTitle: "Introduction"
 description: "On-device, real-time lip-synced AI avatars for iOS, Android, macOS, Linux, and Windows. Audio in, talking video out at 25 FPS with sub-200ms latency. No cloud required."
 keywords:
   - bitHuman
@@ -20,6 +21,10 @@ keywords:
 bitHuman puts a real-time, lip-synced talking avatar in your app. Send audio in, get animated video out at 25 FPS with sub-200ms latency.
 
 It runs **anywhere your users are** — iPhone, iPad, Android, Mac, Linux server, Raspberry Pi, or via a cloud REST API. Inference happens on the device. No cloud round-trip for rendering, no PII leaves the box, no dependency on network reachability for the avatar itself.
+
+<Note>
+**Supported devices at a glance.** iPhone 17 Pro+ · iPad Pro M4+ · Mac Apple Silicon (M3+ for Expression) · Android `arm64-v8a` (Android 10+) · any modern Linux/Windows CPU · Raspberry Pi 4B+ · NVIDIA GPU (8 GB+ VRAM) for Expression. [Full platform matrix →](/getting-started/platforms)
+</Note>
 
 ## Two avatars to choose from
 
@@ -162,87 +167,68 @@ docker run --gpus all -p 8089:8089 \
 
 Every tab maps to a working example under [Examples/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples).
 
-## What can you build?
+## Use cases shipping today
 
 <CardGroup cols={3}>
-  <Card title="Customer Support" icon="headset">
-    Replace hold music with a talking avatar that answers questions.
+  <Card title="Replace hold music" icon="headset">
+    A talking avatar that answers customer-support questions.
   </Card>
-  <Card title="AI Tutor" icon="graduation-cap">
+  <Card title="Teach with a tutor" icon="graduation-cap">
     A patient virtual teacher that explains and adapts to students.
   </Card>
-  <Card title="Digital Receptionist" icon="building">
-    Lobby kiosks and tablets that greet and direct visitors.
+  <Card title="Greet at the lobby" icon="building">
+    Kiosks and tablets that welcome and direct visitors.
   </Card>
-  <Card title="AI Companion" icon="heart">
+  <Card title="Build a companion" icon="heart">
     Persistent characters with personality and memory.
   </Card>
-  <Card title="Game NPC" icon="gamepad">
+  <Card title="Voice your game NPCs" icon="gamepad">
     Dynamic characters that react to player actions with gestures.
   </Card>
-  <Card title="Video Generation" icon="film">
-    Batch-generate talking-head videos from scripts.
+  <Card title="Generate video at scale" icon="film">
+    Batch-render talking-head videos from scripts.
   </Card>
 </CardGroup>
 
 [See all use cases with architecture patterns →](/getting-started/use-cases)
 
-## Developer guides
+## Pick your stack
 
 <CardGroup cols={3}>
   <Card title="Quickstart" icon="rocket" href="/getting-started/quickstart">
     Get your first avatar running in 5 minutes
   </Card>
-  <Card title="bithuman CLI" icon="terminal" href="/getting-started/cli">
-    Voice / text / avatar in one binary
+  <Card title="Run the CLI" icon="terminal" href="/getting-started/cli">
+    Voice, text, and avatar — one binary, no code.
   </Card>
-  <Card title="Swift SDK" icon="apple" href="/swift-sdk/overview">
-    Native iOS / iPadOS / macOS
+  <Card title="Ship a Mac / iPad / iPhone app" icon="apple" href="/swift-sdk/overview">
+    Native SwiftUI integration via `bitHumanKit`.
   </Card>
-  <Card title="Kotlin SDK" icon="android" href="/kotlin-sdk/overview">
-    Native Android
+  <Card title="Ship an Android app" icon="android" href="/kotlin-sdk/overview">
+    Native Kotlin via the `ai.bithuman:sdk` AAR.
   </Card>
-  <Card title="Cloud REST API" icon="code" href="/api-reference/overview">
-    Manage agents, speak, dynamics — no SDK
+  <Card title="Call the REST API" icon="code" href="/api-reference/overview">
+    Generate agents, speak, trigger dynamics — any language.
   </Card>
-  <Card title="LiveKit Cloud Plugin" icon="cloud" href="/deployment/livekit-cloud-plugin">
-    Managed avatar runtime in 5 minutes
+  <Card title="Use the LiveKit plugin" icon="cloud" href="/deployment/livekit-cloud-plugin">
+    Managed avatar runtime in your LiveKit room — 5 min setup.
   </Card>
-  <Card title="Self-hosted GPU" icon="server" href="/deployment/self-hosted-gpu">
-    Expression on Linux + NVIDIA
+  <Card title="Run Expression on your GPU" icon="server" href="/deployment/self-hosted-gpu">
+    Self-host Expression on Linux + NVIDIA.
   </Card>
-  <Card title="Examples" icon="book-open" href="/examples/overview">
-    Working examples for every surface
+  <Card title="Clone a working example" icon="book-open" href="/examples/overview">
+    13 runnable examples covering every surface.
   </Card>
-  <Card title="Chat Widget" icon="comments" href="/integrations/embed">
-    Floating chat with text, voice, and video modes
+  <Card title="Embed the chat widget" icon="comments" href="/integrations/embed">
+    Drop a floating text / voice / video avatar onto any website.
   </Card>
 </CardGroup>
 
-## Platform support
+## Point your AI coding agent at our docs
 
-bitHuman runs on every major platform. The runtime is on-device by default; only a lightweight billing heartbeat (one request per minute) touches the network.
+bitHuman ships first-class machine-readable surfaces so Claude, Cursor, and other agentic coding tools can integrate without hallucinating:
 
-| Platform | Avatars | Minimum hardware |
-|---|---|---|
-| **iOS** | Essence | iPhone 17 Pro+ |
-| **iPadOS** | Essence + Expression | iPad Pro M4+ |
-| **macOS Apple Silicon** | Essence + Expression | M3+ for Expression; any Apple Silicon for Essence |
-| **macOS Intel** | Essence | Any Intel Mac |
-| **Android** | Essence | `arm64-v8a`, Android 10+ |
-| **Linux x86_64** | Essence | Any CPU, 4 GB RAM |
-| **Linux ARM64** | Essence | Raspberry Pi 4B+ |
-| **Windows x86_64** | Essence | Any CPU, 4 GB RAM |
-| **NVIDIA GPU (Docker)** | Expression | 8 GB+ VRAM |
-| **bitHuman Cloud** | Essence + Expression | API key only |
-
-**[Full platform details and benchmarks →](/getting-started/platforms)**
-
-## For AI coding agents
-
-Every surface ships machine-readable discovery files:
-
-- **[AGENTS.md](https://github.com/bithuman-product/bithuman-sdk-public/blob/main/AGENTS.md)** — decision tree, setup, API surface, common patterns
-- **[llms.txt](/llms.txt)** — curated documentation index for LLM consumption
-- **[llms-full.txt](/llms-full.txt)** — complete documentation as a single markdown file
-- **[OpenAPI spec](/api-reference/openapi.yaml)** — machine-readable REST API contract
+- **[AGENTS.md](https://github.com/bithuman-product/bithuman-sdk-public/blob/main/AGENTS.md)** — decision tree, setup, API surface, common patterns.
+- **[llms.txt](/llms.txt)** — curated documentation index for LLM consumption.
+- **[llms-full.txt](/llms-full.txt)** — complete documentation as a single markdown file.
+- **[OpenAPI spec](/api-reference/openapi.yaml)** — machine-readable REST API contract.

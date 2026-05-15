@@ -29,7 +29,7 @@ bitHuman sends webhooks when key avatar events happen on your account — for ex
 The signing secret is the only authentication you need. Don't add a separate `Authorization: Bearer` header — incoming requests are authenticated by the HMAC signature alone.
 </Note>
 
-## Payload format
+## What's in the payload
 
 All payloads share the same envelope:
 
@@ -73,7 +73,7 @@ All payloads share the same envelope:
 }
 ```
 
-## Signature verification
+## Verify the signature
 
 Every webhook request includes an `X-bitHuman-Signature` header of the form `sha256=<hex digest>`. Verify it as `HMAC-SHA256(signing_secret, raw_request_body)`.
 
@@ -160,11 +160,11 @@ app.listen(3000, () => console.log('Listening on port 3000'));
 
 </CodeGroup>
 
-## Idempotency
+## Handle duplicate deliveries
 
 Every delivery carries a unique `event_id`. Network blips and your own 5xx responses can cause the same event to be delivered more than once — always dedupe on `event_id` before processing.
 
-## Retry policy
+## When (and how often) we retry
 
 Failed deliveries (non-2xx responses or timeouts) retry automatically:
 
@@ -176,7 +176,7 @@ Failed deliveries (non-2xx responses or timeouts) retry automatically:
 
 Maximum 3 retries. Your endpoint must respond within 30 seconds. Return 200 immediately and process work asynchronously if your handler is slow.
 
-## Testing
+## Test your endpoint locally
 
 ### Local development with ngrok
 
