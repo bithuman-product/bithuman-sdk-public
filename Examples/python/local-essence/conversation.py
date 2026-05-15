@@ -93,7 +93,6 @@ async def main():
     )
     mic_stream.start()
     speaker_stream.start()
-    await runtime.start()
 
     async def run_openai():
         client = AsyncOpenAI(api_key=openai_key)

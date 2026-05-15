@@ -117,7 +117,6 @@ async def main():
     mic_stream.start()
     logger.info("Microphone started -- press Q in the video window to quit")
 
-    await runtime.start()
     mic_task = asyncio.create_task(
         read_and_push_audio(runtime, audio_queue, args.volume, args.silent_threshold_db)
     )

@@ -74,7 +74,6 @@ async def main() -> None:
 
     speaker, append_pcm = make_speaker()
     speaker.start()
-    await runtime.start()
     pusher = asyncio.create_task(stream_audio(runtime, args.audio_file))
     try:
         async for frame in runtime.run():

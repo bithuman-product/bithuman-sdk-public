@@ -83,7 +83,6 @@ async def main():
                               blocksize=640, callback=audio_callback)
     speaker.start()
 
-    await runtime.start()
     audio_task = asyncio.create_task(push_audio(runtime, args.audio_file))
 
     try:

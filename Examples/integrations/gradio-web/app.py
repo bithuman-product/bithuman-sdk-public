@@ -78,7 +78,6 @@ class BitHumanHandler(AsyncAudioVideoStreamHandler):
         self.runtime = await AsyncBithuman.create(
             api_secret=api_secret, model_path=self.AVATARS[avatar_name],
         )
-        await self.runtime.start()
         self.runtime_ready.set()
 
         await asyncio.gather(self._generate_frames(), self._forward_agent_audio())

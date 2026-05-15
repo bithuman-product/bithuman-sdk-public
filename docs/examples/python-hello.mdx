@@ -30,7 +30,6 @@ async def main():
         model_path="avatar.imx",
         api_secret=os.environ["BITHUMAN_API_SECRET"],
     )
-    await runtime.start()
 
     pcm, sr = load_audio("speech.wav")
     pcm = float32_to_int16(pcm)

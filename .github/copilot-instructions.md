@@ -50,7 +50,6 @@ async def main():
         model_path="avatar.imx",
         api_secret=os.environ["BITHUMAN_API_SECRET"],
     )
-    await runtime.start()
 
     pcm, sr = load_audio("speech.wav")
     pcm = float32_to_int16(pcm)
@@ -74,7 +73,6 @@ asyncio.run(main())
 | Method | Purpose |
 |---|---|
 | `AsyncBithuman.create(model_path, api_secret)` | Create async runtime |
-| `runtime.start()` | Initialize frame loop |
 | `runtime.push_audio(pcm_bytes, sample_rate)` | Push int16 PCM audio |
 | `runtime.flush()` | Signal end of audio segment |
 | `runtime.interrupt()` | Cancel current playback |

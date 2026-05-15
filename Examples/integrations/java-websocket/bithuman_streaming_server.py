@@ -58,7 +58,6 @@ class BithumanStreamingServer:
 
     async def start(self) -> None:
         self._running = True
-        await self.runtime.start()
         self._ws_server = await websockets.serve(
             self._on_client_connect, self.host, self.port,
             ping_interval=30, ping_timeout=10, max_size=2**20,
