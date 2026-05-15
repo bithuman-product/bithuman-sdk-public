@@ -35,7 +35,7 @@ Heavier model. Runs on Apple Silicon on-device or on NVIDIA GPUs server-side.
 | **iPad Pro M4+** | ✅ On-device | Sized for 16 GB+ devices |
 | **iPhone 17 Pro+** | ❌ Not supported | Exceeds iOS per-app memory budget. Use Essence on iPhone. |
 | **Android** | ❌ Not supported | Use Essence. |
-| **Linux + NVIDIA GPU** | ✅ Server | 8 GB+ VRAM via [Docker container](/deployment/self-hosted-gpu) |
+| **Linux + NVIDIA GPU** | ✅ Server | 8 GB+ VRAM via [Docker container](/guides/deployment) |
 | **Mac Intel / Linux CPU** | ❌ Not supported | Requires Apple Silicon or NVIDIA GPU |
 | **Raspberry Pi** | ❌ Not supported | Use Essence |
 
@@ -55,11 +55,11 @@ Frames are delivered at 1280×720 by every SDK; smaller avatars are letterboxed/
 
 ## Quick host-picker
 
-- **Mobile consumer app** → iPhone or iPad → Essence at 384×384 via the [Swift SDK](/swift-sdk/overview) or [Flutter plugin](/integrations/flutter).
+- **Mobile consumer app** → iPhone or iPad → Essence at 384×384 via the [Swift SDK](/sdks/swift) or [Flutter plugin](/integrations/flutter).
 - **Mac desktop app** → either model. Expression for dynamic faces; Essence for lighter footprint and gesture triggers.
-- **Android consumer app** → Essence via the [Kotlin SDK](/kotlin-sdk/overview).
+- **Android consumer app** → Essence via the [Kotlin SDK](/sdks/kotlin).
 - **Single-board edge** (Raspberry Pi, mini-PC) → Essence via `pip install bithuman`.
-- **GPU server** → Expression via the [self-hosted GPU container](/deployment/self-hosted-gpu).
-- **No infrastructure** → [LiveKit Cloud Plugin](/deployment/livekit-cloud-plugin). Either model.
+- **GPU server** → Expression via the [self-hosted GPU container](/guides/deployment).
+- **No infrastructure** → [LiveKit Cloud Plugin](/guides/deployment). Either model.
 
-For full deployment scenarios with device, model, and network combinations together, see [Use cases](/getting-started/use-cases).
+For full deployment scenarios with device, model, and network combinations together, see [Use cases](/getting-started/quickstart).

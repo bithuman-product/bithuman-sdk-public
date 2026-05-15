@@ -1,62 +1,77 @@
 ---
-title: "Quickstart — your first avatar in 5 minutes"
-description: "Install the bitHuman Python SDK, drop in an avatar model, and stream a WAV through it. End-to-end working code."
+title: "Quickstart"
+description: "Your first talking avatar in 2 minutes with the bitHuman CLI — then the same thing in Python, Swift, or Kotlin."
 icon: "rocket"
 ---
 
-This is the Python path. Building somewhere else? Jump to:
+The fastest path is the CLI: no code, no toolchain. Once it works,
+the [SDKs](/sdks/python) do the same thing in your language.
 
-- **Mac / iPad / iPhone app** → [Swift SDK quickstart](/swift-sdk/quickstart)
-- **Android app** → [Kotlin SDK quickstart](/kotlin-sdk/quickstart)
-- **Cross-platform mobile/desktop in Dart** → [Flutter plugin](/integrations/flutter)
-- **Try it without writing code** → [bithuman CLI](/getting-started/cli)
-- **Backend integration in any language** → [REST API](/api-reference/overview)
-- **Web app with WebRTC** → [LiveKit Cloud Plugin](/deployment/livekit-cloud-plugin)
-
-## 1. Get credentials
+## 1. Get credentials + a model
 
 <Steps>
-  <Step title="Sign up">
-    Create an account at [www.bithuman.ai](https://www.bithuman.ai).
+  <Step title="Sign up + copy your API secret">
+    [bithuman.ai → Developer → API Keys](https://www.bithuman.ai/#developer).
+    Copy the **API Secret**.
   </Step>
-  <Step title="Copy your API secret">
-    Go to [Developer → API Keys](https://www.bithuman.ai/#developer) and copy your **API Secret**.
-
-    <img src="/images/example-api-secret.jpg" alt="API Keys" style={{ borderRadius: '8px' }} />
-  </Step>
-  <Step title="Download an avatar model">
-    On the [Explore](https://www.bithuman.ai/#explore) page, click the **⋮** menu on any agent and select **Download** to get a `.imx` file.
-
-    <img src="/images/example-download-button.jpg" alt="Download Model" style={{ borderRadius: '8px' }} />
+  <Step title="Download an avatar">
+    On [Explore](https://www.bithuman.ai/#explore), open the **⋮** menu
+    on any agent → **Download** to get an `.imx` file. (Or skip this —
+    the CLI fetches a sample on first run.)
   </Step>
 </Steps>
 
-## 2. Install
+## 2. Install the CLI
 
 ```bash
-pip install bithuman --upgrade
+# macOS + Linux — universal one-liner
+curl -fsSL https://github.com/bithuman-product/bithuman-sdk-public/releases/latest/download/install.sh | sh
+
+# macOS via Homebrew (auto-pulls native deps)
+brew install bithuman-product/bithuman/bithuman
 ```
-
-Python 3.10 – 3.13. Wheels for macOS arm64, Linux x86_64, Linux aarch64, and Windows x86_64.
-
-<Note>
-The wheel pulls in `opencv-python-headless` automatically. Don't install full `opencv-python` alongside — it conflicts with PyAV and causes FFmpeg warnings on macOS.
-</Note>
-
-## 3. Run your first avatar
-
-You need a `.wav` file to drive the avatar. Each [example directory](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples) bundles a sample `speech.wav`, or generate your own with any TTS service.
-
-### Option A — One-line CLI render
 
 ```bash
 export BITHUMAN_API_SECRET=your_api_secret
-bithuman generate avatar.imx --audio speech.wav --output demo.mp4
+bithuman doctor          # confirms host + key are good
 ```
 
-Open `demo.mp4`. That's the fastest path — no Python code at all.
+## 3. Make it talk
 
-### Option B — Python streaming
+```bash
+# Render a video from any WAV — no code.
+bithuman generate avatar.imx --audio speech.wav --output demo.mp4
+
+# Or a live spoken conversation (cloud LLM/voice).
+export OPENAI_API_KEY=sk-...
+bithuman voice
+
+# Or the avatar in your browser at http://127.0.0.1:8080.
+bithuman avatar
+```
+
+Open `demo.mp4` — that's a lip-synced talking avatar, end to end.
+
+## Now in your language
+
+Same engine, same `.imx`, same `push audio → drain frames` shape:
+
+<CardGroup cols={2}>
+  <Card title="Python SDK" icon="python" href="/sdks/python">
+    `pip install bithuman` — backends, agents, batch jobs.
+  </Card>
+  <Card title="Swift SDK" icon="apple" href="/sdks/swift">
+    SwiftPM `bitHumanKit` — native Mac / iPad / iPhone.
+  </Card>
+  <Card title="Kotlin SDK" icon="android" href="/sdks/kotlin">
+    Maven `ai.bithuman:sdk` — native Android.
+  </Card>
+  <Card title="Flutter plugin" icon="layer-group" href="/integrations/flutter">
+    One Dart codebase — mac / iOS / Android.
+  </Card>
+</CardGroup>
+
+The minimal streaming loop (Python shown; the others mirror it):
 
 ```python
 import asyncio, os
@@ -64,99 +79,66 @@ from bithuman import AsyncBithuman
 from bithuman.audio import float32_to_int16, load_audio
 
 async def main():
-    runtime = await AsyncBithuman.create(
+    rt = await AsyncBithuman.create(
         model_path="avatar.imx",
         api_secret=os.environ["BITHUMAN_API_SECRET"],
     )
-    await runtime.start()
+    await rt.start()
 
     pcm, sr = load_audio("speech.wav")
     pcm = float32_to_int16(pcm)
-    chunk = sr // 100                            # 10 ms per chunk
+    chunk = sr // 100                       # 10 ms chunks
     for i in range(0, len(pcm), chunk):
-        await runtime.push_audio(
-            pcm[i : i + chunk].tobytes(), sr, last_chunk=False,
-        )
-    await runtime.flush()
+        await rt.push_audio(pcm[i:i+chunk].tobytes(), sr, last_chunk=False)
+    await rt.flush()
 
-    try:
-        async for frame in runtime.run():
-            if frame.has_image:
-                image = frame.bgr_image          # numpy (H, W, 3) uint8
-                # Display it, encode it, push it to WebRTC — your choice.
-            if frame.end_of_speech:
-                break
-    finally:
-        await runtime.stop()
+    async for frame in rt.run():
+        if frame.has_image:
+            image = frame.bgr_image         # numpy (H, W, 3) uint8
+        if frame.end_of_speech:
+            break
+    await rt.stop()
 
 asyncio.run(main())
 ```
 
-To see the frames live, add OpenCV display + speaker playback — that's exactly what [Examples/python/local-essence/quickstart.py](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) does.
-
-## Key concepts
-
 | Concept | What it is |
 |---|---|
-| **`AsyncBithuman`** | The runtime. One instance per avatar session. |
-| **`push_audio(bytes, sr, last_chunk)`** | Feed 16-bit PCM. Avatar lip-syncs in real time. |
-| **`flush()`** | Mark end of audio input. |
-| **`run()`** | Async generator that yields frames at 25 FPS. |
-| **`frame`** | Has `.bgr_image` (numpy), `.audio_chunk`, `.has_image`, `.end_of_speech`. |
+| `AsyncBithuman` | The runtime. One per avatar session. |
+| `push_audio(bytes, sr, last_chunk)` | Feed 16-bit PCM; avatar lip-syncs live. |
+| `flush()` | Mark end of audio input. |
+| `run()` | Async generator yielding frames at 25 FPS. |
+| `frame` | `.bgr_image`, `.audio_chunk`, `.has_image`, `.end_of_speech`. |
 
 ## Troubleshooting
 
 <AccordionGroup>
-  <Accordion title="ModuleNotFoundError: No module named 'bithuman'">
-    The SDK isn't installed. Run `pip install bithuman --upgrade` in the same Python environment you're using to run your script.
-  </Accordion>
-
   <Accordion title="401 / authentication failed">
-    1. Check you copied the full secret from [Developer → API Keys](https://www.bithuman.ai/#developer).
-    2. Check `BITHUMAN_API_SECRET` is set in the shell that runs your script.
-    3. Verify your account is active:
-       ```bash
-       curl -X POST https://api.bithuman.ai/v1/validate -H "api-secret: $BITHUMAN_API_SECRET"
-       ```
+    Confirm the full secret is set in the same shell, then verify:
+    ```bash
+    curl -X POST https://api.bithuman.ai/v1/validate -H "api-secret: $BITHUMAN_API_SECRET"
+    ```
   </Accordion>
-
   <Accordion title="Avatar shows but no lip movement">
-    1. Make sure you're calling `push_audio()` with PCM bytes (not float32 — use `float32_to_int16()`).
-    2. Call `flush()` after pushing all audio.
-    3. Verify the sample rate matches your file (use `load_audio()`).
+    Push **PCM bytes** (`float32_to_int16()` first), call `flush()`
+    after all audio, and match the sample rate from `load_audio()`.
   </Accordion>
-
-  <Accordion title="Slow first startup (30-60 seconds)">
-    First load of an `.imx` file converts older format files in place and warms the runtime. Subsequent loads in the same process are under 2 seconds. In production, keep the runtime alive between sessions.
-  </Accordion>
-
-  <Accordion title="FileNotFoundError: avatar.imx not found">
-    Use an absolute path, or download a model from [Explore](https://www.bithuman.ai/#explore).
+  <Accordion title="Slow first startup (30–60 s)">
+    First load of an `.imx` warms the runtime and may upgrade the file
+    format. Keep the runtime alive between sessions in production.
   </Accordion>
 </AccordionGroup>
 
 ## Next steps
 
 <CardGroup cols={3}>
-  <Card title="Audio Clip" icon="play" href="/examples/audio-clip">
-    Play an audio file through the avatar (5 min)
+  <Card title="Models" icon="circle-info" href="/getting-started/models">
+    Essence vs Expression
   </Card>
-  <Card title="Live Microphone" icon="microphone" href="/examples/microphone">
-    Real-time mic input (10 min)
+  <Card title="Examples" icon="book-open" href="/examples/overview">
+    Runnable code, every surface
   </Card>
-  <Card title="AI Conversation" icon="comments" href="/examples/ai-conversation">
-    OpenAI voice chat driving the avatar (15 min)
+  <Card title="Building avatars" icon="wand-magic-sparkles" href="/guides/building-avatars">
+    Prompts, voice, image, video
   </Card>
 </CardGroup>
-
-### Guides
-
-- [**Prompt guide**](/getting-started/prompts) — shape your avatar's personality
-- [**Media guide**](/getting-started/media-guide) — voice, image, and video assets
-- [**Animal mode**](/getting-started/animal-mode) — animal avatars
-
-### System requirements
-
-- Python 3.10 – 3.13.
-- **Essence**: any modern CPU, 4 GB RAM. Linux / macOS / Windows.
-- **Expression on-device**: macOS 14+ on Apple Silicon M3 or later, 16 GB RAM. Elsewhere, use the [self-hosted GPU deployment](/deployment/self-hosted-gpu) on Linux + NVIDIA.

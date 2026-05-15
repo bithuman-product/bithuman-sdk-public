@@ -50,13 +50,13 @@ Essence packages a complete avatar identity (face, body, gestures) into an `.imx
 **How to ship it**
 
 - [**Python SDK**](/getting-started/quickstart) — self-host on Linux/macOS/Windows.
-- [**Swift SDK**](/swift-sdk/essence) — native Mac, iPad, iPhone apps.
-- [**Kotlin SDK**](/kotlin-sdk/overview) — native Android apps.
+- [**Swift SDK**](/sdks/swift) — native Mac, iPad, iPhone apps.
+- [**Kotlin SDK**](/sdks/kotlin) — native Android apps.
 - [**Flutter plugin**](/integrations/flutter) — one Dart codebase across Mac, iOS, Android.
 - [**bitHuman CLI**](/getting-started/cli) — no code, terminal or browser.
 - [**REST API**](/api-reference/overview) — backend integration in any language.
-- [**Cloud LiveKit plugin**](/deployment/livekit-cloud-plugin) — managed, no infrastructure.
-- [**Embed widget**](/integrations/embed) — drop-in iframe for websites.
+- [**Cloud LiveKit plugin**](/guides/deployment) — managed, no infrastructure.
+- [**Embed widget**](/guides/deployment) — drop-in iframe for websites.
 
 ## Expression
 
@@ -71,11 +71,11 @@ Expression generates real-time facial animation directly from a portrait image. 
 
 **How to ship it**
 
-- [**Cloud LiveKit plugin**](/deployment/livekit-cloud-plugin) — bitHuman hosts the GPU worker (set `model="expression"`).
-- [**Self-hosted GPU**](/deployment/self-hosted-gpu) — your own NVIDIA GPU via the Docker container.
-- [**On-device macOS / iPadOS**](/examples/apple-expression) — Apple Silicon M3+, via the Python or Swift SDK.
-- [**Mac reference app**](/examples/apple-expression) — native macOS, drag-drop face swap.
-- [**iPad reference app**](/swift-sdk/ios) — iPadOS, Picture-in-Picture support.
+- [**Cloud LiveKit plugin**](/guides/deployment) — bitHuman hosts the GPU worker (set `model="expression"`).
+- [**Self-hosted GPU**](/guides/deployment) — your own NVIDIA GPU via the Docker container.
+- [**On-device macOS / iPadOS**](/examples/overview) — Apple Silicon M3+, via the Python or Swift SDK.
+- [**Mac reference app**](/examples/overview) — native macOS, drag-drop face swap.
+- [**iPad reference app**](/sdks/swift) — iPadOS, Picture-in-Picture support.
 - [**bitHuman CLI**](/getting-started/cli) — `bithuman avatar --image portrait.jpg`.
 - [**REST API**](/api-reference/overview) — same endpoint as Essence; the model is selected per agent.
 
@@ -92,10 +92,10 @@ Expression generates real-time facial animation directly from a portrait image. 
     **Essence.** Expression on iPhone isn't currently supported — iPad and Mac are the on-device Expression hosts.
   </Accordion>
   <Accordion title="Android app">
-    **Essence** via the [Kotlin SDK](/kotlin-sdk/overview) or [Flutter plugin](/integrations/flutter).
+    **Essence** via the [Kotlin SDK](/sdks/kotlin) or [Flutter plugin](/integrations/flutter).
   </Accordion>
   <Accordion title="Native Mac or iPad app with close-up dynamic faces">
-    **Expression on-device** via the [Swift SDK](/swift-sdk/overview) or the Mac/iPad reference apps.
+    **Expression on-device** via the [Swift SDK](/sdks/swift) or the Mac/iPad reference apps.
   </Accordion>
   <Accordion title="Need custom gestures (wave, nod, laugh)">
     **Essence.** Expression doesn't support gesture triggers.
@@ -120,7 +120,7 @@ Expression generates real-time facial animation directly from a portrait image. 
   <Card title="Quickstart" icon="rocket" href="/getting-started/quickstart">
     Get your first avatar running in 5 minutes
   </Card>
-  <Card title="Platforms" icon="desktop" href="/getting-started/platforms">
+  <Card title="Platforms" icon="desktop" href="/getting-started/device-matrix">
     Full per-platform support matrix
   </Card>
   <Card title="Pricing" icon="credit-card" href="/getting-started/pricing">

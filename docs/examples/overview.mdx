@@ -1,121 +1,32 @@
 ---
-title: "Examples gallery"
-description: "Runnable examples covering every bitHuman integration path — cloud, self-hosted CPU, self-hosted GPU, on-device, and CLI."
+title: "Examples"
+description: "Runnable bitHuman examples — one per surface. Clone, set your API secret, run."
 icon: "book-open"
 ---
 
-<img src="/images/example-agent-images.jpg" alt="Example avatars" style={{ borderRadius: '12px', width: '100%' }} />
-
-Every example below is open-source under [bithuman-product/bithuman-sdk-public/Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples). Pick the path closest to what you're building and clone it.
-
-## Quick start (everyone starts here)
-
-<CardGroup cols={3}>
-  <Card title="Render an audio clip" icon="play" href="/examples/audio-clip">
-    Play a `.wav` through a bitHuman avatar with OpenCV display.<br/>**Python · Essence · 5 min**
-  </Card>
-  <Card title="Stream from the microphone" icon="microphone" href="/examples/microphone">
-    Real-time mic input drives the avatar locally.<br/>**Python · Essence · 10 min**
-  </Card>
-  <Card title="Wire up a full voice agent" icon="comments" href="/examples/ai-conversation">
-    OpenAI Realtime voice chat → talking avatar.<br/>**Python · Essence · 15 min**
-  </Card>
-</CardGroup>
-
-## Hello-world examples (per SDK)
+Every example is open-source under
+[bithuman-sdk-public/Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples).
+Pick the one closest to what you're building.
 
 <CardGroup cols={2}>
+  <Card title="CLI — no code" icon="terminal" href="/examples/cli-hello">
+    `brew install` → `bithuman avatar`. Full demo, zero code. Start here.
+  </Card>
   <Card title="Python — Hello, avatar" icon="python" href="/examples/python-hello">
-    Minimal `AsyncBithuman` loop. ~20 lines of code.
+    Minimal `AsyncBithuman` streaming loop, ~20 lines.
   </Card>
   <Card title="Swift / iOS — Hello, avatar" icon="apple" href="/examples/swift-ios-hello">
-    Minimal SwiftUI integration with `bitHumanKit`. ~40 lines.
+    Minimal SwiftUI `bitHumanKit` integration, ~40 lines.
   </Card>
   <Card title="Kotlin / Android — Hello, avatar" icon="android" href="/examples/kotlin-android-hello">
     Maven AAR + `Avatar.load` in a fresh Android Studio project.
   </Card>
-  <Card title="Run the CLI" icon="terminal" href="/examples/cli-hello">
-    `brew install` and `bithuman avatar` — zero code, full demo.
+  <Card title="AI conversation" icon="comments" href="/examples/ai-conversation">
+    OpenAI Realtime voice chat → talking avatar. The full loop.
   </Card>
 </CardGroup>
 
-## On-device deployments
-
-<CardGroup cols={2}>
-  <Card title="Expression on macOS (Python)" icon="image" href="/examples/apple-expression">
-    `pip install bithuman` on Apple Silicon — render any portrait + WAV to MP4.
-  </Card>
-  <Card title="Offline Apple Local agent" icon="lock" href="/examples/apple-local">
-    100% on-device voice agent on macOS — Siri ASR + Ollama LLM + Essence avatar.
-  </Card>
-  <Card title="bitHuman Halo (signed DMG)" icon="laptop" href="/examples/halo-macos">
-    Free macOS desktop app — floating avatar, drag-drop face swap, Sparkle auto-update.
-  </Card>
-  <Card title="Raspberry Pi deployment" icon="microchip" href="/examples/raspberry-pi">
-    Edge / kiosk install on Raspberry Pi 4B+ with systemd auto-start.
-  </Card>
-  <Card title="iPad / iPhone integration" icon="mobile" href="/swift-sdk/ios">
-    Picture-in-Picture, Stage Manager panels, PhotosPicker portrait swap.
-  </Card>
-  <Card title="Cross-platform via Flutter" icon="layer-group" href="/integrations/flutter">
-    One Dart codebase across Mac, iOS, and Android.
-  </Card>
-</CardGroup>
-
-## Server deployments
-
-<CardGroup cols={2}>
-  <Card title="LiveKit Cloud plugin" icon="cloud" href="/deployment/livekit-cloud-plugin">
-    Managed avatar runtime — no infra, no GPU.<br/>**Essence + Expression**
-  </Card>
-  <Card title="Self-hosted CPU (Python SDK)" icon="server" href="/deployment/avatar-sessions#self-hosted-cpu">
-    Run Essence on your own Linux box.<br/>**Essence · CPU only**
-  </Card>
-  <Card title="Self-hosted GPU container" icon="microchip" href="/deployment/self-hosted-gpu">
-    Run Expression on your own NVIDIA GPUs.<br/>**Expression · 8 GB+ VRAM**
-  </Card>
-  <Card title="Self-hosted LiveKit plugin" icon="network-wired" href="/examples/self-hosted-plugin">
-    Point the LiveKit plugin at your own avatar endpoint.
-  </Card>
-</CardGroup>
-
-## REST API recipes
-
-<CardGroup cols={2}>
-  <Card title="Validate, generate, manage agents" icon="code" href="/api-reference/overview">
-    Curl + Python scripts hitting `api.bithuman.ai`.
-  </Card>
-  <Card title="Generate gestures (dynamics)" icon="person-running" href="/api-reference/dynamics">
-    Add wave / nod / smile / laugh to any Essence agent.
-  </Card>
-  <Card title="Receive webhooks" icon="webhook" href="/integrations/webhooks">
-    HMAC-verified `room.join` / `chat.push` events.
-  </Card>
-  <Card title="Embed a chat widget" icon="comments" href="/integrations/embed">
-    Drop a floating text / voice / video avatar onto any website.
-  </Card>
-</CardGroup>
-
-## Web and framework integrations
-
-<CardGroup cols={3}>
-  <Card title="Next.js UI" icon="react" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/nextjs-ui">
-    Drop-in LiveKit web interface with a talking avatar tile.
-  </Card>
-  <Card title="Java WebSocket client" icon="java" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/java-websocket">
-    Stream PCM into bitHuman from any JVM client.
-  </Card>
-  <Card title="Gradio web demo" icon="browser" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/gradio-web">
-    Browser-based gradio interface for prototyping.
-  </Card>
-</CardGroup>
-
----
-
-## Prerequisites
-
-<Snippet file="prerequisites.mdx" />
-
----
-
-**New to bitHuman?** Start with [Render an audio clip](/examples/audio-clip) — the simplest setup, no GPU, no LiveKit. Building a Mac / iPad / iPhone app instead? Jump to the [Swift SDK quickstart](/swift-sdk/quickstart).
+Building elsewhere? The [Flutter plugin](/integrations/flutter) and
+[REST API](/api-reference/overview) have their own end-to-end samples
+in the repo. For deployment shapes (LiveKit, GPU, embed) see
+[Deployment](/guides/deployment).

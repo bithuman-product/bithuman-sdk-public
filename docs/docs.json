@@ -62,85 +62,44 @@
             "pages": [
               "introduction",
               "getting-started/quickstart",
-              "getting-started/choose-your-sdk",
+              "getting-started/models"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
               "getting-started/authentication",
-              "getting-started/models",
-              "getting-started/platforms",
+              "getting-started/pricing",
+              "guides/building-avatars",
+              "guides/deployment"
+            ]
+          },
+          {
+            "group": "SDKs",
+            "pages": [
               "getting-started/cli",
-              "getting-started/install",
-              "getting-started/pricing"
-            ]
-          },
-          {
-            "group": "Build avatars",
-            "pages": [
-              "getting-started/prompts",
-              "getting-started/media-guide",
-              "getting-started/animal-mode"
-            ]
-          },
-          {
-            "group": "Swift SDK",
-            "pages": [
-              "swift-sdk/overview",
-              "swift-sdk/quickstart",
-              "swift-sdk/streaming",
-              "swift-sdk/essence",
-              "swift-sdk/macos",
-              "swift-sdk/ios",
-              "swift-sdk/troubleshooting"
-            ]
-          },
-          {
-            "group": "Kotlin SDK",
-            "pages": [
-              "kotlin-sdk/overview",
-              "kotlin-sdk/quickstart",
-              "kotlin-sdk/streaming"
-            ]
-          },
-          {
-            "group": "Flutter plugin",
-            "pages": [
+              "sdks/python",
+              "sdks/swift",
+              "sdks/kotlin",
               "integrations/flutter"
-            ]
-          },
-          {
-            "group": "Deployment & ops",
-            "pages": [
-              "deployment/avatar-sessions",
-              "deployment/livekit-cloud-plugin",
-              "deployment/self-hosted-gpu",
-              "integrations/embed",
-              "integrations/webhooks",
-              "integrations/events"
             ]
           },
           {
             "group": "Examples",
             "pages": [
               "examples/overview",
-              "examples/python-hello",
-              "examples/kotlin-android-hello",
-              "examples/swift-ios-hello",
               "examples/cli-hello",
-              "examples/audio-clip",
-              "examples/microphone",
-              "examples/ai-conversation",
-              "examples/apple-local",
-              "examples/apple-expression",
-              "examples/halo-macos",
-              "examples/raspberry-pi",
-              "examples/self-hosted-plugin"
+              "examples/python-hello",
+              "examples/swift-ios-hello",
+              "examples/kotlin-android-hello",
+              "examples/ai-conversation"
             ]
           },
           {
             "group": "Reference",
             "pages": [
-              "getting-started/networking-and-offline",
               "getting-started/architecture",
               "getting-started/device-matrix",
-              "getting-started/use-cases",
               "changelog"
             ]
           }
@@ -208,53 +167,51 @@
     }
   },
   "redirects": [
-    {
-      "source": "/python-sdk",
-      "destination": "/getting-started/quickstart"
-    },
-    {
-      "source": "/python-sdk/overview",
-      "destination": "/getting-started/quickstart"
-    },
-    {
-      "source": "/python-sdk/quickstart",
-      "destination": "/getting-started/quickstart"
-    },
-    {
-      "source": "/platform",
-      "destination": "/api-reference/overview"
-    },
-    {
-      "source": "/swift-sdk/cookbook",
-      "destination": "/swift-sdk/quickstart"
-    },
-    {
-      "source": "/swift-sdk/agentic",
-      "destination": "/swift-sdk/quickstart"
-    },
-    {
-      "source": "/swift-sdk/index",
-      "destination": "/swift-sdk/overview"
-    },
-    {
-      "source": "/swift-sdk/cli",
-      "destination": "/getting-started/cli"
-    },
-    {
-      "source": "/getting-started/how-it-works",
-      "destination": "/getting-started/models"
-    },
-    {
-      "source": "/quickstart",
-      "destination": "/getting-started/quickstart"
-    },
-    {
-      "source": "/install",
-      "destination": "/getting-started/install"
-    },
-    {
-      "source": "/cli",
-      "destination": "/getting-started/cli"
-    }
+    { "source": "/python-sdk", "destination": "/sdks/python" },
+    { "source": "/python-sdk/overview", "destination": "/sdks/python" },
+    { "source": "/python-sdk/quickstart", "destination": "/sdks/python" },
+    { "source": "/getting-started/quickstart-python", "destination": "/sdks/python" },
+    { "source": "/platform", "destination": "/api-reference/overview" },
+    { "source": "/swift-sdk", "destination": "/sdks/swift" },
+    { "source": "/swift-sdk/overview", "destination": "/sdks/swift" },
+    { "source": "/swift-sdk/quickstart", "destination": "/sdks/swift" },
+    { "source": "/swift-sdk/streaming", "destination": "/sdks/swift" },
+    { "source": "/swift-sdk/essence", "destination": "/sdks/swift" },
+    { "source": "/swift-sdk/macos", "destination": "/sdks/swift" },
+    { "source": "/swift-sdk/ios", "destination": "/sdks/swift" },
+    { "source": "/swift-sdk/troubleshooting", "destination": "/sdks/swift" },
+    { "source": "/swift-sdk/cookbook", "destination": "/sdks/swift" },
+    { "source": "/swift-sdk/agentic", "destination": "/sdks/swift" },
+    { "source": "/swift-sdk/index", "destination": "/sdks/swift" },
+    { "source": "/swift-sdk/cli", "destination": "/getting-started/cli" },
+    { "source": "/kotlin-sdk", "destination": "/sdks/kotlin" },
+    { "source": "/kotlin-sdk/overview", "destination": "/sdks/kotlin" },
+    { "source": "/kotlin-sdk/quickstart", "destination": "/sdks/kotlin" },
+    { "source": "/kotlin-sdk/streaming", "destination": "/sdks/kotlin" },
+    { "source": "/getting-started/install", "destination": "/" },
+    { "source": "/getting-started/choose-your-sdk", "destination": "/" },
+    { "source": "/getting-started/platforms", "destination": "/getting-started/device-matrix" },
+    { "source": "/getting-started/networking-and-offline", "destination": "/getting-started/architecture" },
+    { "source": "/getting-started/use-cases", "destination": "/" },
+    { "source": "/getting-started/prompts", "destination": "/guides/building-avatars" },
+    { "source": "/getting-started/media-guide", "destination": "/guides/building-avatars" },
+    { "source": "/getting-started/animal-mode", "destination": "/guides/building-avatars" },
+    { "source": "/getting-started/how-it-works", "destination": "/getting-started/models" },
+    { "source": "/deployment/avatar-sessions", "destination": "/guides/deployment" },
+    { "source": "/deployment/livekit-cloud-plugin", "destination": "/guides/deployment" },
+    { "source": "/deployment/self-hosted-gpu", "destination": "/guides/deployment" },
+    { "source": "/integrations/embed", "destination": "/guides/deployment" },
+    { "source": "/integrations/webhooks", "destination": "/guides/deployment" },
+    { "source": "/integrations/events", "destination": "/guides/deployment" },
+    { "source": "/examples/audio-clip", "destination": "/examples/python-hello" },
+    { "source": "/examples/microphone", "destination": "/examples/python-hello" },
+    { "source": "/examples/apple-local", "destination": "/examples/overview" },
+    { "source": "/examples/apple-expression", "destination": "/examples/overview" },
+    { "source": "/examples/halo-macos", "destination": "/examples/overview" },
+    { "source": "/examples/raspberry-pi", "destination": "/examples/overview" },
+    { "source": "/examples/self-hosted-plugin", "destination": "/guides/deployment" },
+    { "source": "/quickstart", "destination": "/getting-started/quickstart" },
+    { "source": "/install", "destination": "/" },
+    { "source": "/cli", "destination": "/getting-started/cli" }
   ]
 }

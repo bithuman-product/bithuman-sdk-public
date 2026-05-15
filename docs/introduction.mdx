@@ -1,7 +1,7 @@
 ---
-title: "Audio in, talking video out — at 25 FPS, on every device"
-sidebarTitle: "Introduction"
-description: "On-device, real-time lip-synced AI avatars for iOS, Android, macOS, Linux, and Windows. Audio in, talking video out at 25 FPS with sub-200ms latency. No cloud required."
+title: "bitHuman overview"
+sidebarTitle: "Overview"
+description: "On-device, real-time lip-synced AI avatars. Audio in, talking video out at 25 FPS, sub-200 ms latency. One engine — CLI, Python, Swift, Kotlin, Flutter, REST."
 keywords:
   - bitHuman
   - AI avatar SDK
@@ -10,225 +10,243 @@ keywords:
   - talking avatar
   - edge AI
   - private avatar
-  - AI digital human
-  - mobile avatar SDK
-  - Apple Silicon avatar
 ---
 
 <img src="/images/bithuman-banner.jpg" alt="bitHuman Avatars" className="block dark:hidden" style={{ borderRadius: '12px', width: '100%' }} />
 <img src="/images/bitHuman_banner_black.jpg" alt="bitHuman Avatars" className="hidden dark:block" style={{ borderRadius: '12px', width: '100%' }} />
 
-bitHuman puts a real-time, lip-synced talking avatar in your app. Send audio in, get animated video out at 25 FPS with sub-200ms latency.
+bitHuman puts a real-time, lip-synced talking avatar in your app. Send
+audio in, get animated video out at 25 FPS with sub-200 ms latency. The
+rendering runs **on the device** — no cloud round-trip, no PII leaving
+the box, no network dependency for the avatar itself.
 
-It runs **anywhere your users are** — iPhone, iPad, Android, Mac, Linux server, Raspberry Pi, or via a cloud REST API. Inference happens on the device. No cloud round-trip for rendering, no PII leaves the box, no dependency on network reachability for the avatar itself.
+One engine ([`libessence`](/getting-started/architecture)) drives every
+surface: the CLI, the Python / Swift / Kotlin / Flutter SDKs, and the
+cloud REST API. They all read the same `.imx` avatar file and produce
+identical frames — pick the surface that matches what you're building;
+the mental model never changes.
+
+## Get started
+
+Choose your surface. The CLI is the fastest way to see it work — no
+code, no language toolchain.
+
+<Tabs>
+  <Tab title="CLI (no code)">
+    The universal one-liner — macOS and Linux:
+
+    ```bash
+    curl -fsSL https://github.com/bithuman-product/bithuman-sdk-public/releases/latest/download/install.sh | sh
+    ```
+
+    macOS via Homebrew (auto-pulls native deps):
+
+    ```bash
+    brew install bithuman-product/bithuman/bithuman
+    ```
+
+    Then:
+
+    ```bash
+    bithuman doctor      # verify host + API key
+    bithuman avatar      # opens http://127.0.0.1:8080 with the avatar
+    bithuman voice       # spoken conversation in your terminal
+    bithuman text        # text-only chat, stdin → stdout
+    ```
+
+    `voice` / `text` auto-pick cloud (when `OPENAI_API_KEY` is set) or
+    fully on-device. [CLI reference →](/getting-started/cli)
+  </Tab>
+
+  <Tab title="Python">
+    ```bash
+    pip install bithuman --upgrade
+    ```
+
+    Python 3.10–3.13. Wheels for macOS arm64, Linux x86_64 / aarch64,
+    Windows x86_64. The runtime + all native deps are in the wheel.
+
+    ```python
+    import asyncio, os
+    from bithuman import AsyncBithuman
+
+    async def main():
+        rt = await AsyncBithuman.create(
+            model_path="avatar.imx",
+            api_secret=os.environ["BITHUMAN_API_SECRET"],
+        )
+        print(rt.frame_width, "x", rt.frame_height)
+        await rt.stop()
+
+    asyncio.run(main())
+    ```
+
+    [Python SDK →](/sdks/python)
+  </Tab>
+
+  <Tab title="Swift">
+    In Xcode: **File → Add Package Dependencies…** →
+    `https://github.com/bithuman-product/bithuman-sdk-public.git` →
+    pick the latest tag.
+
+    ```swift
+    // .product(name: "bitHumanKit", package: "bithuman-sdk-public")
+    import bitHumanKit
+
+    let runtime = try await Bithuman.createRuntime(modelPath: modelURL)
+    ```
+
+    Binary XCFramework, zero transitive SwiftPM deps. macOS arm64 +
+    iOS device + simulator. [Swift SDK →](/sdks/swift)
+  </Tab>
+
+  <Tab title="Kotlin">
+    ```kotlin
+    // app/build.gradle.kts
+    android { defaultConfig {
+        ndk { abiFilters += setOf("arm64-v8a") }
+        minSdk = 29
+    } }
+    dependencies { implementation("ai.bithuman:sdk:1.17.3") }
+    ```
+
+    ```kotlin
+    import ai.bithuman.sdk.Bithuman
+    val runtime = Bithuman.createRuntime("/path/to/avatar.imx")
+    ```
+
+    AAR ships `arm64-v8a`, Android 10+. [Kotlin SDK →](/sdks/kotlin)
+  </Tab>
+
+  <Tab title="Flutter">
+    ```yaml
+    # pubspec.yaml
+    dependencies:
+      bithuman: ^1.0.0
+    ```
+
+    One Dart codebase across macOS, iOS, and Android, with built-in
+    per-platform echo cancellation.
+
+    <Note>
+    Pub.dev publish is pending — request the git-dep URL on
+    [Discord](https://discord.gg/ES953n7bPA).
+    </Note>
+
+    [Flutter plugin →](/integrations/flutter)
+  </Tab>
+
+  <Tab title="REST API">
+    No install — call `api.bithuman.ai` from any language.
+
+    ```bash
+    # Make a hosted agent speak (create AGENT_CODE at bithuman.ai).
+    curl -X POST https://api.bithuman.ai/v1/agent/AGENT_CODE/speak \
+      -H "api-secret: $BITHUMAN_API_SECRET" \
+      -H "content-type: application/json" \
+      -d '{"message": "Hello from the REST API."}'
+    ```
+
+    [API reference →](/api-reference/overview)
+  </Tab>
+</Tabs>
+
+You'll need a free API secret —
+[bithuman.ai → Developer → API Keys](https://www.bithuman.ai/#developer) —
+and an avatar `.imx` from the
+[Explore](https://www.bithuman.ai/#explore) page. Then
+[walk the 2-minute quickstart →](/getting-started/quickstart)
+
+## What you can do
+
+<AccordionGroup>
+  <Accordion title="Render a talking-head video from a script" icon="film">
+    One command, no code:
+
+    ```bash
+    bithuman generate avatar.imx --audio speech.wav --output demo.mp4
+    ```
+
+    Batch-render at scale by looping over scripts. The same path is
+    available in every SDK via the streaming API.
+  </Accordion>
+
+  <Accordion title="Have a spoken conversation" icon="microphone">
+    ```bash
+    export OPENAI_API_KEY=sk-...   # cloud LLM/voice
+    bithuman voice                 # or `bithuman voice --local` for fully offline
+    ```
+
+    The avatar lip-syncs the bot's reply in real time. Half-duplex mic
+    gating keeps it from talking over itself.
+  </Accordion>
+
+  <Accordion title="Embed an avatar in your app" icon="mobile">
+    Push 16 kHz PCM as it arrives (mic, TTS, WebRTC); drain frames at
+    25 FPS and hand them to your renderer. Same shape in Python, Swift,
+    Kotlin, Flutter. See the [quickstart](/getting-started/quickstart).
+  </Accordion>
+
+  <Accordion title="Run a cloud voice agent with an avatar" icon="cloud">
+    ```bash
+    pip install livekit-plugins-bithuman
+    ```
+
+    Drop `bithuman.AvatarSession(...)` into a LiveKit agent worker —
+    managed runtime, ~5 min setup. [Deployment →](/guides/deployment)
+  </Accordion>
+
+  <Accordion title="Self-host Expression on your own GPU" icon="server">
+    ```bash
+    docker run --gpus all -p 8089:8089 \
+      -e BITHUMAN_API_SECRET=$BITHUMAN_API_SECRET \
+      bithuman/expression-avatar:latest
+    ```
+
+    Point a LiveKit agent at `http://localhost:8089/launch`.
+    [Deployment →](/guides/deployment)
+  </Accordion>
+
+  <Accordion title="Drop a chat avatar onto a website" icon="comments">
+    A floating text / voice / video avatar widget, one script tag.
+    [Deployment → embed →](/guides/deployment)
+  </Accordion>
+</AccordionGroup>
+
+## Two avatar models
+
+| Model | What it is | Best for |
+|---|---|---|
+| **[Essence](/getting-started/models#essence)** | A pre-built avatar identity in an `.imx`. Low memory, runs on every supported platform. **The default.** | Kiosks, mobile, edge, high-concurrency servers |
+| **[Expression](/getting-started/models#expression)** | Animates *any* portrait at runtime. Higher close-up quality; needs more compute. | Native desktop apps, per-session custom faces, GPU cloud |
+
+Both speak the same `.imx` format and the same SDK methods — swap them
+without rewriting your integration.
+
+## I want to…
+
+| Goal | Best surface |
+|---|---|
+| Try it in 2 minutes, no code | [CLI](/getting-started/cli) |
+| Backend service / batch job / AI agent | [Python SDK](/sdks/python) |
+| Native iOS / iPadOS / macOS app | [Swift SDK](/sdks/swift) |
+| Native Android app | [Kotlin SDK](/sdks/kotlin) |
+| One Dart codebase, mac + iOS + Android | [Flutter plugin](/integrations/flutter) |
+| Cloud voice agent, managed | [LiveKit plugin](/guides/deployment) |
+| Expression on my own NVIDIA GPU | [Self-hosted GPU](/guides/deployment) |
+| Backend in any language | [REST API](/api-reference/overview) |
+
+## Next steps
+
+- [Quickstart](/getting-started/quickstart) — your first avatar in 2 minutes
+- [Models](/getting-started/models) — Essence vs Expression, the one concept to grok
+- [Examples](/examples/overview) — runnable code for every surface
+- [Authentication](/getting-started/authentication) · [Pricing](/getting-started/pricing)
 
 <Note>
-**Supported devices at a glance.** iPhone 17 Pro+ · iPad Pro M4+ · Mac Apple Silicon (M3+ for Expression) · Android `arm64-v8a` (Android 10+) · any modern Linux/Windows CPU · Raspberry Pi 4B+ · NVIDIA GPU (8 GB+ VRAM) for Expression. [Full platform matrix →](/getting-started/platforms)
+**For AI coding agents:** point Claude / Cursor at
+[AGENTS.md](https://github.com/bithuman-product/bithuman-sdk-public/blob/main/AGENTS.md),
+[llms.txt](/llms.txt), or the
+[OpenAPI spec](/api-reference/openapi.yaml) to integrate without
+hallucinating.
 </Note>
-
-## Two avatars to choose from
-
-| Avatar | What it is | Best for |
-|---|---|---|
-| **[Essence](/getting-started/models#essence)** | A pre-built avatar identity packaged in an `.imx` file. Real-time lip-sync, low memory, runs on every supported platform. | Kiosks, mobile apps, edge devices, high-concurrency servers. The default. |
-| **[Expression](/getting-started/models#expression)** | A dynamic avatar that animates *any* portrait image at runtime. Higher quality close-up faces; needs more compute. | Native desktop apps, custom faces per session, cloud workloads with GPUs. |
-
-Both models speak the same `.imx` file format and the same SDK methods — you can swap them without rewriting your integration.
-
-## Five ways to integrate
-
-| Path | When to pick it | Install |
-|---|---|---|
-| **[bithuman CLI](/getting-started/cli)** | No code. Voice / text / avatar in your terminal — fastest way to see it work. | `brew install bithuman-product/bithuman/bithuman` |
-| **[Python SDK](/getting-started/quickstart)** | Linux/macOS servers, edge boxes, batch jobs, AI agents. | `pip install bithuman` |
-| **[Swift SDK](/swift-sdk/overview)** | Native iOS / iPadOS / macOS apps. | SwiftPM — see Swift quickstart |
-| **[Kotlin SDK](/kotlin-sdk/overview)** | Native Android apps. | Maven `ai.bithuman:sdk` |
-| **[REST API](/api-reference/overview) / [LiveKit Plugin](/deployment/livekit-cloud-plugin)** | Backend integration, any language. Managed avatars in the cloud. | API key only |
-
-[Flutter plugin](/integrations/flutter) is also available for cross-platform mobile/desktop from a single Dart codebase.
-
-Not sure which to pick? **[Choose your SDK →](/getting-started/choose-your-sdk)** has a short decision tree.
-
-## 5-minute quickstart
-
-Pick the surface that matches what you're building:
-
-<CodeGroup>
-
-```sh CLI (no code)
-brew install bithuman-product/bithuman/bithuman   # macOS
-
-# Auto-picks cloud (OpenAI) when OPENAI_API_KEY is set, on-device otherwise.
-bithuman voice                # spoken conversation in your terminal
-bithuman text                 # text-only chat
-bithuman avatar               # opens http://127.0.0.1:8080 with the avatar
-```
-
-```python Python (Linux / macOS / Windows)
-# pip install bithuman
-import asyncio, os
-from bithuman import AsyncBithuman
-from bithuman.audio import float32_to_int16, load_audio
-
-async def main():
-    runtime = await AsyncBithuman.create(
-        model_path="avatar.imx",
-        api_secret=os.environ["BITHUMAN_API_SECRET"],
-    )
-    await runtime.start()
-
-    pcm, sr = load_audio("speech.wav")
-    pcm = float32_to_int16(pcm)
-    chunk = sr // 100                            # 10 ms per chunk
-    for i in range(0, len(pcm), chunk):
-        await runtime.push_audio(
-            pcm[i : i + chunk].tobytes(), sr, last_chunk=False,
-        )
-    await runtime.flush()
-
-    async for frame in runtime.run():
-        if frame.has_image:
-            image = frame.bgr_image              # numpy (H, W, 3) uint8
-        if frame.end_of_speech:
-            break
-    await runtime.stop()
-
-asyncio.run(main())
-# Full guide: /getting-started/quickstart
-```
-
-```swift Swift (Mac / iPad / iPhone)
-// SwiftPM: .package(url: "https://github.com/bithuman-product/bithuman-sdk-public.git", from: "0.8.1")
-// .product(name: "bitHumanKit", package: "bithuman-sdk-public")
-import bitHumanKit
-
-let imxURL = Bundle.main.url(forResource: "avatar", withExtension: "imx")!
-let runtime = try await Bithuman.createRuntime(modelPath: imxURL)
-
-switch runtime {
-case .essence(let essence):
-    // Drain CGImage frames at 25 fps and hand them to your SwiftUI view.
-    Task {
-        for await frame in essence.frames() {
-            if let frame { /* renderer.present(frame) */ }
-        }
-    }
-    // Push 16 kHz mono PCM as it arrives from mic / TTS / WebRTC.
-    // try await essence.pushAudio(pcmChunk)
-case .expression:
-    break  // handle Expression branch
-}
-// Full integration: /swift-sdk/quickstart
-```
-
-```kotlin Kotlin (Android)
-// build.gradle.kts: implementation("ai.bithuman:sdk:1.17.1")
-import ai.bithuman.sdk.Bithuman
-
-val runtime = Bithuman.createRuntime(modelPath)
-runtime.pushAudio(pcmShortArray)
-runtime.frames().collect { frame ->
-    if (frame != null) renderer.present(frame)
-}
-// Full integration: /kotlin-sdk/quickstart
-```
-
-```bash REST API (any language, cloud)
-# 1. Verify your API secret.
-curl -X POST https://api.bithuman.ai/v1/validate \
-  -H "api-secret: $BITHUMAN_API_SECRET"
-
-# 2. Make a hosted agent speak. Replace AGENT_CODE with your own
-#    (create one at https://www.bithuman.ai/#explore).
-curl -X POST https://api.bithuman.ai/v1/agent/AGENT_CODE/speak \
-  -H "api-secret: $BITHUMAN_API_SECRET" \
-  -H "content-type: application/json" \
-  -d '{"message": "Hello from the REST API."}'
-# Full reference: /api-reference/overview
-```
-
-```bash LiveKit Cloud Plugin (Python, cloud)
-pip install livekit-plugins-bithuman
-# Then in your LiveKit agent worker:
-#   bithuman.AvatarSession(avatar_id=..., api_secret=...)
-# Full guide: /deployment/livekit-cloud-plugin
-```
-
-```bash Self-hosted GPU (Expression, NVIDIA + Docker)
-docker run --gpus all -p 8089:8089 \
-    -e BITHUMAN_API_SECRET=your_api_secret \
-<!-- TODO(infra): migrate from `sgubithuman` (personal Docker Hub namespace) to `ghcr.io/bithuman-product/expression-avatar` or a properly-owned `bithuman` org Docker Hub namespace before this doc goes external. -->
-    docker.io/sgubithuman/expression-avatar:latest
-# Point a LiveKit agent at http://localhost:8089/launch
-# See /deployment/self-hosted-gpu for the full wiring.
-```
-
-</CodeGroup>
-
-Every tab maps to a working example under [Examples/](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples).
-
-## Use cases shipping today
-
-<CardGroup cols={3}>
-  <Card title="Replace hold music" icon="headset">
-    A talking avatar that answers customer-support questions.
-  </Card>
-  <Card title="Teach with a tutor" icon="graduation-cap">
-    A patient virtual teacher that explains and adapts to students.
-  </Card>
-  <Card title="Greet at the lobby" icon="building">
-    Kiosks and tablets that welcome and direct visitors.
-  </Card>
-  <Card title="Build a companion" icon="heart">
-    Persistent characters with personality and memory.
-  </Card>
-  <Card title="Voice your game NPCs" icon="gamepad">
-    Dynamic characters that react to player actions with gestures.
-  </Card>
-  <Card title="Generate video at scale" icon="film">
-    Batch-render talking-head videos from scripts.
-  </Card>
-</CardGroup>
-
-[See all use cases with architecture patterns →](/getting-started/use-cases)
-
-## Pick your stack
-
-<CardGroup cols={3}>
-  <Card title="Quickstart" icon="rocket" href="/getting-started/quickstart">
-    Get your first avatar running in 5 minutes
-  </Card>
-  <Card title="Run the CLI" icon="terminal" href="/getting-started/cli">
-    Voice, text, and avatar — one binary, no code.
-  </Card>
-  <Card title="Ship a Mac / iPad / iPhone app" icon="apple" href="/swift-sdk/overview">
-    Native SwiftUI integration via `bitHumanKit`.
-  </Card>
-  <Card title="Ship an Android app" icon="android" href="/kotlin-sdk/overview">
-    Native Kotlin via the `ai.bithuman:sdk` AAR.
-  </Card>
-  <Card title="Call the REST API" icon="code" href="/api-reference/overview">
-    Generate agents, speak, trigger dynamics — any language.
-  </Card>
-  <Card title="Use the LiveKit plugin" icon="cloud" href="/deployment/livekit-cloud-plugin">
-    Managed avatar runtime in your LiveKit room — 5 min setup.
-  </Card>
-  <Card title="Run Expression on your GPU" icon="server" href="/deployment/self-hosted-gpu">
-    Self-host Expression on Linux + NVIDIA.
-  </Card>
-  <Card title="Clone a working example" icon="book-open" href="/examples/overview">
-    13 runnable examples covering every surface.
-  </Card>
-  <Card title="Embed the chat widget" icon="comments" href="/integrations/embed">
-    Drop a floating text / voice / video avatar onto any website.
-  </Card>
-</CardGroup>
-
-## Point your AI coding agent at our docs
-
-bitHuman ships first-class machine-readable surfaces so Claude, Cursor, and other agentic coding tools can integrate without hallucinating:
-
-- **[AGENTS.md](https://github.com/bithuman-product/bithuman-sdk-public/blob/main/AGENTS.md)** — decision tree, setup, API surface, common patterns.
-- **[llms.txt](/llms.txt)** — curated documentation index for LLM consumption.
-- **[llms-full.txt](/llms-full.txt)** — complete documentation as a single markdown file.
-- **[OpenAPI spec](/api-reference/openapi.yaml)** — machine-readable REST API contract.

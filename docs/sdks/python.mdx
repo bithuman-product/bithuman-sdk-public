@@ -1,0 +1,140 @@
+---
+title: "Python SDK"
+description: "On-device avatar runtime for Python. pip install bithuman. Backends, AI agents, batch jobs, edge boxes. macOS / Linux / Windows."
+icon: "python"
+---
+
+`bithuman` is the Python SDK — the most popular surface for backend
+services, AI agents, batch render jobs, and edge boxes. Audio in
+(16-bit PCM), numpy BGR frames out at 25 FPS. The runtime and all
+native dependencies ship in the wheel.
+
+## Install
+
+```bash
+pip install bithuman --upgrade
+```
+
+Python 3.10–3.13. Wheels: macOS arm64, Linux x86_64, Linux aarch64,
+Windows x86_64.
+
+<Note>
+The wheel pulls `opencv-python-headless`. Don't also install full
+`opencv-python` — it conflicts with PyAV and triggers FFmpeg warnings
+on macOS.
+</Note>
+
+Auth: export `BITHUMAN_API_SECRET`. Get a secret at
+[Developer → API Keys](https://www.bithuman.ai/#developer).
+
+## Streaming loop
+
+`AsyncBithuman` is the runtime — one instance per avatar session.
+
+```python
+import asyncio, os
+from bithuman import AsyncBithuman
+from bithuman.audio import float32_to_int16, load_audio
+
+async def main():
+    rt = await AsyncBithuman.create(
+        model_path="avatar.imx",
+        api_secret=os.environ["BITHUMAN_API_SECRET"],
+    )
+    await rt.start()
+
+    pcm, sr = load_audio("speech.wav")
+    pcm = float32_to_int16(pcm)
+    chunk = sr // 100                       # 10 ms chunks
+    for i in range(0, len(pcm), chunk):
+        await rt.push_audio(pcm[i:i+chunk].tobytes(), sr, last_chunk=False)
+    await rt.flush()
+
+    async for frame in rt.run():
+        if frame.has_image:
+            image = frame.bgr_image         # numpy (H, W, 3) uint8
+            # display, encode, or push to WebRTC — your choice
+        if frame.end_of_speech:
+            break
+    await rt.stop()
+
+asyncio.run(main())
+```
+
+| Concept | What it is |
+|---|---|
+| `AsyncBithuman` | The runtime. One per session. Keep it alive between turns in production. |
+| `push_audio(bytes, sr, last_chunk)` | Feed 16-bit PCM; avatar lip-syncs live. |
+| `flush()` | Mark end of audio input. |
+| `run()` | Async generator yielding frames at 25 FPS. |
+| `frame` | `.bgr_image`, `.audio_chunk`, `.has_image`, `.end_of_speech`. |
+
+`push_audio` and `run()` are independent — push as audio arrives
+(mic, TTS, WebRTC), drain frames on your render tick. The
+[`local-essence` example](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence)
+adds OpenCV display + speaker playback on top of this loop.
+
+## No-code render
+
+For one-shot or batch video, skip the SDK entirely:
+
+```bash
+bithuman generate avatar.imx --audio speech.wav --output demo.mp4
+```
+
+## LiveKit voice agents
+
+For a cloud voice agent with an avatar, use the LiveKit plugin instead
+of driving the runtime yourself:
+
+```bash
+pip install livekit-plugins-bithuman
+```
+
+Drop `bithuman.AvatarSession(...)` into your agent worker. See
+[Deployment](/guides/deployment).
+
+## System requirements
+
+- Python 3.10–3.13.
+- **Essence**: any modern CPU, 4 GB RAM. Linux / macOS / Windows.
+- **Expression on-device**: macOS 14+ Apple Silicon M3+, 16 GB RAM.
+  Elsewhere use the [self-hosted GPU](/guides/deployment) deployment
+  (Linux + NVIDIA).
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="ModuleNotFoundError: No module named 'bithuman'">
+    Not installed in the active environment —
+    `pip install bithuman --upgrade` in the same venv you run from.
+  </Accordion>
+  <Accordion title="401 / authentication failed">
+    Confirm `BITHUMAN_API_SECRET` is set in the running shell, then:
+    ```bash
+    curl -X POST https://api.bithuman.ai/v1/validate -H "api-secret: $BITHUMAN_API_SECRET"
+    ```
+  </Accordion>
+  <Accordion title="Avatar shows but no lip movement">
+    Push **PCM bytes** (`float32_to_int16()` first), call `flush()`
+    after all audio, match the sample rate from `load_audio()`.
+  </Accordion>
+  <Accordion title="Slow first startup (30–60 s)">
+    First `.imx` load warms the runtime / upgrades the file format.
+    Keep the runtime alive between sessions in production.
+  </Accordion>
+</AccordionGroup>
+
+## See also
+
+<CardGroup cols={3}>
+  <Card title="Examples" icon="book-open" href="/examples/python-hello">
+    Audio clip, mic, AI conversation
+  </Card>
+  <Card title="Models" icon="circle-info" href="/getting-started/models">
+    Essence vs Expression
+  </Card>
+  <Card title="Deployment" icon="server" href="/guides/deployment">
+    LiveKit, self-hosted GPU, embed
+  </Card>
+</CardGroup>

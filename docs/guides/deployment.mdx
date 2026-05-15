@@ -1,0 +1,140 @@
+---
+title: "Deployment"
+description: "Ship a bitHuman avatar in production — LiveKit cloud plugin, self-hosted CPU/GPU, embed widget, and webhooks."
+icon: "server"
+---
+
+Pick a deployment shape by where the avatar should run, then the model
+follows. Both Essence and Expression work on every shape below.
+
+| Shape | Best for | Model files | GPU | Models |
+|---|---|---|---|---|
+| **Cloud plugin** | Getting started, web apps | No | No | Essence + Expression |
+| **Self-hosted CPU** | Privacy, edge, high concurrency | `.imx` | No | Essence |
+| **Self-hosted GPU** | Custom face per session | No (uses images) | Yes | Expression |
+| **On-device** | Native apps, privacy-first | `.imx` / weights | No (Apple M3+ / Android) | Essence (+ Expression on Apple) |
+| **Embed widget** | Drop onto a website | No | No | Essence + Expression |
+
+On-device → see the [Swift](/sdks/swift), [Kotlin](/sdks/kotlin),
+[Flutter](/integrations/flutter), or [Python](/sdks/python) SDKs and
+the [CLI](/getting-started/cli). The cloud + embed paths are below.
+
+## LiveKit cloud plugin
+
+The avatar runs on bitHuman's servers — no model files, no GPU on
+your side. The fastest production path (~5 min). Charges per active
+minute against your account.
+
+```bash
+pip install livekit-plugins-bithuman
+```
+
+```bash
+export BITHUMAN_API_SECRET="your_api_secret"
+export BITHUMAN_AGENT_ID="A78WKV4515"        # from your Library
+export OPENAI_API_KEY="sk-..."
+export LIVEKIT_URL="wss://your-project.livekit.cloud"
+export LIVEKIT_API_KEY="APIxxxx"
+export LIVEKIT_API_SECRET="xxxx"
+```
+
+```python
+from livekit.agents import Agent, JobContext
+from livekit.plugins import bithuman
+import os
+
+async def entrypoint(ctx: JobContext):
+    await ctx.connect()
+    await ctx.wait_for_participant()
+    avatar = bithuman.AvatarSession(
+        avatar_id=os.environ["BITHUMAN_AGENT_ID"],
+        api_secret=os.environ["BITHUMAN_API_SECRET"],
+    )
+    # …attach the avatar to your AgentSession and start it.
+```
+
+Python 3.10–3.13. The plugin pulls `bithuman` + `livekit-agents`. To
+point at your **own** Essence server instead of bitHuman's cloud, pass
+`api_url=`.
+
+## Self-hosted GPU (Expression)
+
+A GPU worker that joins a LiveKit room and streams 25 FPS lip-synced
+video — entirely on your GPU; no cloud calls during inference. Use
+this when you need a different portrait per session. 2 credits/min.
+
+```bash
+docker run --gpus all -p 8089:8089 \
+  -e BITHUMAN_API_SECRET=$BITHUMAN_API_SECRET \
+  bithuman/expression-avatar:latest
+```
+
+Then `POST /launch` with `{ livekit_url, livekit_token, room_name,
+avatar_image }` from your agent; the container joins the room and
+publishes video. Requires an NVIDIA GPU (≥ 8 GB VRAM), the NVIDIA
+Container Toolkit, Docker 24+. Weights (~5 GB) download on first run
+into a Docker volume.
+
+<Tip>
+On Apple Silicon M3+ Expression runs natively — no Docker/NVIDIA.
+For self-hosted **Essence** (no GPU, higher concurrency), run the
+[Python SDK](/sdks/python) or [CLI](/getting-started/cli) directly, or
+point the LiveKit plugin's `api_url` at your own Essence server.
+</Tip>
+
+## Embed widget
+
+Drop a talking avatar onto any website — the avatar runs in bitHuman's
+cloud, your page just hosts an iframe. Zero backend:
+
+```html
+<iframe
+  src="https://agent.viewer.bithuman.ai/api/embed/YOUR_AGENT_CODE"
+  allow="microphone *; camera *; autoplay *"
+  style="width: 400px; height: 700px; border: none; border-radius: 12px;"
+></iframe>
+```
+
+Find `YOUR_AGENT_CODE` in the [Library](https://www.bithuman.ai/#library)
+or the Deploy & Share dialog. URL parameters customize the widget; for
+authenticated/branded embeds use the JWT token flow in the
+[REST API reference](/api-reference/overview).
+
+## Webhooks
+
+bitHuman POSTs to your endpoint when session events occur. Return
+`200` immediately and offload work to a queue — long handlers risk the
+timeout.
+
+**`room.join`** — fired once when a user connects:
+
+```json
+{ "agent_code": "A91XMB7113", "event_type": "room.join",
+  "data": { "room_name": "support", "participant_count": 1,
+            "session_id": "session_xyz" }, "timestamp": 1705312200.0 }
+```
+
+**`chat.push`** — fired per message (user and agent):
+
+```json
+{ "agent_code": "A91XMB7113", "event_type": "chat.push",
+  "data": { "role": "user", "message": "help with order #12345",
+            "session_id": "session_xyz" }, "timestamp": 1705312285.0 }
+```
+
+Endpoint setup, signature verification, and retry policy are in the
+[REST API reference](/api-reference/overview).
+
+## Next steps
+
+<CardGroup cols={3}>
+  <Card title="REST API" icon="code" href="/api-reference/overview">
+    Agents, speak, dynamics, tokens
+  </Card>
+  <Card title="Models" icon="circle-info" href="/getting-started/models">
+    Essence vs Expression
+  </Card>
+  <Card title="Pricing" icon="credit-card" href="/getting-started/pricing">
+    What's metered, credit rates
+  </Card>
+</CardGroup>
