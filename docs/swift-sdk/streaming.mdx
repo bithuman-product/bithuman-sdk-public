@@ -7,7 +7,7 @@ icon: "bolt"
 
 The streaming push/pull API on `EssenceRuntime` is the right shape for conversations that run longer than a few seconds, or for any integration where audio arrives incrementally (microphone, TTS stream, WebRTC track).
 
-Each push is constant cost; each pull returns one composed frame. Session length doesn't degrade per-tick performance.
+Each push is constant cost; each pull returns one composed frame. Session length doesn't degrade per-frame performance.
 
 ## API surface
 

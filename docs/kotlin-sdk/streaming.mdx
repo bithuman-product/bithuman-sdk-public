@@ -7,7 +7,7 @@ icon: "bolt"
 
 The streaming push/pull API on `ai.bithuman.sdk.Runtime` is the right shape for conversations that run longer than a few seconds, or for any integration where audio arrives incrementally (microphone, WebRTC sink, TTS stream).
 
-Each push is constant cost; each pull returns one composed frame. Session length doesn't degrade per-tick performance.
+Each push is constant cost; each pull returns one composed frame. Session length doesn't degrade per-frame performance.
 
 ## API surface
 

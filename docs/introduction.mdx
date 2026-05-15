@@ -95,15 +95,19 @@ asyncio.run(main())
 // .product(name: "bitHumanKit", package: "bithuman-sdk-public")
 import bitHumanKit
 
+let imxURL = Bundle.main.url(forResource: "avatar", withExtension: "imx")!
 let runtime = try await Bithuman.createRuntime(modelPath: imxURL)
+
 switch runtime {
 case .essence(let essence):
-    // Push 16 kHz mono PCM from mic / TTS / WebRTC:
-    try await essence.pushAudio(pcmChunk)
-    // Drain CGImage frames at 25 fps:
-    for await frame in essence.frames() {
-        if let frame { renderer.present(frame) }
+    // Drain CGImage frames at 25 fps and hand them to your SwiftUI view.
+    Task {
+        for await frame in essence.frames() {
+            if let frame { /* renderer.present(frame) */ }
+        }
     }
+    // Push 16 kHz mono PCM as it arrives from mic / TTS / WebRTC.
+    // try await essence.pushAudio(pcmChunk)
 case .expression:
     break  // handle Expression branch
 }
