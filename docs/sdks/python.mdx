@@ -84,14 +84,40 @@ bithuman generate avatar.imx --audio speech.wav --output demo.mp4
 
 ## LiveKit voice agents
 
-For a cloud voice agent with an avatar, use the LiveKit plugin instead
-of driving the runtime yourself:
+For a real-time WebRTC voice agent with an avatar, use the
+[LiveKit](https://docs.livekit.io/agents/) plugin instead of driving
+the runtime yourself:
 
 ```bash
-pip install livekit-plugins-bithuman
+pip install "bithuman[agent]"     # pulls livekit-plugins-bithuman
 ```
 
-Drop `bithuman.AvatarSession(...)` into your agent worker. See
+```python
+from livekit.plugins import bithuman
+
+avatar = bithuman.AvatarSession(
+    avatar_id=os.environ["BITHUMAN_AGENT_ID"],
+    api_secret=os.environ["BITHUMAN_API_SECRET"],
+)
+# attach to your AgentSession, then start it
+```
+
+`AvatarSession` is the single integration point — the same call works
+cloud or self-hosted, Essence or Expression. Six runnable LiveKit
+agents ship in the repo, each with `.env.example`, `requirements.txt`,
+and a `docker-compose.yml` full stack:
+
+| Example | Model · where | Needs |
+|---|---|---|
+| [cloud-essence](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-essence) | Essence · bitHuman cloud | API key + agent ID |
+| [cloud-expression](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-expression) | Expression · bitHuman cloud | API key + face image |
+| [local-essence](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) | Essence · your server (CPU) | API key + `.imx` |
+| [local-expression-gpu](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-gpu) | Expression · your NVIDIA GPU | GPU ≥ 8 GB VRAM |
+| [local-expression-gpu-livekit-cloud](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-gpu-livekit-cloud) | Expression · GPU + LiveKit Cloud | GPU + LiveKit Cloud project |
+| [local-expression-mac](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-mac) | Expression · Apple Silicon | Mac M3+ |
+
+`local-essence` also ships a `quickstart.py` — the raw `AsyncBithuman`
+loop with no LiveKit, if you bring your own transport. Wiring details:
 [Deployment](/guides/deployment).
 
 ## System requirements

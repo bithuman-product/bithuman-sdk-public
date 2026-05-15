@@ -39,5 +39,5 @@ No network calls are made after the initial weights download.
 
 ## Docs
 
-- [Swift SDK quickstart](https://docs.bithuman.ai/swift-sdk/quickstart)
-- [macOS guide](https://docs.bithuman.ai/swift-sdk/macos)
+- [Swift SDK quickstart](https://docs.bithuman.ai/sdks/swift)
+- [macOS guide](https://docs.bithuman.ai/sdks/swift)

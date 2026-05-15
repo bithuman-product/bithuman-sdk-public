@@ -57,6 +57,6 @@ Most also include:
 ## Documentation
 
 - [Python quickstart](https://docs.bithuman.ai/getting-started/quickstart)
-- [Avatar sessions](https://docs.bithuman.ai/deployment/avatar-sessions)
-- [Self-hosted GPU](https://docs.bithuman.ai/deployment/self-hosted-gpu)
-- [LiveKit Cloud plugin](https://docs.bithuman.ai/deployment/livekit-cloud-plugin)
+- [Avatar sessions](https://docs.bithuman.ai/guides/deployment)
+- [Self-hosted GPU](https://docs.bithuman.ai/guides/deployment)
+- [LiveKit Cloud plugin](https://docs.bithuman.ai/guides/deployment)

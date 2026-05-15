@@ -89,6 +89,6 @@ The audio encoder runs on the Neural Engine (ANE) via Metal/MLX. The renderer co
 
 ## Docs
 
-- [Essence on Swift](https://docs.bithuman.ai/swift-sdk/essence)
-- [Swift SDK quickstart](https://docs.bithuman.ai/swift-sdk/quickstart)
+- [Essence on Swift](https://docs.bithuman.ai/sdks/swift)
+- [Swift SDK quickstart](https://docs.bithuman.ai/sdks/swift)
 - [Models overview](https://docs.bithuman.ai/getting-started/models)

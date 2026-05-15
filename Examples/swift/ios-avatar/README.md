@@ -72,5 +72,5 @@ Before submitting to TestFlight:
 
 ## Docs
 
-- [Swift SDK quickstart](https://docs.bithuman.ai/swift-sdk/quickstart)
-- [iOS / iPadOS guide](https://docs.bithuman.ai/swift-sdk/ios)
+- [Swift SDK quickstart](https://docs.bithuman.ai/sdks/swift)
+- [iOS / iPadOS guide](https://docs.bithuman.ai/sdks/swift)

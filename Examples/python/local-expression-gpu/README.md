@@ -80,7 +80,7 @@ curl -X POST http://localhost:8089/launch \
 curl http://localhost:8089/tasks
 ```
 
-The full `/launch` schema lives at [`docs.bithuman.ai/deployment/self-hosted-gpu`](https://docs.bithuman.ai/deployment/self-hosted-gpu). For an interactive browser UI, use the Docker Compose stack above.
+The full `/launch` schema lives at [`docs.bithuman.ai/guides/deployment`](https://docs.bithuman.ai/guides/deployment). For an interactive browser UI, use the Docker Compose stack above.
 
 ## Verify the GPU Container
 

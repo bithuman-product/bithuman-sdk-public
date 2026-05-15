@@ -30,6 +30,6 @@ Each subdirectory has its own README with setup steps.
 ## Documentation
 
 - [Quickstart (Python)](https://docs.bithuman.ai/getting-started/quickstart)
-- [Quickstart (Swift)](https://docs.bithuman.ai/swift-sdk/quickstart)
+- [Quickstart (Swift)](https://docs.bithuman.ai/sdks/swift)
 - [API reference](https://docs.bithuman.ai/api-reference/overview)
 - [Python SDK on PyPI](https://pypi.org/project/bithuman/)

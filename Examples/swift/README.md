@@ -35,9 +35,9 @@ M1 and M2 Macs are not supported for Expression (the SDK raises `ExpressionModel
 | Resource | URL |
 |----------|-----|
 | SwiftPM package | [github.com/bithuman-product/bithuman-sdk-public](https://github.com/bithuman-product/bithuman-sdk-public) |
-| Overview docs | [docs.bithuman.ai/swift-sdk/overview](https://docs.bithuman.ai/swift-sdk/overview) |
-| Quickstart | [docs.bithuman.ai/swift-sdk/quickstart](https://docs.bithuman.ai/swift-sdk/quickstart) |
-| CLI (no-code) | [docs.bithuman.ai/swift-sdk/cli](https://docs.bithuman.ai/swift-sdk/cli) |
+| Overview docs | [docs.bithuman.ai/sdks/swift](https://docs.bithuman.ai/sdks/swift) |
+| Quickstart | [docs.bithuman.ai/sdks/swift](https://docs.bithuman.ai/sdks/swift) |
+| CLI (no-code) | [docs.bithuman.ai/getting-started/cli](https://docs.bithuman.ai/getting-started/cli) |
 
 ## Integration
 
@@ -61,11 +61,11 @@ brew install bithuman-cli
 bithuman-cli video
 ```
 
-See [docs.bithuman.ai/swift-sdk/cli](https://docs.bithuman.ai/swift-sdk/cli) for usage.
+See [docs.bithuman.ai/getting-started/cli](https://docs.bithuman.ai/getting-started/cli) for usage.
 
 ## Reference apps
 
-Reference apps (Mac, iPad, iPhone) live in the private [bithuman-apps](https://github.com/bithuman-product/bithuman-apps) repo. They consume the SDK via the published SwiftPM binary package — the same way any external developer would. Prebuilt binaries are linked from the [quickstart docs](https://docs.bithuman.ai/swift-sdk/quickstart).
+Reference apps (Mac, iPad, iPhone) live in the private [bithuman-apps](https://github.com/bithuman-product/bithuman-apps) repo. They consume the SDK via the published SwiftPM binary package — the same way any external developer would. Prebuilt binaries are linked from the [quickstart docs](https://docs.bithuman.ai/sdks/swift).
 
 ## Python SDK on Apple Silicon
 
@@ -73,7 +73,7 @@ For developers who prefer Python, the `bithuman` PyPI package includes a macOS a
 
 ## Documentation
 
-- [Swift SDK overview](https://docs.bithuman.ai/swift-sdk/overview)
-- [Quickstart](https://docs.bithuman.ai/swift-sdk/quickstart)
-- [CLI reference](https://docs.bithuman.ai/swift-sdk/cli)
+- [Swift SDK overview](https://docs.bithuman.ai/sdks/swift)
+- [Quickstart](https://docs.bithuman.ai/sdks/swift)
+- [CLI reference](https://docs.bithuman.ai/getting-started/cli)
 - [Models overview](https://docs.bithuman.ai/getting-started/models)

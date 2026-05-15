@@ -55,7 +55,22 @@ async def entrypoint(ctx: JobContext):
 
 Python 3.10–3.13. The plugin pulls `bithuman` + `livekit-agents`. To
 point at your **own** Essence server instead of bitHuman's cloud, pass
-`api_url=`.
+`api_url=`. [LiveKit Agents docs →](https://docs.livekit.io/agents/)
+
+### Runnable LiveKit examples
+
+Six complete LiveKit agents ship in the repo — each with
+`.env.example`, `requirements.txt`, and a `docker-compose.yml` full
+stack (LiveKit + agent + web UI). Clone, fill `.env`, `docker compose up`:
+
+| Example | Model · where |
+|---|---|
+| [cloud-essence](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-essence) | Essence · bitHuman cloud — start here |
+| [cloud-expression](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-expression) | Expression · bitHuman cloud |
+| [local-essence](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) | Essence · your server (CPU) |
+| [local-expression-gpu](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-gpu) | Expression · your NVIDIA GPU (local LiveKit + Redis) |
+| [local-expression-gpu-livekit-cloud](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-gpu-livekit-cloud) | Expression · your GPU, WebRTC via LiveKit Cloud |
+| [local-expression-mac](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-mac) | Expression · Apple Silicon M3+ |
 
 ## Self-hosted GPU (Expression)
 
