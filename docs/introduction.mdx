@@ -161,14 +161,16 @@ and an avatar `.imx` from the
 
 <AccordionGroup>
   <Accordion title="Render a talking-head video from a script" icon="film">
-    One command, no code:
+    No code — make a WAV, then render an MP4:
 
     ```bash
+    bithuman tts "Hello from bitHuman." --output speech.wav
     bithuman generate avatar.imx --audio speech.wav --output demo.mp4
     ```
 
-    Batch-render at scale by looping over scripts. The same path is
-    available in every SDK via the streaming API.
+    `avatar.imx` is any model you downloaded from Explore (or the
+    sample the CLI caches on first `bithuman avatar`). Batch-render at
+    scale by looping over scripts; the same path is in every SDK.
   </Accordion>
 
   <Accordion title="Have a spoken conversation" icon="microphone">

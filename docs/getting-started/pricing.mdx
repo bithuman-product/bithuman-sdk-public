@@ -62,26 +62,29 @@ Response:
 {
   "success": true,
   "data": {
+    "user_id": "1f09e2f0-bffd-4201-a3e7-e98a9e432e67",
     "balance": 5240,
     "plan_credits": 240,
     "topup_credits": 5000,
+    "is_enterprise": false,
+    "isEnterprisePlanUser": false,
     "minutes_estimate": {
       "voice_chat": 524,
-      "video_chat": 174,
-      "standard_avatar_cloud": 2620,
-      "standard_avatar_self_hosted": 5240,
-      "advanced_avatar_cloud": 1310,
-      "advanced_avatar_self_hosted": 2620
+      "camera_chat": 174,
+      "essence_cloud": 2620,
+      "essence_self_hosted": 5240,
+      "expression_cloud": 1310,
+      "expression_self_hosted": 2620
     }
   }
 }
 ```
 
-The `minutes_estimate` keys are the literal API field names and map to
-the avatar models: `standard_avatar_*` = **Essence**,
-`advanced_avatar_*` = **Expression** (`cloud` = bitHuman-hosted,
-`self_hosted` = your hardware). `voice_chat` / `video_chat` are the
-managed cloud conversational-agent rates, not avatar models.
+The `minutes_estimate` keys are the two avatar models directly:
+`essence_*` = **Essence**, `expression_*` = **Expression** (`cloud` =
+bitHuman-hosted, `self_hosted` = your hardware). `voice_chat` /
+`camera_chat` are the managed cloud conversational-agent estimates, not
+avatar models.
 
 See [Credits & Billing](/api-reference/rate-limits) for the full schema.
 

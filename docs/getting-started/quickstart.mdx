@@ -38,16 +38,28 @@ bithuman doctor          # confirms host + key are good
 
 ## 3. Make it talk
 
-```bash
-# Render a video from any WAV — no code.
-bithuman generate avatar.imx --audio speech.wav --output demo.mp4
+The fastest check needs no files — this fetches a sample avatar on
+first run and serves it in your browser:
 
-# Or a live spoken conversation (cloud LLM/voice).
+```bash
+bithuman avatar          # open http://127.0.0.1:8080, grant mic, talk
+```
+
+Or hold a spoken conversation (cloud LLM + voice):
+
+```bash
 export OPENAI_API_KEY=sk-...
 bithuman voice
+```
 
-# Or the avatar in your browser at http://127.0.0.1:8080.
-bithuman avatar
+Or render an MP4 offline. `generate` needs an `.imx` model and a WAV —
+make a quick WAV with the built-in TTS, and reuse the sample the step
+above cached (or any `.imx` you downloaded from Explore):
+
+```bash
+bithuman tts "Hello from bitHuman." --output speech.wav
+bithuman generate ~/.cache/bithuman/models/sample-avatar.imx \
+  --audio speech.wav --output demo.mp4
 ```
 
 Open `demo.mp4` — that's a lip-synced talking avatar, end to end.

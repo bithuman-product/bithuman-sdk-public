@@ -17,16 +17,19 @@ curl https://api.bithuman.ai/v2/credit-summaries \
 {
   "success": true,
   "data": {
+    "user_id": "1f09e2f0-bffd-4201-a3e7-e98a9e432e67",
     "balance": 5240,
     "plan_credits": 240,
     "topup_credits": 5000,
+    "is_enterprise": false,
+    "isEnterprisePlanUser": false,
     "minutes_estimate": {
       "voice_chat": 524,
-      "video_chat": 174,
-      "standard_avatar_cloud": 2620,
-      "standard_avatar_self_hosted": 5240,
-      "advanced_avatar_cloud": 1310,
-      "advanced_avatar_self_hosted": 2620
+      "camera_chat": 174,
+      "essence_cloud": 2620,
+      "essence_self_hosted": 5240,
+      "expression_cloud": 1310,
+      "expression_self_hosted": 2620
     }
   }
 }
@@ -34,19 +37,21 @@ curl https://api.bithuman.ai/v2/credit-summaries \
 
 | Field | Description |
 |-------|-------------|
+| `user_id` | Account identifier |
 | `balance` | Total usable credits (plan + topup) |
 | `plan_credits` | Monthly subscription credits — reset each billing cycle |
 | `topup_credits` | Purchased credits — carry over until used |
+| `is_enterprise` / `isEnterprisePlanUser` | Whether the account is on an enterprise plan |
 | `minutes_estimate` | Pre-calculated minutes remaining per session type |
 
-The `minutes_estimate` keys are the literal API field names; they map to
-the avatar models as follows:
+`minutes_estimate` keys map directly to the two avatar models and the
+managed conversational agent:
 
-| API key | Model · where |
+| Key | Meaning |
 |---|---|
-| `standard_avatar_cloud` / `standard_avatar_self_hosted` | **Essence** · bitHuman cloud / your hardware |
-| `advanced_avatar_cloud` / `advanced_avatar_self_hosted` | **Expression** · bitHuman cloud / your hardware |
-| `voice_chat` / `video_chat` | Managed cloud conversational agent (no avatar / with camera) |
+| `essence_cloud` / `essence_self_hosted` | **Essence** · bitHuman cloud / your hardware |
+| `expression_cloud` / `expression_self_hosted` | **Expression** · bitHuman cloud / your hardware |
+| `voice_chat` / `camera_chat` | Managed cloud conversational agent (no avatar / with camera) |
 
 ---
 
@@ -57,7 +62,7 @@ Different features consume credits at different rates per minute:
 | Feature | Credits/min | Description |
 |---------|------------|-------------|
 | **Voice Chat** | 10 | Managed cloud conversational agent — STT + LLM + TTS, no avatar |
-| **Video Chat** | 30 | Managed cloud conversational agent with user camera enabled |
+| **Camera Chat** | 30 | Managed cloud conversational agent with user camera enabled |
 | **Essence — Cloud** | 2 | Essence avatar rendering on bitHuman's servers |
 | **Essence — Self-hosted** | 1 | Essence avatar rendering on your hardware |
 | **Expression — Cloud** | 4 | Expression avatar rendering on bitHuman's servers |

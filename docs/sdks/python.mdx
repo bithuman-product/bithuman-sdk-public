@@ -75,9 +75,11 @@ adds OpenCV display + speaker playback on top of this loop.
 
 ## No-code render
 
-For one-shot or batch video, skip the SDK entirely:
+For one-shot or batch video, skip the SDK entirely. `generate` needs an
+`.imx` and a WAV (`bithuman tts` can make the WAV):
 
 ```bash
+bithuman tts "Hello from bitHuman." --output speech.wav
 bithuman generate avatar.imx --audio speech.wav --output demo.mp4
 ```
 

@@ -73,8 +73,11 @@ responses through the default output device, and print transcripts.
 ## 5. Offline batch render
 
 ```bash
-# Render an MP4 from a model + WAV file, no interactive session.
-bithuman generate avatar.imx --audio speech.wav --output rendered.mp4
+# Make a quick WAV, then render an MP4 — no interactive session.
+# Step 2 already cached the sample model; or use any .imx you have.
+bithuman tts "Hello from bitHuman." --output speech.wav
+bithuman generate ~/.cache/bithuman/models/sample-avatar.imx \
+  --audio speech.wav --output rendered.mp4
 ```
 
 Default canvas is 1280×720 (letterboxed for non-matching fixture
