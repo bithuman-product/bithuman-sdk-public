@@ -17,6 +17,7 @@ bitHuman bills in **credits** consumed per **active minute** of avatar runtime. 
 | **On-device (Swift SDK)** | Expression | 2 cr/min | Active avatar minutes only |
 | **On-device (Swift SDK), audio-only** | — | **Free** | No avatar, no metering |
 | **Agent generation** | — | 250 cr (one-time) | Per `.imx` model built from your photo / video |
+| **Dynamics generation** | — | 250 cr (one-time) | Per gesture / movement set generated for an agent |
 
 A "credit minute" is wall-clock time the engine is actively producing frames (or, on-device, the wall-clock time between `chat.start()` and `chat.stop()` with avatar attached). Idle / paused / disconnected time isn't billed.
 
@@ -75,6 +76,12 @@ Response:
   }
 }
 ```
+
+The `minutes_estimate` keys are the literal API field names and map to
+the avatar models: `standard_avatar_*` = **Essence**,
+`advanced_avatar_*` = **Expression** (`cloud` = bitHuman-hosted,
+`self_hosted` = your hardware). `voice_chat` / `video_chat` are the
+managed cloud conversational-agent rates, not avatar models.
 
 See [Credits & Billing](/api-reference/rate-limits) for the full schema.
 

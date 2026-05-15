@@ -39,6 +39,15 @@ curl https://api.bithuman.ai/v2/credit-summaries \
 | `topup_credits` | Purchased credits — carry over until used |
 | `minutes_estimate` | Pre-calculated minutes remaining per session type |
 
+The `minutes_estimate` keys are the literal API field names; they map to
+the avatar models as follows:
+
+| API key | Model · where |
+|---|---|
+| `standard_avatar_cloud` / `standard_avatar_self_hosted` | **Essence** · bitHuman cloud / your hardware |
+| `advanced_avatar_cloud` / `advanced_avatar_self_hosted` | **Expression** · bitHuman cloud / your hardware |
+| `voice_chat` / `video_chat` | Managed cloud conversational agent (no avatar / with camera) |
+
 ---
 
 ## Credit Rates
@@ -47,12 +56,12 @@ Different features consume credits at different rates per minute:
 
 | Feature | Credits/min | Description |
 |---------|------------|-------------|
-| **Voice Chat** | 10 | Cloud agent with STT + LLM + TTS |
-| **Video Chat** | 30 | Cloud agent with user camera enabled |
-| **Standard Avatar (Cloud)** | 2 | Cloud-hosted avatar rendering |
-| **Standard Avatar (Self-Hosted)** | 1 | Your infrastructure, avatar rendering |
-| **Advanced Avatar (Cloud)** | 4 | Cloud-hosted high-quality avatar rendering |
-| **Advanced Avatar (Self-Hosted)** | 2 | Your infrastructure, high-quality avatar rendering |
+| **Voice Chat** | 10 | Managed cloud conversational agent — STT + LLM + TTS, no avatar |
+| **Video Chat** | 30 | Managed cloud conversational agent with user camera enabled |
+| **Essence — Cloud** | 2 | Essence avatar rendering on bitHuman's servers |
+| **Essence — Self-hosted** | 1 | Essence avatar rendering on your hardware |
+| **Expression — Cloud** | 4 | Expression avatar rendering on bitHuman's servers |
+| **Expression — Self-hosted** | 2 | Expression avatar rendering on your hardware |
 
 One-time costs:
 
