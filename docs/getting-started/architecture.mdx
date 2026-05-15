@@ -46,7 +46,7 @@ bitHuman ships in three layers — most app developers only touch Layer 3 (a bin
 └─────────────────────────────────────────────────────────────┘
 ```
 
-The reference apps are now consolidating onto **one Flutter codebase** that covers macOS + iOS + Android. The native Swift Mac / iPad / iPhone reference apps are being archived; the SDK bindings themselves stay first-class on every platform.
+The reference apps now ship in three intentionally non-overlapping flavors: a Flutter Essence app that covers macOS + iOS + Android (the easy cross-platform path), a native macOS Expression app under [`expression/mac/`](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/mac) (the on-device LLM/TTS path), and the Rust + Swift `bithuman` CLI for terminal-launched flows. iPad Expression lives at [`expression/ipad/`](https://github.com/bithuman-product/bithuman-apps/tree/main/expression/ipad); iPhone Expression is parked in `archive/` while the compute story firms up.
 
 ### Layer 1 — `libessence` engine
 
@@ -100,7 +100,15 @@ Built on top of the bindings:
 
 - **`bithuman` CLI** — single Rust binary that links `libessence` statically and ships a browser-served local avatar, optional on-device ASR / LLM / TTS, and a `doctor` command. Same UX on macOS / Linux / Windows. Distributed via Homebrew (`brew install bithuman`) and a curl-pipe install script. Now defaults to OpenAI Realtime model `gpt-realtime-mini` (cost-efficient tier) on the GA Realtime endpoint. Full reference: [`docs/CLI.md`](https://github.com/bithuman-product/bithuman-sdk/blob/main/docs/CLI.md).
 - **`bithuman_avatar` Flutter plugin** — one Dart codebase covering macOS + iOS + Android, wrapping the Swift and Kotlin bindings.
-- **Reference apps** — converging onto the Flutter codebase above. The legacy native Mac / iPad / iPhone Swift apps are being archived.
+- **Reference apps** — three flavors with non-overlapping scopes:
+
+  | Demo | Platforms | Runtime | LLM / TTS | Distribution |
+  |---|---|---|---|---|
+  | `flutter/bithuman_avatar/example/` | macOS · iOS · Android | Essence | Cloud (OpenAI Realtime) | `flutter run` |
+  | `expression/mac/` | macOS only | Expression | On-device (MLX) or Cloud | Sparkle DMG / `swift run` |
+  | `bithuman-cli avatar` (Rust + Swift CLI) | macOS terminal | both Expression + Essence | both On-device + Cloud | `brew install bithuman` |
+
+  See [bithuman-apps](https://github.com/bithuman-product/bithuman-apps) for the full reference-app catalogue.
 
 ## What's open, what's proprietary
 
