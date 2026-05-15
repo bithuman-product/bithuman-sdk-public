@@ -1,99 +1,116 @@
 # bitHuman CLI Tools
 
-Command-line tools for rendering video, streaming avatars, and running the bitHuman desktop app.
+Command-line tools for rendering video, streaming an avatar, and
+running voice / text / browser-avatar conversations — no code.
 
-## Setup
+## Install
 
-All CLI tools require a bitHuman API secret. Get yours at [www.bithuman.ai/#developer](https://www.bithuman.ai/#developer).
+The `bithuman` command is a single self-contained binary, installed via
+Homebrew or the universal one-liner. It is **not** the `pip install
+bithuman` package (that ships the Python *SDK* plus an `essence-render`
+console script — see the [Python examples](../python/)).
+
+```bash
+# macOS — Homebrew (recommended; pulls native deps).
+brew install bithuman-product/bithuman/bithuman
+
+# macOS / Linux — universal one-liner.
+curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
+```
+
+All commands need a bitHuman API secret. Get yours at
+[www.bithuman.ai/#developer](https://www.bithuman.ai/#developer).
 
 ```bash
 export BITHUMAN_API_SECRET="your_secret_here"
+bithuman doctor      # verify host setup + API key presence
 ```
 
 ---
 
-## 1. `bithuman` CLI (Python SDK)
-
-Installed via pip. Works on Linux, macOS, and Windows.
-
-```bash
-pip install bithuman
-```
-
-### Commands
+## Commands
 
 | Command | Description |
 |---------|-------------|
-| `bithuman generate <model.imx> --audio speech.wav --output demo.mp4` | Render a lip-synced MP4 from an .imx model and audio file |
-| `bithuman stream <model.imx> --port 8765` | Start a WebSocket streaming server for real-time lip sync |
-| `bithuman speak <audio.wav>` | Send audio to a running `stream` server |
-| `bithuman demo [--model <imx>] [--audio <file>]` | Launch an interactive demo (auto-downloads model if omitted) |
-| `bithuman convert <input> --output <output.imx>` | Convert legacy TAR .imx to v2 format (smaller, faster) |
-| `bithuman pack ...` | Pack Expression weights into an .imx bundle (model authors only) |
-| `bithuman validate` | Validate your API credentials |
-| `bithuman info <model.imx>` | Show metadata for an .imx model file |
-| `bithuman --help` | Full list of all commands and flags |
+| `bithuman doctor` | Host capability check (arch, OS, RAM, disk, API key) |
+| `bithuman generate <model.imx> --audio speech.wav --output demo.mp4` | Offline batch render an MP4 from a model + WAV |
+| `bithuman avatar [--model <imx>]` | Browser-served avatar at `http://127.0.0.1:8080` |
+| `bithuman voice` | Interactive voice chat (auto-picks cloud or `--local`) |
+| `bithuman text` | Non-interactive text chat (stdin → stdout) |
+| `bithuman stream [--model <imx>] [--port 3001]` | HTTP streaming avatar server |
+| `bithuman speak <audio.wav> [--port 3001]` | POST a WAV to a running `stream` server |
+| `bithuman action <name> [--port 3001]` | POST an action trigger (e.g. `wave`) to a `stream` server |
+| `bithuman info <model.imx>` | Show metadata for an `.imx` model file |
+| `bithuman asr <audio.wav>` | Transcribe a 16 kHz mono WAV (on-device Whisper) |
+| `bithuman tts "<text>"` | Synthesize text to a 24 kHz mono WAV (offline) |
+| `bithuman models list` / `pull` | Browse and download showcase avatars |
+| `bithuman cleanup` | Wipe regenerable model caches under `~/.cache` |
+| `bithuman --help` | Full list of commands and flags |
 
-> **Note:** `bithuman demo` with no arguments auto-downloads a demo model (~3.7 GB, cached) on first run. Great for a zero-setup hello world: `pip install bithuman && bithuman demo`.
+Run `bithuman <command> --help` for the full flag list of any command.
 
-### Examples
-
-**Render a video** -- see [render-video.sh](render-video.sh):
+### Render a video — see [render-video.sh](render-video.sh)
 
 ```bash
 bithuman generate model.imx --audio speech.wav --output demo.mp4
 ```
 
-**Start a streaming server** -- see [live-stream.sh](live-stream.sh):
+### Start a streaming server — see [live-stream.sh](live-stream.sh)
 
 ```bash
-bithuman stream model.imx --port 8765
+bithuman stream --model model.imx --port 3001
 
-# Clients connect via WebSocket at ws://127.0.0.1:8765
-# Send audio frames, receive lip-synced video frames at 25 FPS
+# HTTP endpoints (no WebSocket):
+#   POST /audio       raw f32 PCM      GET  /video.mjpg   MJPEG video
+#   POST /action      action trigger   GET  /status       server status
+# Drive it from another shell:  bithuman speak clip.wav --port 3001
 ```
 
-**Quick validation:**
+### Validate your API secret
+
+There is no `bithuman validate` subcommand — use the REST endpoint:
 
 ```bash
-bithuman validate
+curl -s -X POST https://api.bithuman.ai/v1/validate \
+  -H "api-secret: $BITHUMAN_API_SECRET" | python3 -m json.tool
 ```
 
 ---
 
-## 2. `bithuman-cli` (macOS Desktop App)
+## Voice / text / browser-avatar conversations
 
-A native Mac application for interactive voice, text, and video conversations with bitHuman avatars. Runs locally on Apple Silicon.
-
-### Install via Homebrew
-
-```bash
-brew install bithuman-product/bithuman/bithuman
-```
-
-### Requirements
-
-- macOS with Apple Silicon M3 or later (M3, M3 Pro/Max, M4, M4 Pro/Max)
-- Homebrew ([brew.sh](https://brew.sh))
-
-### Modes
+The same `bithuman` binary runs full conversations locally — no agent
+ID, no separate app. Models are `.imx` files, not agent IDs.
 
 | Mode | Command | What it does |
 |------|---------|-------------|
-| Voice | `bithuman-cli --agent-id AXXXXXXXXX --mode voice` | Speak into your microphone, avatar responds in real time |
-| Text | `bithuman-cli --agent-id AXXXXXXXXX --mode text` | Type messages, avatar speaks them aloud |
-| Video | `bithuman-cli --agent-id AXXXXXXXXX --mode video` | Webcam + microphone for face-to-face conversation |
+| Voice | `bithuman voice` | Speak into your mic; spoken reply, with transcript |
+| Text | `bithuman text` | Type messages; the model replies as text |
+| Browser avatar | `bithuman avatar` | Lip-synced avatar in your browser at `127.0.0.1:8080` |
+| Server-side voice + avatar | `bithuman avatar --openai` | Mic + speakers locally, avatar in the browser |
 
-See [mac-app.sh](mac-app.sh) for a wrapper script that handles installation and mode selection.
+`voice` and `text` auto-pick the **cloud** backend when
+`OPENAI_API_KEY` is set (instant, no downloads) or fully **on-device**
+with `--local` (≈5 GB first-run download, then offline). See
+[mac-app.sh](mac-app.sh) for a thin wrapper.
+
+```bash
+export OPENAI_API_KEY=sk-...   # optional — enables the instant cloud path
+bithuman voice                 # or:  bithuman voice --local
+```
+
+Requirements for the on-device modes: macOS Apple Silicon M3+ or
+Linux x86_64 / aarch64.
 
 ---
 
-## 3. REST API via curl
+## REST API via curl
 
-For quick API calls from the terminal without Python, see the [rest-api.sh](rest-api.sh) quickstart or the full curl examples in [../rest-api/curl/](../rest-api/curl/).
+For API calls from the terminal without Python, see
+[rest-api.sh](rest-api.sh) or the full curl examples in
+[../rest-api/curl/](../rest-api/curl/).
 
 ```bash
-# Validate credentials
 curl -s -X POST https://api.bithuman.ai/v1/validate \
   -H "Content-Type: application/json" \
   -H "api-secret: $BITHUMAN_API_SECRET" | python3 -m json.tool
@@ -105,9 +122,9 @@ curl -s -X POST https://api.bithuman.ai/v1/validate \
 
 | Script | Description |
 |--------|-------------|
-| [render-video.sh](render-video.sh) | Render a lip-synced MP4 from .imx + audio using `bithuman generate` |
-| [live-stream.sh](live-stream.sh) | Start a local WebSocket streaming server using `bithuman stream` |
-| [mac-app.sh](mac-app.sh) | Install and run the bithuman-cli desktop app (macOS M3+) |
+| [render-video.sh](render-video.sh) | Render a lip-synced MP4 from `.imx` + audio using `bithuman generate` |
+| [live-stream.sh](live-stream.sh) | Start a local HTTP/MJPEG streaming server using `bithuman stream` |
+| [mac-app.sh](mac-app.sh) | Wrapper for `bithuman voice` / `text` / `avatar` conversations |
 | [rest-api.sh](rest-api.sh) | Quickstart: validate API key + make an agent speak via curl |
 
 ## Environment Variables
@@ -115,10 +132,10 @@ curl -s -X POST https://api.bithuman.ai/v1/validate \
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `BITHUMAN_API_SECRET` | Yes | Your API secret from [www.bithuman.ai/#developer](https://www.bithuman.ai/#developer) |
-| `BITHUMAN_AGENT_ID` | No | Default agent ID for scripts that need one |
+| `OPENAI_API_KEY` | No | Enables the instant cloud backend for `voice` / `text` |
 
 ## Documentation
 
-- [Python SDK on PyPI](https://pypi.org/project/bithuman/)
+- [CLI reference](https://docs.bithuman.ai/getting-started/cli)
 - [REST API reference](https://docs.bithuman.ai/api-reference/overview)
 - [Full documentation](https://docs.bithuman.ai)

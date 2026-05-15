@@ -7,14 +7,14 @@ icon: "terminal"
 `bithuman` is a single binary that runs the avatar locally and gives you voice / text / browser-rendered avatar modes. Same commands on macOS, Linux, and Windows. The fastest way to see bitHuman in action — no code, no language toolchain.
 
 <Note>
-**Both Essence and Expression `.imx` models work in this one binary.** `bithuman avatar` auto-detects which model is in the file and uses the right backend automatically. For Expression with a runtime portrait swap, pass `--image <portrait.jpg>`.
+**Both Essence and Expression `.imx` models work in this one binary.** `bithuman avatar --model <file.imx>` auto-detects which model is in the file and uses the right backend automatically.
 </Note>
 
 ## When to use the CLI vs an SDK
 
 | You're… | Use |
 |---|---|
-| Trying bitHuman in 5 minutes without writing code | **CLI** |
+| Trying bitHuman in ~2 minutes without writing code | **CLI** |
 | Scripting a one-off render or batch job | **CLI** (`bithuman generate`) |
 | Wiring CI / smoke tests / shell pipelines | **CLI** |
 | Building a Python service or backend | **Python SDK** (`pip install bithuman`) |
@@ -59,12 +59,15 @@ The `avatar` subcommand exposes two transport modes:
 
 | Mode | Command | What it does |
 |---|---|---|
-| **Browser-served** (default) | `bithuman avatar [--identity <agent.imx>]` | Runs the avatar at `http://127.0.0.1:8080`. Browser captures the mic, the lip-synced video streams back. |
-| **Server-side voice loop** | `bithuman avatar --openai [--identity <agent.imx>]` | Captures the mic and plays back through your local speakers while the browser displays the avatar. Right when you want the OpenAI Realtime voice loop on a workstation without running audio in a browser tab. |
+| **Browser-served** (default) | `bithuman avatar [--model <agent.imx>]` | Runs the avatar at `http://127.0.0.1:8080`. Browser captures the mic, the lip-synced video streams back. |
+| **Server-side voice loop** | `bithuman avatar --openai [--model <agent.imx>]` | Captures the mic and plays back through your local speakers while the browser displays the avatar. Right when you want the OpenAI Realtime voice loop on a workstation without running audio in a browser tab. |
 
-For Expression with a runtime portrait swap, pass `--image <portrait.jpg>` alongside `--identity <expression.imx>`. For Essence, the avatar identity is baked into the `.imx` — no `--image` needed.
+Point `--model` at any `.imx` — Essence or Expression. The backend is
+auto-detected from the file; there is no separate flag to set the model
+type.
 
-If you omit `--identity`, the CLI uses the bundled sample avatar (Essence) and downloads it to `~/.cache/bithuman/models/` on first run.
+If you omit `--model`, the CLI uses the bundled sample avatar (Essence)
+and downloads it to `~/.cache/bithuman/models/` on first run.
 
 ## Subcommands
 
@@ -101,14 +104,14 @@ All subcommands accept `--help` for full flag listings.
 ## Where to go next
 
 <CardGroup cols={2}>
-  <Card title="CLI Hello World" icon="rocket" href="/examples/cli-hello">
-    First 5 minutes — install, doctor, avatar.
+  <Card title="CLI — Hello, avatar" icon="rocket" href="/examples/cli-hello">
+    First ~2 minutes — install, doctor, avatar.
   </Card>
   <Card title="Architecture" icon="diagram-project" href="/getting-started/architecture">
     How the CLI fits with the SDKs.
   </Card>
-  <Card title="Halo macOS" icon="apple" href="/examples/overview">
-    Signed-DMG desktop variant of the CLI (no Terminal).
+  <Card title="Examples" icon="book-open" href="/examples/overview">
+    Every runnable project, grouped by what you're building.
   </Card>
   <Card title="Pricing" icon="credit-card" href="/getting-started/pricing">
     Credits, plans, what's metered.

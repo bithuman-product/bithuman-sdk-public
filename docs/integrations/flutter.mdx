@@ -1,435 +1,160 @@
 ---
 title: "Flutter plugin"
-description: "Ship a bitHuman avatar from one Dart codebase to macOS, iOS, and Android."
+sidebarTitle: "Flutter plugin"
+description: "Ship a real-time bitHuman avatar from one Dart codebase to macOS, iOS, and Android."
 icon: "mobile"
 ---
 
-Two ways to ship a bitHuman avatar with Flutter:
+The `bithuman` plugin wraps the Swift and Kotlin SDKs under one Dart
+API. Audio in, lip-synced video out at 25 FPS — fully on-device, with
+per-platform echo cancellation auto-selected for you. One codebase
+across **macOS, iOS, and Android**.
 
-1. **[The `bithuman` plugin](#bithuman-plugin-recommended)** — `flutter pub add bithuman`. One Dart codebase, on-device Essence avatar, three platforms (macOS, iOS, Android).
-2. **[LiveKit + Python agent stack](#flutter--livekit--python-stack)** — Flutter UI subscribes to a LiveKit room; a Python agent runs the avatar (Essence or Expression) on a server you control. Use this when the avatar is cloud-hosted or shared between participants.
+<Note>
+**Pub.dev publish is pending.** While the package is finalized, request
+the git-dependency URL on [Discord](https://discord.gg/ES953n7bPA), or
+watch the
+[bithuman-apps releases](https://github.com/bithuman-product/bithuman-apps/releases)
+for the publish announcement.
+</Note>
 
----
-
-## bithuman plugin (recommended)
-
-The plugin wraps the Swift and Kotlin SDKs under one Dart API. Built-in echo cancellation per platform — the right audio transport is auto-selected for you.
+## Install
 
 ```yaml
 # pubspec.yaml
 dependencies:
-  bithuman: ^1.0.0
+  bithuman: ^1.16.0
 ```
 
-<Note>
-Pub.dev publish is pending. While the package is finalized, request early access on [Discord](https://discord.gg/ES953n7bPA) or watch the [bithuman-sdk-public releases](https://github.com/bithuman-product/bithuman-sdk-public/releases) for the publish announcement.
-</Note>
+```bash
+flutter pub get
+```
+
+Auth: provide your `BITHUMAN_API_SECRET` to the app (env var in
+development, your own secret store in production). Get one at
+[Developer → API Keys](https://www.bithuman.ai/#developer).
+
+## Minimal usage
+
+Load an `.imx` model and host the avatar canvas. The plugin owns the
+runtime, audio capture, lip-sync, and echo cancellation.
 
 ```dart
+import 'package:flutter/material.dart';
 import 'package:bithuman/bithuman.dart';
 
-void main() => runApp(const MaterialApp(home: AvatarScreen()));
-```
-
-The plugin ships with a cross-platform example app demonstrating settings, prompt hot-reload, and the full Essence pipeline. For Expression on Apple Silicon (Mac and iPad), pair the plugin with the native Swift [Expression on Swift](/sdks/swift) guide — the Flutter plugin itself covers the Essence cross-platform path today.
-
----
-
-## Flutter + LiveKit + Python stack
-
-Use this architecture when the avatar runs on a server you control and the Flutter app is just a subscriber. Both Essence and Expression are valid choices for the Python agent — see the [LiveKit Cloud Plugin](/guides/deployment) guide.
-
-## Architecture
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Flutter App   │    │   LiveKit Room  │    │  Python Agent   │
-│   Video View    │◄──►│  Real-time      │◄──►│  bitHuman       │
-│   Audio Capture │    │  Streaming      │    │  Avatar + LLM   │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
-- **Flutter App**: Cross-platform UI, camera/microphone capture, video rendering
-- **LiveKit Room**: Real-time media routing, participant management
-- **Python Agent**: AI conversation processing, avatar rendering
-
-## Prerequisites
-
-- Flutter SDK 3.0+
-- Python 3.11+
-- bitHuman API Secret
-- LiveKit Cloud account
-- OpenAI API Key
-
----
-
-## Quick Start
-
-<Steps>
-  <Step title="Project structure">
-    ```bash
-    mkdir flutter-bithuman-avatar
-    cd flutter-bithuman-avatar
-    mkdir -p backend frontend/lib
-    ```
-  </Step>
-  <Step title="Backend setup">
-    ```bash
-    cd backend
-    python3 -m venv .venv
-    source .venv/bin/activate
-    pip install "livekit-agents[openai,bithuman,silero]~=1.4" flask flask-cors python-dotenv
-    ```
-
-    Create `.env`:
-    ```bash
-    BITHUMAN_API_SECRET=your_api_secret
-    BITHUMAN_AGENT_ID=A33NZN6384
-    OPENAI_API_KEY=sk-proj_your_key_here
-    LIVEKIT_API_KEY=APIyour_key
-    LIVEKIT_API_SECRET=your_secret
-    LIVEKIT_URL=wss://your-project.livekit.cloud
-    ```
-  </Step>
-  <Step title="Frontend setup">
-    ```bash
-    cd ../frontend
-    flutter create . --org com.bithuman.avatar
-    ```
-
-    Update `pubspec.yaml` dependencies:
-    ```yaml
-    dependencies:
-      flutter:
-        sdk: flutter
-      livekit_components: 1.2.2+hotfix.1
-      livekit_client: ^2.5.3
-      provider: ^6.1.1
-      http: ^1.1.0
-    ```
-
-    ```bash
-    flutter pub get
-    ```
-  </Step>
-  <Step title="Run the system">
-    ```bash
-    # Terminal 1: Start Backend
-    cd backend && source .venv/bin/activate
-    python token_server.py &
-    python agent.py dev
-
-    # Terminal 2: Start Frontend
-    cd frontend
-    flutter run -d chrome --web-port 8080
-    ```
-  </Step>
-</Steps>
-
----
-
-## Token Server
-
-<Warning>
-LiveKit requires a JWT to join rooms. Never ship LiveKit API keys in client apps. Use a server endpoint to mint short-lived tokens.
-</Warning>
-
-```python token_server.py
-from flask import Flask, request, jsonify
-from livekit import api
-from datetime import timedelta
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-app = Flask(__name__)
-
-LIVEKIT_API_KEY = os.getenv("LIVEKIT_API_KEY")
-LIVEKIT_API_SECRET = os.getenv("LIVEKIT_API_SECRET")
-LIVEKIT_URL = os.getenv("LIVEKIT_URL")
-
-@app.route('/token', methods=['POST'])
-def create_token():
-    data = request.get_json() or {}
-    room = data.get('room', 'flutter-avatar-room')
-    identity = data.get('participant', 'Flutter User')
-
-    at = api.AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, identity=identity)
-    at.add_grant(api.VideoGrant(room_join=True, room=room))
-    at.ttl = timedelta(hours=1)
-
-    return jsonify({'token': at.to_jwt(), 'server_url': LIVEKIT_URL})
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000)
-```
-
----
-
-## Python Agent
-
-```python agent.py
-import os
-from dotenv import load_dotenv
-from livekit.agents import (
-    Agent,
-    AgentSession,
-    JobContext,
-    RoomOutputOptions,
-    WorkerOptions,
-    WorkerType,
-    cli,
-)
-from livekit.plugins import bithuman, openai, silero
-
-load_dotenv()
-
-async def entrypoint(ctx: JobContext):
-    await ctx.connect()
-    await ctx.wait_for_participant()
-
-    avatar = bithuman.AvatarSession(
-        avatar_id=os.getenv("BITHUMAN_AGENT_ID"),
-        api_secret=os.getenv("BITHUMAN_API_SECRET"),
-    )
-
-    session = AgentSession(
-        llm=openai.realtime.RealtimeModel(
-            voice="coral",
-            model="gpt-4o-mini-realtime-preview",
-        ),
-        vad=silero.VAD.load(),
-    )
-
-    await avatar.start(session, room=ctx.room)
-
-    await session.start(
-        agent=Agent(
-            instructions="You are a helpful assistant. Respond concisely."
-        ),
-        room=ctx.room,
-        room_output_options=RoomOutputOptions(audio_enabled=False),
-    )
-
-if __name__ == "__main__":
-    cli.run_app(WorkerOptions(
-        entrypoint_fnc=entrypoint,
-        worker_type=WorkerType.ROOM,
-        job_memory_warn_mb=2000,
-        num_idle_processes=1,
-        initialize_process_timeout=180,
-    ))
-```
-
----
-
-## Flutter App
-
-### LiveKit Configuration
-
-```dart config/livekit_config.dart
-import 'dart:convert';
-import 'dart:math';
-import 'package:http/http.dart' as http;
-
-class LiveKitConfig {
-  static const String serverUrl = 'wss://your-project.livekit.cloud';
-  static const String? tokenEndpoint = 'http://localhost:3000/token';
-
-  static String get roomName {
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    final random = Random();
-    return 'room-${String.fromCharCodes(
-      Iterable.generate(12, (_) => chars.codeUnitAt(random.nextInt(chars.length)))
-    )}';
-  }
-
-  static String get participantName {
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    final random = Random();
-    return 'user-${String.fromCharCodes(
-      Iterable.generate(8, (_) => chars.codeUnitAt(random.nextInt(chars.length)))
-    )}';
-  }
-
-  static Future<String> getToken() async {
-    final response = await http.post(
-      Uri.parse(tokenEndpoint!),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'room': roomName,
-        'participant': participantName,
-      }),
-    );
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body)['token'] as String;
-    }
-    throw Exception('Token server returned ${response.statusCode}');
-  }
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MaterialApp(home: AvatarScreen()));
 }
-```
 
-### Main App
-
-```dart main.dart
-import 'package:flutter/material.dart';
-import 'package:livekit_client/livekit_client.dart' as lk;
-import 'package:livekit_components/livekit_components.dart';
-import 'config/livekit_config.dart';
-
-void main() => runApp(const BitHumanFlutterApp());
-
-class BitHumanFlutterApp extends StatelessWidget {
-  const BitHumanFlutterApp({super.key});
-
+class AvatarScreen extends StatefulWidget {
+  const AvatarScreen({super.key});
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'bitHuman Flutter Integration',
-      theme: LiveKitTheme().buildThemeData(context),
-      themeMode: ThemeMode.dark,
-      home: const ConnectionScreen(),
-    );
-  }
+  State<AvatarScreen> createState() => _AvatarScreenState();
 }
 
-class ConnectionScreen extends StatefulWidget {
-  const ConnectionScreen({super.key});
-
-  @override
-  State<ConnectionScreen> createState() => _ConnectionScreenState();
-}
-
-class _ConnectionScreenState extends State<ConnectionScreen> {
-  bool _isConnecting = false;
+class _AvatarScreenState extends State<AvatarScreen> {
+  BithumanAvatar? _avatar;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _connect());
-  }
-
-  Future<void> _connect() async {
-    setState(() => _isConnecting = true);
-    final token = await LiveKitConfig.getToken();
-    if (!mounted) return;
-
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => VideoRoomScreen(
-          url: LiveKitConfig.serverUrl,
-          token: token,
-          roomName: LiveKitConfig.roomName,
-        ),
-      ),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // imxPath: an .imx downloaded from Explore, bundled or on disk.
+      _avatar = await BithumanAvatar.load(imxPath);
+      setState(() {});
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1a1a1a),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 20),
-            Text(
-              _isConnecting ? 'Connecting...' : 'Failed',
-              style: const TextStyle(color: Colors.white70, fontSize: 18),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class VideoRoomScreen extends StatelessWidget {
-  final String url, token, roomName;
-  const VideoRoomScreen({
-    super.key, required this.url, required this.token, required this.roomName,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return LivekitRoom(
-      roomContext: RoomContext(
-        url: url,
-        token: token,
-        connect: true,
-        roomOptions: lk.RoomOptions(adaptiveStream: true, dynacast: true),
-      ),
-      builder: (context, roomCtx) {
-        return Scaffold(
-          appBar: AppBar(title: Text('Room: $roomName')),
-          backgroundColor: const Color(0xFF1a1a1a),
-          body: const Center(child: Text('AI Avatar Video Here')),
-        );
-      },
+      body: _avatar == null
+          ? const Center(child: CircularProgressIndicator())
+          : AvatarCanvas(avatar: _avatar!),
     );
   }
 }
 ```
 
----
+The plugin ships a complete cross-platform example app — settings,
+prompt hot-reload, and the full Essence pipeline on all three
+platforms. Use it as your reference integration.
 
-## Platform-Specific Setup
+For OpenAI Realtime voice chat (mic in → spoken reply → lip-synced
+avatar), import `package:bithuman/bithuman_realtime.dart`.
 
-### iOS (`ios/Runner/Info.plist`)
+<Note>
+The plugin covers the **Essence** cross-platform path today. For
+**Expression** on Apple Silicon (Mac and iPad), pair it with the
+native [Swift SDK](/sdks/swift).
+</Note>
 
-```xml
-<key>NSCameraUsageDescription</key>
-<string>Camera access for video calls with AI avatar</string>
-<key>NSMicrophoneUsageDescription</key>
-<string>Microphone access for voice interaction with AI avatar</string>
-```
+## Requirements
 
-### Android (`AndroidManifest.xml`)
+| Platform | Floor |
+|---|---|
+| **macOS** | Apple Silicon M3+, macOS 26+ |
+| **iOS / iPadOS** | iPhone 17 Pro+ or iPad Pro M4+, iOS 26+ |
+| **Android** | `arm64-v8a`, Android 10+ |
+| **Flutter** | 3.3+, Dart SDK 3.11+ |
 
-```xml
-<uses-permission android:name="android.permission.CAMERA" />
-<uses-permission android:name="android.permission.RECORD_AUDIO" />
-<uses-permission android:name="android.permission.INTERNET" />
-```
+Add the platform permission strings your app needs — microphone (all
+platforms), plus `com.apple.security.device.audio-input` for sandboxed
+macOS apps. The same iOS increased-memory entitlement the
+[Swift SDK](/sdks/swift) requires applies here.
 
----
+## Alternative: cloud-hosted via LiveKit
 
-## Deployment
+When the avatar should run on a server (shared between participants,
+or Expression on a GPU) rather than on-device, the Flutter app becomes
+a thin LiveKit subscriber and a Python agent runs the avatar. That's a
+deployment shape, not this plugin — start from the runnable stacks:
 
-<CodeGroup>
+<CardGroup cols={2}>
+  <Card title="cloud-essence" icon="cloud" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-essence">
+    Essence on bitHuman cloud + LiveKit + web UI.
+  </Card>
+  <Card title="nextjs-ui" icon="react" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/integrations/nextjs-ui">
+    A polished LiveKit video-chat front end to model yours on.
+  </Card>
+</CardGroup>
 
-```bash iOS
-flutter build ios --release
-```
-
-```bash Android
-flutter build apk --release
-```
-
-```bash Web
-flutter build web --release
-```
-
-</CodeGroup>
-
----
+The Flutter client side is the standard
+[`livekit_client`](https://pub.dev/packages/livekit_client) flow —
+mint a room token from a server you control, subscribe to the agent's
+video track. See [Deployment](/guides/deployment) for the full shape.
 
 ## Troubleshooting
 
-| Problem | Solution |
-|---------|----------|
-| Avatar session failed | Check bitHuman API secret and avatar ID |
-| Connection failed | Verify LiveKit server URL, ensure backend is running |
-| No camera found | Check device permissions |
-| Avatar not showing | Check backend logs, verify API key |
-| Shader compilation errors | Run `flutter clean && flutter pub get` |
+<AccordionGroup>
+  <Accordion title="Avatar never appears">
+    Confirm the `.imx` path resolves on-device and
+    `BITHUMAN_API_SECRET` is reachable from the running app, then check
+    the device meets the hardware floor above.
+  </Accordion>
+  <Accordion title="App killed mid-conversation on iOS">
+    Missing the increased-memory-limit entitlement — see the
+    [Swift SDK](/sdks/swift) warning; it must be approved by Apple
+    before it takes effect.
+  </Accordion>
+  <Accordion title="Build fails after adding the dependency">
+    `flutter clean && flutter pub get`, then rebuild. On iOS/macOS run
+    `pod install` in the platform directory if pods are stale.
+  </Accordion>
+</AccordionGroup>
 
----
+## See also
 
-## Resources
-
-- [Flutter Documentation](https://docs.flutter.dev)
-- [LiveKit Flutter SDK](https://pub.dev/packages/livekit_client)
-- [LiveKit Agents Documentation](https://docs.livekit.io/agents)
+<CardGroup cols={3}>
+  <Card title="Swift SDK" icon="apple" href="/sdks/swift">
+    The native layer this plugin wraps on Apple
+  </Card>
+  <Card title="Kotlin SDK" icon="android" href="/sdks/kotlin">
+    The native layer this plugin wraps on Android
+  </Card>
+  <Card title="Models" icon="circle-info" href="/getting-started/models">
+    Essence vs Expression
+  </Card>
+</CardGroup>

@@ -1,17 +1,18 @@
 ---
-title: "CLI Hello World"
-description: "Get an on-device AI avatar talking in 5 minutes — Homebrew install, doctor check, browser-served avatar, no code required."
+title: "CLI — Hello, avatar"
+sidebarTitle: "CLI — Hello, avatar"
+description: "Get an on-device AI avatar talking in ~2 minutes — install, doctor check, browser-served avatar, no code required."
 icon: "terminal"
 ---
 
-This page is the fastest way to try a real-time on-device avatar end-to-end.
-No code: just install the `bithuman` CLI, check your host, and open a
+The fastest way to try a real-time on-device avatar end-to-end.
+No code: install the `bithuman` CLI, check your host, and open a
 browser-served avatar on `localhost`. Audio is captured from your mic;
 lip-synced frames stream back over MJPEG.
 
 ## Prerequisites
 
-- macOS 26 (Tahoe) or later, Apple Silicon (M3+).
+- macOS 26+ (Apple Silicon M3+) **or** Linux x86_64 / aarch64.
 - ~3 GB free disk for voice mode, ~7 GB for the full local stack.
 - A bitHuman API key (free tier works). Sign in at
   [www.bithuman.ai → Developer → API Keys](https://www.bithuman.ai/#developer).
@@ -20,8 +21,11 @@ lip-synced frames stream back over MJPEG.
 ## 1. Install
 
 ```bash
-# Homebrew (recommended) — pulls onnxruntime / hdf5 / jpeg-turbo / webp / ffmpeg.
+# macOS — Homebrew (recommended). Pulls onnxruntime / hdf5 / jpeg-turbo / webp / ffmpeg.
 brew install bithuman-product/bithuman/bithuman
+
+# macOS / Linux — universal one-liner.
+curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
 
 # Sanity-check host setup + API key presence.
 bithuman doctor
@@ -81,12 +85,12 @@ tune.
 
 <CardGroup cols={2}>
   <Card title="CLI reference" icon="book" href="/getting-started/cli">
-    All 13 subcommands, cache layout, exit codes.
+    Every subcommand, cache layout, exit codes.
   </Card>
-  <Card title="Halo macOS" icon="apple" href="/examples/overview">
-    Free signed DMG — floating avatar desktop app.
+  <Card title="Python — Hello, avatar" icon="python" href="/examples/python-hello">
+    The same engine, in ~20 lines of code.
   </Card>
-  <Card title="Swift quickstart" icon="rocket" href="/sdks/swift">
+  <Card title="Swift SDK" icon="rocket" href="/sdks/swift">
     Embed the same engine in a Mac / iPad / iPhone app.
   </Card>
   <Card title="Architecture" icon="diagram-project" href="/getting-started/architecture">
