@@ -73,9 +73,11 @@ Requires Apple Silicon M3 or newer. See [swift/README.md](swift/README.md) for d
 
 ```bash
 brew tap bithuman-product/bithuman
-brew install bithuman-cli
-bithuman-cli video    # starts a voice + avatar window
+brew install bithuman
+bithuman video    # starts a voice + avatar window
 ```
+
+100% on-device — runs locally on Apple Silicon, no API key needed for the audio-only mode.
 
 ## Quick start (Python)
 
@@ -117,17 +119,15 @@ Don't have an `.imx` file? Download one from [bithuman.ai → Explore](https://w
 ## What's in this repo
 
 ```
-├── Package.swift              Swift package manifest — the binary distribution of bitHumanKit
-│                              (binaryTarget consuming bitHumanKit.xcframework.zip from
-│                              this repo's GitHub Releases). Required at root by SwiftPM.
+├── Package.swift              Swift package manifest — distributes the bitHumanKit
+│                              framework as a binaryTarget consuming the xcframework
+│                              attached to this repo's GitHub Releases.
 │
-├── python/                    Per-language landing page for the `bithuman` PyPI package.
-│                              README, CHANGELOG, LICENSE — no SDK source (the runtime
-│                              ships as wheels, source is private).
-├── swift/                     Per-language landing page for the `bitHumanKit` Swift package.
-│                              README, CHANGELOG, LICENSE — no SDK source (the framework
-│                              ships as a pre-compiled xcframework consumed via Package.swift
-│                              above).
+├── python/                    Landing page for the `bithuman` PyPI package — README,
+│                              CHANGELOG, LICENSE. The SDK itself installs via
+│                              `pip install bithuman` (pre-built wheels).
+├── swift/                     Landing page for the `bitHumanKit` Swift package — README,
+│                              CHANGELOG, LICENSE. Add via SwiftPM (URL above).
 │
 ├── Examples/                  Working code you can run
 │   ├── quickstart/                Your first demo (start here)
@@ -142,7 +142,7 @@ Don't have an `.imx` file? Download one from [bithuman.ai → Explore](https://w
 └── CONTRIBUTING.md            How to contribute to this repo
 ```
 
-> **Heads up on `python/` and `swift/`.** These directories hold the per-language landing pages and changelogs only — the SDK runtime sources are private (signing material is baked into the published artefacts). Use them as a navigation entry point ("here is the README and version history for the Python SDK") rather than expecting to find source. To install: `pip install bithuman` (Python) or add the SwiftPM URL above (Swift). To file a bug: [bithuman-sdk-public/issues](https://github.com/bithuman-product/bithuman-sdk-public/issues).
+> **About `python/` and `swift/`.** These directories are the landing pages and version history for each SDK — install with `pip install bithuman` or the SwiftPM URL above; the runtimes ship as pre-built wheels and xcframework. File bugs at [bithuman-sdk-public/issues](https://github.com/bithuman-product/bithuman-sdk-public/issues) — that's where both Swift and Python issues are triaged.
 
 ## Pricing
 
