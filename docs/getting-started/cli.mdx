@@ -77,7 +77,7 @@ All 13 subcommands accept `--help` for full flag listings.
 | `bithuman text`     | Non-interactive text chat — reads stdin, streams stdout, exits.                 |
 | `bithuman asr`      | Transcribe a 16 kHz mono WAV file with whisper.cpp (Metal-accelerated on Mac).  |
 | `bithuman tts`      | Synthesize text to a 24 kHz mono WAV via Piper, fully offline after first run.  |
-| `bithuman avatar`   | Browser-served avatar runtime on `127.0.0.1:8080`, mic in, MJPEG out.           |
+| `bithuman avatar`   | Local avatar runtime — browser-driven (default) **or** `--openai` for terminal-launched OpenAI Realtime voice loop with the avatar's mouth tracking the bot's voice. |
 | `bithuman info`     | Print `.imx` metadata — sample rate, frame size, cluster count, TOC layout.     |
 | `bithuman generate` | Offline batch render an MP4 from a model + WAV at 1280×720 (configurable).      |
 | `bithuman stream`   | HTTP avatar server driven by POSTed audio (instead of local mic).               |
