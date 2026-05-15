@@ -5,139 +5,53 @@ icon: "clock-rotate-left"
 ---
 
 <Note>
-This page tracks **product-level** changes (platform, web, agent runtime). For per-version release notes of the **`bithuman` PyPI package** specifically, see the [Python SDK CHANGELOG](https://github.com/bithuman-product/bithuman-sdk-public/blob/main/python/CHANGELOG.md). For the **Swift SDK** (`bitHumanKit`), see the [bithuman-sdk-public Releases page](https://github.com/bithuman-product/bithuman-sdk-public/releases).
+Product-level changes only. Per-version notes: [Python SDK CHANGELOG](https://github.com/bithuman-product/bithuman-sdk-public/blob/main/python/CHANGELOG.md) · [Swift SDK Releases](https://github.com/bithuman-product/bithuman-sdk-public/releases).
 </Note>
 
 ## May 2026
 
-### v1.17.x — server-side avatar Realtime + Flutter rename (2026-05-14)
+**v1.17.x** (2026-05-14)
+- `bithuman avatar --openai` — workstation Realtime, browser-rendered avatar.
+- `voice` / `text` auto-pick cloud vs `--local`; explicit flags override.
+- Interactive TUI for `voice` (mic/bot meters + transcript); `BITHUMAN_NO_TUI=1` opts out.
+- Flutter plugin renamed `bithuman_avatar` → `bithuman` (one Dart codebase, mac/iOS/Android).
+- Canonical OpenAI Realtime path is now the Rust CLI's `--openai` mode.
 
-- **`bithuman avatar --openai`** — new CLI mode that runs OpenAI Realtime on your workstation while the browser displays the avatar. Mic captures and speakers play locally; the avatar renders in any browser. Default Realtime model is `gpt-realtime-mini`; override with `--model gpt-realtime` for higher quality.
-- **Auto-pick backend for `voice` / `text`.** Both subcommands now infer the backend at startup: cloud (OpenAI) when `OPENAI_API_KEY` is set, on-device (`--local`) otherwise. Explicit `--openai` / `--local` flags still win.
-- **Interactive terminal UI for `voice`.** On a TTY, `bithuman voice` shows live mic and bot level meters plus a scrolling transcript. Set `BITHUMAN_NO_TUI=1` to fall back to plain stdout.
-- **Flutter plugin renamed `bithuman_avatar` → `bithuman`.** One Dart codebase covers macOS, iOS, and Android, with built-in echo cancellation per platform. The settings sheet hot-updates the system prompt mid-session. Pub.dev publish is pending; install via git dep until then.
-- **`BithumanRealtimeOpenAI` Swift library removed.** Its only consumer was the retired Swift `bithuman-cli`; the canonical OpenAI Realtime path is now `bithuman voice --openai` / `bithuman avatar --openai` via the Rust CLI.
-- **Reference apps:** native macOS Expression app, iPadOS Expression app (revived this release with Picture-in-Picture), and cross-platform Essence Flutter example. iPhone runs Essence only — Expression needs iPad Pro M4+ or Mac M3+.
+**v1.16.0** (2026-05-14)
+- Streaming API on Swift (`pushAudio`/`frames()`/`resetStream()`) and Kotlin (`pushAudio`/`pullFrame`/`ticksAvailable`/`resetStream()`). Flat per-tick cost on long sessions.
+- Default Realtime model: `gpt-realtime-mini`.
 
-### v1.16.0 — streaming API on Swift and Kotlin (2026-05-14)
-
-Streaming-first refactor for the Swift and Kotlin SDKs. Long sessions stay smooth — per-tick cost is now flat regardless of how much audio has accumulated.
-
-- **Swift** — `pushAudio` / `frames()` / `resetStream()` on `EssenceRuntime`.
-- **Kotlin** — `pushAudio` / `pullFrame` / `ticksAvailable` / `resetStream()` on `ai.bithuman.sdk.Runtime`. Maven `ai.bithuman:sdk:1.16.0+`.
-- **CLI** — default OpenAI Realtime model is `gpt-realtime-mini` (cost-efficient tier).
-
-### v1.12.0 — unified SDK release (2026-05-12)
-
-First unified release across all SDKs from a single source. Install matrix:
-
-- `pip install bithuman` → **1.12.0** (macOS arm64, Linux x86_64, Linux aarch64 wheels)
-- SwiftPM `bitHumanKit` from `bithuman-sdk-public`
-- Maven `ai.bithuman:sdk:1.12.0` — first publish on Maven Central, `arm64-v8a`, minSdk 29
-- `brew install bithuman-product/bithuman/bithuman`
-
-Highlights:
-
-- **Same runtime, four SDKs.** Python, Swift, Kotlin, and the Rust CLI all produce identical output.
-- **Maven Central, first publish.** `ai.bithuman:sdk:1.12.0` AAR with bundled native dependencies.
-- **Linux + Windows wheels.** Native wheels for all supported Python versions, no WSL needed.
-
----
+**v1.12.0** (2026-05-12)
+- First unified release: Python, Swift, Kotlin, CLI from one source, identical output.
+- Maven Central first publish (`ai.bithuman:sdk`, arm64-v8a, minSdk 29).
+- Linux + Windows Python wheels (no WSL).
 
 ## April 2026
 
-### Chat Widget v5
-- New `bithuman-chat-widget-v5.js` with text, voice, and video modes in a single floating widget
-- Configurable themes (`light`/`dark`), accent colors, FAB styles (`bar`/`circle`)
-- Public API: `BitHumanChat.open()`, `close()`, `isOpen()`, `setTheme()`, `destroy()`
-- Suggested questions and custom welcome message support
-
-### FAQ Knowledge Base Improvements
-- FAQ search now always executes (no early exit on keyword match)
-- Removed duplicate FAQ deduplication logic that was dropping valid results
-
-### Voice Mode Enhancements
-- Siri-style animation during voice interactions
-- Multilingual TTS support: 11 new languages with automatic voice selection
-- Thai, Chinese, Arabic, and additional language support
-
-### Streaming & Performance
-- Instant text streaming to the UI without waiting for audio sync
-
----
+- **Chat Widget v5** — text/voice/video in one floating widget; themes, FAB styles, JS API (`open/close/setTheme/destroy`).
+- **FAQ KB** — search always runs; removed dedup that dropped valid results.
+- **Voice** — Siri-style animation; multilingual TTS (+11 languages incl. Thai/Chinese/Arabic).
+- **Streaming** — instant text to UI without waiting for audio sync.
 
 ## March 2026
 
-### Platform UI Refresh
-- Redesigned navigation: sidebar with **Explore**, **Library**, **Billing**, **Developer** sections
-- **Explore** replaces the old Community page — browse agents, apps, videos, and books with category filters
-- **Library** replaces My Agents — view and manage your agents with new side-panel settings (Identity, Features, Distribute, Developer tabs)
-- **Developer** section consolidates API Keys, Webhooks, Integrations, and Docs in one place
-- New top navigation: Platform, Create, Plan, Docs, Case Studies, Contact
-- Credit balance visible in the top navigation bar
-- Agent context menu: Launch Agent, Create Video, Share, Clone, Embed, Download
-
-### Documentation Updates
-- Updated all screenshots to match the March 2026 UI
-- Updated all navigation references (Developer → API Keys, Explore page, Library)
-- Updated prerequisites snippet with new Explore page download flow
-
----
+- **Platform UI** — sidebar (Explore/Library/Billing/Developer); Explore replaces Community, Library replaces My Agents; credit balance in top nav.
+- **Docs** — screenshots + navigation refreshed for the new UI.
 
 ## February 2026
 
-### Expression Avatar v2
-- 24% faster rendering pipeline with optimized video decoder
-- Eliminates visual artifacts in concurrent sessions
-
-### Self-Hosted GPU Container
-- Published Expression Avatar Docker image for self-hosted deployment
-- Supports up to 8 concurrent sessions per GPU
-- Cold start ~50s, warm start 4-6s
-- ~5 GB auto-downloaded model weights (cached in Docker volume)
-
-### Developer Examples Overhaul
-- Fixed Docker Compose env_file handling across all 4 example stacks
-- Standardized `.env.example` files with section headers and inline help
-- Expanded READMEs with architecture diagrams, config tables, verification steps
-- Added `rest-api/python/test.py` for zero-friction API credential validation
-- Added `AGENTS.md` for AI coding agent discoverability
-- Added `llms.txt` and `llms-full.txt` for AI documentation indexing
-- Published OpenAPI specification
-
-### REST API
-- `POST /v1/agent/{code}/speak` — make avatar speak text in active sessions
-- `POST /v1/agent/{code}/add-context` — inject silent background knowledge
-- Improved error responses with consistent error codes and messages
-
-### SDK & Plugin
-- `livekit-plugins-bithuman` — Expression model support with `model="expression"`
-- `bithuman.AvatarSession` — unified interface for cloud, CPU, and GPU modes
-- Animal mode support for Essence avatars
-
----
+- **Expression Avatar v2** — 24% faster pipeline; no concurrent-session artifacts.
+- **Self-hosted GPU container** — up to 8 sessions/GPU; ~50s cold / 4–6s warm; ~5 GB weights auto-cached.
+- **Examples overhaul** — fixed Compose env_file; standardized `.env.example`; added `AGENTS.md`, `llms.txt`, OpenAPI spec.
+- **REST API** — `/v1/agent/{code}/speak`, `/v1/agent/{code}/add-context`; consistent error codes.
+- **SDK** — `livekit-plugins-bithuman` Expression support; `bithuman.AvatarSession` unified cloud/CPU/GPU; animal mode for Essence.
 
 ## January 2026
 
-### Essence Avatar
-- CPU-only avatar rendering from `.imx` model files
-- 25 FPS real-time on 4+ core machines
-- Cross-platform: Linux, macOS (M2+), Windows (WSL)
-
-### Platform API
-- Agent generation from text prompts + image/video/audio
-- Agent management (CRUD operations)
-- File upload (URL and base64)
-- Dynamics/gesture generation and triggering
-
-### Integrations
-- LiveKit Cloud Plugin
-- Website embed (iframe with JWT)
-- Webhooks (room.join, chat.push events)
-- Flutter full-stack example
-
----
+- **Essence Avatar** — CPU-only `.imx` rendering, 25 FPS, Linux/macOS/Windows.
+- **Platform API** — agent generation, CRUD, file upload, dynamics/gestures.
+- **Integrations** — LiveKit cloud plugin, iframe embed (JWT), webhooks, Flutter example.
 
 <Info>
-For feature requests and bug reports, visit our [GitHub](https://github.com/bithuman-product/bithuman-sdk-public/issues) or [Discord](https://discord.gg/ES953n7bPA).
+Feature requests + bugs: [GitHub](https://github.com/bithuman-product/bithuman-sdk-public/issues) · [Discord](https://discord.gg/ES953n7bPA).
 </Info>
