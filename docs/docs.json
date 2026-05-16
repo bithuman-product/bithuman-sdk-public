@@ -16,6 +16,10 @@
   "navbar": {
     "links": [
       {
+        "label": "Downloads",
+        "href": "https://releases.bithuman.ai"
+      },
+      {
         "label": "Pricing",
         "href": "https://docs.bithuman.ai/getting-started/pricing"
       },
