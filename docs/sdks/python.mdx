@@ -54,6 +54,50 @@ The legacy 1.x Python CLI is preserved as the `essence-render`
 console-script (same binary as before; only the entry-script name
 changed).
 
+## Fully on-device — `bithuman[local]` (2.2+)
+
+For private, no-cloud operation, install the `[local]` extra and set
+`BITHUMAN_LOCAL=1`. The conversation brain swaps from OpenAI Realtime
+to an entirely in-process stack — no API key, no outbound network.
+
+```bash
+pip install 'bithuman[local]'
+export BITHUMAN_API_KEY=...
+BITHUMAN_LOCAL=1 bithuman run ~/.cache/bithuman/models/sample-avatar.imx
+# → open the printed http://127.0.0.1:8088/<code> URL in a browser
+```
+
+| Slot | Backend (mobile-portable C++ core) | Default model | Disk | RAM |
+| ---- | ---------------------------------- | ------------- | ---- | --- |
+| STT  | `pywhispercpp` → whisper.cpp        | `tiny.en`     | 77 MB  | ~150 MB |
+| LLM  | `llama-cpp-python` → llama.cpp      | Qwen 2.5 0.5B-Instruct Q4_K_M | 400 MB | ~600 MB |
+| TTS  | `supertonic` → ONNX Runtime         | Supertonic 3 (31 languages, voice M1) | 380 MB | ~600 MB |
+| VAD  | `livekit-plugins-silero`            | Silero        | 5 MB   | ~50 MB  |
+
+Total ~860 MB on disk, ~1.5 GB RAM, ~717 ms warm load, ~1.4 s warm
+end-to-end (STT + LLM + TTS) on Apple Silicon. First run downloads the
+models from HuggingFace into `~/.cache/{huggingface,supertonic}` — ~90
+seconds once.
+
+All three local backends have first-party iOS and Android C++ builds, so
+the same `.gguf` / `.bin` / `.onnx` model files port straight to mobile
+when those bindings ship.
+
+### Tuning
+
+| Env var | Default | What |
+| ------- | ------- | ---- |
+| `BITHUMAN_LOCAL` | _unset_ | `=1` flips the brain to the local stack. |
+| `BITHUMAN_LOCAL_WHISPER` | `tiny.en` | whisper.cpp size: `tiny.en` / `base.en` / `small` / `large-v3-turbo`. |
+| `BITHUMAN_LOCAL_LLM` | `Qwen/Qwen2.5-0.5B-Instruct-GGUF` | HuggingFace repo of a GGUF LLM. |
+| `BITHUMAN_LOCAL_LLM_FILE` | `qwen2.5-0.5b-instruct-q4_k_m.gguf` | GGUF file within the repo. |
+| `BITHUMAN_LOCAL_VOICE` | `M1` | Supertonic voice preset (`M1`–`M5` / `F1`–`F5`). |
+| `BITHUMAN_LOCAL_LANG` | `en` | Supertonic language (`en`, `ko`, `ja`, `es`, `de`, … — 31 total). |
+| `BITHUMAN_INSTRUCTIONS` | _short default_ | Override the system prompt. |
+
+The cloud path (`bithuman run` with `OPENAI_API_KEY` set, `BITHUMAN_LOCAL`
+unset) is unchanged.
+
 ## Streaming loop
 
 `AsyncBithuman` is the runtime — one instance per avatar session.
