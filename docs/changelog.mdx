@@ -10,6 +10,41 @@ Product-level changes only. Per-version notes: [Python SDK CHANGELOG](https://gi
 
 ## May 2026
 
+**Python SDK `bithuman` 2.2.0** (2026-05-24) — `bithuman[local]` extra
+- New `pip install 'bithuman[local]'` extra adds a **fully on-device
+  conversation brain** to `bithuman run`. Flip it on with
+  `BITHUMAN_LOCAL=1`; no API key required, no outbound network.
+- Stack: `whisper.cpp` (STT) + `llama.cpp` (LLM, default Qwen 2.5
+  0.5B-Instruct Q4_K_M) + Supertonic 3 (TTS, 31 languages, voice M1
+  default) + Silero VAD. All in-process — no Ollama or other server.
+- All three backends have first-party iOS + Android C++ cores, so the
+  same `.gguf` / `.bin` / `.onnx` model files are reusable when porting
+  to mobile.
+- New plugins live in `livekit.plugins.bithuman.{WhisperSTT, LlamaCppLLM,
+  SupertonicTTS}` alongside `AvatarSession`. The avatar-only install
+  path is unchanged (heavy deps are lazy-imported).
+- Tuning via env vars: `BITHUMAN_LOCAL_WHISPER`, `BITHUMAN_LOCAL_LLM`,
+  `BITHUMAN_LOCAL_LLM_FILE`, `BITHUMAN_LOCAL_VOICE`, `BITHUMAN_LOCAL_LANG`,
+  `BITHUMAN_INSTRUCTIONS`. See [Python SDK · Fully on-device](/sdks/python#fully-on-device--bithumanlocal-22).
+- Footprint: ~860 MB on disk (auto-downloaded from HuggingFace on first
+  run), ~1.5 GB RAM, ~717 ms warm load, ~1.4 s warm end-to-end on
+  Apple Silicon.
+- Cloud path (`BITHUMAN_LOCAL` unset, `OPENAI_API_KEY` set) is
+  byte-for-byte unchanged.
+
+**Python SDK `bithuman` 2.1.0** (2026-05-24) — figure → avatar
+- Retired legacy "figure" terminology. CLI flag `--figures-root` is now
+  `--avatars-root` (old name kept as a deprecated alias). Default cache
+  moved from `~/.cache/bithuman/figures` to `~/.cache/bithuman/avatars`.
+- No runtime behavior change; alignment with the public-facing "avatar"
+  product term.
+
+**Python SDK `bithuman` 2.0.2** (2026-05-24) — graceful drain
+- `bithuman run` now cancels active sessions and waits ≤2 s for
+  libessence/HDF5 teardown before the process unwinds. Eliminates the
+  `H5F.c: decrementing file ID failed` + exit 134 SIGABRT on Ctrl-C /
+  LaunchDaemon stop. Required for production-style supervisors.
+
 **Python SDK `bithuman` 2.0.1** (2026-05-24)
 - `AsyncBithuman.cleanup` is now `async` — `await b.cleanup()` works
   (was raising `TypeError` and segfaulting at interpreter shutdown).
