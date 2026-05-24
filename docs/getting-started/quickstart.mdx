@@ -36,8 +36,8 @@ brew install bithuman-product/bithuman/bithuman
 
 # Or via pip — the 2.0 bundled wheel ships the same CLI inside the
 # Python package (no separate binary install). macOS arm64 + Linux
-# x86_64/aarch64; Python 3.10+.
-pip install bithuman
+# x86_64/aarch64; pin the version below to match what we've tested.
+pip install 'bithuman==2.1.0'
 ```
 
 ```bash
@@ -52,6 +52,15 @@ install paths are interchangeable; pick whichever fits your
 environment. If you already use pip for backend services, sticking
 with pip lets you pin the avatar runtime + CLI together.
 </Note>
+
+<Warning>
+**Python 3.11 only on the pip path right now.** 2.1.0 ships
+`cp311` wheels only (macOS arm64, Linux x86_64, Linux aarch64). If
+you're on a different Python version, either pyenv your project to
+3.11 (`pyenv install 3.11.10 && pyenv shell 3.11.10`) or use the
+Homebrew CLI instead — it has no Python dependency. Broader wheel
+coverage is on the roadmap.
+</Warning>
 
 ## 3. Make it talk
 

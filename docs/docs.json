@@ -126,6 +126,13 @@
             ]
           },
           {
+            "group": "Sessions & Tokens",
+            "pages": [
+              "api-reference/runtime-tokens",
+              "api-reference/credit-summaries"
+            ]
+          },
+          {
             "group": "Agents",
             "pages": [
               "api-reference/agent-generation",

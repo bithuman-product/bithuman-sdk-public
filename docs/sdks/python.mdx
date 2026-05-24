@@ -12,11 +12,30 @@ native dependencies ship in the wheel.
 ## Install
 
 ```bash
-pip install bithuman --upgrade
+pip install 'bithuman==2.1.0'
 ```
 
-Python 3.10+ (3.10–3.14 wheels). Wheels: macOS arm64, Linux x86_64,
-Linux aarch64, Windows x86_64.
+**Python 3.11** is the only version with wheels on the current
+2.1.0 release. Platforms: macOS arm64, Linux x86_64, Linux aarch64.
+(Windows wheels were last published with 1.9.0 and are not yet
+back in the 2.x matrix.)
+
+<Warning>
+If you're on a different Python version, install will fail with
+`ERROR: Could not find a version that satisfies the requirement
+bithuman`. Use `pyenv` or a Python 3.11 venv:
+
+```bash
+pyenv install 3.11.10           # one-time
+pyenv shell 3.11.10
+python -m venv .venv && source .venv/bin/activate
+pip install 'bithuman==2.1.0'
+```
+
+Broader wheel coverage (3.10, 3.12, 3.13, 3.14 across macOS/Linux,
+plus Windows) is on the roadmap. Watch the
+[changelog](/changelog).
+</Warning>
 
 <Note>
 The SDK returns frames as numpy BGR arrays and needs **no** OpenCV
@@ -150,8 +169,10 @@ loop with no LiveKit, if you bring your own transport. Wiring details:
 
 ## System requirements
 
-- Python 3.9+ (3.9–3.14 wheels).
-- **Essence**: any modern CPU, 4 GB RAM. Linux / macOS / Windows.
+- **Python 3.11** (only version with current 2.1.0 wheels; see
+  install warning above).
+- **Essence**: any modern CPU, 4 GB RAM. macOS arm64 / Linux
+  x86_64 / Linux aarch64.
 - **Expression on-device**: macOS 14+ Apple Silicon M3+, 16 GB RAM.
   Elsewhere use the [self-hosted GPU](/guides/deployment) deployment
   (Linux + NVIDIA).

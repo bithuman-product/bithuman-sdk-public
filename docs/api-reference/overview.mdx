@@ -83,10 +83,28 @@ Different endpoint paths use slightly different parameter names for the same val
   <Card title="Dynamics" icon="person-running" href="/api-reference/dynamics">
     Generate and manage avatar movements and gestures
   </Card>
-  <Card title="Credits & Billing" icon="credit-card" href="/api-reference/rate-limits">
-    Credit balance, usage rates, plan limits
+  <Card title="Runtime Tokens" icon="key" href="/api-reference/runtime-tokens">
+    Mint short-lived JWTs for streaming avatar sessions
+  </Card>
+  <Card title="Credit Summary" icon="wallet" href="/api-reference/credit-summaries">
+    Read user balance + per-mode minute estimates
+  </Card>
+  <Card title="Rate Limits & Billing" icon="credit-card" href="/api-reference/rate-limits">
+    Concurrent-session caps, tier limits, plan pricing
   </Card>
 </CardGroup>
+
+<Note>
+**Internal endpoints not documented here:** `/v1/realtime-user` and
+`/v1/realtime-agent` (OpenAI Realtime API proxies), the `/launch`
+worker endpoint (used by the avatar-dispatcher), the
+`/v1/embed-tokens/request` token-mint (called by the iframe embed
+flow under [Deployment](/guides/deployment)), and the
+Organizations / User-scoped API-Secrets surfaces. These are stable
+but used primarily by our first-party UIs and aren't part of the
+public integration surface. Open a GitHub issue or ping
+[Discord](https://discord.gg/ES953n7bPA) if you need them.
+</Note>
 
 ## Generate a client from the OpenAPI spec
 

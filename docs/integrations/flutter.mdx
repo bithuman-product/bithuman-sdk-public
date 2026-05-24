@@ -10,25 +10,38 @@ API. Audio in, lip-synced video out at 25 FPS — fully on-device, with
 per-platform echo cancellation auto-selected for you. One codebase
 across **macOS, iOS, and Android**.
 
-<Note>
-**Pub.dev publish is pending.** While the package is finalized, request
-the git-dependency URL on [Discord](https://discord.gg/ES953n7bPA), or
-watch the
+<Warning>
+**Not on pub.dev yet.** The plain `bithuman: ^1.16.0` snippet you may
+see in older docs will fail `flutter pub get` with "package not found".
+The plugin is currently distributed as a git dependency only.
+**Request the git URL on [Discord](https://discord.gg/ES953n7bPA)**
+(we gate it during early access), or watch the
 [bithuman-apps releases](https://github.com/bithuman-product/bithuman-apps/releases)
-for the publish announcement.
-</Note>
+for the pub.dev publish announcement.
+</Warning>
 
 ## Install
 
+Once you have the git URL from Discord, pin it in `pubspec.yaml`:
+
 ```yaml
-# pubspec.yaml
+# pubspec.yaml — replace <git-url-from-discord> with the URL we share with you
 dependencies:
-  bithuman: ^1.16.0
+  bithuman:
+    git:
+      url: <git-url-from-discord>
+      ref: v1.16.0    # pin to a release tag (don't track main)
 ```
 
 ```bash
 flutter pub get
 ```
+
+<Tip>
+After pub.dev publish, this will become a one-line
+`bithuman: ^X.Y.Z` and `flutter pub get` will resolve directly. The
+public API will be source-compatible across the transition.
+</Tip>
 
 Auth: provide your `BITHUMAN_API_SECRET` to the app (env var in
 development, your own secret store in production). Get one at

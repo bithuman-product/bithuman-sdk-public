@@ -1,0 +1,97 @@
+---
+title: "Credit Summary"
+sidebarTitle: "Credit Summary"
+description: "Fetch a user's current credit balance + per-mode minute estimates."
+icon: "wallet"
+---
+
+`GET /v2/credit-summaries`
+
+Returns the live credit balance for a user, broken down by plan vs.
+topup credits, plus an estimate of how many minutes of each
+session-type they can afford at current rates. Polled by the
+imaginex-ui credit banner; safe to call frequently (cached
+read-through, no side effects).
+
+## Endpoint
+
+| Method | Path |
+|---|---|
+| `GET` | `https://api.bithuman.ai/v2/credit-summaries` |
+
+**Auth:** `api-secret: $BITHUMAN_API_SECRET` header.
+
+## Query parameters
+
+| Name | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `user_id` | `string` | **yes** | — | User UUID to look up |
+| `app` | `string` | no | `imaginex` | App identifier for multi-app subscription support |
+| `app_key` | `string` | no | (same as `app`) | Explicit subscription key for collection-scoped apps (e.g. `imaginex_collection_<id>`) |
+
+## Request
+
+```bash
+curl "https://api.bithuman.ai/v2/credit-summaries?user_id=$USER_ID&app=imaginex" \
+  -H "api-secret: $BITHUMAN_API_SECRET"
+```
+
+## Response — `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "user_id": "229be55d-1c1e-42b9-8517-a22c742668ef",
+    "balance": 1842,
+    "plan_credits": 99,
+    "topup_credits": 1743,
+    "is_enterprise": false,
+    "minutes_estimate": {
+      "voice_chat": 184,
+      "camera_chat": 61,
+      "essence_cloud": 921,
+      "essence_self_hosted": 1842,
+      "expression_cloud": 460,
+      "expression_self_hosted": 921
+    },
+    "isEnterprisePlanUser": false
+  }
+}
+```
+
+### Response fields
+
+| Field | Type | Notes |
+|---|---|---|
+| `balance` | `number` | Sum of plan + topup + reward credits. Can be negative down to `-11` (grace window before suspension). |
+| `plan_credits` | `number` | Remaining credits from the active subscription plan; resets at billing period end. |
+| `topup_credits` | `number` | Credits from one-time top-ups; do not reset. |
+| `is_enterprise` | `boolean` | `true` if the user's email matches an organizational pattern (org-pooled billing). |
+| `minutes_estimate.voice_chat` | `int` | balance ÷ 10 cr/min |
+| `minutes_estimate.camera_chat` | `int` | balance ÷ 30 cr/min |
+| `minutes_estimate.essence_cloud` | `int` | balance ÷ 2 cr/min |
+| `minutes_estimate.essence_self_hosted` | `int` | balance ÷ 1 cr/min |
+| `minutes_estimate.expression_cloud` | `int` | balance ÷ 4 cr/min |
+| `minutes_estimate.expression_self_hosted` | `int` | balance ÷ 2 cr/min |
+| `isEnterprisePlanUser` | `boolean` | Backward-compat alias for `is_enterprise` — prefer the snake_case field. |
+
+## Errors
+
+| HTTP | Code | When |
+|---|---|---|
+| 401 | `UNAUTHORIZED` / `MISSING_AUTH` | Missing or invalid `api-secret` header |
+| 404 | `USER_NOT_FOUND` | `user_id` does not exist |
+| 500 | `INTERNAL_ERROR` | Upstream DB error |
+
+## Notes
+
+- **Balance is the source of truth**, not activity-row sums. Activity
+  rows are best-effort audit trail; sub-cent rounding and historical
+  drift mean the activity ledger can differ from balance by small
+  amounts. Quote `balance` to the user, not a sum.
+- The minute estimates are floor-division on integer balance; they
+  treat the suspension grace window (`-11..0`) as zero minutes.
+- For checking suspension status (UI banners), compare `balance` to
+  the documented threshold `-11` rather than relying on a separate
+  status flag.

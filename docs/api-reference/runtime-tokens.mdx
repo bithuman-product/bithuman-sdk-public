@@ -1,0 +1,118 @@
+---
+title: "Request Runtime Token"
+sidebarTitle: "Runtime Tokens"
+description: "Mint a short-lived runtime JWT for a streaming avatar session (LiveKit, self-hosted GPU, or cloud runtime)."
+icon: "key"
+---
+
+`POST /v1/runtime-tokens/request`
+
+Exchange your long-lived `api-secret` for a short-lived **runtime
+token** scoped to a single avatar session. Use the runtime token to
+authorize the bitHuman runtime (cloud or self-hosted GPU) to run that
+session. Tokens carry the user_id (for billing attribution), session
+fingerprint, and a transaction_id used to dedup heartbeats.
+
+## Endpoint
+
+| Method | Path |
+|---|---|
+| `POST` | `https://api.bithuman.ai/v1/runtime-tokens/request` |
+
+**Auth:** `api-secret: $BITHUMAN_API_SECRET` header.
+
+## Request body
+
+```json
+{
+  "fingerprint": "<random-hex>",
+  "transaction_id": "<uuid>",
+  "billing_type": "agent-voice-chat",
+  "agent_code": "A12ABC3456",
+  "runtime_model_hash": "abc123...",
+  "tags": "agent-worker-dispatched",
+  "user_id": "229be55d-1c1e-42b9-8517-a22c742668ef",
+  "mode": "local",
+  "runtime_version": "1.2.2",
+  "timestamp": "2026-05-24T22:00:00Z"
+}
+```
+
+### Fields
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `fingerprint` | `string` | **yes** | Stable per-device hex string. Used for rate limiting and the JWT `aud` claim. Generate once per device and persist. |
+| `transaction_id` | `uuid` | **yes** | Unique session ID. Use the same value for the first beat and every subsequent heartbeat in the session — the billing path uses it for idempotency. |
+| `billing_type` | `string` | no | One of `agent-voice-chat`, `agent-video-chat`, `self-hosted-expression-model`, `self-hosted-flash-model`. Drives the pricing rate. Defaults to essence/agent. |
+| `agent_code` | `string` | no | Public agent code (e.g. `A12ABC3456`). Required for agent sessions; lets billing attribute usage to the agent owner for reward credits. |
+| `runtime_model_hash` | `string` | no | Hash of the `.imx` model the runtime will load. Used for analytics + version-pin checks. |
+| `tags` | `string` | no | Comma-separated tags. Setting `agent-worker-dispatched` indicates the caller (agent-worker) handles billing in its own loop — the auth-service will skip billing here. Setting `cloud-api` marks the session as cloud-hosted. |
+| `user_id` | `uuid` | no | End-user to bill. Trusted callers (api-secret-authenticated) can pass this to bill on behalf of a different user (e.g. agent-worker billing the end-user, not the bot's own account). Falls back to the api-secret owner if omitted. |
+| `mode` | `string` | no | `local` keeps the request in this endpoint; anything else routes to the cloud-runtime path. Defaults to local. |
+| `runtime_version` | `string` | no | Runtime client version (e.g. `1.2.2`). Used for minimum-version enforcement. |
+| `timestamp` | `ISO8601` | no | Caller's clock. Auto-filled to server UTC if omitted. |
+
+## Response — `200 OK`
+
+```json
+{
+  "transaction_id": "6eb62a7a-4170-4bb8-9b08-69d2d629dc44",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.<...>"
+}
+```
+
+| Field | Type | Notes |
+|---|---|---|
+| `transaction_id` | `uuid` | Echoes the request's `transaction_id` (or the server-generated one if omitted). Use this as the activity-record id for all subsequent heartbeats in the session. |
+| `token` | `JWT` | Runtime token. HS256-signed, `~5 min` TTL. Claims: `iss=bitHuman`, `sub=<user_id>`, `aud=<fingerprint>`, `exp`, `nbf`, `iat`. |
+
+## Errors
+
+| HTTP | Code | When |
+|---|---|---|
+| 401 | `UNAUTHORIZED` | Invalid or revoked `api-secret` |
+| 402 | `INSUFFICIENT_BALANCE` | Balance below `0` (the depleted threshold). Pre-deduction guard. |
+| 403 | `ACCOUNT_SUSPENDED` | Balance below `-11` (the suspension floor). |
+| 422 | `VALIDATION_ERROR` | Required fields missing |
+| 500 | `INTERNAL_ERROR` | Upstream auth/billing error |
+
+## Heartbeat loop
+
+For an ongoing session, call this endpoint roughly every **60 s** with
+the **same** `transaction_id`. Each call triggers an incremental
+billing tick (delta = current total credits - already billed) and
+returns a fresh token. Skipping the heartbeat for more than ~5 minutes
+will revoke the runtime session.
+
+```python
+# Pseudocode — your runtime client should already do this for you.
+while session_alive:
+    resp = requests.post(
+        "https://api.bithuman.ai/v1/runtime-tokens/request",
+        headers={"api-secret": API_SECRET},
+        json={
+            "fingerprint": FP,
+            "transaction_id": TX,        # same value every beat
+            "billing_type": "agent-voice-chat",
+            "agent_code": AGENT,
+            "user_id": END_USER,
+            "tags": "agent-worker-dispatched",
+        },
+    )
+    token = resp.json()["token"]         # refresh the JWT
+    time.sleep(60)
+```
+
+## Notes
+
+- The runtime token is **not** an api-secret. It cannot mint other
+  tokens; it just authorizes the streaming runtime to compute frames
+  for one specific session.
+- If you're integrating with LiveKit, you'll also need a LiveKit room
+  token — that's separate. See
+  [Deployment](/guides/deployment) for the full LiveKit + bitHuman
+  flow.
+- For browser-side embeds, use [`/v1/embed-tokens/request`](/api-reference/embed-tokens)
+  instead — that endpoint mints a more constrained token suitable for
+  cross-origin iframe authentication.
