@@ -10,11 +10,31 @@ Product-level changes only. Per-version notes: [Python SDK CHANGELOG](https://gi
 
 ## May 2026
 
+**Python SDK `bithuman` 2.0.1** (2026-05-24)
+- `AsyncBithuman.cleanup` is now `async` — `await b.cleanup()` works
+  (was raising `TypeError` and segfaulting at interpreter shutdown).
+- CLI error message polish: `bithuman pull <bad-slug>` and `bithuman
+  render` no longer reference renamed subcommands.
+- `essence-render --help` shows the correct prog name (was `bithuman`).
+
+**Python SDK `bithuman` 2.0.0** (2026-05-22) — bundled-CLI release
+- `pip install bithuman` now ships a `bithuman` console-script that
+  runs the full talk-to-your-avatar stack (Rust CLI + embedded
+  livekit-server + agent-worker brain + browser UI). One install,
+  one command, one URL — same Rust binary as the Homebrew CLI.
+- The runtime library API (`import bithuman`, `AsyncBithuman`,
+  `from bithuman import Avatar`) is unchanged — existing library
+  consumers keep working.
+- The legacy 1.x Python CLI is preserved as the `essence-render`
+  console-script.
+- Wheels: macOS arm64, Linux x86_64, Linux aarch64. Python 3.10+.
+- Quickstart: `pip install bithuman && bithuman run` — see
+  [Quickstart](/getting-started/quickstart) for the full flow.
+
 **v1.18.5** (2026-05-18)
 - Unified `bithuman`: one `pip install bithuman` = full prior `1.11.3` API + native engine, 100% backward-compatible (`==1.11.3` code runs unchanged).
 - Native engine: far faster cold load + lower memory than pure-Python, exact output parity. Loads fresh console `.imx` TAR exports natively.
 - Python 3.9–3.14 (Linux x86_64/ARM64, macOS Apple Silicon). Pin `>=1.18.5` (1.18.0–1.18.4 predate the unification; Windows/macOS-Intel stay on `==1.11.3`).
-
 
 **v1.17.x** (2026-05-14)
 - `bithuman avatar --openai` — workstation Realtime, browser-rendered avatar.
