@@ -33,7 +33,7 @@ Architecture deep dive + production patterns at [docs.bithuman.ai](https://docs.
 pip install bithuman --upgrade
 ```
 
-Pre-built wheels for Python 3.9 – 3.14 on Linux x86_64 + ARM64, macOS Intel + Apple Silicon, Windows x86_64. No compile step.
+Pre-built wheels for Python 3.10 – 3.14 on Linux x86_64 + aarch64 and macOS Apple Silicon. (macOS Intel + Windows ship via a separate per-tag CI run; Python 3.9 dropped in 2.0 because the bundled brain requires 3.10.)
 
 For LiveKit Agent integration (voice agents with faces over WebRTC):
 
@@ -41,16 +41,36 @@ For LiveKit Agent integration (voice agents with faces over WebRTC):
 pip install bithuman[agent]
 ```
 
+## Two ways to use the package
+
+Since 2.0, `pip install bithuman` gives you **both** a Python library AND a `bithuman` CLI binary — same Rust binary the Homebrew install ships, just bundled into the wheel.
+
+### The talk-to-your-avatar CLI (2.0+)
+
+```bash
+pip install bithuman
+export BITHUMAN_API_SECRET=...   OPENAI_API_KEY=...
+bithuman run        # auto-downloads demo avatar → URL → browser → talk
+```
+
+`bithuman run` brings up the entire stack (embedded livekit-server + agent-worker brain + browser UI) from one command. The legacy 1.x Python CLI (`bithuman pack` / `generate` / `stream` / …) is preserved as the `essence-render` console-script.
+
+### The Python library (1.x API preserved)
+
+For backend services / batch jobs / custom integrations, the runtime API below is unchanged from 1.x — code pinned to `bithuman==1.11.3` runs on 2.0.1 without edits.
+
 ## Quick start — Essence (cross-platform, default)
 
 Grab an `.imx` from your [bitHuman dashboard](https://www.bithuman.ai/#explore) (⋮ → Download), export your API secret, then:
 
-### CLI
+### Offline render via CLI
 
 ```bash
 export BITHUMAN_API_SECRET=your_secret
-bithuman generate avatar.imx --audio speech.wav --output demo.mp4
+bithuman render avatar.imx --audio speech.wav --output demo.mp4   # Linux
 ```
+
+(Offline render on macOS routes via Apple's AVAssetWriter — planned follow-up; meanwhile use the Linux build or the Python library below.)
 
 Don't have a WAV to test with? Grab the 13-second sample bundled in the examples repo:
 

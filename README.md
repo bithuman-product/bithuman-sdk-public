@@ -69,19 +69,28 @@ https://github.com/bithuman-product/bithuman-sdk-public.git
 
 Requires Apple Silicon M3 or newer. See [swift/README.md](swift/README.md) for details.
 
-### CLI (Mac, no code needed)
+### CLI — talk to an avatar in 2 minutes
+
+Two install paths, same Rust binary:
 
 ```bash
-# Universal installer (macOS + Linux)
-curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
-# Or macOS Homebrew
-brew install bithuman-product/bithuman/bithuman
+# Path A: via pip (since 2.0, the wheel ships the bundled CLI)
+pip install bithuman
 
-bithuman avatar    # browser-served avatar at http://127.0.0.1:8080
-bithuman voice     # spoken conversation in the terminal
+# Path B: via Homebrew / curl (no Python needed)
+curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
+brew install bithuman-product/bithuman/bithuman      # alternative
 ```
 
-100% on-device — runs locally on Apple Silicon, no API key needed for the audio-only mode.
+Either way:
+
+```bash
+export BITHUMAN_API_SECRET=...   OPENAI_API_KEY=...
+bithuman run                                          # auto-downloads a demo avatar
+# → http://127.0.0.1:8088/<code> — open in browser, click mic, talk
+```
+
+`bithuman run` is the full talk-to-your-avatar stack — embedded livekit-server + agent-worker brain + browser UI — from one command. For offline rendering and other modes, see [docs.bithuman.ai/getting-started/cli](https://docs.bithuman.ai/getting-started/cli).
 
 ## Quick start (Python)
 
