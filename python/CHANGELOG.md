@@ -2,6 +2,64 @@
 
 All notable changes to the `bithuman` package are documented here.
 
+## [2.0.1] - 2026-05-24
+
+### Fixed
+- **`await b.cleanup()` on `AsyncBithuman` works.** Was raising
+  `TypeError: object NoneType can't be used in 'await' expression`
+  (the inherited parent method was sync), then segfaulting at
+  interpreter shutdown because the runtime never released. The async
+  override proxies to `stop()`; `__del__` overridden to bypass the
+  async cleanup and call the parent's sync release directly via MRO.
+- **`bithuman pull <bad-slug>` error message** no longer references
+  `bithuman models list`; says `bithuman list` (matches the actual
+  subcommand surface).
+- **`bithuman render` errors** no longer say `bithuman generate`
+  (leftover from a subcommand rename).
+- **`essence-render --help`** shows `usage: essence-render` (the
+  argparse `prog` was hardcoded to `bithuman`).
+
+## [2.0.0] - 2026-05-22
+
+### Added
+- **Bundled CLI.** `pip install bithuman` now ships a `bithuman`
+  console-script that runs the full talk-to-your-avatar stack — the
+  same Rust binary as the [Homebrew CLI](https://docs.bithuman.ai/getting-started/cli),
+  plus an embedded `livekit-server` child, plus an embedded
+  agent-worker brain (livekit-agents + OpenAI Realtime), plus a
+  static browser UI. One install, one command (`bithuman run`),
+  one URL.
+- **Subcommands**: `run` (live avatar), `render` (offline MP4 —
+  Linux only currently), `info` (inspect `.imx`), `pull` (showcase
+  fixture download), `list` (browse showcase). Run `bithuman --help`
+  for the surface.
+
+### Changed
+- **`bithuman` console-script semantics.** Pre-2.0 the `bithuman`
+  entry-script ran the legacy Python CLI (`bithuman pack`,
+  `bithuman generate`, …). It now execs the Rust binary. The legacy
+  Python CLI is preserved under the **`essence-render`**
+  entry-script (same code, different name). Scripts that called
+  `bithuman pack …` need to retarget to `essence-render pack …`.
+- **Python 3.10 minimum.** Was 3.9. The embedded brain
+  (`livekit-agents 1.4+` + `livekit-plugins-bithuman 1.4+`) requires
+  Python 3.10; pip will surface a clean "no matching wheel" error
+  on 3.9 instead of installing a wheel that fails at runtime.
+- **Wheel size:** ~50 MB (macOS arm64) / ~71 MB (Linux x86_64) /
+  ~70 MB (Linux aarch64). Was ~14 MB pre-2.0 (runtime library
+  only). The bundled Rust binary (~76 MB) + `livekit-server` (~44
+  MB) + vendored dep closure (~30 MB) account for the bulk.
+
+### Compat
+- The library API (`import bithuman`, `from bithuman import Avatar /
+  AsyncBithuman / Runtime / Fixture`, `bithuman.engine.*`, …) is
+  **unchanged**. Existing library consumers work without code edits.
+- `livekit-plugins-bithuman` is vendored under
+  `livekit/plugins/bithuman/` (PEP-420 namespace package) — same
+  import path. Installing a separate `livekit-plugins-bithuman`
+  package alongside `bithuman==2.x` is incompatible (the upstream
+  plugin pins `bithuman<1.12`).
+
 ## [1.18.5] - 2026-05-18
 
 ### Added

@@ -15,8 +15,8 @@ native dependencies ship in the wheel.
 pip install bithuman --upgrade
 ```
 
-Python 3.9+ (3.9–3.14 wheels). Wheels: macOS arm64, Linux x86_64, Linux aarch64,
-Windows x86_64.
+Python 3.10+ (3.10–3.14 wheels). Wheels: macOS arm64, Linux x86_64,
+Linux aarch64, Windows x86_64.
 
 <Note>
 The SDK returns frames as numpy BGR arrays and needs **no** OpenCV
@@ -27,6 +27,32 @@ each example's `requirements.txt`.
 
 Auth: export `BITHUMAN_API_SECRET`. Get a secret at
 [Developer → API Keys](https://www.bithuman.ai/#developer).
+
+## 2.0 — `bithuman` is also a CLI
+
+Since 2.0, `pip install bithuman` also installs a `bithuman`
+console-script that spawns the **entire avatar stack** — embedded
+livekit-server, agent-worker brain, and browser UI — from one
+command. Same Rust binary as the [Homebrew CLI](/getting-started/cli);
+no extra install.
+
+```bash
+pip install bithuman
+export BITHUMAN_API_SECRET=... OPENAI_API_KEY=...
+bithuman run                                       # http://127.0.0.1:8088/<code>
+bithuman render avatar.imx -a speech.wav -o out.mp4   # offline render (Linux)
+bithuman info  avatar.imx                              # inspect an .imx
+bithuman pull  nova                                    # download a showcase avatar
+bithuman list                                          # browse showcase
+```
+
+The runtime library API below (`AsyncBithuman`, `from bithuman import
+Avatar`, …) is **unchanged** — existing library consumers keep
+working without code changes. The CLI is additive.
+
+The legacy 1.x Python CLI is preserved as the `essence-render`
+console-script (same binary as before; only the entry-script name
+changed).
 
 ## Streaming loop
 

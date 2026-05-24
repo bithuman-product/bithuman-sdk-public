@@ -33,12 +33,25 @@ curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest
 
 # macOS via Homebrew (auto-pulls native deps)
 brew install bithuman-product/bithuman/bithuman
+
+# Or via pip — the 2.0 bundled wheel ships the same CLI inside the
+# Python package (no separate binary install). macOS arm64 + Linux
+# x86_64/aarch64; Python 3.10+.
+pip install bithuman
 ```
 
 ```bash
 export BITHUMAN_API_SECRET=your_api_secret
 bithuman doctor          # confirms host + key are good
 ```
+
+<Note>
+The `pip install bithuman` and Homebrew paths install the **same**
+Rust CLI binary (the pip path bundles it inside the wheel). The two
+install paths are interchangeable; pick whichever fits your
+environment. If you already use pip for backend services, sticking
+with pip lets you pin the avatar runtime + CLI together.
+</Note>
 
 ## 3. Make it talk
 
