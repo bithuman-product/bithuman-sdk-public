@@ -33,6 +33,7 @@ You get **99 free credits per month** (about 50 minutes of avatar time). No cred
 | **Build a native Apple app** (Mac, iPad, iPhone) | Swift SDK | 15 min | [Examples/swift/](Examples/swift/) |
 | **Use the command line** (no code at all) | `bithuman` CLI | 2 min | [Examples/cli/](Examples/cli/) |
 | **Call from any language** (Java, Go, JS, etc.) | REST API | 5 min | [Examples/rest-api/](Examples/rest-api/) |
+| **Talk to it with zero cloud** (no OpenAI key, no outbound network) | `pip install 'bithuman[local]'` then `BITHUMAN_LOCAL=1 bithuman run` | 5 min after a ~860 MB one-time download | [Local mode →](https://docs.bithuman.ai/guides/local-mode) |
 
 If you're unsure, start with **[Examples/quickstart/](Examples/quickstart/)**.
 

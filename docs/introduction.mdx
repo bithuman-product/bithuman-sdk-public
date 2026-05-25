@@ -63,8 +63,19 @@ code, no language toolchain.
     pip install bithuman --upgrade
     ```
 
-    Python 3.9+. Wheels for macOS arm64, Linux x86_64 / aarch64,
-    Windows x86_64. The runtime + all native deps are in the wheel.
+    Python 3.10+ on macOS arm64 + Linux x86_64 / aarch64. The runtime +
+    all native deps + the `bithuman run` CLI are in one wheel.
+
+    For a **fully on-device brain** (no OpenAI key, no outbound
+    network), add the `[local]` extra and flip one env var:
+
+    ```bash
+    pip install 'bithuman[local]'
+    BITHUMAN_LOCAL=1 bithuman run sample-avatar.imx
+    ```
+
+    Ships whisper.cpp + llama.cpp + Supertonic + Silero VAD; ~1.5 GB
+    RAM peak. [Local mode →](/guides/local-mode)
 
     ```python
     import asyncio, os

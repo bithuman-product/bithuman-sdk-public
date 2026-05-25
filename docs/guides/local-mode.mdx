@@ -1,0 +1,226 @@
+---
+title: "Local mode — zero-cloud conversation"
+sidebarTitle: "Local mode"
+description: "Fully on-device avatar conversation: whisper.cpp + llama.cpp + Supertonic + bitHuman avatar. No API keys, no outbound network, ~1.5 GB RAM. One env var flip on bithuman run."
+keywords:
+  - bitHuman local
+  - on-device LLM
+  - on-device TTS
+  - on-device STT
+  - private avatar
+  - mobile avatar
+  - bithuman[local]
+  - BITHUMAN_LOCAL
+---
+
+`bithuman[local]` is an opt-in extra that swaps the cloud conversation
+brain (OpenAI Realtime) for an **entirely in-process, on-device stack**
+— whisper.cpp + llama.cpp + Supertonic + Silero VAD. No API key, no
+outbound network, no separate servers. Same `bithuman run` command,
+same browser URL, same avatar.
+
+```bash
+pip install 'bithuman[local]'
+BITHUMAN_LOCAL=1 bithuman run sample-avatar.imx
+# → open the printed http://127.0.0.1:8088/<CODE> URL in a browser
+```
+
+Ships in **bithuman 2.2.1+** for macOS arm64, Linux x86_64, Linux aarch64,
+Python 3.10–3.14.
+
+## When you'd reach for it
+
+- **Privacy-bound deployments** — kiosks, healthcare, finance, classroom.
+  Audio never leaves the device.
+- **Offline / air-gapped** — demos at conferences with shaky WiFi, edge
+  boxes in stores, field engineers.
+- **Eliminate per-minute LLM/TTS spend** — pay once for the wheel,
+  conversations are free thereafter.
+- **Latency floor below network RTT** — when the speed of light to the
+  nearest cloud region is itself the bottleneck.
+- **Mobile portability ramp** — same C++ cores (whisper.cpp,
+  llama.cpp, ONNX Runtime) have first-party iOS and Android builds. The
+  exact `.gguf` / `.bin` / `.onnx` model files run on phones; the port
+  is binding work, not re-architecture.
+
+## The stack
+
+| Slot | Backend (mobile-portable C++ core) | Default model | Disk | RAM |
+| ---- | ---------------------------------- | ------------- | ---- | --- |
+| STT  | `pywhispercpp` → whisper.cpp        | `tiny.en`     | 77 MB  | ~150 MB |
+| LLM  | `llama-cpp-python` → llama.cpp      | Qwen 2.5 0.5B-Instruct Q4_K_M | 400 MB | ~600 MB |
+| TTS  | `supertonic` → ONNX Runtime         | Supertonic 3 (31 languages, voice M1) | 380 MB | ~600 MB |
+| VAD  | `livekit-plugins-silero`            | Silero        | 5 MB   | ~50 MB  |
+| Avatar | `libessence`                       | `.imx`        | varies | ~300 MB |
+
+**Total**: ~860 MB on disk for the brain + your avatar file; ~1.5 GB RAM
+peak. First run downloads the brain models from HuggingFace into
+`~/.cache/{huggingface,supertonic}` — about 90 seconds, once.
+
+## Performance (M5 MacBook Pro)
+
+| Stage | Latency (warm) |
+| --- | --- |
+| Pipeline warm load | **717 ms** (all four models from cache) |
+| Whisper STT (4.6 s utterance, `tiny.en`) | **131 ms** |
+| Qwen 2.5 0.5B (first token / 30-token reply at 96 tok/s) | **114 ms / 894 ms** |
+| Supertonic TTS (10.7 s of speech, RTF 0.16) | **1,729 ms** |
+| End-to-end (STT + LLM + TTS, sentence-blocking) | **2,754 ms** |
+| First audible word (streamed token-by-token + sentence-chunked TTS) | **~800 ms** |
+
+Cold start (every-model first download, first run only): ~90 s.
+Process warm-up after that: under a second.
+
+## Architecture
+
+The local-mode brain is the same `livekit-agents` worker as the cloud
+brain — only the `stt` / `llm` / `tts` plugins differ. The avatar
+transport (`AvatarSession`), the embedded `livekit-server`, the browser
+player, and the lifecycle are all unchanged.
+
+```
+bithuman run avatar.imx                  (Rust CLI, same as cloud)
+├─ embedded livekit-server               (same)
+├─ libessence avatar runtime             (same)
+└─ bithuman.serve_brain                  (Python livekit-agents worker)
+   if BITHUMAN_LOCAL=1:                  (← the only branch)
+     stt = WhisperSTT(...)
+     llm = LlamaCppLLM(...)
+     tts = SupertonicTTS(...)
+     vad = silero.VAD.load()
+   else:
+     llm = openai.realtime.RealtimeModel(...)
+```
+
+The plugin classes live in the same namespace as the existing avatar
+plugin — `livekit.plugins.bithuman.{WhisperSTT, LlamaCppLLM,
+SupertonicTTS}` — so you can also use them in your own custom brain
+without going through `bithuman run`. See
+[Python SDK · LiveKit voice agents](/sdks/python#livekit-voice-agents)
+for the pattern.
+
+## Tuning
+
+All optional. Defaults are tuned for "smallest models that produce
+fluent English on a laptop CPU".
+
+| Env var | Default | What |
+| --- | --- | --- |
+| `BITHUMAN_LOCAL` | _unset_ | `=1` flips the brain to the local stack. |
+| `BITHUMAN_LOCAL_WHISPER` | `tiny.en` | whisper.cpp model size — `tiny.en` / `base.en` (multilingual: `tiny`, `base`, `small`, `medium`, `large-v3-turbo`). Larger = more accurate, more RAM, slower. |
+| `BITHUMAN_LOCAL_LLM` | `Qwen/Qwen2.5-0.5B-Instruct-GGUF` | HuggingFace repo id of any GGUF chat LLM. |
+| `BITHUMAN_LOCAL_LLM_FILE` | `qwen2.5-0.5b-instruct-q4_k_m.gguf` | GGUF file within the repo. |
+| `BITHUMAN_LOCAL_VOICE` | `M1` | Supertonic preset (`M1`–`M5` male, `F1`–`F5` female). |
+| `BITHUMAN_LOCAL_LANG` | `en` | Supertonic language. 31 supported: `en`, `ko`, `ja`, `es`, `de`, `fr`, `it`, `pt`, `ru`, `zh`, `hi`, `ar`, `nl`, `pl`, `tr`, `vi`, `id`, `th`, … |
+| `BITHUMAN_INSTRUCTIONS` | short default | Override the system prompt. |
+
+### Upgrading the LLM for quality
+
+The 0.5B default keeps the entire stack under 1.5 GB RAM. For better
+reasoning, swap to a bigger GGUF (any HuggingFace `*-GGUF` repo works):
+
+```bash
+# 1.7B (~1 GB on disk, ~1.5 GB RAM):
+export BITHUMAN_LOCAL_LLM="Qwen/Qwen2.5-1.5B-Instruct-GGUF"
+export BITHUMAN_LOCAL_LLM_FILE="qwen2.5-1.5b-instruct-q4_k_m.gguf"
+
+# Llama 3.2 3B (~2 GB on disk, ~3 GB RAM):
+export BITHUMAN_LOCAL_LLM="bartowski/Llama-3.2-3B-Instruct-GGUF"
+export BITHUMAN_LOCAL_LLM_FILE="Llama-3.2-3B-Instruct-Q4_K_M.gguf"
+
+BITHUMAN_LOCAL=1 bithuman run avatar.imx
+```
+
+### Multilingual setup
+
+```bash
+# Korean: bigger whisper + Korean Supertonic voice
+export BITHUMAN_LOCAL_WHISPER=small        # multilingual
+export BITHUMAN_LOCAL_LANG=ko
+export BITHUMAN_LOCAL_VOICE=F1
+
+BITHUMAN_LOCAL=1 bithuman run avatar.imx
+```
+
+The default LLM (Qwen 2.5) is multilingual; for production multilingual
+deployments you might want to size it up too (1.5B+ recommended for
+non-English fluency).
+
+## Cloud vs local — side by side
+
+| | **Cloud (default)** | **Local (`BITHUMAN_LOCAL=1`)** |
+|---|---|---|
+| Setup | `export OPENAI_API_KEY=...` | First run downloads ~860 MB once |
+| Per-conversation cost | OpenAI Realtime pricing | $0 (one-time wheel install) |
+| Network | OpenAI Realtime + LiveKit signal | LiveKit signal only (localhost) |
+| Privacy | Audio + transcripts go to OpenAI | Audio stays on box |
+| Languages | OpenAI-supported | 31 (Supertonic) for TTS; Whisper coverage for STT |
+| RAM | ~300 MB (just the avatar) | ~1.5 GB |
+| Latency floor | ~400-600 ms (network) | ~800 ms first-audio (compute-bound) |
+| Mobile path | not applicable | iOS / Android via the same `.gguf` / `.bin` / `.onnx` |
+
+Both modes use the **same Rust CLI**, the **same brain entrypoint**
+(`bithuman.serve_brain`), and the **same `AvatarSession`** plugin. One
+env var is the only difference.
+
+## Mobile portability — what's actually portable
+
+The choice of all three backends was deliberately constrained to "has
+official iOS + Android C++ builds, identical model files across
+platforms":
+
+| Backend | iOS | Android | Same model file? |
+|---|---|---|---|
+| whisper.cpp | ✅ official | ✅ official | ✅ same `.bin` |
+| llama.cpp | ✅ official | ✅ official | ✅ same `.gguf` |
+| ONNX Runtime (Supertonic) | ✅ ORT iOS | ✅ ORT Android | ✅ same `.onnx` |
+| Silero VAD | ✅ pytorch-mobile / ONNX | ✅ same | ✅ same |
+
+We picked these over alternatives that wouldn't port (Ollama is a
+server, not a library; CTranslate2 has no iOS build; MLX is Apple-only).
+The Python plugin layer is what ships today; the binding work to expose
+them in Swift / Kotlin is the future port path, not a re-architecture.
+
+## What's NOT in `bithuman[local]`
+
+- **Avatar generation** — you still need an `.imx` file. Generate one on
+  [bithuman.ai](https://www.bithuman.ai/#explore) (free tier), or use
+  the bundled sample (`~/.cache/bithuman/models/sample-avatar.imx`).
+- **Avatar metering** — `bithuman run` still pings `api.bithuman.ai`
+  for credit accounting. Set `BITHUMAN_UNMETERED=1` for dev parity
+  testing. Production deployments still need `BITHUMAN_API_KEY`.
+- **Voice cloning** — Supertonic ships 10 voice presets. Custom voice
+  cloning is a [hosted service](https://supertonic.supertone.ai/voice-builder)
+  that produces JSON style files; once you have the JSON, inference is
+  local but the cloning step is not.
+- **Tool / function calling** — the default LLM (Qwen 2.5 0.5B) is too
+  small to do reliable JSON tool calls. Swap to ≥3B for that.
+
+## Troubleshooting
+
+**First run feels stuck.** It's downloading ~860 MB from HuggingFace.
+Watch network activity; subsequent runs start in <1 s.
+
+**`BITHUMAN_LOCAL=1` errors with "required the local extras".** You
+installed `bithuman` without the `[local]` extra. Re-install:
+`pip install 'bithuman[local]'`.
+
+**LLM is too dumb.** Bump to a bigger GGUF — see the table above.
+
+**TTS pronouns wrong language.** Set `BITHUMAN_LOCAL_LANG` to match
+your transcript language. Default `en`.
+
+**Browser shows avatar but no audio.** Check the brain logs in the
+terminal — there's structured tracing (`stt:transcribe duration_ms=…`,
+`llm:first_token`, `tts:synthesize`). If `stt:transcribe` shows empty
+text, your mic or VAD is the issue; if `llm:first_token` never fires,
+the LLM model didn't load (probably the GGUF file name in
+`BITHUMAN_LOCAL_LLM_FILE` is wrong).
+
+## See also
+
+- [Python SDK · Fully on-device](/sdks/python#fully-on-device--bithumanlocal-22) — quick install + tuning table
+- [Architecture](/getting-started/architecture) — how `libessence` + `livekit-agents` fit together
+- [Changelog · 2.2.x](/changelog) — release notes for the `[local]` extra
+- The plugin source (and structured-logging helpers) lives in
+  [`bithuman-sdk:cpp/bindings/python/livekit_local_plugins/`](https://github.com/bithuman-product/bithuman-sdk/tree/main/cpp/bindings/python/livekit_local_plugins)
