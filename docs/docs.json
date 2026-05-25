@@ -2,6 +2,16 @@
   "$schema": "https://mintlify.com/docs.json",
   "name": "bitHuman",
   "theme": "mint",
+  "fonts": {
+    "heading": {
+      "family": "Roboto",
+      "weight": 700
+    },
+    "body": {
+      "family": "Roboto",
+      "weight": 400
+    }
+  },
   "logo": {
     "light": "/images/bithuman-logo.png",
     "dark": "/images/bithuman-logo.png",
