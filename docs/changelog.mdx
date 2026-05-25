@@ -10,7 +10,13 @@ Product-level changes only. Per-version notes: [Python SDK CHANGELOG](https://gi
 
 ## May 2026
 
-**Python SDK `bithuman` 2.2.0** (2026-05-24) — `bithuman[local]` extra
+**Python SDK `bithuman` 2.2.1** (2026-05-25) — `bithuman[local]` extra
+- (Note: 2.2.0 was tagged the day before but never published — PyPI
+  rejected uploads with bare `400 Bad Request`. 2.2.1 has identical
+  source content + a verbose-twine workflow tweak that surfaced the
+  real cause: the `bithuman` project had reached its 10 GB PyPI
+  storage cap. Deleting 6 superseded releases freed ~8.6 GB; ship
+  unblocked.)
 - New `pip install 'bithuman[local]'` extra adds a **fully on-device
   conversation brain** to `bithuman run`. Flip it on with
   `BITHUMAN_LOCAL=1`; no API key required, no outbound network.
