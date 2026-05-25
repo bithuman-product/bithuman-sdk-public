@@ -149,13 +149,17 @@ adds OpenCV display + speaker playback on top of this loop.
 
 ## No-code render
 
-For one-shot or batch video, skip the SDK entirely. `generate` needs an
-`.imx` and a WAV (`bithuman tts` can make the WAV):
+For one-shot or batch video, skip the SDK entirely. `bithuman render`
+takes an `.imx` and a WAV (bring your own — any TTS works):
 
 ```bash
-bithuman tts "Hello from bitHuman." --output speech.wav
-bithuman generate avatar.imx --audio speech.wav --output demo.mp4
+bithuman render avatar.imx --audio speech.wav --output demo.mp4
 ```
+
+If you want to skip the second tool too, the `[local]` extra bundles
+Supertonic for offline TTS — use it from Python (`from
+livekit.plugins.bithuman import SupertonicTTS`) or wait for the
+upcoming `bithuman tts` subcommand.
 
 ## LiveKit voice agents
 

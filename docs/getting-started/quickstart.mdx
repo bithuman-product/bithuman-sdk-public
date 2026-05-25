@@ -27,63 +27,61 @@ For the full platform support matrix, pre-built wheels for every OS, and install
 
 ## 2. Install the CLI
 
+The recommended path is **pip** — one wheel ships the Rust CLI, the
+runtime, and the streaming Python API:
+
 ```bash
-# macOS + Linux — universal one-liner
-curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
-
-# macOS via Homebrew (auto-pulls native deps)
-brew install bithuman-product/bithuman/bithuman
-
-# Or via pip — the 2.0 bundled wheel ships the same CLI inside the
-# Python package (no separate binary install). Python 3.10–3.14 wheels
-# for macOS arm64 + Linux x86_64/aarch64; pin the version to match
-# what we've tested.
-pip install 'bithuman==2.1.1'
+pip install 'bithuman==2.2.2'
 ```
 
+Python 3.10–3.14 on macOS arm64 + Linux x86_64 / aarch64. Pin the
+version so you don't drift with main.
+
 ```bash
-export BITHUMAN_API_SECRET=your_api_secret
-bithuman doctor          # confirms host + key are good
+export BITHUMAN_API_SECRET=your_api_secret    # avatar-runtime auth
+bithuman --version                              # confirms install
+bithuman list                                   # browse showcase avatars
 ```
 
 <Note>
-The `pip install bithuman` and Homebrew paths install the **same**
-Rust CLI binary (the pip path bundles it inside the wheel). The two
-install paths are interchangeable; pick whichever fits your
-environment. If you already use pip for backend services, sticking
-with pip lets you pin the avatar runtime + CLI together.
-</Note>
-
-<Note>
-**Python 3.10–3.14 supported.** 2.1.1 ships wheels for cp310, cp311,
-cp312, cp313, cp314 on macOS arm64 + Linux x86_64 + Linux aarch64.
-If you're on a different OS/arch (Intel Mac, Windows), use the
-Homebrew CLI instead — no Python dependency.
+**Homebrew alternative.** The Homebrew tap (`brew install
+bithuman-product/bithuman/bithuman`) ships the legacy 1.17.x CLI surface
+(`voice` / `text` / `avatar` / `doctor` / `asr` / `tts` / `generate`
+subcommands). It works, but the `pip install` path is the canonical
+2.x runtime — single command `bithuman run`, `[local]` extra for
+on-device mode, faster ship cadence. See the [CLI reference](/getting-started/cli)
+for the homebrew details.
 </Note>
 
 ## 3. Make it talk
 
-The fastest check needs no files — this fetches a sample avatar on
-first run and serves it in your browser:
+The fastest check needs no model file. Download a sample, then
+stand up the live avatar in your browser:
 
 ```bash
-bithuman avatar          # open http://127.0.0.1:8080, grant mic, talk
+export OPENAI_API_KEY=sk-...                              # cloud brain
+bithuman pull modern-court-jester                          # any slug from `bithuman list`
+bithuman run ~/.cache/bithuman/showcase/modern-court-jester.imx
+# → open the printed http://127.0.0.1:8088/<CODE> URL, grant mic, talk
 ```
 
-Or hold a spoken conversation (cloud LLM + voice):
+Or skip the cloud entirely with the **on-device brain** — no API key,
+no outbound network, ~1.5 GB RAM:
 
 ```bash
-export OPENAI_API_KEY=sk-...
-bithuman voice
+pip install 'bithuman[local]'
+BITHUMAN_LOCAL=1 bithuman run ~/.cache/bithuman/showcase/modern-court-jester.imx
 ```
 
-Or render an MP4 offline. `generate` needs an `.imx` model and a WAV —
-make a quick WAV with the built-in TTS, and reuse the sample the step
-above cached (or any `.imx` you downloaded from Explore):
+First run downloads ~860 MB of brain models from HuggingFace, ~90 s
+once. Subsequent runs warm-load in under a second. See [Local
+mode →](/guides/local-mode) for the stack details and tuning knobs.
+
+Or render an MP4 offline (no browser, no brain — just lipsync a WAV
+you have already):
 
 ```bash
-bithuman tts "Hello from bitHuman." --output speech.wav
-bithuman generate ~/.cache/bithuman/models/sample-avatar.imx \
+bithuman render ~/.cache/bithuman/showcase/modern-court-jester.imx \
   --audio speech.wav --output demo.mp4
 ```
 

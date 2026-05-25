@@ -35,27 +35,28 @@ code, no language toolchain.
   <Tab title="CLI (no code)">
     The universal one-liner — macOS and Linux:
 
-    ```bash
-    curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
-    ```
-
-    macOS via Homebrew (auto-pulls native deps):
+    The 2.x CLI ships in the pip wheel — one install, one command:
 
     ```bash
-    brew install bithuman-product/bithuman/bithuman
+    pip install bithuman
+    export BITHUMAN_API_SECRET=...    # avatar-runtime auth
+    export OPENAI_API_KEY=sk-...      # cloud brain (or skip + use local below)
+    bithuman pull modern-court-jester
+    bithuman run ~/.cache/bithuman/showcase/modern-court-jester.imx
+    # → open the printed http://127.0.0.1:8088/<CODE>, grant mic, talk
     ```
 
-    Then:
+    For a **fully on-device brain** (no OpenAI key, no outbound
+    network), add the `[local]` extra and flip one env var:
 
     ```bash
-    bithuman doctor      # verify host + API key
-    bithuman avatar      # opens http://127.0.0.1:8080 with the avatar
-    bithuman voice       # spoken conversation in your terminal
-    bithuman text        # text-only chat, stdin → stdout
+    pip install 'bithuman[local]'
+    BITHUMAN_LOCAL=1 bithuman run <model.imx>
     ```
 
-    `voice` / `text` auto-pick cloud (when `OPENAI_API_KEY` is set) or
-    fully on-device. [CLI reference →](/getting-started/cli)
+    Homebrew tap available too (ships the 1.17.x surface with
+    voice / text / doctor / avatar subcommands —
+    [CLI reference →](/getting-started/cli)).
   </Tab>
 
   <Tab title="Python">
@@ -172,26 +173,39 @@ and an avatar `.imx` from the
 
 <AccordionGroup>
   <Accordion title="Render a talking-head video from a script" icon="film">
-    No code — make a WAV, then render an MP4:
+    No code — render an MP4 from a model + WAV:
 
     ```bash
-    bithuman tts "Hello from bitHuman." --output speech.wav
-    bithuman generate avatar.imx --audio speech.wav --output demo.mp4
+    bithuman render avatar.imx --audio speech.wav --output demo.mp4
     ```
 
-    `avatar.imx` is any model you downloaded from Explore (or the
-    sample the CLI caches on first `bithuman avatar`). Batch-render at
-    scale by looping over scripts; the same path is in every SDK.
+    `avatar.imx` is any model you downloaded via `bithuman pull <slug>`
+    (browse with `bithuman list`) or from
+    [Explore](https://www.bithuman.ai/#explore). Bring the WAV from any
+    TTS — your own, ElevenLabs, OpenAI, or the bundled
+    [`SupertonicTTS` plugin](/guides/local-mode) if you've installed
+    `bithuman[local]`. Batch-render at scale by looping over scripts;
+    the same path is in every SDK.
   </Accordion>
 
-  <Accordion title="Have a spoken conversation" icon="microphone">
+  <Accordion title="Have a spoken conversation in your browser" icon="microphone">
+    Cloud brain (OpenAI Realtime):
+
     ```bash
-    export OPENAI_API_KEY=sk-...   # cloud LLM/voice
-    bithuman voice                 # or `bithuman voice --local` for fully offline
+    export OPENAI_API_KEY=sk-...
+    bithuman run avatar.imx
+    # → open the printed http://127.0.0.1:8088/<CODE> URL, grant mic, talk
     ```
 
-    The avatar lip-syncs the bot's reply in real time. Half-duplex mic
-    gating keeps it from talking over itself.
+    Fully on-device — no API key, no outbound network:
+
+    ```bash
+    pip install 'bithuman[local]'
+    BITHUMAN_LOCAL=1 bithuman run avatar.imx
+    ```
+
+    The avatar lip-syncs the bot's reply in real time. See
+    [Local mode →](/guides/local-mode) for the on-device stack.
   </Accordion>
 
   <Accordion title="Embed an avatar in your app" icon="mobile">
