@@ -32,8 +32,21 @@ brew install bithuman-product/bithuman/bithuman
 # macOS / Linux — curl-pipe.
 curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
 
-# Linux x86_64 + aarch64, Windows x86_64 — tarballs on GitHub Releases.
+# Linux x86_64 + aarch64 — tarballs on GitHub Releases.
+
+# Python (2.0+): the same binary ships in the pip wheel.
+pip install bithuman
 ```
+
+<Note>
+The flow below describes the **1.17.x** CLI surface still on Homebrew
+(`voice` / `text` / `avatar` / `asr` subcommands). The **2.x** surface
+that ships from `pip install bithuman` is consolidated to a single
+`bithuman run avatar.imx` command. Set `BITHUMAN_LOCAL=1` to use the
+fully on-device brain (whisper.cpp + llama.cpp + Supertonic + Silero
+VAD) — see [Local mode →](/guides/local-mode). Homebrew bump to 2.x
+is tracked.
+</Note>
 
 Verify:
 

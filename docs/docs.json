@@ -105,6 +105,7 @@
           {
             "group": "Guides",
             "pages": [
+              "guides/local-mode",
               "guides/building-avatars",
               "guides/deployment"
             ]
