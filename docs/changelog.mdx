@@ -10,6 +10,17 @@ Product-level changes only. Per-version notes: [Python SDK CHANGELOG](https://gi
 
 ## May 2026
 
+**Python SDK `bithuman` 2.2.2** (2026-05-25) — Linux CLI tarballs restored
+- CI-only cleanup release; no API / runtime changes. Same Python wheel
+  content as 2.2.1.
+- Linux CLI tarballs (`bithuman-x86_64-unknown-linux-gnu.tar.gz` and
+  `bithuman-aarch64-unknown-linux-gnu.tar.gz`) ship on the GitHub
+  Release again — they had been missing since 2.0.1 because of two
+  container-build blockers, both now fixed in `main`.
+- Pin `bithuman==2.2.2` if you want `pip install` AND the standalone
+  Linux CLI binary from the same tag; `==2.2.1` is fine for wheel-only
+  consumers.
+
 **Python SDK `bithuman` 2.2.1** (2026-05-25) — `bithuman[local]` extra
 - (Note: 2.2.0 was tagged the day before but never published — PyPI
   rejected uploads with bare `400 Bad Request`. 2.2.1 has identical
