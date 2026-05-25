@@ -6,6 +6,18 @@ icon: "terminal"
 
 `bithuman` is a single binary that runs the avatar locally and gives you voice / text / browser-rendered avatar modes. Same commands on macOS, Linux, and Windows. The fastest way to see bitHuman in action — no code, no language toolchain.
 
+<Warning>
+**This page documents the Homebrew CLI (v1.17.x).** That surface has
+`voice` / `text` / `avatar` / `doctor` / `asr` / `tts` / `generate`
+subcommands and auto-pick cloud-vs-local. The `pip install bithuman`
+path ships the **2.x runtime** (`run` / `render` / `info` / `pull` /
+`list` only — single canonical `bithuman run avatar.imx` with
+`BITHUMAN_LOCAL=1` for the on-device brain). If you're following the
+[Quickstart](/getting-started/quickstart), you're on 2.x — skip to
+[Local mode →](/guides/local-mode) for the on-device path. Homebrew
+bump to 2.x is tracked.
+</Warning>
+
 <Note>
 **Both Essence and Expression `.imx` models work in this one binary.** `bithuman avatar --model <file.imx>` auto-detects which model is in the file and uses the right backend automatically.
 </Note>
