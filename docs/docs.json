@@ -9,9 +9,9 @@
   },
   "favicon": "/images/bitHuman-logo-circle.png",
   "colors": {
-    "primary": "#ea5455",
-    "light": "#ff7b7c",
-    "dark": "#ea5455"
+    "primary": "#FF5757",
+    "light": "#FF8A65",
+    "dark": "#FF5757"
   },
   "navbar": {
     "links": [
@@ -181,51 +181,189 @@
     }
   },
   "redirects": [
-    { "source": "/python-sdk", "destination": "/sdks/python" },
-    { "source": "/python-sdk/overview", "destination": "/sdks/python" },
-    { "source": "/python-sdk/quickstart", "destination": "/sdks/python" },
-    { "source": "/getting-started/quickstart-python", "destination": "/sdks/python" },
-    { "source": "/platform", "destination": "/api-reference/overview" },
-    { "source": "/swift-sdk", "destination": "/sdks/swift" },
-    { "source": "/swift-sdk/overview", "destination": "/sdks/swift" },
-    { "source": "/swift-sdk/quickstart", "destination": "/sdks/swift" },
-    { "source": "/swift-sdk/streaming", "destination": "/sdks/swift" },
-    { "source": "/swift-sdk/essence", "destination": "/sdks/swift" },
-    { "source": "/swift-sdk/macos", "destination": "/sdks/swift" },
-    { "source": "/swift-sdk/ios", "destination": "/sdks/swift" },
-    { "source": "/swift-sdk/troubleshooting", "destination": "/sdks/swift" },
-    { "source": "/swift-sdk/cookbook", "destination": "/sdks/swift" },
-    { "source": "/swift-sdk/agentic", "destination": "/sdks/swift" },
-    { "source": "/swift-sdk/index", "destination": "/sdks/swift" },
-    { "source": "/swift-sdk/cli", "destination": "/getting-started/cli" },
-    { "source": "/kotlin-sdk", "destination": "/sdks/kotlin" },
-    { "source": "/kotlin-sdk/overview", "destination": "/sdks/kotlin" },
-    { "source": "/kotlin-sdk/quickstart", "destination": "/sdks/kotlin" },
-    { "source": "/kotlin-sdk/streaming", "destination": "/sdks/kotlin" },
-    { "source": "/getting-started/install", "destination": "/" },
-    { "source": "/getting-started/choose-your-sdk", "destination": "/" },
-    { "source": "/getting-started/platforms", "destination": "/getting-started/device-matrix" },
-    { "source": "/getting-started/networking-and-offline", "destination": "/getting-started/architecture" },
-    { "source": "/getting-started/use-cases", "destination": "/" },
-    { "source": "/getting-started/prompts", "destination": "/guides/building-avatars" },
-    { "source": "/getting-started/media-guide", "destination": "/guides/building-avatars" },
-    { "source": "/getting-started/animal-mode", "destination": "/guides/building-avatars" },
-    { "source": "/getting-started/how-it-works", "destination": "/getting-started/models" },
-    { "source": "/deployment/avatar-sessions", "destination": "/guides/deployment" },
-    { "source": "/deployment/livekit-cloud-plugin", "destination": "/guides/deployment" },
-    { "source": "/deployment/self-hosted-gpu", "destination": "/guides/deployment" },
-    { "source": "/integrations/embed", "destination": "/guides/deployment" },
-    { "source": "/integrations/webhooks", "destination": "/guides/deployment" },
-    { "source": "/integrations/events", "destination": "/guides/deployment" },
-    { "source": "/examples/audio-clip", "destination": "/examples/python-hello" },
-    { "source": "/examples/microphone", "destination": "/examples/python-hello" },
-    { "source": "/examples/apple-local", "destination": "/examples/overview" },
-    { "source": "/examples/apple-expression", "destination": "/examples/overview" },
-    { "source": "/examples/halo-macos", "destination": "/examples/overview" },
-    { "source": "/examples/raspberry-pi", "destination": "/examples/overview" },
-    { "source": "/examples/self-hosted-plugin", "destination": "/guides/deployment" },
-    { "source": "/quickstart", "destination": "/getting-started/quickstart" },
-    { "source": "/install", "destination": "/" },
-    { "source": "/cli", "destination": "/getting-started/cli" }
+    {
+      "source": "/python-sdk",
+      "destination": "/sdks/python"
+    },
+    {
+      "source": "/python-sdk/overview",
+      "destination": "/sdks/python"
+    },
+    {
+      "source": "/python-sdk/quickstart",
+      "destination": "/sdks/python"
+    },
+    {
+      "source": "/getting-started/quickstart-python",
+      "destination": "/sdks/python"
+    },
+    {
+      "source": "/platform",
+      "destination": "/api-reference/overview"
+    },
+    {
+      "source": "/swift-sdk",
+      "destination": "/sdks/swift"
+    },
+    {
+      "source": "/swift-sdk/overview",
+      "destination": "/sdks/swift"
+    },
+    {
+      "source": "/swift-sdk/quickstart",
+      "destination": "/sdks/swift"
+    },
+    {
+      "source": "/swift-sdk/streaming",
+      "destination": "/sdks/swift"
+    },
+    {
+      "source": "/swift-sdk/essence",
+      "destination": "/sdks/swift"
+    },
+    {
+      "source": "/swift-sdk/macos",
+      "destination": "/sdks/swift"
+    },
+    {
+      "source": "/swift-sdk/ios",
+      "destination": "/sdks/swift"
+    },
+    {
+      "source": "/swift-sdk/troubleshooting",
+      "destination": "/sdks/swift"
+    },
+    {
+      "source": "/swift-sdk/cookbook",
+      "destination": "/sdks/swift"
+    },
+    {
+      "source": "/swift-sdk/agentic",
+      "destination": "/sdks/swift"
+    },
+    {
+      "source": "/swift-sdk/index",
+      "destination": "/sdks/swift"
+    },
+    {
+      "source": "/swift-sdk/cli",
+      "destination": "/getting-started/cli"
+    },
+    {
+      "source": "/kotlin-sdk",
+      "destination": "/sdks/kotlin"
+    },
+    {
+      "source": "/kotlin-sdk/overview",
+      "destination": "/sdks/kotlin"
+    },
+    {
+      "source": "/kotlin-sdk/quickstart",
+      "destination": "/sdks/kotlin"
+    },
+    {
+      "source": "/kotlin-sdk/streaming",
+      "destination": "/sdks/kotlin"
+    },
+    {
+      "source": "/getting-started/install",
+      "destination": "/"
+    },
+    {
+      "source": "/getting-started/choose-your-sdk",
+      "destination": "/"
+    },
+    {
+      "source": "/getting-started/platforms",
+      "destination": "/getting-started/device-matrix"
+    },
+    {
+      "source": "/getting-started/networking-and-offline",
+      "destination": "/getting-started/architecture"
+    },
+    {
+      "source": "/getting-started/use-cases",
+      "destination": "/"
+    },
+    {
+      "source": "/getting-started/prompts",
+      "destination": "/guides/building-avatars"
+    },
+    {
+      "source": "/getting-started/media-guide",
+      "destination": "/guides/building-avatars"
+    },
+    {
+      "source": "/getting-started/animal-mode",
+      "destination": "/guides/building-avatars"
+    },
+    {
+      "source": "/getting-started/how-it-works",
+      "destination": "/getting-started/models"
+    },
+    {
+      "source": "/deployment/avatar-sessions",
+      "destination": "/guides/deployment"
+    },
+    {
+      "source": "/deployment/livekit-cloud-plugin",
+      "destination": "/guides/deployment"
+    },
+    {
+      "source": "/deployment/self-hosted-gpu",
+      "destination": "/guides/deployment"
+    },
+    {
+      "source": "/integrations/embed",
+      "destination": "/guides/deployment"
+    },
+    {
+      "source": "/integrations/webhooks",
+      "destination": "/guides/deployment"
+    },
+    {
+      "source": "/integrations/events",
+      "destination": "/guides/deployment"
+    },
+    {
+      "source": "/examples/audio-clip",
+      "destination": "/examples/python-hello"
+    },
+    {
+      "source": "/examples/microphone",
+      "destination": "/examples/python-hello"
+    },
+    {
+      "source": "/examples/apple-local",
+      "destination": "/examples/overview"
+    },
+    {
+      "source": "/examples/apple-expression",
+      "destination": "/examples/overview"
+    },
+    {
+      "source": "/examples/halo-macos",
+      "destination": "/examples/overview"
+    },
+    {
+      "source": "/examples/raspberry-pi",
+      "destination": "/examples/overview"
+    },
+    {
+      "source": "/examples/self-hosted-plugin",
+      "destination": "/guides/deployment"
+    },
+    {
+      "source": "/quickstart",
+      "destination": "/getting-started/quickstart"
+    },
+    {
+      "source": "/install",
+      "destination": "/"
+    },
+    {
+      "source": "/cli",
+      "destination": "/getting-started/cli"
+    }
   ]
 }
