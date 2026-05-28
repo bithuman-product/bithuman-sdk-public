@@ -2,6 +2,59 @@
 
 All notable changes to the `bithuman` package are documented here.
 
+## [2.3.0] - 2026-05-28
+
+### Changed
+- **`bithuman` is now library-only.** The wheel ships the
+  `AsyncBithuman` / `Bithuman` runtime + LiveKit plugin glue and
+  nothing else. Wheel size drops back to ~5 MB (was ~50–71 MB in
+  2.0–2.2 when it also bundled the Rust CLI binary +
+  `livekit-server`).
+- **CLI moved to a sibling wheel.** The talk-to-your-avatar CLI is now
+  published as [`bithuman-cli`](https://pypi.org/project/bithuman-cli/)
+  on PyPI. Source moved out of the SDK monorepo into the new
+  [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps)
+  repo (apps consume the engine via the SDKs, same as any other
+  downstream consumer). Both wheels share the same `libessence`
+  engine — installing both side-by-side is supported.
+- **Homebrew install path unchanged.** `brew install
+  bithuman-product/bithuman/bithuman` continues to ship the same Rust
+  binary as `bithuman-cli`; the formula source lives at
+  [`homebrew-bithuman`](https://github.com/bithuman-product/homebrew-bithuman).
+
+### Migration
+- **Already on `pip install bithuman` for the CLI?** Switch to one of:
+  ```
+  pip install bithuman-cli                                   # PyPI sibling
+  brew install bithuman-product/bithuman/bithuman            # Homebrew
+  ```
+  The `bithuman` console-script disappears from this wheel — installing
+  `bithuman-cli` (or Homebrew) restores it. The CLI surface itself is
+  unchanged (`bithuman run / render / info / list / pull / doctor`).
+- **Using the library only (`from bithuman import AsyncBithuman`)?** No
+  code change required. `pip install bithuman --upgrade` is enough.
+- **Vendored `livekit-plugins-bithuman`** continues to ship inside this
+  wheel under `livekit/plugins/bithuman/` — same import path as before.
+
+### Compat
+- Library API (`AsyncBithuman`, `Bithuman`, `bithuman.engine.*`,
+  `bithuman.audio`, `bithuman.api`, `bithuman.runtime`, …) is
+  **unchanged**. Public symbols, error hierarchy, IPC formats all
+  preserved.
+- Python 3.10 minimum unchanged.
+
+### Architecture
+- This release is part of a coordinated cross-repo rollout that
+  separates the **Engine** (`libessence`) from the **SDKs** (Python,
+  Swift, Kotlin, Rust) from the **Apps** (`bithuman-cli`, Flutter
+  plugin, Expression demos). The engine + SDKs live in
+  [`bithuman-sdk`](https://github.com/bithuman-product/bithuman-sdk);
+  the apps live in
+  [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps);
+  the public landing pages + examples + docs live in this repo
+  ([`bithuman-sdk-public`](https://github.com/bithuman-product/bithuman-sdk-public)).
+  See [docs.bithuman.ai → Architecture](https://docs.bithuman.ai/getting-started/architecture).
+
 ## [2.0.1] - 2026-05-24
 
 ### Fixed

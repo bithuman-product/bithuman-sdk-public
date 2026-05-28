@@ -10,10 +10,10 @@ bitHuman is shipped as a single cross-platform runtime with idiomatic SDKs in ea
 
 | SDK | Platforms | Install |
 |---|---|---|
-| **Python** | macOS arm64, Linux x86_64, Linux aarch64, Windows x86_64 | `pip install bithuman` |
+| **Python (library)** | macOS arm64, Linux x86_64, Linux aarch64, Windows x86_64 | `pip install bithuman` |
 | **Swift** | macOS arm64, iOS device + simulator | SwiftPM `bitHumanKit` |
 | **Kotlin** | Android `arm64-v8a` | Maven `ai.bithuman:sdk` |
-| **Rust CLI** | macOS, Linux, Windows | `brew install bithuman-product/bithuman/bithuman` |
+| **bithuman CLI** | macOS, Linux, Windows | `brew install bithuman-product/bithuman/bithuman` or `pip install bithuman-cli` |
 
 All four SDKs read the same `.imx` model file and produce identical output. Third-party dependencies are bundled inside the SDK — your app's `Package.swift` / `build.gradle.kts` / `requirements.txt` only needs the bithuman dependency.
 
@@ -23,30 +23,30 @@ For the full install matrix and channel-by-channel snippets, see the [Quickstart
 
 ```
 ┌───────────────────────────────────────────────────────────────┐
-│  Your app                                                     │
-│  ─────────                                                    │
+│  Apps          (bithuman-apps repo — consume the SDKs)        │
 │   • bitHuman CLI       brew install bithuman                  │
+│                        pip install bithuman-cli               │
 │   • Flutter plugin     one Dart codebase, three platforms     │
 │   • Reference apps     Mac + iPad consumer apps               │
 └───────────────────────────────────────────────────────────────┘
                             ▼ build on
 ┌───────────────────────────────────────────────────────────────┐
-│  Language SDKs        (where most developers integrate)       │
+│  SDKs          (bithuman-sdk repo — language bindings)        │
 │   • Python wheel       pip install bithuman                   │
 │   • Swift package      SwiftPM bitHumanKit                    │
 │   • Kotlin AAR         ai.bithuman:sdk                        │
-│   • Rust crate         bundled with the CLI                   │
+│   • Rust crate         bithuman-core                          │
 └───────────────────────────────────────────────────────────────┘
                             ▼ wrap
 ┌───────────────────────────────────────────────────────────────┐
-│  bitHuman runtime     (cross-platform, statically linked)     │
+│  Engine        (libessence — cross-platform, static)          │
 │   • Audio in           16 kHz mono PCM                        │
 │   • Video out          25 FPS BGR frames                      │
 │   • macOS · iOS · Android · Linux · Windows                   │
 └───────────────────────────────────────────────────────────────┘
 ```
 
-Most developers integrate at the SDK layer — you never need to know what's underneath. The runtime is statically linked into each SDK distribution, so there are no extra system libraries to install.
+Most developers integrate at the SDK layer — you never need to know what's underneath. The engine is statically linked into each SDK distribution, so there are no extra system libraries to install. The CLI consumes the Rust SDK the same way any third-party app would.
 
 ## Models
 
@@ -64,24 +64,27 @@ The same SDK methods drive both — see [Models](/getting-started/models) for th
 | **Examples** ([bithuman-sdk-public/Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples)) | Public, MIT |
 | **Homebrew tap** ([homebrew-bithuman](https://github.com/bithuman-product/homebrew-bithuman)) | Public, Apache-2.0 |
 | **Docs site source** | Public |
-| **Runtime engine + SDK source** | Private (proprietary) |
+| **Engine source** (`libessence` in [`bithuman-sdk`](https://github.com/bithuman-product/bithuman-sdk)) | Private (proprietary) |
+| **SDK source** (Python / Swift / Kotlin / Rust, same repo) | Private (proprietary) |
+| **App source** (CLI, Flutter, Expression demos in [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps)) | Private (proprietary) |
 | **Cloud runtime** (`api.bithuman.ai`) | Private (proprietary) |
 | **Model weights** (`.imx` files) | Private, downloaded at runtime, gated by API key |
 
-The IP that matters — model weights, the cloud GPU service, billing — is server-side. The runtime engine compiles into the public binary distributions.
+The IP that matters — model weights, the cloud GPU service, billing — is server-side. The engine + SDKs compile into the public binary distributions; the apps consume them the same way any third-party would.
 
 ## Release flow
 
-Every release starts from a single git tag on the runtime monorepo and fans out:
+Every release starts from a single coordinated git tag on the engine repo (`bithuman-sdk`) and fans out across the SDK repo and the apps repo:
 
 ```
-Single release tag
+Coordinated release tag (engine + SDKs)
     │
-    ├──► PyPI               bithuman 1.17.x
-    ├──► Maven Central      ai.bithuman:sdk:1.17.x
+    ├──► PyPI               bithuman 2.3.x          (library)
+    ├──► PyPI               bithuman-cli 2.3.x      (CLI, from bithuman-apps)
+    ├──► Maven Central      ai.bithuman:sdk:2.3.x
     ├──► GitHub Releases    Swift XCFramework + Rust CLI tarballs
-    ├──► Homebrew tap       bithuman 1.17.x formula
-    └──► pub.dev            bithuman Flutter plugin (publish queued)
+    ├──► Homebrew tap       bithuman 2.3.x formula  (CLI, from bithuman-apps)
+    └──► pub.dev            bithuman Flutter plugin (from bithuman-apps; publish queued)
     ▼
 Your app picks its channel
     ▼

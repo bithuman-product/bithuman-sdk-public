@@ -27,15 +27,24 @@ For the full platform support matrix, pre-built wheels for every OS, and install
 
 ## 2. Install the CLI
 
-The recommended path is **pip** — one wheel ships the Rust CLI, the
-runtime, and the streaming Python API:
+Three install paths, same Rust binary:
 
 ```bash
-pip install 'bithuman==2.2.5'
+# macOS Homebrew — recommended.
+brew install bithuman-product/bithuman/bithuman
+
+# Universal installer — macOS + Linux, no Python required.
+curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
+
+# PyPI sibling wheel — Python-only environments.
+pip install 'bithuman-cli==2.3.0'
 ```
 
-Python 3.10–3.14 on macOS arm64 + Linux x86_64 / aarch64. Pin the
-version so you don't drift with main.
+The CLI is published as the standalone [`bithuman-cli`](https://pypi.org/project/bithuman-cli/)
+wheel (Python 3.10–3.14, macOS arm64 + Linux x86_64 / aarch64). The
+sibling [`bithuman`](https://pypi.org/project/bithuman/) wheel is the
+Python **library** (`from bithuman import AsyncBithuman`) and does
+not ship the CLI as of 2.3.
 
 ```bash
 export BITHUMAN_API_SECRET=your_api_secret    # avatar-runtime auth
@@ -44,13 +53,10 @@ bithuman list                                   # browse showcase avatars
 ```
 
 <Note>
-**Homebrew alternative.** The Homebrew tap (`brew install
-bithuman-product/bithuman/bithuman`) ships the legacy 1.17.x CLI surface
-(`voice` / `text` / `avatar` / `doctor` / `asr` / `tts` / `generate`
-subcommands). It works, but the `pip install` path is the canonical
-2.x runtime — single command `bithuman run`, `[local]` extra for
-on-device mode, faster ship cadence. See the [CLI reference](/getting-started/cli)
-for the homebrew details.
+**Library + CLI together.** Installing both `bithuman` and
+`bithuman-cli` side-by-side is supported — they share the same
+`libessence` engine. Most users only need one. See the
+[CLI reference](/getting-started/cli) for the full subcommand surface.
 </Note>
 
 ## 3. Make it talk
@@ -69,7 +75,7 @@ Or skip the cloud entirely with the **on-device brain** — no API key,
 no outbound network, ~1.5 GB RAM:
 
 ```bash
-pip install 'bithuman[local]'
+pip install 'bithuman-cli[local]'
 BITHUMAN_LOCAL=1 bithuman run ~/.cache/bithuman/showcase/modern-court-jester.imx
 ```
 

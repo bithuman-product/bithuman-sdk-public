@@ -12,18 +12,9 @@
 
 Photorealistic avatars with audio-driven lip sync at 25 FPS. Runs on edge devices — typically 1–2 CPU cores, &lt;200 ms end-to-end latency. Use it for voice agents with faces, video chatbots, tutors, NPCs, digital humans.
 
-## Which avatar should I use?
+## What the SDK ships
 
-The SDK ships one API — `AsyncBithuman.create(model_path=…)` — driving two model types. Start with **Essence**. It's the default, runs on every supported platform, and is what every new user should reach for.
-
-| | **Essence** ← default | **Expression** |
-|---|---|---|
-| Runs on | Linux / macOS / Windows, any CPU | macOS 14+ on Apple Silicon **M3 or later** (on-device) |
-| Rendering | Pre-built `.imx` bundle, in-process | Bundled Swift daemon via IPC |
-| Footprint | 1–2 CPU cores, &lt;200 MB RAM | ~4 GB RAM working set |
-| Best for | Voice agents, kiosks, edge devices, everywhere | Custom-face avatars on Mac M3+ |
-
-Loading an Expression `.imx` on an unsupported host raises a typed `ExpressionModelNotSupported` — not a crash. For cloud or self-hosted-GPU Expression dispatch (Linux + NVIDIA, or bitHuman's cloud workers), use the [LiveKit plugin](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-expression) (`bithuman.AvatarSession`), not `AsyncBithuman`.
+The SDK exposes one API — `AsyncBithuman.create(model_path=…)` — driving the **Essence** model family. Essence runs on Linux / macOS / Windows on any modern CPU (1–2 cores, &lt;200 MB RAM) and is the supported avatar runtime.
 
 Architecture deep dive + production patterns at [docs.bithuman.ai](https://docs.bithuman.ai).
 
@@ -33,7 +24,7 @@ Architecture deep dive + production patterns at [docs.bithuman.ai](https://docs.
 pip install bithuman --upgrade
 ```
 
-Pre-built wheels for Python 3.10 – 3.14 on Linux x86_64 + aarch64 and macOS Apple Silicon. (macOS Intel + Windows ship via a separate per-tag CI run; Python 3.9 dropped in 2.0 because the bundled brain requires 3.10.)
+Pre-built wheels for Python 3.10 – 3.14 on Linux x86_64 + aarch64 and macOS Apple Silicon. (macOS Intel + Windows ship via a separate per-tag CI run; Python 3.9 dropped in 2.0.)
 
 For LiveKit Agent integration (voice agents with faces over WebRTC):
 
@@ -41,29 +32,33 @@ For LiveKit Agent integration (voice agents with faces over WebRTC):
 pip install bithuman[agent]
 ```
 
-## Two ways to use the package
+## Library only — the CLI ships separately
 
-Since 2.0, `pip install bithuman` gives you **both** a Python library AND a `bithuman` CLI binary — same Rust binary the Homebrew install ships, just bundled into the wheel.
+As of 2.3, this package is **library-only** (~5 MB). The `bithuman`
+CLI moved to its own PyPI package, [`bithuman-cli`](https://pypi.org/project/bithuman-cli/),
+to keep this wheel slim for backend services / batch jobs / custom
+integrations. The runtime library API is unchanged — code pinned to
+`bithuman==1.11.3` (or `2.x`) runs on 2.3 without edits.
 
-### The talk-to-your-avatar CLI (2.0+)
+Need the talk-to-your-avatar CLI? Install either of:
 
 ```bash
-pip install bithuman
-export BITHUMAN_API_SECRET=...   OPENAI_API_KEY=...
-bithuman run        # auto-downloads demo avatar → URL → browser → talk
+pip install bithuman-cli                                   # sibling wheel
+brew install bithuman-product/bithuman/bithuman            # Homebrew tap
 ```
 
-`bithuman run` brings up the entire stack (embedded livekit-server + agent-worker brain + browser UI) from one command. The legacy 1.x Python CLI (`bithuman pack` / `generate` / `stream` / …) is preserved as the `essence-render` console-script.
-
-### The Python library (1.x API preserved)
-
-For backend services / batch jobs / custom integrations, the runtime API below is unchanged from 1.x — code pinned to `bithuman==1.11.3` runs on 2.0.1 without edits.
+Both surface the same `bithuman run` / `render` / `info` subcommands
+documented at [docs.bithuman.ai/getting-started/cli](https://docs.bithuman.ai/getting-started/cli).
+The CLI source lives in [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps);
+this repo hosts the library only.
 
 ## Quick start — Essence (cross-platform, default)
 
 Grab an `.imx` from your [bitHuman dashboard](https://www.bithuman.ai/#explore) (⋮ → Download), export your API secret, then:
 
 ### Offline render via CLI
+
+The CLI is a separate install (see above). Once it's on your `PATH`:
 
 ```bash
 export BITHUMAN_API_SECRET=your_secret
@@ -111,41 +106,6 @@ asyncio.run(main())
 
 `Bithuman` (no `Async`) is the threaded sync equivalent — same surface, no `await`. Usage examples live in the [Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples) directory.
 
-## Quick start — Expression on macOS M3+ (on-device, optional)
-
-> **macOS 14+ on Apple Silicon M3 or later (M3+ recommended).** M1 / M2 / Intel / Linux / Windows: use Essence above, or the LiveKit cloud plugin for Expression dispatch.
-
-Expression bundles a diffusion-based animator that renders any face image in real time. Same API — just point at an Expression `.imx`.
-
-```bash
-bithuman generate expression.imx --audio speech.wav -o out.mp4   # CLI one-shot
-```
-
-```python
-runtime = await AsyncBithuman.create(
-    model_path="expression.imx",
-    api_secret=os.environ["BITHUMAN_API_SECRET"],
-    identity="alice.jpg",         # optional — overrides the bundle's default face
-    quality="medium",             # "high" is offline-only (~2× slower)
-)
-
-await runtime.set_identity("bob.jpg")           # swap face mid-session, ~300 ms
-await runtime.set_identity("bob_cached.npy")    # pre-encoded — instant
-```
-
-| `identity=` | Cost on load | Cost on swap |
-|---|---|---|
-| `None` | 0 (bundle's baked-in face) | n/a |
-| `.jpg` / `.png` | ~300 ms | ~300 ms |
-| `.npy` (pre-encoded) | instant | instant |
-
-| `quality=` | Realtime @ 384×384 on M5 | Realtime @ 512×512 on M5 |
-|---|---|---|
-| `"medium"` (default) | **1.84×** | **1.14×** |
-| `"high"` | 1.05× | 0.67× ⚠ sub-realtime — offline only |
-
-On a supported Mac, `AsyncBithuman` transparently spawns the bundled `bithuman-expression-daemon` subprocess when it sees an Expression manifest — there's nothing to configure.
-
 ## API surface
 
 ```python
@@ -170,19 +130,21 @@ async for frame in runtime.run():
 # Controls:
 await runtime.push(VideoControl(action="wave"))
 await runtime.push(VideoControl(target_video="idle"))
-
-# Identity (Expression only):
-await runtime.set_identity("face.jpg")
 ```
 
 Full reference: [docs.bithuman.ai](https://docs.bithuman.ai).
 
 ## CLI
 
-The `bithuman` CLI is a **separate binary**, not part of this pip
-package. Install it independently:
+The `bithuman` CLI is a **separate package** ([`bithuman-cli`](https://pypi.org/project/bithuman-cli/)
+on PyPI, [`bithuman` on Homebrew](https://github.com/bithuman-product/homebrew-bithuman)).
+Source lives in the [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps) repo.
+Install one of:
 
 ```bash
+# PyPI sibling wheel — same Rust binary, Python-friendly install
+pip install bithuman-cli
+
 # macOS + Linux — universal installer
 curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
 # Or macOS Homebrew
@@ -258,7 +220,7 @@ Commercial license required. See [bithuman.ai](https://bithuman.ai) for pricing.
 
 ## Source code & support
 
-The wheels you install via `pip install bithuman` ship Cython-compiled `.so` files for parts of the runtime that include client-side licensing material; the corresponding `.py` source is kept in a private repository for that reason. Everything else in the SDK — the public Python API, the CLI, the LiveKit plugin glue — is the documentation you're reading and the symbols you import.
+The wheels you install via `pip install bithuman` ship Cython-compiled `.so` files for parts of the runtime that include client-side licensing material; the corresponding `.py` source is kept in a private repository for that reason. Everything else in the SDK — the public Python API and the LiveKit plugin glue — is the documentation you're reading and the symbols you import. The CLI is a separate package; its source lives in [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps).
 
 This repo is the public surface for the package:
 

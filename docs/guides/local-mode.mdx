@@ -9,18 +9,18 @@ keywords:
   - on-device STT
   - private avatar
   - mobile avatar
-  - bithuman[local]
+  - bithuman-cli[local]
   - BITHUMAN_LOCAL
 ---
 
-`bithuman[local]` is an opt-in extra that swaps the cloud conversation
+`bithuman-cli[local]` is an opt-in extra that swaps the cloud conversation
 brain (OpenAI Realtime) for an **entirely in-process, on-device stack**
 — whisper.cpp + llama.cpp + Supertonic + Silero VAD. No API key, no
 outbound network, no separate servers. Same `bithuman run` command,
 same browser URL, same avatar.
 
 ```bash
-pip install 'bithuman[local]'
+pip install 'bithuman-cli[local]'   # CLI sibling package; library is `bithuman`
 BITHUMAN_LOCAL=1 bithuman run sample-avatar.imx
 # → open the printed http://127.0.0.1:8088/<CODE> URL in a browser
 ```
@@ -82,7 +82,7 @@ player, and the lifecycle are all unchanged.
 bithuman run avatar.imx                  (Rust CLI, same as cloud)
 ├─ embedded livekit-server               (same)
 ├─ libessence avatar runtime             (same)
-└─ bithuman.serve_brain                  (Python livekit-agents worker)
+└─ bithuman.agent                        (Python livekit-agents worker)
    if BITHUMAN_LOCAL=1:                  (← the only branch)
      stt = WhisperSTT(...)
      llm = LlamaCppLLM(...)
@@ -160,7 +160,7 @@ non-English fluency).
 | Mobile path | not applicable | iOS / Android via the same `.gguf` / `.bin` / `.onnx` |
 
 Both modes use the **same Rust CLI**, the **same brain entrypoint**
-(`bithuman.serve_brain`), and the **same `AvatarSession`** plugin. One
+(`bithuman.agent`), and the **same `AvatarSession`** plugin. One
 env var is the only difference.
 
 ## Mobile portability — what's actually portable
@@ -181,7 +181,7 @@ server, not a library; CTranslate2 has no iOS build; MLX is Apple-only).
 The Python plugin layer is what ships today; the binding work to expose
 them in Swift / Kotlin is the future port path, not a re-architecture.
 
-## What's NOT in `bithuman[local]`
+## What's NOT in `bithuman-cli[local]`
 
 - **Avatar generation** — you still need an `.imx` file. Generate one on
   [bithuman.ai](https://www.bithuman.ai/#explore) (free tier), or use
@@ -202,8 +202,8 @@ them in Swift / Kotlin is the future port path, not a re-architecture.
 Watch network activity; subsequent runs start in <1 s.
 
 **`BITHUMAN_LOCAL=1` errors with "required the local extras".** You
-installed `bithuman` without the `[local]` extra. Re-install:
-`pip install 'bithuman[local]'`.
+installed `bithuman-cli` without the `[local]` extra. Re-install:
+`pip install 'bithuman-cli[local]'`.
 
 **LLM is too dumb.** Bump to a bigger GGUF — see the table above.
 

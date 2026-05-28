@@ -10,6 +10,20 @@ Product-level changes only. Per-version notes: [Python SDK CHANGELOG](https://gi
 
 ## May 2026
 
+**Python SDK `bithuman` 2.3.0** (2026-05-28) — library / CLI split
+- `pip install bithuman` is now **library-only** (~5 MB). The CLI
+  ships as a sibling [`bithuman-cli`](https://pypi.org/project/bithuman-cli/)
+  wheel; Homebrew (`brew install bithuman-product/bithuman/bithuman`)
+  is unchanged.
+- CLI source moved into the new
+  [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps)
+  repo (apps layer). Engine + language SDKs live in
+  [`bithuman-sdk`](https://github.com/bithuman-product/bithuman-sdk).
+  See [Architecture →](/getting-started/architecture).
+- Library API unchanged — `from bithuman import AsyncBithuman` works
+  the same. Migration is install-time only: `pip install bithuman-cli`
+  (or use Homebrew) to keep the `bithuman` console-script.
+
 **Python SDK `bithuman` 2.2.2** (2026-05-25) — Linux CLI tarballs restored
 - CI-only cleanup release; no API / runtime changes. Same Python wheel
   content as 2.2.1.

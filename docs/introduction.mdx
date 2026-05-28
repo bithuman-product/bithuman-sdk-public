@@ -33,12 +33,14 @@ code, no language toolchain.
 
 <Tabs>
   <Tab title="CLI (no code)">
-    The universal one-liner — macOS and Linux:
-
-    The 2.x CLI ships in the pip wheel — one install, one command:
+    macOS Homebrew, the universal installer, or the `bithuman-cli`
+    PyPI sibling wheel — all ship the same Rust binary:
 
     ```bash
-    pip install bithuman
+    brew install bithuman-product/bithuman/bithuman    # macOS
+    # or:
+    pip install bithuman-cli                            # Python-only env
+
     export BITHUMAN_API_SECRET=...    # avatar-runtime auth
     export OPENAI_API_KEY=sk-...      # cloud brain (or skip + use local below)
     bithuman pull modern-court-jester
@@ -50,13 +52,13 @@ code, no language toolchain.
     network), add the `[local]` extra and flip one env var:
 
     ```bash
-    pip install 'bithuman[local]'
+    pip install 'bithuman-cli[local]'
     BITHUMAN_LOCAL=1 bithuman run <model.imx>
     ```
 
-    Homebrew tap available too (ships the 1.17.x surface with
-    voice / text / doctor / avatar subcommands —
-    [CLI reference →](/getting-started/cli)).
+    `pip install bithuman` (no `-cli`) is the **library** —
+    `from bithuman import AsyncBithuman` — see the Python tab.
+    [CLI reference →](/getting-started/cli)
   </Tab>
 
   <Tab title="Python">
@@ -65,13 +67,15 @@ code, no language toolchain.
     ```
 
     Python 3.10+ on macOS arm64 + Linux x86_64 / aarch64. The runtime +
-    all native deps + the `bithuman run` CLI are in one wheel.
+    LiveKit plugin glue ship in this wheel; the `bithuman` CLI is
+    a separate package (`pip install bithuman-cli`).
 
     For a **fully on-device brain** (no OpenAI key, no outbound
-    network), add the `[local]` extra and flip one env var:
+    network) on top of the CLI, add the `[local]` extra and flip one
+    env var:
 
     ```bash
-    pip install 'bithuman[local]'
+    pip install 'bithuman-cli[local]'
     BITHUMAN_LOCAL=1 bithuman run sample-avatar.imx
     ```
 
@@ -184,7 +188,7 @@ and an avatar `.imx` from the
     [Explore](https://www.bithuman.ai/#explore). Bring the WAV from any
     TTS — your own, ElevenLabs, OpenAI, or the bundled
     [`SupertonicTTS` plugin](/guides/local-mode) if you've installed
-    `bithuman[local]`. Batch-render at scale by looping over scripts;
+    `bithuman-cli[local]`. Batch-render at scale by looping over scripts;
     the same path is in every SDK.
   </Accordion>
 
@@ -200,7 +204,7 @@ and an avatar `.imx` from the
     Fully on-device — no API key, no outbound network:
 
     ```bash
-    pip install 'bithuman[local]'
+    pip install 'bithuman-cli[local]'
     BITHUMAN_LOCAL=1 bithuman run avatar.imx
     ```
 

@@ -21,7 +21,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "bithuman-kit",
+    name: "bithuman",
     platforms: [
         .macOS("26.0"),
         .iOS("26.0"),

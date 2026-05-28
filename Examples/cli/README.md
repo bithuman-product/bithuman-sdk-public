@@ -5,10 +5,12 @@ running voice / text / browser-avatar conversations — no code.
 
 ## Install
 
-The `bithuman` command is a single self-contained binary, installed via
-Homebrew or the universal one-liner. It is **not** the `pip install
-bithuman` package (that ships the Python *SDK* plus an `essence-render`
-console script — see the [Python examples](../python/)).
+The `bithuman` command is a single self-contained binary published as
+the `bithuman-cli` package on PyPI and the `bithuman` formula on the
+Homebrew tap. Source lives in
+[`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps).
+For the Python library (`from bithuman import AsyncBithuman`) see the
+[Python examples](../python/).
 
 ```bash
 # macOS — Homebrew (recommended; pulls native deps).
@@ -16,6 +18,9 @@ brew install bithuman-product/bithuman/bithuman
 
 # macOS / Linux — universal one-liner.
 curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
+
+# Any platform with Python — PyPI sibling wheel, same Rust binary.
+pip install bithuman-cli
 ```
 
 All commands need a bitHuman API secret. Get yours at

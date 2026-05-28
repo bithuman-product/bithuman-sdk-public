@@ -11,7 +11,7 @@ bitHuman is a real-time avatar animation platform. You push audio in, and get li
 | Kiosk / 24-7 / edge box | Self-hosted Essence (CPU) | `pip install bithuman` | `Examples/python/local-essence/` |
 | On-prem NVIDIA GPU | Self-hosted Expression (Docker) | `docker pull bithuman/expression-avatar:latest` | `Examples/python/local-expression-gpu/` |
 | macOS / iPad / iPhone app | Swift SDK (on-device) | SwiftPM `bithuman-sdk-public` >= 0.8.1 | `Examples/swift/` |
-| Mac, no code | CLI | `curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh \| sh` | `Examples/cli/` |
+| Mac, no code | CLI | `brew install bithuman-product/bithuman/bithuman` (or `pip install bithuman-cli`) | `Examples/cli/` |
 | Any language, HTTP only | REST API | `curl https://api.bithuman.ai/v1/...` | `Examples/rest-api/` |
 | 100% offline Mac | Ollama + Apple Speech + bitHuman | -- | `Examples/integrations/offline-mac/` |
 | Browser embed (iframe) | Embed widget | `bithuman-chat-widget-v5.js` | See docs: [embed](https://docs.bithuman.ai/integrations/embed) |
@@ -133,7 +133,7 @@ All requests require `api-secret: YOUR_SECRET` header.
 | POST | `/v1/dynamics/generate` | Create gesture animations |
 | GET | `/v1/dynamics/{agent_id}` | List available gestures |
 
-### CLI (`bithuman` — install via `curl|sh` or Homebrew, not pip)
+### CLI (`bithuman` — install via Homebrew, `curl|sh`, or `pip install bithuman-cli`; the `bithuman` PyPI wheel is library-only as of 2.3)
 
 | Command | Purpose |
 |---|---|
@@ -217,14 +217,15 @@ await runtime.set_identity("bob.npy")       # instant (pre-encoded)
 
 ## Repository Layout
 
-There are two repos relevant to Apple-platform development:
+The bitHuman platform spans three repos, each owning one layer of the stack:
 
-| Repo | Visibility | What it contains |
-|------|-----------|------------------|
-| **bithuman-sdk-public** | Public | SwiftPM binary package, Python SDK metadata, runnable examples, docs.bithuman.ai source |
-| **bithuman-apps** | Private | Reference apps (Mac, iPad, iPhone) that consume the SDK via the published SwiftPM binary — the same way any external developer would |
+| Repo | Visibility | Layer | What it contains |
+|------|-----------|-------|------------------|
+| **bithuman-sdk** | Private | Engine + SDKs | `libessence` engine + Python / Swift / Kotlin / Rust language bindings (source). Publishes the binary wheels / xcframework / AAR. |
+| **bithuman-apps** | Private | Apps | CLI (`bithuman-cli` on PyPI, Homebrew formula source), Flutter plugin, reference apps (Mac, iPad, iPhone). Each consumes the SDKs the same way any third-party would. |
+| **bithuman-sdk-public** | Public | Landing pages + docs + examples | SwiftPM facade for the binary release, `python/` PyPI landing, runnable `Examples/`, `docs.bithuman.ai` source. |
 
-Reference apps do **not** live inside bithuman-sdk-public. They are in the separate `bithuman-apps` repo and depend on the SDK as a normal SwiftPM consumer.
+Reference apps and the CLI do **not** live inside `bithuman-sdk-public` or `bithuman-sdk`. They are in `bithuman-apps` and depend on the SDKs as normal downstream consumers.
 
 ### bithuman-sdk-public
 

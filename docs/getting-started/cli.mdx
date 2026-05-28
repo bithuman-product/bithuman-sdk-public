@@ -11,15 +11,26 @@ introspection, host check. Same surface on macOS arm64 and Linux
 
 ## Install
 
-```bash
-# pip — recommended. Ships the CLI + runtime + Python SDK in one wheel.
-pip install bithuman
+The `bithuman` CLI ships as its own package — `bithuman-cli` on PyPI
+or `bithuman` on the Homebrew tap. Both surface the same Rust binary.
+(The `bithuman` PyPI package is the **library** — `from bithuman import
+AsyncBithuman` — and does not ship the CLI as of 2.3.)
 
-# Homebrew (legacy 1.17.x surface; bump to 2.x is tracked).
-# brew install bithuman-product/bithuman/bithuman
+```bash
+# macOS Homebrew — recommended on Apple Silicon.
+brew install bithuman-product/bithuman/bithuman
+
+# Universal installer — macOS + Linux, no Python required.
+curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
+
+# PyPI sibling wheel — same Rust binary, Python-friendly install.
+pip install bithuman-cli
 ```
 
-Python 3.10–3.14 on macOS arm64 + Linux x86_64 / aarch64. Verify:
+The `pip install bithuman-cli` path supports Python 3.10–3.14 on macOS
+arm64 + Linux x86_64 / aarch64. CLI source lives in
+[`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps).
+Verify the install:
 
 ```bash
 bithuman --version
@@ -31,7 +42,7 @@ bithuman doctor      # full host + key + cache check
 | Brain | Requires | Use when |
 |---|---|---|
 | **Cloud** (OpenAI Realtime) | `OPENAI_API_KEY` | Fast warm-up, lowest first-token latency, hosted reliability |
-| **On-device** (whisper.cpp + llama.cpp + Supertonic) | `pip install 'bithuman[local]'` + `BITHUMAN_LOCAL=1` | Zero outbound network, private audio, kiosks / offline / mobile-ramp |
+| **On-device** (whisper.cpp + llama.cpp + Supertonic) | `pip install 'bithuman-cli[local]'` + `BITHUMAN_LOCAL=1` | Zero outbound network, private audio, kiosks / offline / mobile-ramp |
 
 Both go through the **same** `bithuman run` command:
 
@@ -43,7 +54,7 @@ export OPENAI_API_KEY=sk-...
 bithuman run avatar.imx
 
 # On-device:
-pip install 'bithuman[local]'
+pip install 'bithuman-cli[local]'
 BITHUMAN_LOCAL=1 bithuman run avatar.imx
 ```
 
@@ -159,27 +170,6 @@ with `rm -rf ~/.cache/bithuman` (regenerates on next run).
 | `BITHUMAN_INSTRUCTIONS` | System prompt override for the brain. |
 | `BITHUMAN_UNMETERED` | `=1` skips the avatar-runtime auth heartbeat — dev / parity testing only. |
 | `RUST_LOG` | Tracing filter. Default `info,bithuman_serve=info`. |
-
-## Homebrew (legacy 1.17.x)
-
-The Homebrew tap still ships the 1.17.x CLI surface
-(`voice` / `text` / `avatar` / `asr` / `tts` / `generate` subcommands
-with auto-pick cloud-vs-local on `voice` and `text`). It works, but
-the **pip path is the canonical 2.x runtime** — single `bithuman run`
-command, `[local]` extra for on-device, faster ship cadence.
-
-If you're already on the Homebrew CLI:
-
-```bash
-brew upgrade bithuman-product/bithuman/bithuman    # check for 2.x tap bump
-```
-
-Or migrate to pip:
-
-```bash
-pip install bithuman
-bithuman --version    # confirms you're on the 2.x runtime
-```
 
 ## See also
 

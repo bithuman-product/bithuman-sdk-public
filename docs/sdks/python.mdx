@@ -12,7 +12,7 @@ native dependencies ship in the wheel.
 ## Install
 
 ```bash
-pip install 'bithuman==2.2.5'
+pip install 'bithuman==2.3.0'
 ```
 
 **Python 3.10–3.14** supported. Platforms: macOS arm64, Linux
@@ -20,6 +20,14 @@ x86_64, Linux aarch64. (Windows wheels were last published with
 1.9.0 and are not yet back in the 2.x matrix — use WSL2, or fall
 back to the [Homebrew CLI](/getting-started/cli) on a different
 host.)
+
+<Note>
+`pip install bithuman` is the **library** — `from bithuman import
+AsyncBithuman`. For the command-line tool, install the sibling
+[`bithuman-cli`](https://pypi.org/project/bithuman-cli/) wheel or use
+the [Homebrew tap](/getting-started/cli). Both share the same
+`libessence` engine.
+</Note>
 
 <Note>
 The SDK returns frames as numpy BGR arrays and needs **no** OpenCV
@@ -31,40 +39,43 @@ each example's `requirements.txt`.
 Auth: export `BITHUMAN_API_SECRET`. Get a secret at
 [Developer → API Keys](https://www.bithuman.ai/#developer).
 
-## 2.0 — `bithuman` is also a CLI
+## 2.3 — library and CLI are now separate wheels
 
-Since 2.0, `pip install bithuman` also installs a `bithuman`
-console-script that spawns the **entire avatar stack** — embedded
-livekit-server, agent-worker brain, and browser UI — from one
-command. Same Rust binary as the [Homebrew CLI](/getting-started/cli);
-no extra install.
+Through 2.2, `pip install bithuman` bundled both the Python library
+and a `bithuman` CLI console-script. As of 2.3 the wheel is
+**library-only** (~5 MB) — the CLI moved to the sibling
+[`bithuman-cli`](https://pypi.org/project/bithuman-cli/) wheel
+(source in [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps)).
 
 ```bash
+# Library (this page):
 pip install bithuman
-export BITHUMAN_API_SECRET=... OPENAI_API_KEY=...
+python -c "from bithuman import AsyncBithuman"
+
+# CLI (separate package, same Rust binary as Homebrew):
+pip install bithuman-cli
 bithuman run                                       # http://127.0.0.1:8088/<code>
 bithuman render avatar.imx -a speech.wav -o out.mp4   # offline render (Linux)
 bithuman info  avatar.imx                              # inspect an .imx
-bithuman pull  nova                                    # download a showcase avatar
-bithuman list                                          # browse showcase
 ```
 
 The runtime library API below (`AsyncBithuman`, `from bithuman import
 Avatar`, …) is **unchanged** — existing library consumers keep
-working without code changes. The CLI is additive.
+working without code changes.
 
-The legacy 1.x Python CLI is preserved as the `essence-render`
-console-script (same binary as before; only the entry-script name
-changed).
+Essence is the supported model family. `pip install bithuman` ships
+the runtime + LiveKit plugin glue — one wheel for backend services,
+AI agents, batch render jobs, and edge boxes.
 
-## Fully on-device — `bithuman[local]` (2.2+)
+## Fully on-device — `bithuman-cli[local]` (2.2+)
 
-For private, no-cloud operation, install the `[local]` extra and set
-`BITHUMAN_LOCAL=1`. The conversation brain swaps from OpenAI Realtime
-to an entirely in-process stack — no API key, no outbound network.
+For private, no-cloud operation, install the `[local]` extra **on the
+CLI package** and set `BITHUMAN_LOCAL=1`. The conversation brain
+swaps from OpenAI Realtime to an entirely in-process stack — no API
+key, no outbound network.
 
 ```bash
-pip install 'bithuman[local]'
+pip install 'bithuman-cli[local]'
 export BITHUMAN_API_KEY=...
 BITHUMAN_LOCAL=1 bithuman run ~/.cache/bithuman/models/sample-avatar.imx
 # → open the printed http://127.0.0.1:8088/<code> URL in a browser
@@ -182,18 +193,14 @@ avatar = bithuman.AvatarSession(
 ```
 
 `AvatarSession` is the single integration point — the same call works
-cloud or self-hosted, Essence or Expression. Six runnable LiveKit
-agents ship in the repo, each with `.env.example`, `requirements.txt`,
-and a `docker-compose.yml` full stack:
+cloud or self-hosted. Two runnable LiveKit agents ship in the repo,
+each with `.env.example`, `requirements.txt`, and a `docker-compose.yml`
+full stack:
 
-| Example | Model · where | Needs |
+| Example | Where | Needs |
 |---|---|---|
-| [cloud-essence](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-essence) | Essence · bitHuman cloud | API key + agent ID |
-| [cloud-expression](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-expression) | Expression · bitHuman cloud | API key + face image |
-| [local-essence](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) | Essence · your server (CPU) | API key + `.imx` |
-| [local-expression-gpu](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-gpu) | Expression · your NVIDIA GPU | GPU ≥ 8 GB VRAM |
-| [local-expression-gpu-livekit-cloud](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-gpu-livekit-cloud) | Expression · GPU + LiveKit Cloud | GPU + LiveKit Cloud project |
-| [local-expression-mac](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-mac) | Expression · Apple Silicon | Mac M3+ |
+| [cloud-essence](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/cloud-essence) | bitHuman cloud | API key + agent ID |
+| [local-essence](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence) | Your server (CPU) | API key + `.imx` |
 
 `local-essence` also ships a `quickstart.py` — the raw `AsyncBithuman`
 loop with no LiveKit, if you bring your own transport. Wiring details:
@@ -205,9 +212,6 @@ loop with no LiveKit, if you bring your own transport. Wiring details:
   ship for every supported platform).
 - **Essence**: any modern CPU, 4 GB RAM. macOS arm64 / Linux
   x86_64 / Linux aarch64.
-- **Expression on-device**: macOS 14+ Apple Silicon M3+, 16 GB RAM.
-  Elsewhere use the [self-hosted GPU](/guides/deployment) deployment
-  (Linux + NVIDIA).
 
 ## Troubleshooting
 
@@ -239,7 +243,7 @@ loop with no LiveKit, if you bring your own transport. Wiring details:
     Every runnable project, grouped by goal
   </Card>
   <Card title="Models" icon="circle-info" href="/getting-started/models">
-    Essence vs Expression
+    Essence models and `.imx` format
   </Card>
   <Card title="Deployment" icon="server" href="/guides/deployment">
     LiveKit, self-hosted GPU, embed
