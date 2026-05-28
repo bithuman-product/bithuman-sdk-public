@@ -64,7 +64,7 @@ See [docs.bithuman.ai/getting-started/cli](https://docs.bithuman.ai/getting-star
 
 ## Reference apps
 
-Reference apps (Mac, iPad, iPhone) live in the private [bithuman-apps](https://github.com/bithuman-product/bithuman-apps) repo. They consume the SDK via the published SwiftPM binary package — the same way any external developer would. Prebuilt binaries are linked from the [quickstart docs](https://docs.bithuman.ai/sdks/swift).
+Reference apps (Mac, iPad, iPhone) live in the private `bithuman-apps` repo (collaborator-only). They consume the SDK via the published SwiftPM binary package — the same way any external developer would. Prebuilt binaries are linked from the [quickstart docs](https://docs.bithuman.ai/sdks/swift).
 
 ## Python SDK on Apple Silicon
 

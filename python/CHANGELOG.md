@@ -13,10 +13,9 @@ All notable changes to the `bithuman` package are documented here.
 - **CLI moved to a sibling wheel.** The talk-to-your-avatar CLI is now
   published as [`bithuman-cli`](https://pypi.org/project/bithuman-cli/)
   on PyPI. Source moved out of the SDK monorepo into the new
-  [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps)
-  repo (apps consume the engine via the SDKs, same as any other
-  downstream consumer). Both wheels share the same `libessence`
-  engine — installing both side-by-side is supported.
+  `bithuman-apps` repo *(private)* — apps consume the engine via the
+  SDKs, same as any other downstream consumer. Both wheels share the
+  same `libessence` engine — installing both side-by-side is supported.
 - **Homebrew install path unchanged.** `brew install
   bithuman-product/bithuman/bithuman` continues to ship the same Rust
   binary as `bithuman-cli`; the formula source lives at
@@ -49,8 +48,7 @@ All notable changes to the `bithuman` package are documented here.
   Swift, Kotlin, Rust) from the **Apps** (`bithuman-cli`, Flutter
   plugin, Expression demos). The engine + SDKs live in
   [`bithuman-sdk`](https://github.com/bithuman-product/bithuman-sdk);
-  the apps live in
-  [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps);
+  the apps live in `bithuman-apps` *(private)*;
   the public landing pages + examples + docs live in this repo
   ([`bithuman-sdk-public`](https://github.com/bithuman-product/bithuman-sdk-public)).
   See [docs.bithuman.ai → Architecture](https://docs.bithuman.ai/getting-started/architecture).

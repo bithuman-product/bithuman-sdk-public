@@ -7,10 +7,10 @@ running voice / text / browser-avatar conversations — no code.
 
 The `bithuman` command is a single self-contained binary published as
 the `bithuman-cli` package on PyPI and the `bithuman` formula on the
-Homebrew tap. Source lives in
-[`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps).
-For the Python library (`from bithuman import AsyncBithuman`) see the
-[Python examples](../python/).
+Homebrew tap. Source lives in `bithuman-apps` *(private —
+collaborator-only)*; end users install via the published artifacts
+below. For the Python library (`from bithuman import AsyncBithuman`)
+see the [Python examples](../python/).
 
 ```bash
 # macOS — Homebrew (recommended; pulls native deps).

@@ -49,8 +49,8 @@ brew install bithuman-product/bithuman/bithuman            # Homebrew tap
 
 Both surface the same `bithuman run` / `render` / `info` subcommands
 documented at [docs.bithuman.ai/getting-started/cli](https://docs.bithuman.ai/getting-started/cli).
-The CLI source lives in [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps);
-this repo hosts the library only.
+The CLI source lives in `bithuman-apps` *(private)*; this repo hosts
+the library only.
 
 ## Quick start — Essence (cross-platform, default)
 
@@ -138,8 +138,7 @@ Full reference: [docs.bithuman.ai](https://docs.bithuman.ai).
 
 The `bithuman` CLI is a **separate package** ([`bithuman-cli`](https://pypi.org/project/bithuman-cli/)
 on PyPI, [`bithuman` on Homebrew](https://github.com/bithuman-product/homebrew-bithuman)).
-Source lives in the [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps) repo.
-Install one of:
+Source lives in the `bithuman-apps` repo *(private)*. Install one of:
 
 ```bash
 # PyPI sibling wheel — same Rust binary, Python-friendly install
@@ -220,7 +219,7 @@ Commercial license required. See [bithuman.ai](https://bithuman.ai) for pricing.
 
 ## Source code & support
 
-The wheels you install via `pip install bithuman` ship Cython-compiled `.so` files for parts of the runtime that include client-side licensing material; the corresponding `.py` source is kept in a private repository for that reason. Everything else in the SDK — the public Python API and the LiveKit plugin glue — is the documentation you're reading and the symbols you import. The CLI is a separate package; its source lives in [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps).
+The wheels you install via `pip install bithuman` ship Cython-compiled `.so` files for parts of the runtime that include client-side licensing material; the corresponding `.py` source is kept in a private repository for that reason. Everything else in the SDK — the public Python API and the LiveKit plugin glue — is the documentation you're reading and the symbols you import. The CLI is a separate package; its source lives in `bithuman-apps` *(private)*.
 
 This repo is the public surface for the package:
 
