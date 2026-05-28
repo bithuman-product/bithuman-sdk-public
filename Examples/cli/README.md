@@ -60,6 +60,12 @@ bithuman run model.imx
 bithuman render model.imx --audio speech.wav --output demo.mp4
 ```
 
+> ⚠️ Note: As of bithuman 2.3.0 / libessence ABI v7, `bithuman render` is
+> implemented on Linux only. On macOS, the binary returns a "not implemented"
+> error from `be_video_encoder_*`. macOS support is queued. Workarounds:
+> run on Linux (Docker manylinux container or native Linux host), or use
+> `bithuman run` and record the browser tab (live-streaming variant).
+
 ### Validate your API secret
 
 There is no `bithuman validate` subcommand — use the REST endpoint:

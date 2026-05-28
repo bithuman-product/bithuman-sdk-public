@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 # Render a lip-synced video from an .imx model and audio file.
 # Get your API secret at https://www.bithuman.ai (Developer section).
+#
+# NOTE: As of bithuman 2.3.0 / libessence ABI v7, `bithuman render` is
+# implemented on Linux only. On macOS, the binary returns a "not implemented"
+# error from be_video_encoder_*. macOS support is queued.
+# Workarounds:
+#   - run on Linux (Docker manylinux container or native Linux host)
+#   - use `bithuman run` + record the browser tab (live-streaming variant)
 set -euo pipefail
 
 export BITHUMAN_API_SECRET="${BITHUMAN_API_SECRET:?Set BITHUMAN_API_SECRET first}"
