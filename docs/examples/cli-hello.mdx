@@ -7,16 +7,18 @@ icon: "terminal"
 
 The fastest way to try a real-time on-device avatar end-to-end.
 No code: install the `bithuman` CLI, check your host, and open a
-browser-served avatar on `localhost`. Audio is captured from your mic;
-lip-synced frames stream back over MJPEG.
+browser-served avatar on `localhost`. Audio is captured from your
+mic; lip-synced frames stream back over WebRTC.
 
 ## Prerequisites
 
 - macOS 26+ (Apple Silicon M3+) **or** Linux x86_64 / aarch64.
-- ~3 GB free disk for voice mode, ~7 GB for the full local stack.
+- ~3 GB free disk for the showcase avatar, ~7 GB for the local
+  brain stack.
 - A bitHuman API key (free tier works). Sign in at
   [www.bithuman.ai → Developer → API Keys](https://www.bithuman.ai/#developer).
-- Optional: `OPENAI_API_KEY` for cloud `voice` / `text` mode.
+- Optional: `OPENAI_API_KEY` for the cloud brain. Skip the key and
+  use `BITHUMAN_LOCAL=1` instead for the fully on-device brain.
 
 ## 1. Install
 
@@ -27,62 +29,54 @@ brew install bithuman-product/bithuman/bithuman-cli
 # macOS / Linux — universal one-liner.
 curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
 
+# Or in any Python env (3.10–3.14):
+pip install bithuman-cli
+
 # Sanity-check host setup + API key presence.
+export BITHUMAN_API_SECRET=your_api_secret
 bithuman doctor
 ```
 
-`doctor` is idempotent — re-run it any time you change env vars or move
-the sample avatar.
+`doctor` is idempotent — re-run it any time you change env vars or
+move the sample avatar.
 
-## 2. Browser-served avatar
-
-```bash
-# Spin up an HTTP avatar runtime on http://127.0.0.1:8080.
-# Open the URL, grant mic permission, talk. Lip-synced MJPEG streams back.
-bithuman avatar
-```
-
-The first run pulls `sample-avatar.imx` into
-`~/.cache/bithuman/models/`. Pass `--model /path/to/your.imx` to drive
-your own fixture.
-
-## 3. One-shot text chat (no UI)
+## 2. Pull a showcase avatar
 
 ```bash
-# Cloud (default): uses OpenAI Chat Completions — instant, requires OPENAI_API_KEY.
-echo "Hello, who are you?" | bithuman text --openai
-
-# --local: pulls Gemma 3 1B 4-bit (~840 MB) to ~/.cache/huggingface/.
-#          Fully offline, private, air-gap-friendly after first run.
-echo "Hello, who are you?" | bithuman text --local
+bithuman list                          # browse the showcase catalog
+bithuman pull modern-court-jester      # downloads to ~/.cache/bithuman/showcase/
 ```
 
-## 4. Voice conversation
+## 3. Browser-served voice chat (cloud brain)
 
 ```bash
-# Cloud voice (OpenAI Realtime — instant startup).
-bithuman voice --openai
-
-# Local voice (whisper.cpp ASR + Gemma 3 1B + Piper TTS, fully on-device).
-bithuman voice --local
+export OPENAI_API_KEY=sk-...
+bithuman run ~/.cache/bithuman/showcase/modern-court-jester.imx
+# → open the printed http://127.0.0.1:8088/<CODE> URL, grant mic, talk
 ```
 
-Ctrl-C exits gracefully. Both modes capture the system mic, play
-responses through the default output device, and print transcripts.
+## 4. Browser-served voice chat (fully on-device brain)
+
+```bash
+pip install 'bithuman-cli[local]'
+BITHUMAN_LOCAL=1 bithuman run ~/.cache/bithuman/showcase/modern-court-jester.imx
+```
+
+First run downloads ~860 MB of brain models from HuggingFace, ~90 s
+once. Subsequent runs warm-load in under a second. See
+[Local mode →](/guides/local-mode) for the full stack details.
 
 ## 5. Offline batch render
 
 ```bash
-# Make a quick WAV, then render an MP4 — no interactive session.
-# Step 2 already cached the sample model; or use any .imx you have.
-bithuman tts "Hello from bitHuman." --output speech.wav
-bithuman generate ~/.cache/bithuman/models/sample-avatar.imx \
+# Lipsync a WAV you already have into an MP4 — no browser, no brain.
+bithuman render ~/.cache/bithuman/showcase/modern-court-jester.imx \
   --audio speech.wav --output rendered.mp4
 ```
 
 Default canvas is 1280×720 (letterboxed for non-matching fixture
-aspects). Use `--target-size WxH` and `--quality LOW|MEDIUM|HIGH` to
-tune.
+aspects). Use `--quality LOW|MEDIUM|HIGH` and `--fps` to tune. Stream
+raw BGR24 frames to stdout by passing `--output -`.
 
 ## Where to go next
 

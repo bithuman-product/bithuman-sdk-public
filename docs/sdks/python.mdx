@@ -1,6 +1,6 @@
 ---
 title: "Python SDK"
-description: "On-device avatar runtime for Python. pip install bithuman. Backends, AI agents, batch jobs, edge boxes. macOS / Linux / Windows."
+description: "On-device avatar runtime for Python. pip install bithuman. Backends, AI agents, batch jobs, edge boxes. macOS arm64 + Linux x86_64 / aarch64."
 icon: "python"
 ---
 
@@ -77,7 +77,8 @@ key, no outbound network.
 ```bash
 pip install 'bithuman-cli[local]'
 export BITHUMAN_API_KEY=...
-BITHUMAN_LOCAL=1 bithuman run ~/.cache/bithuman/models/sample-avatar.imx
+bithuman pull modern-court-jester
+BITHUMAN_LOCAL=1 bithuman run ~/.cache/bithuman/showcase/modern-court-jester.imx
 # → open the printed http://127.0.0.1:8088/<code> URL in a browser
 ```
 

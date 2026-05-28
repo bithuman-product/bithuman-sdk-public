@@ -20,13 +20,15 @@ outbound network, no separate servers. Same `bithuman run` command,
 same browser URL, same avatar.
 
 ```bash
-pip install 'bithuman-cli[local]'   # CLI sibling package; library is `bithuman`
-BITHUMAN_LOCAL=1 bithuman run sample-avatar.imx
+pip install 'bithuman-cli[local]'    # CLI sibling package; library is `bithuman`
+bithuman pull modern-court-jester
+BITHUMAN_LOCAL=1 bithuman run ~/.cache/bithuman/showcase/modern-court-jester.imx
 # → open the printed http://127.0.0.1:8088/<CODE> URL in a browser
 ```
 
-Ships in **bithuman 2.2.1+** for macOS arm64, Linux x86_64, Linux aarch64,
-Python 3.10–3.14.
+Shipped as the `[local]` extra on the CLI sibling wheel — `bithuman-cli`
+as of 2.3.0 (previously `bithuman` itself, through 2.2.x). macOS arm64,
+Linux x86_64, Linux aarch64; Python 3.10–3.14.
 
 ## When you'd reach for it
 
@@ -184,8 +186,8 @@ them in Swift / Kotlin is the future port path, not a re-architecture.
 ## What's NOT in `bithuman-cli[local]`
 
 - **Avatar generation** — you still need an `.imx` file. Generate one on
-  [bithuman.ai](https://www.bithuman.ai/#explore) (free tier), or use
-  the bundled sample (`~/.cache/bithuman/models/sample-avatar.imx`).
+  [bithuman.ai](https://www.bithuman.ai/#explore) (free tier), or pull
+  one from the showcase (`bithuman pull <slug>` → `~/.cache/bithuman/showcase/`).
 - **Avatar metering** — `bithuman run` still pings `api.bithuman.ai`
   for credit accounting. Set `BITHUMAN_UNMETERED=1` for dev parity
   testing. Production deployments still need `BITHUMAN_API_KEY`.

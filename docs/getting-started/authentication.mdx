@@ -5,7 +5,7 @@ icon: "key"
 ---
 
 <Tip>
-**You only need an API key when an avatar is rendering.** Audio-only voice agents — and the local CLI `bithuman voice` / `bithuman text` flows — run fully offline without one. If that's your path, skip this page.
+**You only need an API key when an avatar is rendering.** Audio-only voice agents (Swift `VoiceChat` with no `config.avatar`) run fully offline without one. If that's your path, skip this page.
 </Tip>
 
 bitHuman uses a single shared credential per account that authenticates every SDK and the REST API. There are two equivalent ways to refer to it depending on which SDK you're using:
@@ -98,7 +98,10 @@ For production:
 ```bash
 brew install bithuman-product/bithuman/bithuman-cli
 export BITHUMAN_API_SECRET="your_api_secret"
-bithuman avatar      # browser-served avatar at http://127.0.0.1:8080
+export OPENAI_API_KEY="sk-..."          # cloud brain (or use BITHUMAN_LOCAL=1)
+bithuman pull modern-court-jester
+bithuman run ~/.cache/bithuman/showcase/modern-court-jester.imx
+# → browser-served avatar at http://127.0.0.1:8088/<CODE>
 ```
 
 ## 3. Audio-only Swift mode is unmetered

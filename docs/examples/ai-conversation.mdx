@@ -31,12 +31,12 @@ A full voice-driven conversation: your mic feeds OpenAI Realtime, the AI's spoke
     it needs (the SDK itself ships no OpenCV; the display window does).
   </Step>
   <Step title="Run">
-    You need an avatar `.imx`. Easiest: run `bithuman avatar` once (it
-    caches a sample at `~/.cache/bithuman/models/sample-avatar.imx`), or
+    You need an avatar `.imx`. Easiest: run `bithuman pull modern-court-jester`
+    once (caches to `~/.cache/bithuman/showcase/modern-court-jester.imx`), or
     download one from [Explore](https://www.bithuman.ai/#explore).
 
     ```bash
-    python conversation.py --model ~/.cache/bithuman/models/sample-avatar.imx
+    python conversation.py --model ~/.cache/bithuman/showcase/modern-court-jester.imx
     ```
     Speak into your mic. The AI responds, the avatar lip-syncs in real time. Press `Q` to quit.
 
