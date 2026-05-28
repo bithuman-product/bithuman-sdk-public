@@ -75,10 +75,29 @@ curl -O https://raw.githubusercontent.com/bithuman-product/bithuman-sdk-public/m
 
 ### Python
 
+As of SDK 2.3 the wheel is library-only — audio loading helpers are
+application-side. The snippet below uses `soundfile` + `numpy` (both already
+in most audio-pipeline projects); swap in `librosa`/`soxr` if you prefer.
+
 ```python
 import asyncio, os
+import numpy as np
+import soundfile as sf
 from bithuman import AsyncBithuman
-from bithuman.audio import load_audio, float32_to_int16
+
+def load_audio(path, target_sr=16000):
+    audio, sr = sf.read(path, dtype="float32", always_2d=False)
+    if audio.ndim > 1:
+        audio = audio.mean(axis=1)
+    if sr != target_sr:
+        n = int(round(len(audio) * target_sr / sr))
+        audio = np.interp(np.linspace(0, len(audio), n, endpoint=False),
+                          np.arange(len(audio)), audio).astype(np.float32)
+        sr = target_sr
+    return audio, sr
+
+def float32_to_int16(arr):
+    return (np.clip(arr, -1.0, 1.0) * 32767.0).astype(np.int16)
 
 async def main():
     runtime = await AsyncBithuman.create(

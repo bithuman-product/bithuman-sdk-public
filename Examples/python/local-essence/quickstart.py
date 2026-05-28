@@ -15,10 +15,38 @@ import threading
 import cv2
 import numpy as np
 import sounddevice as sd
+import soundfile as sf
 from dotenv import load_dotenv
 
 from bithuman import AsyncBithuman
-from bithuman.audio import float32_to_int16, load_audio
+
+
+# --- Inline replacements for bithuman.audio (removed in SDK 2.3 slim wheel). ---
+# These helpers were tiny leaf utilities; we inline them so examples have no
+# dependency on internal SDK helpers that may move between releases.
+def load_audio(path: str, target_sr: int = 16000) -> tuple[np.ndarray, int]:
+    """Load WAV/MP3/FLAC/etc., downmix to mono, resample to target_sr.
+
+    Returns (float32 array in [-1, 1], sample_rate).
+    """
+    audio, sr = sf.read(path, dtype="float32", always_2d=False)
+    if audio.ndim > 1:
+        audio = audio.mean(axis=1)
+    if sr != target_sr:
+        n_out = int(round(len(audio) * target_sr / sr))
+        audio = np.interp(
+            np.linspace(0, len(audio), n_out, endpoint=False),
+            np.arange(len(audio)),
+            audio,
+        ).astype(np.float32)
+        sr = target_sr
+    return audio, sr
+
+
+def float32_to_int16(arr: np.ndarray) -> np.ndarray:
+    """Clip + scale float32 [-1, 1] to int16 PCM."""
+    return (np.clip(arr, -1.0, 1.0) * 32767.0).astype(np.int16)
+# --- end inline helpers ---
 
 load_dotenv()
 

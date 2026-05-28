@@ -10,6 +10,7 @@ Usage:
 import asyncio
 import logging
 import os
+import time
 from collections.abc import AsyncIterator
 from pathlib import Path
 
@@ -24,8 +25,45 @@ from livekit.plugins import openai
 from numpy.typing import NDArray
 
 from bithuman import AsyncBithuman
-from bithuman.utils import FPSController
 from fastrtc import AsyncAudioVideoStreamHandler, AudioEmitType, Stream, VideoEmitType, wait_for_item
+
+
+# --- Inline replacement for bithuman.utils.FPSController (removed in SDK 2.3). ---
+# Tiny time.monotonic() pacer. Surface matches the original:
+#   wait_next_frame(sleep=False) -> float seconds until next frame deadline
+#   update()                     -> record that a frame was emitted
+#   average_fps                  -> float, recent observed FPS
+class FPSController:
+    def __init__(self, target_fps: int = 25, window: int = 50):
+        self._target_dt = 1.0 / float(target_fps)
+        self._next_t = time.monotonic()
+        self._window = window
+        self._ticks: list[float] = []
+
+    def wait_next_frame(self, sleep: bool = True) -> float:
+        now = time.monotonic()
+        wait = self._next_t - now
+        if wait > 0 and sleep:
+            time.sleep(wait)
+        return max(wait, 0.0)
+
+    def update(self) -> None:
+        now = time.monotonic()
+        self._next_t += self._target_dt
+        # If we've fallen badly behind (e.g. a long pause), resync.
+        if self._next_t < now - self._target_dt:
+            self._next_t = now + self._target_dt
+        self._ticks.append(now)
+        if len(self._ticks) > self._window:
+            self._ticks.pop(0)
+
+    @property
+    def average_fps(self) -> float:
+        if len(self._ticks) < 2:
+            return 0.0
+        span = self._ticks[-1] - self._ticks[0]
+        return (len(self._ticks) - 1) / span if span > 0 else 0.0
+# --- end inline FPSController ---
 
 load_dotenv()
 logger = logging.getLogger("bithuman-web")
