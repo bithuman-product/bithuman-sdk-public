@@ -87,7 +87,7 @@ final class AvatarLifecycle: ObservableObject {
             coord.currentAgentCode = agent.code
 
             let renderer = AvatarRendererView(
-                frame: .zero, idleFrame: chat.initialIdleFrame, clipMode: .circle)
+                frame: .zero, idleFrame: chat.initialIdleFrame)
             let pump = FramePump(
                 bithuman: bh, chat: chat, window: renderer, coordinator: coord)
             coord.framePump = pump

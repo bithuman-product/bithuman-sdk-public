@@ -1,3 +1,14 @@
+// PREVIEW — DEFERRED.
+//
+// This example targets the dual-runtime API (Bithuman.createRuntime + EssenceRuntime)
+// scheduled for a future SDK release. It does NOT build against the currently
+// published SDK 0.8.2.
+//
+// For Essence playback against the current SDK, see Examples/swift/macos-avatar/
+// (which uses the shipping Bithuman.create() API).
+//
+// Tracked for refresh when the dual-runtime split lands publicly.
+
 // EssencePlayback -- Essence avatar model on macOS / iPad.
 //
 // Demonstrates Bithuman.createRuntime(modelPath:) which returns
