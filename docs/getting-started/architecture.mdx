@@ -13,7 +13,7 @@ bitHuman is shipped as a single cross-platform runtime with idiomatic SDKs in ea
 | Embed in a Python app | `pip install bithuman` | Python SDK (library only, ~5 MB) |
 | Embed in a Swift app | SwiftPM `bitHumanKit` | Swift SDK + bundled libessence XCFramework |
 | Embed in an Android app | `ai.bithuman:sdk` (Maven Central) | Kotlin SDK + AAR (`arm64-v8a`) |
-| Run from CLI on Mac | `brew install bithuman-product/bithuman/bithuman` | CLI tool (single Rust binary) |
+| Run from CLI on Mac | `brew install bithuman-product/bithuman/bithuman-cli` | CLI tool (single Rust binary) |
 | Run from CLI on Linux | `curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh \| sh` | CLI tool (single Rust binary) |
 | Run from CLI in any Python env | `pip install bithuman-cli` | CLI tool (in Python wheel) |
 | On-device brain for CLI | `pip install 'bithuman-cli[local]'` | CLI + on-device STT / LLM / TTS |
@@ -27,7 +27,7 @@ For the full install matrix and channel-by-channel snippets, see the [Quickstart
 ```
 ┌───────────────────────────────────────────────────────────────┐
 │  Apps          (bithuman-apps repo — consume the SDKs)        │
-│   • bitHuman CLI       brew install bithuman                  │
+│   • bitHuman CLI       brew install bithuman-cli              │
 │                        pip install bithuman-cli               │
 │   • Flutter plugin     one Dart codebase, three platforms     │
 │   • Reference apps     Mac + iPad consumer apps               │

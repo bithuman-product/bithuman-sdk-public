@@ -7,7 +7,7 @@
 # grant mic permission, and talk.
 #
 # Prerequisites:
-#   brew install bithuman-product/bithuman/bithuman   # or the curl one-liner
+#   brew install bithuman-product/bithuman/bithuman-cli   # or the curl one-liner
 #   export BITHUMAN_API_SECRET=your_secret
 #   export OPENAI_API_KEY=sk-...                      # cloud brain (default)
 #   #   ...or:  BITHUMAN_LOCAL=1                      # on-device brain

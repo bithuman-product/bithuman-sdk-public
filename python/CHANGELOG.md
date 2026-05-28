@@ -17,7 +17,7 @@ All notable changes to the `bithuman` package are documented here.
   SDKs, same as any other downstream consumer. Both wheels share the
   same `libessence` engine — installing both side-by-side is supported.
 - **Homebrew install path unchanged.** `brew install
-  bithuman-product/bithuman/bithuman` continues to ship the same Rust
+  bithuman-product/bithuman/bithuman-cli` continues to ship the same Rust
   binary as `bithuman-cli`; the formula source lives at
   [`homebrew-bithuman`](https://github.com/bithuman-product/homebrew-bithuman).
 
@@ -25,7 +25,7 @@ All notable changes to the `bithuman` package are documented here.
 - **Already on `pip install bithuman` for the CLI?** Switch to one of:
   ```
   pip install bithuman-cli                                   # PyPI sibling
-  brew install bithuman-product/bithuman/bithuman            # Homebrew
+  brew install bithuman-product/bithuman/bithuman-cli        # Homebrew
   ```
   The `bithuman` console-script disappears from this wheel — installing
   `bithuman-cli` (or Homebrew) restores it. The CLI surface itself is

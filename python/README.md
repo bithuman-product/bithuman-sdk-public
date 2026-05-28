@@ -44,7 +44,7 @@ Need the talk-to-your-avatar CLI? Install either of:
 
 ```bash
 pip install bithuman-cli                                   # sibling wheel
-brew install bithuman-product/bithuman/bithuman            # Homebrew tap
+brew install bithuman-product/bithuman/bithuman-cli        # Homebrew tap
 ```
 
 Both surface the same `bithuman run` / `render` / `info` subcommands
@@ -147,7 +147,7 @@ pip install bithuman-cli
 # macOS + Linux — universal installer
 curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
 # Or macOS Homebrew
-brew install bithuman-product/bithuman/bithuman
+brew install bithuman-product/bithuman/bithuman-cli
 ```
 
 Every command reads `$BITHUMAN_API_SECRET` by default.

@@ -56,7 +56,7 @@ Then `import bitHumanKit` in your source files.
 For quick testing without writing code, install the CLI via Homebrew:
 
 ```bash
-brew install bithuman-product/bithuman/bithuman
+brew install bithuman-product/bithuman/bithuman-cli
 bithuman avatar
 ```
 

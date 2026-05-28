@@ -11,7 +11,7 @@ bitHuman is a real-time avatar animation platform. You push audio in, and get li
 | Kiosk / 24-7 / edge box | Self-hosted Essence (CPU) | `pip install bithuman` | `Examples/python/local-essence/` |
 | On-prem NVIDIA GPU | Self-hosted Expression (Docker) | `docker pull bithuman/expression-avatar:latest` | `Examples/python/local-expression-gpu/` |
 | macOS / iPad / iPhone app | Swift SDK (on-device) | SwiftPM `bithuman-sdk-public` >= 0.8.1 | `Examples/swift/` |
-| Mac, no code | CLI | `brew install bithuman-product/bithuman/bithuman` (or `pip install bithuman-cli`) | `Examples/cli/` |
+| Mac, no code | CLI | `brew install bithuman-product/bithuman/bithuman-cli` (or `pip install bithuman-cli`) | `Examples/cli/` |
 | Any language, HTTP only | REST API | `curl https://api.bithuman.ai/v1/...` | `Examples/rest-api/` |
 | 100% offline Mac | Ollama + Apple Speech + bitHuman | -- | `Examples/integrations/offline-mac/` |
 | Browser embed (iframe) | Embed widget | `bithuman-chat-widget-v5.js` | See docs: [embed](https://docs.bithuman.ai/integrations/embed) |
@@ -59,7 +59,7 @@ import bitHumanKit
 # Universal installer (macOS + Linux)
 curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
 # Or macOS Homebrew
-brew install bithuman-product/bithuman/bithuman
+brew install bithuman-product/bithuman/bithuman-cli
 
 bithuman avatar      # browser-served avatar at http://127.0.0.1:8080
 bithuman voice       # spoken conversation in the terminal

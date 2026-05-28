@@ -13,7 +13,7 @@ For the Python library (`from bithuman import AsyncBithuman`) see the
 
 ```bash
 # macOS — Homebrew (recommended; pulls native deps).
-brew install bithuman-product/bithuman/bithuman
+brew install bithuman-product/bithuman/bithuman-cli
 
 # macOS / Linux — universal one-liner.
 curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh

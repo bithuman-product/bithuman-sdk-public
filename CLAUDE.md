@@ -105,7 +105,7 @@ cd docs && npx mintlify@latest dev
 ## Key Technical Facts
 
 - Python SDK (library): `pip install bithuman` -- wheels for Python 3.10-3.14, Linux/macOS. Library only as of 2.3.
-- Python CLI (sibling package): `pip install bithuman-cli` or `brew install bithuman-product/bithuman/bithuman`. CLI source in the `bithuman-apps` repo.
+- Python CLI (sibling package): `pip install bithuman-cli` or `brew install bithuman-product/bithuman/bithuman-cli`. CLI source in the `bithuman-apps` repo.
 - Swift SDK: Binary XCFramework via SwiftPM. All deps statically linked. Zero transitive dependencies.
 - Hardware floor for Swift: macOS M3+, iPad Pro M4+, iPhone 16 Pro+ (A18 Pro).
 - Expression on macOS auto-spawns `bithuman-expression-daemon` subprocess.

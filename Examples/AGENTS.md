@@ -56,7 +56,7 @@ If you are an AI agent wiring bitHuman into a user's codebase:
 | "Kiosk / 24/7 / edge box" | [python/local-essence/](python/local-essence/) | CPU only, no idle timeout |
 | "On-prem, NVIDIA GPU" | [python/local-expression-gpu/](python/local-expression-gpu/) | Docker, dynamic face |
 | "Mac/iPad/iPhone app" | [swift/macos-avatar/](swift/macos-avatar/) or [swift/ios-avatar/](swift/ios-avatar/) | All on-device |
-| "Mac, no code" | `brew install bithuman-product/bithuman/bithuman` → see [cli/](cli/) | 30 seconds |
+| "Mac, no code" | `brew install bithuman-product/bithuman/bithuman-cli` → see [cli/](cli/) | 30 seconds |
 | "REST API, any language" | [rest-api/curl/](rest-api/curl/) | Just curl |
 | "100% offline Mac" | [integrations/offline-mac/](integrations/offline-mac/) | Ollama + Apple Speech |
 

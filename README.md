@@ -76,7 +76,7 @@ Three install paths, same Rust binary:
 
 ```bash
 # Path A: Homebrew (macOS, recommended; pulls native deps).
-brew install bithuman-product/bithuman/bithuman
+brew install bithuman-product/bithuman/bithuman-cli
 
 # Path B: universal installer (macOS + Linux, no Python needed).
 curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
