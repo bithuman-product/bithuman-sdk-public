@@ -21,25 +21,39 @@ rendering runs **on the device** — no cloud round-trip, no PII leaving
 the box, no network dependency for the avatar itself.
 
 One engine ([`libessence`](/getting-started/architecture)) drives every
-surface: the CLI, the Python / Swift / Kotlin / Flutter SDKs, and the
-cloud REST API. They all read the same `.imx` avatar file and produce
-identical frames — pick the surface that matches what you're building;
-the mental model never changes.
+surface: the bitHuman CLI, the Python / Swift / Kotlin / Flutter SDKs,
+and the cloud REST API. They all read the same `.imx` avatar file and
+produce identical frames — pick the surface that matches what you're
+building; the mental model never changes.
+
+<Note>
+`bithuman` is **two things**: a Python SDK library
+(`pip install bithuman` → `from bithuman import AsyncBithuman`) and a
+standalone CLI tool (`pip install bithuman-cli`, `brew install
+bithuman-cli`, or the `curl … | sh` installer). The library + CLI are
+separately versioned PyPI packages as of 2.3.0; both share the same
+`libessence` engine.
+</Note>
 
 ## Get started
 
-Choose your surface. The CLI is the fastest way to see it work — no
-code, no language toolchain.
+Choose your surface. The bitHuman CLI is the fastest way to see it
+work — no code, no language toolchain.
 
 <Tabs>
   <Tab title="CLI (no code)">
-    macOS Homebrew, the universal installer, or the `bithuman-cli`
-    PyPI sibling wheel — all ship the same Rust binary:
+    macOS Homebrew, the universal `curl … | sh` installer, or the
+    `bithuman-cli` PyPI sibling wheel — all ship the same Rust binary:
 
     ```bash
-    brew install bithuman-product/bithuman/bithuman-cli    # macOS
-    # or:
-    pip install bithuman-cli                            # Python-only env
+    # macOS — Homebrew (canonical)
+    brew install bithuman-product/bithuman/bithuman-cli
+
+    # any OS / any shell — universal installer
+    curl -sSL https://raw.githubusercontent.com/bithuman-product/homebrew-bithuman/main/install.sh | sh
+
+    # Python-only env (Linux x86_64/aarch64 + macOS arm64)
+    pip install bithuman-cli
 
     export BITHUMAN_API_SECRET=...    # avatar-runtime auth
     export OPENAI_API_KEY=sk-...      # cloud brain (or skip + use local below)
@@ -47,6 +61,10 @@ code, no language toolchain.
     bithuman run ~/.cache/bithuman/showcase/modern-court-jester.imx
     # → open the printed http://127.0.0.1:8088/<CODE>, grant mic, talk
     ```
+
+    Subcommands: `run`, `render`, `info`, `pull`, `list`, `doctor`.
+    Verify with `bithuman --version` → `libessence 1.19.1 ABI 7 /
+    bithuman 2.3.0`.
 
     For a **fully on-device brain** (no OpenAI key, no outbound
     network), add the `[local]` extra and flip one env var:
@@ -56,7 +74,7 @@ code, no language toolchain.
     BITHUMAN_LOCAL=1 bithuman run <model.imx>
     ```
 
-    `pip install bithuman` (no `-cli`) is the **library** —
+    `pip install bithuman` (no `-cli`) is the **Python SDK library** —
     `from bithuman import AsyncBithuman` — see the Python tab.
     [CLI reference →](/getting-started/cli)
   </Tab>
@@ -66,13 +84,15 @@ code, no language toolchain.
     pip install bithuman --upgrade
     ```
 
-    Python 3.10+ on macOS arm64 + Linux x86_64 / aarch64. The runtime +
-    LiveKit plugin glue ship in this wheel; the `bithuman` CLI is
-    a separate package (`pip install bithuman-cli`).
+    Python 3.10+ on macOS arm64 + Linux x86_64 / aarch64. As of 2.3.0
+    this wheel is the **Python SDK library only** (~5 MB) — runtime +
+    LiveKit plugin glue. The `bithuman` CLI binary ships separately as
+    `pip install bithuman-cli`, `brew install bithuman-cli`, or the
+    `curl … | sh` installer.
 
     For a **fully on-device brain** (no OpenAI key, no outbound
-    network) on top of the CLI, add the `[local]` extra and flip one
-    env var:
+    network) on top of the CLI, add the `[local]` extra to the
+    `bithuman-cli` package and flip one env var:
 
     ```bash
     pip install 'bithuman-cli[local]'
@@ -106,7 +126,7 @@ code, no language toolchain.
     pick the latest tag.
 
     ```swift
-    // .product(name: "bitHumanKit", package: "bithuman-sdk-public")
+    // .product(name: "bitHumanKit", package: "bithuman")
     import bitHumanKit
 
     let runtime = try await Bithuman.createRuntime(modelPath: modelURL)

@@ -13,32 +13,61 @@ Product-level changes only. Per-version notes: [Python SDK CHANGELOG](https://gi
 **2.3.0** (2026-05-28) — layered architecture + PyPI wheel split
 - **PyPI wheel split.** `pip install bithuman` is now the Python SDK
   **library only** (~5 MB) — `from bithuman import AsyncBithuman`
-  still works. The CLI moved to the sibling
-  [`bithuman-cli`](https://pypi.org/project/bithuman-cli/) wheel;
-  Homebrew (`brew install bithuman-product/bithuman/bithuman-cli`) and the
-  universal `curl … | sh` installer are unchanged.
-- **Layered architecture.** Engine, SDKs, and apps are now cleanly
+  still works. The bitHuman CLI moved to the sibling
+  [`bithuman-cli`](https://pypi.org/project/bithuman-cli/2.3.0/) wheel;
+  install via `pip install bithuman-cli`, `brew install bithuman-cli`
+  (the old `brew install bithuman` keeps working as a deprecated
+  alias), or the universal
+  `curl -sSL https://raw.githubusercontent.com/bithuman-product/homebrew-bithuman/main/install.sh | sh`
+  installer — all three deliver the same Rust binary that prints
+  `libessence 1.19.1 ABI 7 / bithuman 2.3.0` on `bithuman --version`.
+- **CLI surface trimmed.** The binary now exposes exactly six
+  subcommands: `run`, `render`, `info`, `pull`, `list`, `doctor`.
+  Legacy 1.x verbs (`voice`, `text`, `avatar`, `stream`, `speak`,
+  `action`, `generate`, `asr`, `tts`, `models pull|list`, `cleanup`)
+  were removed during the 2.x line and stay removed.
+- **Wheel matrix.** PyPI now ships
+  [`bithuman` 2.3.0](https://pypi.org/project/bithuman/2.3.0/) +
+  [`bithuman-cli` 2.3.0](https://pypi.org/project/bithuman-cli/2.3.0/)
+  for **macOS arm64** (built natively on Apple Silicon) and **Linux
+  x86_64 + aarch64** (built inside manylinux Docker containers).
+  Python 3.10 – 3.14.
+- **Four-repo architecture.** Engine, SDKs, and apps are now cleanly
   separated across two private repos and two public ones:
   [`bithuman-sdk`](https://github.com/bithuman-product/bithuman-sdk)
-  holds the `libessence` engine + Python / Swift / Kotlin / Rust SDKs +
-  the `parity/` contract tests;
-  `bithuman-apps` *(private)* holds the CLI, the Flutter plugin, and
-  the Expression reference apps;
+  *(private)* holds the `libessence` engine + Python / Swift / Kotlin /
+  Rust SDKs + the `parity/` contract tests;
+  `bithuman-apps` *(private)* holds the bitHuman CLI, the Flutter
+  plugin, and the Expression reference apps;
   [`bithuman-sdk-public`](https://github.com/bithuman-product/bithuman-sdk-public)
-  is this docs source + examples;
+  *(public)* is this docs source + Examples + landing pages;
   [`homebrew-bithuman`](https://github.com/bithuman-product/homebrew-bithuman)
-  is the tap + universal installer. See
+  *(public)* is the tap + the universal `install.sh` + the tarball
+  release mirror. See
   [Architecture →](/getting-started/architecture).
+- **`BITHUMAN_BRAIN_*` → `BITHUMAN_AGENT_*` env-var rename** (carried
+  through from Wave 5 of the 2.x line): `BITHUMAN_AGENT_PORT`,
+  `BITHUMAN_AGENT_PYTHON`, `BITHUMAN_AGENT_SCRIPT`. The old
+  `BITHUMAN_BRAIN_*` names are still read with a deprecation warning.
 - **No external API breaks.** Python (`from bithuman import
   AsyncBithuman`), Swift (`import bitHumanKit`), and Kotlin
   (`ai.bithuman:sdk`) public APIs are unchanged from 2.2.x. Migration
   for existing `pip install bithuman && bithuman run` users is
-  install-time only: `pip install bithuman-cli` (or use Homebrew) to
-  keep the `bithuman` console-script.
-- **Engine ABI** bumps to `v7` — adds
+  install-time only: `pip install bithuman-cli` (or `brew install
+  bithuman-cli`) to keep the `bithuman` console-script.
+- **Engine ABI** bumps to `v7` (libessence 1.19.1) — adds
   `be_set_default_audio_encoder` for fallback audio-encoder
   registration. Additive on top of v6; old SDK builds keep working.
   Full table at [Compatibility →](/getting-started/compatibility).
+- **LiveKit integration.** The upstream pin-relaxation PR
+  ([livekit/agents#5882](https://github.com/livekit/agents/pull/5882))
+  is open against `livekit-plugins-bithuman`; once merged the plugin
+  will accept `bithuman>=2.3` directly. Until then, install the plugin
+  alongside the library: `pip install bithuman livekit-plugins-bithuman`.
+- **Removed surfaces.** The `bithuman.utils` and `bithuman.audio`
+  Python modules are gone from the slim 2.3.0 wheel (helpers are
+  inlined into the examples). The Elevate model family was deleted
+  from the platform.
 
 **Python SDK `bithuman` 2.2.2** (2026-05-25) — Linux CLI tarballs restored
 - CI-only cleanup release; no API / runtime changes. Same Python wheel
