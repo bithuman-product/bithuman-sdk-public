@@ -4,18 +4,22 @@ description: "The two bitHuman avatar models — what each does, where each runs
 icon: "code-compare"
 ---
 
-bitHuman ships two avatar models. Both are first-class, both work with the same `.imx` file format, both expose the same SDK methods. The choice depends on what you're building.
+bitHuman ships two avatar models. Both share the same `.imx` file
+format and the same SDK methods. **Essence is the default** — it runs
+on virtually every CPU and is what `bithuman pull` ships in the
+showcase. **Expression** is the heavier high-fidelity option for
+specific on-device Apple Silicon or GPU server use cases.
 
 ## At a glance
 
-| | **Essence** | **Expression** |
+| | **Essence** (default) | **Expression** |
 |---|---|---|
 | **What it does** | Pre-built avatar identity packaged in an `.imx` file. Real-time lip-sync. | Dynamic facial animation from any portrait image at runtime. |
 | **Avatar source** | `.imx` you build once from a photo or video. | Any face image — provide at runtime, no build step. |
 | **Custom gestures** | Yes (wave, nod, laugh, etc.) | No |
 | **Idle animation** | Pre-recorded natural movement | AI-generated micro-movements |
-| **Compute needed** | Any modern CPU | Apple Silicon M3+ or NVIDIA GPU |
-| **Memory footprint** | Low | Higher |
+| **Compute needed** | Any modern CPU | Apple Silicon M3+ (demo apps) or NVIDIA GPU |
+| **Memory footprint** | Low (~200–500 MB) | Higher (~2–6 GB) |
 | **Best for** | Kiosks, mobile, edge, 24/7 deployments, high concurrency | Close-up native consumer apps, custom faces per session |
 | **Pricing** | 1 credit/min self-hosted · 2 credits/min cloud | 2 credits/min self-hosted · 4 credits/min cloud |
 
@@ -26,30 +30,46 @@ Both ship to every surface — SDKs, REST API, LiveKit plugin, CLI, on-device, e
 | Surface | Essence | Expression |
 |---|---|---|
 | **iOS / iPadOS** | ✅ iPhone 17 Pro+, iPad Pro M4+ | ✅ iPad Pro M4+ only |
-| **macOS** | ✅ Any Apple Silicon | ✅ M3+ |
+| **macOS arm64** | ✅ Any Apple Silicon | ✅ M3+ |
+| **macOS Intel** | ⚠️ Pending (2.3 ships arm64 only) | — |
 | **Android** | ✅ `arm64-v8a`, Android 10+ | — |
-| **Linux / Windows** | ✅ Any modern CPU | ✅ via NVIDIA GPU (Docker) |
-| **Raspberry Pi** | ✅ Pi 4B+ | — |
+| **Linux x86_64 / aarch64** | ✅ Any modern CPU | ✅ via NVIDIA GPU (Docker) |
+| **Windows** | ⚠️ Pending (use WSL2 today) | — |
+| **Raspberry Pi 4B+** | ✅ | — |
 | **bitHuman Cloud** | ✅ Managed | ✅ Managed |
 | **Self-hosted CPU** | ✅ Python SDK / LiveKit plugin | — |
 | **Self-hosted GPU** | — | ✅ Docker container |
 
-iPhone Expression is not currently supported — use Essence on iPhone.
+Native macOS-Intel and Windows wheels are pending for the 2.3 line;
+the [device matrix](/getting-started/device-matrix) tracks per-platform
+shipping status. iPhone Expression is not currently supported — use
+Essence on iPhone.
 
 ## Essence
 
 Essence packages a complete avatar identity (face, body, gestures) into an `.imx` file. At runtime, the SDK plays back pre-rendered base motion and patches the mouth region in real time to match incoming audio.
 
-**Strengths**
+**Runtime characteristics**
 
-- Runs on virtually any modern CPU — Mac, iOS, iPad, Android, Linux, Windows, Raspberry Pi.
-- Supports custom gestures (wave, nod, laugh) triggered by keywords or API.
+- ~200–500 MB resident, 1–2 CPU cores, real-time at 25 FPS.
+- Runs on macOS arm64, Linux x86_64 / aarch64, iOS, iPadOS, Android, Raspberry Pi 4B+.
 - No idle timeout — sessions can run 24/7. Reliable for unattended kiosks and lobby displays.
+- Supports custom gestures (wave, nod, laugh) triggered by keywords or API.
 - Predictable, consistent behavior. Lower per-stream cost — the right pick for high-concurrency self-hosted deployments.
+
+**Try it from the showcase**
+
+The CLI ships a curated set of ready-to-run Essence `.imx` avatars:
+
+```bash
+bithuman list                          # browse the showcase
+bithuman pull modern-court-jester      # downloads to ~/.cache/bithuman/showcase/<slug>.imx
+bithuman run modern-court-jester.imx   # live browser-served avatar
+```
 
 **How to ship it**
 
-- [**Python SDK**](/sdks/python) — self-host on Linux/macOS/Windows.
+- [**Python SDK**](/sdks/python) — self-host on macOS arm64 + Linux x86_64 / aarch64.
 - [**Swift SDK**](/sdks/swift) — native Mac, iPad, iPhone apps.
 - [**Kotlin SDK**](/sdks/kotlin) — native Android apps.
 - [**Flutter plugin**](/integrations/flutter) — one Dart codebase across Mac, iOS, Android.
@@ -62,12 +82,13 @@ Essence packages a complete avatar identity (face, body, gestures) into an `.imx
 
 Expression generates real-time facial animation directly from a portrait image. The face can change between sessions or even mid-session — no avatar build step is required.
 
-**Strengths**
+**Runtime characteristics**
 
+- ~2–6 GB resident; needs Apple Silicon M3+ (Mac) / M4+ (iPad Pro) or an NVIDIA GPU (8 GB+ VRAM).
 - Works with any face image — drag-and-drop swap, photo, video frame, anything.
 - AI-driven expressions adapt to speech content and emotional context.
 - Higher visual fidelity for close-up conversational interactions.
-- Runs on-device on Apple Silicon M3+ (no GPU server, no per-turn network round-trip), or on NVIDIA GPUs server-side.
+- On-device demo apps target macOS M3+ and iPad Pro M4+. iPhone Expression and macOS-Intel are not currently supported.
 
 **How to ship it**
 

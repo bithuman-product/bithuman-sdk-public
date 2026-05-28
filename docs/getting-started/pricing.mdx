@@ -6,20 +6,36 @@ icon: "credit-card"
 
 bitHuman bills in **credits** consumed per **active minute** of avatar runtime. Audio-only mode (Swift SDK without an attached avatar) is unmetered. Plans top up credits monthly; overage is pay-as-you-go.
 
+Grab a free dev key at [bithuman.ai → Developer](https://www.bithuman.ai/#developer); it lands in your inbox in seconds with the 99-credit free tier attached.
+
 ## At a glance
 
 | Surface | Model | Cost | Notes |
 |---|---|---|---|
 | **bitHuman Cloud** | Essence | 2 cr/min | CPU rendering on bitHuman's servers |
 | **bitHuman Cloud** | Expression | 4 cr/min | GPU rendering on bitHuman's servers |
-| **Self-hosted (Python SDK)** | Essence | 1 cr/min | CPU on your hardware |
+| **Self-hosted (Python SDK / CLI)** | Essence | 1 cr/min | CPU on your hardware |
 | **Self-hosted (GPU container)** | Expression | 2 cr/min | NVIDIA GPU on your hardware |
 | **On-device (Swift SDK)** | Expression | 2 cr/min | Active avatar minutes only |
-| **On-device (Swift SDK), audio-only** | — | **Free** | No avatar, no metering |
+| **Audio-only (Swift SDK, no avatar)** | — | **Free** | No avatar attached → fully offline, no metering |
+| **`BITHUMAN_UNMETERED=1` dev mode** | either | **Free** | Skips the auth + heartbeat — dev / parity testing only |
 | **Agent generation** | — | 250 cr (one-time) | Per `.imx` model built from your photo / video |
 | **Dynamics generation** | — | 250 cr (one-time) | Per gesture / movement set generated for an agent |
 
-A "credit minute" is wall-clock time the engine is actively producing frames (or, on-device, the wall-clock time between `chat.start()` and `chat.stop()` with avatar attached). Idle / paused / disconnected time isn't billed.
+A "credit minute" is wall-clock time the engine is actively producing frames (or, on-device, the wall-clock between `chat.start()` and `chat.stop()` with avatar attached). Idle / paused / disconnected time isn't billed.
+
+## Self-hosted vs metered
+
+| Mode | What it means | Auth |
+|---|---|---|
+| **Metered (default)** | Your `BITHUMAN_API_SECRET` exchanges for a runtime token; a heartbeat fires once per minute while frames are flowing. Both cloud and self-hosted run this way. | `BITHUMAN_API_SECRET` (server) / `BITHUMAN_API_KEY` (Swift) |
+| **Unmetered dev mode** | `BITHUMAN_UNMETERED=1` skips the auth + heartbeat entirely. For local dev, CI, contract tests, and parity work — not licensed for production. | none |
+| **Audio-only** | Swift SDK with no `AvatarConfig` attached. Fully offline, never reaches the auth endpoint. | none |
+
+The CLI, Python SDK, and Docker container all honour
+`BITHUMAN_UNMETERED=1`. The Swift SDK has the same escape hatch via
+the unmetered initializer documented in the [Swift SDK
+reference](/sdks/swift).
 
 ## Free tier
 
@@ -90,7 +106,9 @@ See [Credits & Billing](/api-reference/rate-limits) for the full schema.
 
 ## Downloads & platform support
 
-For the full SDK downloads matrix, pre-built wheels, device compatibility table, and install commands for every platform, see [releases.bithuman.ai](https://releases.bithuman.ai).
+- [Device matrix](/getting-started/device-matrix) — which platforms ship in 2.3 and which are pending.
+- [Compatibility](/getting-started/compatibility) — SDK ↔ libessence ABI pinning across releases.
+- [releases.bithuman.ai](https://releases.bithuman.ai) — pre-built wheels and install commands for every platform.
 
 ## What's NOT billed
 
