@@ -28,7 +28,18 @@ The credential never sits in process memory. On runtime startup the SDK exchange
     Click **Create new key**, name it (e.g. "production-mac"), and copy the value. **You won't be able to view it again** — store it somewhere durable.
   </Step>
   <Step title="Verify">
-    Run a quick `curl` to confirm:
+    With the CLI installed (`brew install bithuman-product/bithuman/bithuman-cli`):
+
+    ```bash
+    export BITHUMAN_API_SECRET="your_key"
+    bithuman doctor
+    ```
+
+    `bithuman doctor` checks the credential, brain selection
+    (`OPENAI_API_KEY` or `BITHUMAN_LOCAL=1`), cache sizes, and host
+    capabilities — exits 0 if your install can stand up a live avatar.
+
+    Or hit the REST endpoint directly:
 
     ```bash
     curl -X POST https://api.bithuman.ai/v1/validate \
