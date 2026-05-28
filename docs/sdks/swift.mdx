@@ -25,9 +25,13 @@ dependencies: [
 ],
 targets: [
     .target(name: "MyApp",
-            dependencies: [.product(name: "bitHumanKit", package: "bithuman-sdk-public")])
+            dependencies: [.product(name: "bitHumanKit", package: "bithuman")])
 ]
 ```
+
+The SwiftPM package was renamed `bithuman-sdk-public` → `bithuman` in
+Wave 8. The product import stays `import bitHumanKit` — only the
+`package:` field changes.
 
 Auth: export `BITHUMAN_API_KEY` (Apple convention) or set
 `VoiceChatConfig.apiKey`. Get a secret at

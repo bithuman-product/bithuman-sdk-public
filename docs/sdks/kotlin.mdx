@@ -28,6 +28,7 @@ dependencies { implementation("ai.bithuman:sdk:1.17.1") }
 |---|---|
 | Maven coord | `ai.bithuman:sdk:1.17.1` |
 | ABI | `arm64-v8a` only |
+| Engine ABI | v6 (v7 refresh queued — track via release notes) |
 | Min / Compile SDK | 29 (Android 10) / 35 |
 | NDK | 28.0.13004108 |
 | AAR size | ~40 MB |
@@ -35,6 +36,9 @@ dependencies { implementation("ai.bithuman:sdk:1.17.1") }
 `mavenCentral()` is in `settings.gradle.kts` by default in new
 projects. `armeabi-v7a` / `x86_64` are not supported — file an issue
 if you need them.
+
+The Kotlin SDK has its own release cadence — `ai.bithuman:sdk` is
+**not** locked to the Python `bithuman` 2.x line.
 
 ## Auth
 
