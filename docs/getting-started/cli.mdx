@@ -11,14 +11,17 @@ introspection, host check. Same surface on macOS arm64 and Linux
 
 ## Install
 
-The `bithuman` CLI ships as its own package — `bithuman-cli` on PyPI
-or `bithuman` on the Homebrew tap. Both surface the same Rust binary.
-(The `bithuman` PyPI package is the **library** — `from bithuman import
-AsyncBithuman` — and does not ship the CLI as of 2.3.)
+The bithuman CLI ships as its own package — `bithuman-cli` on the
+Homebrew tap *and* on PyPI. **The exact same Rust binary is shipped
+through all three install channels (Homebrew, universal `curl|sh`, PyPI
+wheel) — byte-identical.** Pick whichever fits your environment.
+
+(The `bithuman` PyPI package is the **Python SDK / library** — `from
+bithuman import AsyncBithuman` — and does not ship the CLI as of 2.3.)
 
 ```bash
 # macOS Homebrew — recommended on Apple Silicon.
-brew install bithuman-product/bithuman/bithuman-cli
+brew install bithuman-cli
 
 # Universal installer — macOS + Linux, no Python required.
 curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
@@ -33,8 +36,11 @@ arm64 + Linux x86_64 / aarch64. CLI source lives in `bithuman-apps`
 artifacts above. Verify the install:
 
 ```bash
-bithuman --version
-bithuman doctor      # full host + key + cache check
+$ bithuman --version
+libessence 1.19.1 ABI 7
+bithuman    2.3.0
+
+$ bithuman doctor      # full host + key + cache check
 ```
 
 ## Two ways to talk to the avatar
@@ -47,7 +53,8 @@ bithuman doctor      # full host + key + cache check
 Both go through the **same** `bithuman run` command:
 
 ```bash
-export BITHUMAN_API_KEY=...        # avatar-runtime auth (both modes)
+export BITHUMAN_API_SECRET=...     # avatar-runtime auth (both modes)
+                                   # (BITHUMAN_API_KEY is accepted as an alias)
 
 # Cloud:
 export OPENAI_API_KEY=sk-...
@@ -64,17 +71,22 @@ on-device stack details.
 
 ## Subcommands
 
+The bithuman CLI exposes exactly six subcommands. There are no
+hidden commands; older 1.x verbs (`voice`, `text`, `avatar`, `stream`,
+`speak`, `action`, `generate`, `asr`, `tts`, `models pull`,
+`models list`, `cleanup`) have been removed in 2.x.
+
 ```text
-bithuman run    avatar.imx                   live browser-served avatar
+bithuman run    avatar.imx                    live browser-served avatar
 bithuman render avatar.imx -a a.wav -o m.mp4  offline render: model + WAV → MP4
 bithuman info   avatar.imx                    print .imx metadata
 bithuman list                                 browse showcase avatars
 bithuman pull   <slug>                        download a showcase avatar
 bithuman doctor                               host + auth + cache sanity check
-bithuman --version                            versions (libessence + CLI + pip wheel)
+bithuman --version                            libessence + ABI + CLI versions
 ```
 
-All accept `--help` for full flag listings.
+All accept `--help` for the full flag listing.
 
 ### `bithuman run` — live avatar (cloud OR on-device)
 
@@ -105,19 +117,45 @@ For batch jobs or pipelines with TTS upstream:
 bithuman render avatar.imx --audio speech.wav --output demo.mp4
 ```
 
-Flags include `--fps`, `--quality` (libx264 1..100), `--ep`
-(`cpu` / `auto` / `coreml`), `--threads`, `--no-audio`. Pass
-`--output -` to stream raw BGR24 frames to stdout for piping into
-your own encoder.
+Flags:
+
+| Flag | Default | What |
+| --- | --- | --- |
+| `-a`, `--audio <PATH>` | (required) | 16 kHz mono PCM WAV input. |
+| `-o`, `--output <PATH>` | `output.mp4` | Output MP4 path. |
+| `--quality <PRESET>` | `MEDIUM` | Encoder preset: `LOW`, `MEDIUM`, `HIGH`. |
+| `--target-size <SIZE>` | `1280` | Either a single number `N` (longest side binds to `N`, aspect preserved) or `WxH` (explicit canvas). |
+| `--limit <N>` | none | Cap output frame count — for testing. |
+
+<Warning>
+**macOS limitation.** The encoder behind `bithuman render` is currently
+**Linux-only** — on macOS the command will print a `not implemented:
+be_video_encoder_*` error and exit. Three workarounds:
+
+1. **Run inside a Linux Docker container.** From an `python:3.12-slim`
+   (or similar) container, `pip install bithuman-cli` and run the
+   render there — mount your `.imx` and WAV in and the MP4 out.
+2. **Use `bithuman run` instead.** The live-avatar path doesn't need
+   the offline encoder — it publishes frames into LiveKit via the
+   webrtc-rs encoder. You can record from the browser if you need a
+   file.
+3. **Render on a Linux host.** A small Linux box or CI runner with
+   `bithuman-cli` installed will render any `.imx` + WAV pair to MP4
+   identically.
+
+An AVFoundation-based native macOS encoder is on the roadmap; until it
+ships, treat `bithuman render` on macOS as a "not supported yet" path.
+</Warning>
 
 ### `bithuman doctor` — install sanity check
 
 When something doesn't work, run this first. It checks:
 
-- **Versions** — libessence engine, ABI, CLI binary, pip wheel (when run via the pip shim).
-- **Host** — OS / arch / total RAM, with a "is this big enough for local mode" hint.
-- **Auth + brain selection** — `BITHUMAN_API_KEY` (avatar auth) and which brain is selected (cloud OpenAI, on-device, or neither).
-- **Caches** — `~/.cache/bithuman` (avatars), brain venv, `~/.cache/huggingface` + `~/.cache/supertonic` (local-mode model downloads).
+- **Versions** — libessence engine + ABI tag + CLI binary version.
+- **Host** — OS, arch, total RAM, with a "is this big enough for local mode" hint.
+- **Auth + brain selection** — `BITHUMAN_API_SECRET` (avatar auth) and which brain is selected (cloud OpenAI, on-device, or neither).
+- **Brain availability** — for cloud, whether `OPENAI_API_KEY` is set; for local, whether the `[local]` extra is installed and weights are downloadable.
+- **Caches** — sizes of `~/.cache/bithuman` (avatars + showcase), the brain venv, `~/.cache/huggingface` + `~/.cache/supertonic` (local-mode model downloads).
 
 Exits 0 only if **both** avatar auth and a brain path are configured.
 CI-friendly:
@@ -163,9 +201,9 @@ with `rm -rf ~/.cache/bithuman` (regenerates on next run).
 
 | Var | What |
 | --- | --- |
-| `BITHUMAN_API_KEY` / `BITHUMAN_API_SECRET` | Avatar-runtime auth (metering). Get a free key at [bithuman.ai → Developer](https://www.bithuman.ai/#developer). |
+| `BITHUMAN_API_SECRET` | Avatar-runtime auth (metering). Canonical name on the CLI. `BITHUMAN_API_KEY` is accepted as an alias for cross-SDK parity. Get a free key at [bithuman.ai → Developer](https://www.bithuman.ai/#developer). |
 | `OPENAI_API_KEY` | Cloud conversation brain (OpenAI Realtime). Required for `bithuman run` unless `BITHUMAN_LOCAL=1` is set. |
-| `BITHUMAN_LOCAL` | `=1` flips the brain to the on-device stack. See [Local mode →](/guides/local-mode). |
+| `BITHUMAN_LOCAL` | `=1` flips the brain to the on-device stack (whisper.cpp + llama.cpp + Supertonic + Silero). Needs the `[local]` extra: `pip install 'bithuman-cli[local]'`. See [Local mode →](/guides/local-mode). |
 | `BITHUMAN_LOCAL_*` | Per-component tuning (whisper model, LLM, voice, language). [Reference](/guides/local-mode#tuning). |
 | `BITHUMAN_INSTRUCTIONS` | System prompt override for the brain. |
 | `BITHUMAN_UNMETERED` | `=1` skips the avatar-runtime auth heartbeat — dev / parity testing only. |
