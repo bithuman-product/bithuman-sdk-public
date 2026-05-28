@@ -39,16 +39,16 @@ each example's `requirements.txt`.
 Auth: export `BITHUMAN_API_SECRET`. Get a secret at
 [Developer → API Keys](https://www.bithuman.ai/#developer).
 
-## 2.3 — library and CLI are now separate wheels
+## 2.3 — slim wheel, CLI moved out
 
-Through 2.2, `pip install bithuman` bundled both the Python library
-and a `bithuman` CLI console-script. As of 2.3 the wheel is
-**library-only** (~5 MB) — the CLI moved to the sibling
+Through 2.2, `pip install bithuman` bundled both the Python SDK
+and a `bithuman` CLI console-script. As of **2.3.0** the wheel is
+**library-only** — the CLI moved to the sibling
 [`bithuman-cli`](https://pypi.org/project/bithuman-cli/) wheel
 (source in `bithuman-apps`, private).
 
 ```bash
-# Library (this page):
+# Python SDK (this page):
 pip install bithuman
 python -c "from bithuman import AsyncBithuman"
 
@@ -59,9 +59,12 @@ bithuman render avatar.imx -a speech.wav -o out.mp4   # offline render (Linux)
 bithuman info  avatar.imx                              # inspect an .imx
 ```
 
-The runtime library API below (`AsyncBithuman`, `from bithuman import
-Avatar`, …) is **unchanged** — existing library consumers keep
-working without code changes.
+Also removed from the slim wheel: the leaf modules `bithuman.audio`
+(`load_audio`, `float32_to_int16`) and `bithuman.utils` (`FPSController`).
+They were tiny shims around `soundfile` / `time.monotonic`; applications
+inline them now (~15–30 LOC — see the [quickstart example](https://github.com/bithuman-product/bithuman-sdk-public/blob/main/Examples/quickstart/local-avatar.py)
+for the canonical inline pattern). The runtime API
+(`AsyncBithuman`, `Bithuman`, `AudioChunk`, `VideoFrame`, …) is unchanged.
 
 Essence is the supported model family. `pip install bithuman` ships
 the runtime + LiveKit plugin glue — one wheel for backend services,
@@ -113,14 +116,41 @@ when those bindings ship.
 The cloud path (`bithuman run` with `OPENAI_API_KEY` set, `BITHUMAN_LOCAL`
 unset) is unchanged.
 
+## Public API at a glance
+
+Top-level imports — these are the surface you build against:
+
+```python
+from bithuman import (
+    AsyncBithuman, Bithuman,             # runtime (async / sync)
+    AudioChunk, VideoFrame, VideoControl, # I/O types
+    Emotion, EmotionPrediction,           # emotion analysis
+    # exceptions
+    BithumanError,
+    ModelError, ModelLoadError, ModelNotFoundError, ModelSecurityError,
+    RuntimeNotReadyError,
+    TokenError, TokenExpiredError, TokenValidationError, TokenRequestError,
+    AccountStatusError,
+    # version metadata
+    __version__, __core_version__, __abi_version__,
+)
+```
+
+`AsyncBithuman` is the recommended runtime. `Bithuman` is the
+blocking equivalent for batch scripts and notebooks. `Avatar` /
+`AsyncAvatar` are kept as **soft-deprecated identity aliases** for
+pre-2.0 code (`Avatar is Bithuman` evaluates `True`); new code should
+use the `Bithuman` names.
+
 ## Streaming loop
 
 `AsyncBithuman` is the runtime — one instance per avatar session.
 
 ```python
 import asyncio, os
+import numpy as np
+import soundfile as sf
 from bithuman import AsyncBithuman
-from bithuman.audio import float32_to_int16, load_audio
 
 async def main():
     rt = await AsyncBithuman.create(
@@ -128,16 +158,21 @@ async def main():
         api_secret=os.environ["BITHUMAN_API_SECRET"],
     )
 
-    pcm, sr = load_audio("speech.wav")
-    pcm = float32_to_int16(pcm)
-    chunk = sr // 100                       # 10 ms chunks
+    # Load mono int16 PCM at 16 kHz — soundfile + a one-liner clip+scale
+    # replace the removed bithuman.audio helpers.
+    audio, sr = sf.read("speech.wav", dtype="float32", always_2d=False)
+    if audio.ndim > 1:
+        audio = audio.mean(axis=1)              # downmix to mono
+    pcm = (np.clip(audio, -1.0, 1.0) * 32767).astype(np.int16)
+
+    chunk = sr // 100                           # 10 ms chunks
     for i in range(0, len(pcm), chunk):
         await rt.push_audio(pcm[i:i+chunk].tobytes(), sr, last_chunk=False)
     await rt.flush()
 
     async for frame in rt.run():
         if frame.has_image:
-            image = frame.bgr_image         # numpy (H, W, 3) uint8
+            image = frame.bgr_image             # numpy (H, W, 3) uint8
             # display, encode, or push to WebRTC — your choice
         if frame.end_of_speech:
             break
@@ -158,6 +193,38 @@ asyncio.run(main())
 (mic, TTS, WebRTC), drain frames on your render tick. The
 [`local-essence` example](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-essence)
 adds OpenCV display + speaker playback on top of this loop.
+
+<Note>
+If you previously imported `bithuman.audio.load_audio` /
+`float32_to_int16` or `bithuman.utils.FPSController`, see the
+[canonical inline shim](https://github.com/bithuman-product/bithuman-sdk-public/blob/main/Examples/quickstart/local-avatar.py)
+in the quickstart example — about 15–30 lines drop-in.
+</Note>
+
+## Low-level API (advanced)
+
+For multi-tenant servers that share one set of model weights across
+many concurrent sessions, the wheel also exposes the engine primitives
+directly:
+
+```python
+from bithuman import Fixture, Runtime, EP_AUTO, EP_CPU, EP_COREML
+
+fixture = Fixture.load("avatar.imx", api_secret="...")  # weights, once
+runtime = Runtime(fixture, ep=EP_AUTO)                  # cheap per session
+```
+
+`EP_AUTO` / `EP_CPU` / `EP_COREML` / `EP_NNAPI` / `EP_QNN` select the
+ONNX Runtime execution provider. Most users should stick to
+`AsyncBithuman` / `Bithuman`, which wrap these for you.
+
+## Native acceleration
+
+The wheel ships a native extension `bithuman/_core.cpython-3X-<platform>.so`
+— a pybind11 binding to the shared `libessence` engine that also powers
+the Swift, Kotlin, and Rust SDKs. You never import `_core` directly;
+it loads automatically behind `AsyncBithuman`. `bithuman.__core_version__`
+reports the engine version; `bithuman.__abi_version__` reports the C ABI.
 
 ## No-code render
 
@@ -228,8 +295,14 @@ loop with no LiveKit, if you bring your own transport. Wiring details:
     ```
   </Accordion>
   <Accordion title="Avatar shows but no lip movement">
-    Push **PCM bytes** (`float32_to_int16()` first), call `flush()`
-    after all audio, match the sample rate from `load_audio()`.
+    Push **int16 PCM bytes** (clip float32 to ±1 and scale by 32767),
+    call `flush()` after all audio, and pass the same sample rate you
+    decoded with (`sf.read` returns `(audio, sr)`).
+  </Accordion>
+  <Accordion title="ImportError: No module named 'bithuman.audio' / 'bithuman.utils'">
+    Removed in 2.3.0. Inline `load_audio` / `float32_to_int16` /
+    `FPSController` in your app — see the [quickstart example](https://github.com/bithuman-product/bithuman-sdk-public/blob/main/Examples/quickstart/local-avatar.py)
+    for the 15-line drop-in.
   </Accordion>
   <Accordion title="Slow first startup (30–60 s)">
     First `.imx` load warms the runtime / upgrades the file format.
