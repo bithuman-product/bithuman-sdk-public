@@ -119,6 +119,15 @@
             ]
           },
           {
+            "group": "Community",
+            "pages": [
+              "roadmap",
+              "community/rfc-process",
+              "community/adding-an-sdk",
+              "community/adding-an-integration"
+            ]
+          },
+          {
             "group": "Changelog",
             "pages": [
               "changelog"
