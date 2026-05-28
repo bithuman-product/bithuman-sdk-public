@@ -41,7 +41,9 @@ services:
         condition: service_started
 
   frontend:
-    image: docker.io/bithuman/bithuman-webui:latest
+    build:
+      context: .
+      dockerfile: webui.dockerfile
     restart: always
     ports:
       - "4202:4202"
