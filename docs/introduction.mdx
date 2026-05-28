@@ -256,8 +256,10 @@ and an avatar `.imx` from the
   <Accordion title="Self-host Expression on your own GPU" icon="server">
     ```bash
     docker run --gpus all -p 8089:8089 \
-      -e BITHUMAN_API_SECRET=$BITHUMAN_API_SECRET \
-      bithuman/expression-avatar:latest
+      -v bithuman-models:/data/models \
+      --tmpfs /tmp/bh-weights:size=12g,mode=0700 \
+      --env-file ./bithuman.env \
+      sgubithuman/expression-avatar:latest
     ```
 
     Point a LiveKit agent at `http://localhost:8089/launch`.
