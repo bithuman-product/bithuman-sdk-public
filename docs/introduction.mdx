@@ -20,6 +20,12 @@ audio in, get animated video out at 25 FPS with sub-200 ms latency. The
 rendering runs **on the device** — no cloud round-trip, no PII leaving
 the box, no network dependency for the avatar itself.
 
+Three places it can render:
+
+- **Cloud** *(default)* — managed avatar runtime, video published over LiveKit.
+- **On-device** — your machine via the [bithuman CLI](/getting-started/cli) or any SDK; optional [fully on-device brain](/guides/local-mode).
+- **Browser** — ONNX Runtime Web (WASM) renders in the user's tab; the server runs only the brain. [Browser rendering →](/guides/browser-rendering)
+
 One engine ([`libessence`](/getting-started/architecture)) drives every
 surface: the bitHuman CLI, the Python / Swift / Kotlin / Flutter SDKs,
 and the cloud REST API. They all read the same `.imx` avatar file and

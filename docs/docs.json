@@ -106,6 +106,7 @@
             "group": "Guides",
             "pages": [
               "guides/local-mode",
+              "guides/browser-rendering",
               "guides/building-avatars",
               "guides/deployment"
             ]
