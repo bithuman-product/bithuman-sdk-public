@@ -78,7 +78,7 @@ mvn -version    # should show 3.6+
 ### Step 4: Build the Java Client
 
 ```bash
-cd integrations/java
+cd integrations/java-websocket
 
 # Build the fat JAR (includes all dependencies)
 mvn clean package -q

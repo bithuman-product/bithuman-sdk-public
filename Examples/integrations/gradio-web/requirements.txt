@@ -1,5 +1,5 @@
-bithuman>=1.7.0
-livekit-agents[openai,bithuman,silero]~=1.4
+bithuman>=2.3
+livekit-agents[openai]~=1.5
 fastrtc>=0.0.18
 gradio>=4.0
 numpy>=1.24

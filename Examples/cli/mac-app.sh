@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
-# Install and run bitHuman conversation modes via the `bithuman` CLI.
+# Install and run the bitHuman live avatar via the `bithuman` CLI.
 #
-# The `bithuman` binary runs voice / text / browser-avatar
-# conversations locally on Apple Silicon (M3 or later) — no agent ID,
-# no separate desktop app. Conversations are driven by `.imx` models.
+# `bithuman run` brings up a self-contained avatar server (LiveKit
+# pool + embedded livekit-server) and prints a landing-page URL.
+# Open it in a browser, grant mic permission, and talk.
+#
+# Brain selection (no flag — env-driven):
+#   - cloud (default):  OPENAI_API_KEY=sk-...      (OpenAI Realtime)
+#   - on-device:        BITHUMAN_LOCAL=1           (whisper.cpp +
+#                                                   llama.cpp +
+#                                                   Supertonic)
+#                       Requires `pip install 'bithuman[local]'`.
 #
 # Prerequisites:
 #   - macOS with Apple Silicon M3+ (or Linux x86_64 / aarch64)
@@ -11,23 +18,14 @@
 #   - A bitHuman API secret (https://www.bithuman.ai/#developer)
 #
 # Usage:
-#   ./mac-app.sh install                 Install the bithuman CLI via Homebrew
-#   ./mac-app.sh voice                   Voice conversation (microphone)
-#   ./mac-app.sh text                    Text chat (type messages)
-#   ./mac-app.sh avatar [model.imx]      Browser-served lip-synced avatar
+#   ./mac-app.sh install              Install the bithuman CLI via Homebrew
+#   ./mac-app.sh run [model.imx]      Run the live avatar
 set -euo pipefail
 
 ACTION="${1:-help}"
 
 if [[ "$ACTION" != "install" && "$ACTION" != "help" && "$ACTION" != "--help" && "$ACTION" != "-h" ]]; then
   export BITHUMAN_API_SECRET="${BITHUMAN_API_SECRET:?Set BITHUMAN_API_SECRET first (get yours at https://www.bithuman.ai/#developer)}"
-fi
-
-# Optional second arg: a model .imx path for `avatar`. If omitted, the
-# CLI uses the bundled sample avatar. `voice`/`text` need no model.
-MODEL_ARG=()
-if [[ -n "${2:-}" ]]; then
-  MODEL_ARG=(--model "$2")
 fi
 
 case "$ACTION" in
@@ -39,43 +37,30 @@ case "$ACTION" in
     echo "Done. Run: bithuman doctor"
     ;;
 
-  voice)
-    echo "Starting voice conversation."
-    echo "Speak into your microphone; the model replies aloud."
-    echo "Set OPENAI_API_KEY for the instant cloud backend, or add --local."
+  run)
+    MODEL="${2:?Usage: ./mac-app.sh run <model.imx>}"
+    echo "Starting the live avatar."
+    echo "Open the printed landing-page URL in your browser, grant"
+    echo "mic permission, and talk."
+    echo ""
+    echo "Brain: set OPENAI_API_KEY=sk-... for the cloud backend,"
+    echo "       or BITHUMAN_LOCAL=1 for the on-device backend."
     echo "Press Ctrl+C to stop."
     echo ""
-    bithuman voice
-    ;;
-
-  text)
-    echo "Starting text chat. Type messages; the model replies as text."
-    echo "Set OPENAI_API_KEY for the instant cloud backend, or add --local."
-    echo "Press Ctrl+C to stop."
-    echo ""
-    bithuman text
-    ;;
-
-  avatar)
-    echo "Starting the browser-served avatar at http://127.0.0.1:8080"
-    echo "Open the URL, grant mic permission, and talk."
-    echo "Press Ctrl+C to stop."
-    echo ""
-    bithuman avatar "${MODEL_ARG[@]}"
+    bithuman run "$MODEL"
     ;;
 
   help|--help|-h)
-    echo "bitHuman CLI conversation modes"
+    echo "bitHuman CLI live avatar"
     echo ""
     echo "Usage:"
-    echo "  ./mac-app.sh install              Install the bithuman CLI via Homebrew"
-    echo "  ./mac-app.sh voice                Voice conversation (microphone)"
-    echo "  ./mac-app.sh text                 Text chat (type messages)"
-    echo "  ./mac-app.sh avatar [model.imx]   Browser-served lip-synced avatar"
+    echo "  ./mac-app.sh install            Install the bithuman CLI via Homebrew"
+    echo "  ./mac-app.sh run <model.imx>    Run the live avatar"
     echo ""
     echo "Environment:"
-    echo "  BITHUMAN_API_SECRET   Your API secret (required for avatar mode)"
-    echo "  OPENAI_API_KEY        Optional — enables the instant cloud backend"
+    echo "  BITHUMAN_API_SECRET   Your API secret (required)"
+    echo "  OPENAI_API_KEY        Cloud brain (default path)"
+    echo "  BITHUMAN_LOCAL        =1 for on-device brain"
     echo ""
     echo "Requirements:"
     echo "  - macOS Apple Silicon M3+ (or Linux x86_64 / aarch64)"

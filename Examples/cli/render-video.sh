@@ -5,15 +5,19 @@ set -euo pipefail
 
 export BITHUMAN_API_SECRET="${BITHUMAN_API_SECRET:?Set BITHUMAN_API_SECRET first}"
 
-# Install the SDK if not already installed
-pip install -q bithuman
+# Install the CLI if not already installed.
+#   macOS:  brew install bithuman-product/bithuman/bithuman
+#   PyPI:   pip install bithuman-cli
+# (See ./README.md for the curl one-liner that works on Linux too.)
+
+MODEL="${1:?Usage: ./render-video.sh <model.imx>}"
 
 # Download sample audio if you don't have one
 if [ ! -f speech.wav ]; then
   curl -sO https://raw.githubusercontent.com/bithuman-product/bithuman-sdk-public/main/Examples/python/local-essence/speech.wav
 fi
 
-# Render: .imx + audio → MP4
-bithuman generate "${1:?Usage: ./render-video.sh <model.imx>}" --audio speech.wav --output demo.mp4
+# Render: .imx + audio -> MP4
+bithuman render "$MODEL" --audio speech.wav --output demo.mp4
 
 echo "Done! Open demo.mp4 to see your avatar talking."

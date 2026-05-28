@@ -129,7 +129,7 @@ if __name__ == "__main__":
     parser.add_argument("--agent-id", required=True, help="Agent code (e.g. A91XMB7113)")
     parser.add_argument("--generate", action="store_true", help="Generate new dynamics")
     parser.add_argument("--duration", type=int, default=5, help="Gesture duration in seconds (default: 5)")
-    parser.add_argument("--model", default="seedance", choices=["seedance", "kling"])
+    parser.add_argument("--model", default="quality", choices=["quality", "speed", "auto"])
     args = parser.parse_args()
 
     if args.generate:

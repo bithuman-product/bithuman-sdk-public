@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
-# Start a local bitHuman streaming server.
+# Start a local bitHuman avatar server.
 #
-# This launches an HTTP server that streams lip-synced video frames
-# from an .imx model in real time. Clients POST audio to /audio and
-# read the MJPEG stream from /video.mjpg at 25 FPS. (No WebSocket.)
+# `bithuman run` brings up a self-contained LiveKit pool with an
+# embedded livekit-server and serves a landing page that connects
+# the browser to the avatar over WebRTC. Open the printed URL,
+# grant mic permission, and talk.
 #
 # Prerequisites:
 #   brew install bithuman-product/bithuman/bithuman   # or the curl one-liner
 #   export BITHUMAN_API_SECRET=your_secret
+#   export OPENAI_API_KEY=sk-...                      # cloud brain (default)
+#   #   ...or:  BITHUMAN_LOCAL=1                      # on-device brain
 #
 # Usage:
 #   ./live-stream.sh <model.imx>
-#   ./live-stream.sh <model.imx> --port 9000
-#   ./live-stream.sh <model.imx> --port 9000 --host 0.0.0.0
+#   ./live-stream.sh <model.imx> --port 8088
+#   ./live-stream.sh <model.imx> --port 8088 --host 0.0.0.0
 set -euo pipefail
 
 export BITHUMAN_API_SECRET="${BITHUMAN_API_SECRET:?Set BITHUMAN_API_SECRET first (get yours at https://www.bithuman.ai/#developer)}"
@@ -20,8 +23,8 @@ export BITHUMAN_API_SECRET="${BITHUMAN_API_SECRET:?Set BITHUMAN_API_SECRET first
 MODEL="${1:?Usage: ./live-stream.sh <model.imx> [--port PORT] [--host HOST]}"
 shift
 
-# Defaults match the CLI (`bithuman stream`).
-PORT=3001
+# Defaults match the CLI (`bithuman run`).
+PORT=8088
 HOST="127.0.0.1"
 
 # Parse optional flags
@@ -33,18 +36,12 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-echo "Starting bitHuman streaming server"
+echo "Starting bitHuman avatar server"
 echo "  Model:  $MODEL"
 echo "  Server: http://$HOST:$PORT"
 echo ""
-echo "Endpoints:"
-echo "  POST http://$HOST:$PORT/audio        raw f32 PCM in"
-echo "  GET  http://$HOST:$PORT/video.mjpg   lip-synced MJPEG out (25 FPS)"
-echo "  POST http://$HOST:$PORT/action       action trigger"
-echo "  GET  http://$HOST:$PORT/status       server status"
-echo ""
-echo "Drive it from another shell:  bithuman speak clip.wav --port $PORT"
-echo "Press Ctrl+C to stop."
+echo "Open the printed landing-page URL in your browser, grant mic"
+echo "permission, and start talking. Press Ctrl+C to stop."
 echo ""
 
-bithuman stream --model "$MODEL" --port "$PORT" --host "$HOST"
+bithuman run "$MODEL" --host "$HOST" --port "$PORT"

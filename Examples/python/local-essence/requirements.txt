@@ -1,5 +1,5 @@
 python-dotenv~=1.1
-bithuman>=1.7.0
+bithuman==2.3.0
 livekit-agents[openai,silero]>=1.4
 livekit-plugins-bithuman>=1.4
 openai>=1.0

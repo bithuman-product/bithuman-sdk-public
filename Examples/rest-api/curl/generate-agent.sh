@@ -40,7 +40,7 @@ while true; do
     -H "api-secret: $API_SECRET")
 
   STATUS=$(echo "$STATUS_RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin).get('data', {}).get('status', 'unknown'))")
-  PROGRESS=$(echo "$STATUS_RESPONSE" | python3 -c "import sys, json; p = json.load(sys.stdin).get('data', {}).get('progress'); print(f'{int(p*100)}%' if p is not None else 'N/A')")
+  PROGRESS=$(echo "$STATUS_RESPONSE" | python3 -c "import sys, json; p = json.load(sys.stdin).get('data', {}).get('progress'); print(f'{int(p)}%' if p is not None else 'N/A')")
 
   echo "  Status: $STATUS  Progress: $PROGRESS"
 

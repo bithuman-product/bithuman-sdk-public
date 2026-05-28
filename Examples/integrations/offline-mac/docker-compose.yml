@@ -29,7 +29,7 @@ services:
       - LIVEKIT_API_SECRET=UPivas8PQvWiYhubkqxqfkY8kfB9TgGj
       - IMX_MODEL_ROOT=/imx-models  # Path to mounted models
     env_file:
-      - ./.env  # API keys (BITHUMAN_API_SECRET, OPENAI_API_KEY)
+      - ./.env  # API keys (BITHUMAN_API_SECRET)
     volumes:
       - ./models:/imx-models  # Mount .imx models directory
       - ./agent.py:/app/agent.py  # Mount for live editing

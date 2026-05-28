@@ -65,7 +65,6 @@ Create a `.env` file:
 
 ```bash
 BITHUMAN_API_SECRET=your_api_secret_here
-# Note: OPENAI_API_KEY not needed for local setup
 ```
 
 Optional environment variables for custom service URLs:

@@ -8,14 +8,15 @@ let package = Package(
         .macOS("26.0")
     ],
     dependencies: [
-        .package(url: "https://github.com/bithuman-product/bithuman-sdk-public.git",
+        .package(name: "bithuman",
+                 url: "https://github.com/bithuman-product/bithuman-sdk-public.git",
                  from: "0.8.1")
     ],
     targets: [
         .executableTarget(
             name: "MacOSVoice",
             dependencies: [
-                .product(name: "bitHumanKit", package: "bithuman-sdk-public")
+                .product(name: "bitHumanKit", package: "bithuman")
             ],
             path: "Sources"
         )

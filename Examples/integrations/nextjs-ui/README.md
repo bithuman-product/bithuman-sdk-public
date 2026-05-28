@@ -154,7 +154,17 @@ LIVEKIT_API_SECRET=your-api-secret
 
 # Required for client connection
 NEXT_PUBLIC_LIVEKIT_URL=wss://your-livekit-server.com
+
+# Optional — only when server.js is used (docker-compose path)
+LIVEKIT_WS_URL=http://livekit:17880     # internal LiveKit URL
+PORT=3000                               # Next.js listen port
+BITHUMAN_AVATAR_IMAGE=                  # avatar background image URL
 ```
+
+`PORT`, `LIVEKIT_WS_URL`, and `BITHUMAN_AVATAR_IMAGE` are read by
+`server.js` and the `/api/token` route when the app runs behind the
+docker-compose stack. For `npm run dev`/`npm start`, they default to
+`3000`, the LiveKit container internal URL, and empty respectively.
 
 ## 🚢 Deployment
 
@@ -167,17 +177,10 @@ NEXT_PUBLIC_LIVEKIT_URL=wss://your-livekit-server.com
 
 ### Docker
 
-```bash
-# Build the image
-docker build -t bithuman-ui .
-
-# Run the container
-docker run -p 3000:3000 \
-  -e NEXT_PUBLIC_LIVEKIT_URL=wss://your-server.com \
-  -e LIVEKIT_API_KEY=your-key \
-  -e LIVEKIT_API_SECRET=your-secret \
-  bithuman-ui
-```
+A `webui.dockerfile` that clones this folder is provided by the
+`Examples/python/local-essence/` and `Examples/integrations/offline-mac/`
+docker-compose stacks (built via `frontend.build.dockerfile`). There
+is no standalone Dockerfile in this directory.
 
 ### Other Platforms
 

@@ -1,16 +1,15 @@
 # bitHuman CLI Tools
 
-Command-line tools for rendering video, streaming an avatar, and
-running voice / text / browser-avatar conversations — no code.
+Command-line tools for running a live avatar locally and rendering
+lip-synced video offline — no code.
 
 ## Install
 
-The `bithuman` command is a single self-contained binary published as
-the `bithuman-cli` package on PyPI and the `bithuman` formula on the
-Homebrew tap. Source lives in `bithuman-apps` *(private —
-collaborator-only)*; end users install via the published artifacts
-below. For the Python library (`from bithuman import AsyncBithuman`)
-see the [Python examples](../python/).
+The `bithuman` command is a single self-contained binary published
+on a Homebrew tap and as the `bithuman-cli` PyPI wheel. Source lives
+in [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps).
+For the Python library (`from bithuman import AsyncBithuman`) see the
+[Python examples](../python/).
 
 ```bash
 # macOS — Homebrew (recommended; pulls native deps).
@@ -35,40 +34,30 @@ bithuman doctor      # verify host setup + API key presence
 
 ## Commands
 
+The 2.x CLI surface is six commands. Run `bithuman <command> --help`
+for the full flag list.
+
 | Command | Description |
 |---------|-------------|
-| `bithuman doctor` | Host capability check (arch, OS, RAM, disk, API key) |
-| `bithuman generate <model.imx> --audio speech.wav --output demo.mp4` | Offline batch render an MP4 from a model + WAV |
-| `bithuman avatar [--model <imx>]` | Browser-served avatar at `http://127.0.0.1:8080` |
-| `bithuman voice` | Interactive voice chat (auto-picks cloud or `--local`) |
-| `bithuman text` | Non-interactive text chat (stdin → stdout) |
-| `bithuman stream [--model <imx>] [--port 3001]` | HTTP streaming avatar server |
-| `bithuman speak <audio.wav> [--port 3001]` | POST a WAV to a running `stream` server |
-| `bithuman action <name> [--port 3001]` | POST an action trigger (e.g. `wave`) to a `stream` server |
-| `bithuman info <model.imx>` | Show metadata for an `.imx` model file |
-| `bithuman asr <audio.wav>` | Transcribe a 16 kHz mono WAV (on-device Whisper) |
-| `bithuman tts "<text>"` | Synthesize text to a 24 kHz mono WAV (offline) |
-| `bithuman models list` / `pull` | Browse and download showcase avatars |
-| `bithuman cleanup` | Wipe regenerable model caches under `~/.cache` |
-| `bithuman --help` | Full list of commands and flags |
+| `bithuman run [<model.imx>]` | Live avatar — self-contained LiveKit pool + embedded server. Prints a landing-page URL to open in a browser. |
+| `bithuman render <model.imx> --audio speech.wav --output demo.mp4` | Offline batch render an MP4 from a model + WAV. |
+| `bithuman info <model.imx>` | Print metadata for an `.imx` model file. |
+| `bithuman pull <slug>` | Download a showcase avatar fixture by slug into the local cache. |
+| `bithuman list` | Browse showcase avatars — manifest + local cache state. |
+| `bithuman doctor` | Host capability check (arch, OS, RAM, disk, API key, brain availability). |
 
-Run `bithuman <command> --help` for the full flag list of any command.
-
-### Render a video — see [render-video.sh](render-video.sh)
+### Run a live avatar — see [live-stream.sh](live-stream.sh) and [mac-app.sh](mac-app.sh)
 
 ```bash
-bithuman generate model.imx --audio speech.wav --output demo.mp4
+bithuman run model.imx
+# Open the printed http://127.0.0.1:8088/<CODE> URL in your browser,
+# grant mic permission, and talk.
 ```
 
-### Start a streaming server — see [live-stream.sh](live-stream.sh)
+### Render a video offline — see [render-video.sh](render-video.sh)
 
 ```bash
-bithuman stream --model model.imx --port 3001
-
-# HTTP endpoints (no WebSocket):
-#   POST /audio       raw f32 PCM      GET  /video.mjpg   MJPEG video
-#   POST /action      action trigger   GET  /status       server status
-# Drive it from another shell:  bithuman speak clip.wav --port 3001
+bithuman render model.imx --audio speech.wav --output demo.mp4
 ```
 
 ### Validate your API secret
@@ -82,30 +71,27 @@ curl -s -X POST https://api.bithuman.ai/v1/validate \
 
 ---
 
-## Voice / text / browser-avatar conversations
+## Brain selection
 
-The same `bithuman` binary runs full conversations locally — no agent
-ID, no separate app. Models are `.imx` files, not agent IDs.
+`bithuman run` connects the avatar to a *brain* (the LLM + TTS that
+generates speech). Pick one of two paths via env vars:
 
-| Mode | Command | What it does |
-|------|---------|-------------|
-| Voice | `bithuman voice` | Speak into your mic; spoken reply, with transcript |
-| Text | `bithuman text` | Type messages; the model replies as text |
-| Browser avatar | `bithuman avatar` | Lip-synced avatar in your browser at `127.0.0.1:8080` |
-| Server-side voice + avatar | `bithuman avatar --openai` | Mic + speakers locally, avatar in the browser |
-
-`voice` and `text` auto-pick the **cloud** backend when
-`OPENAI_API_KEY` is set (instant, no downloads) or fully **on-device**
-with `--local` (≈5 GB first-run download, then offline). See
-[mac-app.sh](mac-app.sh) for a thin wrapper.
+| Brain | How to enable | Notes |
+|-------|---------------|-------|
+| Cloud (default) | `export OPENAI_API_KEY=sk-...` | OpenAI Realtime; instant, no downloads. |
+| On-device | `export BITHUMAN_LOCAL=1` | whisper.cpp + llama.cpp + Supertonic + Silero. Needs `pip install 'bithuman[local]'`. ~5 GB first-run download, then offline. |
 
 ```bash
-export OPENAI_API_KEY=sk-...   # optional — enables the instant cloud path
-bithuman voice                 # or:  bithuman voice --local
+export OPENAI_API_KEY=sk-...     # cloud (default)
+bithuman run model.imx
+
+# or, fully on-device:
+pip install 'bithuman[local]'
+BITHUMAN_LOCAL=1 bithuman run model.imx
 ```
 
-Requirements for the on-device modes: macOS Apple Silicon M3+ or
-Linux x86_64 / aarch64.
+Hardware requirements for the on-device brain: macOS Apple Silicon
+M3+ or Linux x86_64 / aarch64.
 
 ---
 
@@ -127,17 +113,18 @@ curl -s -X POST https://api.bithuman.ai/v1/validate \
 
 | Script | Description |
 |--------|-------------|
-| [render-video.sh](render-video.sh) | Render a lip-synced MP4 from `.imx` + audio using `bithuman generate` |
-| [live-stream.sh](live-stream.sh) | Start a local HTTP/MJPEG streaming server using `bithuman stream` |
-| [mac-app.sh](mac-app.sh) | Wrapper for `bithuman voice` / `text` / `avatar` conversations |
+| [render-video.sh](render-video.sh) | Render a lip-synced MP4 from `.imx` + audio using `bithuman render` |
+| [live-stream.sh](live-stream.sh) | Start the live avatar server using `bithuman run` |
+| [mac-app.sh](mac-app.sh) | Wrapper for `bithuman install` + `bithuman run` |
 | [rest-api.sh](rest-api.sh) | Quickstart: validate API key + make an agent speak via curl |
 
 ## Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `BITHUMAN_API_SECRET` | Yes | Your API secret from [www.bithuman.ai/#developer](https://www.bithuman.ai/#developer) |
-| `OPENAI_API_KEY` | No | Enables the instant cloud backend for `voice` / `text` |
+| `BITHUMAN_API_SECRET` | Yes | Your API secret from [www.bithuman.ai/#developer](https://www.bithuman.ai/#developer) (`BITHUMAN_API_KEY` is accepted as an alias) |
+| `OPENAI_API_KEY` | One of | Cloud brain for `bithuman run` (default path) |
+| `BITHUMAN_LOCAL` | One of | `=1` flips `bithuman run` to the on-device brain |
 
 ## Documentation
 
