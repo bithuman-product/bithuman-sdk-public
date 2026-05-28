@@ -93,6 +93,46 @@ Best results: front-facing, high-contrast, well-lit, face filling the
 frame. Side profiles produce unnatural movement — use straight-on
 views. Start with a pre-built animal for guaranteed compatibility.
 
+## The `.imx` file
+
+The packaged output is a single `.imx` file — a self-contained
+container with the avatar's frames, motion priors, voice config, and
+metadata. The same file plays back on every runtime:
+[Python](/sdks/python), [Swift](/sdks/swift), [Kotlin](/sdks/kotlin),
+the [CLI](/getting-started/cli). Inspect one with `bithuman info
+path/to/avatar.imx`.
+
+## Curated showcase
+
+Pre-built avatars are listed in the [showcase
+manifest](https://www.bithuman.ai/#explore). From the CLI:
+
+```bash
+bithuman list                            # browse what's available
+bithuman pull modern-court-jester        # cache to ~/.cache/bithuman/showcase/
+bithuman run ~/.cache/bithuman/showcase/modern-court-jester.imx
+```
+
+## Programmatic creation
+
+The same upload + packaging flow is available over HTTP — generate
+agents from your own service without going through the website. See
+the [REST API reference](/api-reference/overview) for the agent
+generation endpoints (image / video / voice / prompt → `agent_code` →
+deployable `.imx`).
+
+## Pricing
+
+What it costs to run an avatar after you've built it:
+
+| Model | Use | Rate |
+|---|---|---|
+| Essence | Replay a packaged `.imx` | 1 credit / active minute |
+| Expression | Generate face from an image at session start | 2 credits / active minute |
+
+Audio-only sessions are 0 credits. Full breakdown in
+[Pricing](/getting-started/pricing).
+
 ## Next steps
 
 <CardGroup cols={3}>

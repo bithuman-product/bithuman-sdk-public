@@ -72,6 +72,97 @@ stack (LiveKit + agent + web UI). Clone, fill `.env`, `docker compose up`:
 | [local-expression-gpu-livekit-cloud](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-gpu-livekit-cloud) | Expression · your GPU, WebRTC via LiveKit Cloud |
 | [local-expression-mac](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/python/local-expression-mac) | Expression · Apple Silicon M3+ |
 
+## Self-hosted CLI pool (Essence)
+
+For a single-binary deployment of `bithuman run` as a multi-tenant
+session pool — no Python brain to install, no separate LiveKit
+server, optional embedded agent worker for fully self-contained ops.
+
+```bash
+brew install bithuman-product/bithuman/bithuman-cli   # or: curl -fsSL https://get.bithuman.ai | sh
+export BITHUMAN_API_SECRET=...                        # production metering
+export OPENAI_API_KEY=sk-...                          # cloud brain; omit if BITHUMAN_LOCAL=1
+
+bithuman run \
+  --avatars-root /srv/bithuman/avatars \
+  --launcher \                                        # serves GET /, /<CODE>, /list
+  --workers 4 \                                       # pool size; one runtime per session
+  --embedded-livekit \                                # spawn livekit-server as a child
+  --embedded-agent-worker \                           # spawn the Python agent as a child
+  --bind 0.0.0.0:8088
+```
+
+Each flag is independent — drop `--embedded-livekit` to point at your
+own LiveKit cluster (set `LIVEKIT_URL` / `LIVEKIT_API_KEY` /
+`LIVEKIT_API_SECRET` instead); drop `--embedded-agent-worker` to run
+the brain on a separate box and connect it like any other
+livekit-agents worker. Put the avatars under `--avatars-root` and the
+launcher exposes `GET /<agent_code>` for each.
+
+| Flag | Spawns | When to enable |
+|---|---|---|
+| `--launcher` | the landing page + dispatch endpoints | always, for the pool shape |
+| `--workers N` | up to N concurrent avatar runtimes | size to fit RAM (Essence ≈ 350 MB / session) |
+| `--embedded-livekit` | a child `livekit-server` | single-box deployments; remove for an external LiveKit cluster |
+| `--embedded-agent-worker` | the conversation agent as a child | single-box deployments; remove to host the brain separately |
+
+### Background as a service
+
+LaunchDaemon (macOS) and systemd (Linux) — drop in the binary path
+and the same flags above.
+
+```ini
+# /etc/systemd/system/bithuman.service
+[Unit]
+After=network-online.target
+
+[Service]
+Environment=BITHUMAN_API_SECRET=...
+Environment=OPENAI_API_KEY=...
+ExecStart=/usr/local/bin/bithuman run --avatars-root /srv/bithuman/avatars \
+          --launcher --workers 4 --embedded-livekit --embedded-agent-worker \
+          --bind 0.0.0.0:8088
+Restart=always
+User=bithuman
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```xml
+<!-- /Library/LaunchDaemons/ai.bithuman.run.plist -->
+<plist version="1.0"><dict>
+  <key>Label</key><string>ai.bithuman.run</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/bin/bithuman</string><string>run</string>
+    <string>--avatars-root</string><string>/srv/bithuman/avatars</string>
+    <string>--launcher</string>
+    <string>--workers</string><string>4</string>
+    <string>--embedded-livekit</string>
+    <string>--embedded-agent-worker</string>
+    <string>--bind</string><string>0.0.0.0:8088</string>
+  </array>
+  <key>EnvironmentVariables</key><dict>
+    <key>BITHUMAN_API_SECRET</key><string>...</string>
+    <key>OPENAI_API_KEY</key><string>...</string>
+  </dict>
+  <key>RunAtLoad</key><true/><key>KeepAlive</key><true/>
+</dict></plist>
+```
+
+For Kubernetes / Docker, the same binary runs in any image with
+glibc 2.28+ (Linux) — bind `0.0.0.0:8088`, set the env vars from
+secrets, and add a readiness probe on `GET /healthz`.
+
+<Tip>
+**Dev / parity testing without metering.** Set `BITHUMAN_UNMETERED=1`
+to skip `api.bithuman.ai` calls entirely. Production deployments
+should leave it unset and provide `BITHUMAN_API_SECRET`. The local
+brain (`BITHUMAN_LOCAL=1`, [Local mode](/guides/local-mode)) composes
+with every flag above — same `bithuman run`.
+</Tip>
+
 ## Self-hosted GPU (Expression)
 
 A GPU worker that joins a LiveKit room and streams 25 FPS lip-synced
