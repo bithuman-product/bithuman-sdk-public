@@ -174,7 +174,7 @@ this when you need a different portrait per session. 2 credits/min.
 # it out of shell history and `ps aux`.
 docker run --gpus all -p 8089:8089 \
   -v bithuman-models:/data/models \
-  --tmpfs /tmp/bh-weights:size=8g,mode=0700 \
+  --tmpfs /tmp/bh-weights:size=12g,mode=0700 \
   --env-file ./bithuman.env \
   sgubithuman/expression-avatar:latest
 ```
