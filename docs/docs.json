@@ -97,6 +97,7 @@
               "examples/overview",
               "examples/cli-hello",
               "examples/python-hello",
+              "examples/rest-hello",
               "examples/swift-ios-hello",
               "examples/kotlin-android-hello",
               "examples/ai-conversation"
