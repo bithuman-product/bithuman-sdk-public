@@ -1,5 +1,13 @@
 # macos-avatar -- macOS Voice Agent with Lip-Synced Avatar
 
+> ⚠️ **Preview / deferred.** This example targets a renderer/sink bridge
+> not yet published in SDK 0.8.2. `FramePump` expects an
+> `AvatarFrameSink`, but `AvatarRendererView` does not conform to that
+> protocol in the published surface (only `AvatarWindow` does), and no
+> bridging property or factory method is exposed. Tracked for refresh
+> when the `AvatarRendererView` -> `AvatarFrameSink` conformance lands
+> in a future SDK release.
+
 A SwiftUI app that boots a voice agent with a real-time, lip-synced Expression avatar on macOS. The avatar pipeline downloads ~1.6 GB of weights on first launch, then runs entirely on-device.
 
 ## Prerequisites

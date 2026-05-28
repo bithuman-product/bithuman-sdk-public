@@ -1,3 +1,15 @@
+// PREVIEW -- DEFERRED.
+//
+// Targets a renderer/sink bridge not yet published in SDK 0.8.2.
+// `FramePump.init(..., window: any AvatarFrameSink, ...)` expects an
+// AvatarFrameSink, but `AvatarRendererView` does not conform to that
+// protocol in the published surface (only `AvatarWindow` does, via an
+// extension), and the SDK exposes no `.frameSink` property or factory
+// method to bridge a renderer view into a sink.
+//
+// Tracked for refresh when AvatarRendererView's AvatarFrameSink
+// conformance (or an equivalent bridge) lands in a future SDK release.
+//
 // MacOSAvatar -- macOS voice agent WITH lip-synced avatar.
 //
 // Demonstrates ExpressionWeights download, AvatarConfig,
