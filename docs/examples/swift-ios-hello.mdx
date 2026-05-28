@@ -93,7 +93,11 @@ struct ContentView: View {
 
 That's the whole pipeline: bundled `.imx` in, `CGImage` frames at 25 fps on the main actor, fully on-device. Wire `vm.push(pcm)` to your audio source (mic, TTS, WebRTC) to make it lip-sync.
 
-A complete reference is at [Examples/swift/essence-playback](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/swift/essence-playback).
+A complete runnable reference is at [Examples/swift/ios-avatar](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/swift/ios-avatar) — same shape, with `HardwareCheck.evaluate()`, memory entitlements, and full lifecycle wiring.
+
+<Note>
+The sibling [`essence-playback`](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/swift/essence-playback) example targets an SDK API surface that has not yet shipped (does not build against the current 0.8.x XCFramework). Use `ios-avatar` until that lands.
+</Note>
 
 ## Where to go next
 
@@ -101,8 +105,8 @@ A complete reference is at [Examples/swift/essence-playback](https://github.com/
   <Card title="Swift SDK" icon="rocket" href="/sdks/swift">
     Full walkthrough — voice agent, lifecycle, entitlements.
   </Card>
-  <Card title="essence-playback project" icon="apple" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/swift/essence-playback">
-    A complete runnable SwiftUI Essence reference app.
+  <Card title="ios-avatar project" icon="apple" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/swift/ios-avatar">
+    A complete runnable SwiftUI iOS reference app.
   </Card>
   <Card title="macos-voice project" icon="microphone" href="https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples/swift/macos-voice">
     Offline macOS voice agent — no avatar, no API key.

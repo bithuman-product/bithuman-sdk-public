@@ -30,7 +30,7 @@ brew install bithuman-product/bithuman/bithuman-cli
 curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
 
 # Or in any Python env (3.10–3.14):
-pip install bithuman-cli
+pip install bithuman-cli==2.3.0
 
 # Sanity-check host setup + API key presence.
 export BITHUMAN_API_SECRET=your_api_secret
@@ -77,6 +77,14 @@ bithuman render ~/.cache/bithuman/showcase/modern-court-jester.imx \
 Default canvas is 1280×720 (letterboxed for non-matching fixture
 aspects). Use `--quality LOW|MEDIUM|HIGH` and `--fps` to tune. Stream
 raw BGR24 frames to stdout by passing `--output -`.
+
+<Note>
+**macOS limitation.** As of bithuman 2.3.0 / libessence ABI v7,
+`bithuman render` ships on Linux only. On macOS the encoder returns
+"not implemented". Workarounds: run on Linux (a manylinux Docker
+container works), or use `bithuman run` and screen-record the
+browser tab. macOS support is queued.
+</Note>
 
 ## Where to go next
 
