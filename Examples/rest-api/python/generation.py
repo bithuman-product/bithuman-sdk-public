@@ -131,7 +131,7 @@ def poll_status(agent_id: str, interval: int = 5, timeout: int = 600):
         tick += 1
 
         if progress is not None:
-            pct = max(0, min(100, int(progress)))
+            pct = max(0, min(100, int(round(progress * 100))))
             bar = "=" * (pct // 5) + " " * (20 - pct // 5)
             print(f"\r  {spinner} [{mins}:{secs:02d}] [{bar}] {pct}% {progress_msg}      ", end="", flush=True)
         else:
