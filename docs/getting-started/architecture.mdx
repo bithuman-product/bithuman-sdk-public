@@ -6,18 +6,21 @@ icon: "diagram-project"
 
 bitHuman is shipped as a single cross-platform runtime with idiomatic SDKs in each language. This page documents how the pieces fit together — useful if you're choosing which surface to integrate, or just curious about what runs where.
 
-## SDKs at a glance
+## Pick by what you're building
 
-| SDK | Platforms | Install |
+| Goal | Install | What you get |
 |---|---|---|
-| **Python (library)** | macOS arm64, Linux x86_64, Linux aarch64, Windows x86_64 | `pip install bithuman` |
-| **Swift** | macOS arm64, iOS device + simulator | SwiftPM `bitHumanKit` |
-| **Kotlin** | Android `arm64-v8a` | Maven `ai.bithuman:sdk` |
-| **bithuman CLI** | macOS, Linux, Windows | `brew install bithuman-product/bithuman/bithuman` or `pip install bithuman-cli` |
+| Embed in a Python app | `pip install bithuman` | Python SDK (library only, ~5 MB) |
+| Embed in a Swift app | SwiftPM `bitHumanKit` | Swift SDK + bundled libessence XCFramework |
+| Embed in an Android app | `ai.bithuman:sdk` (Maven Central) | Kotlin SDK + AAR (`arm64-v8a`) |
+| Run from CLI on Mac | `brew install bithuman-product/bithuman/bithuman` | CLI tool (single Rust binary) |
+| Run from CLI on Linux | `curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh \| sh` | CLI tool (single Rust binary) |
+| Run from CLI in any Python env | `pip install bithuman-cli` | CLI tool (in Python wheel) |
+| On-device brain for CLI | `pip install 'bithuman-cli[local]'` | CLI + on-device STT / LLM / TTS |
 
-All four SDKs read the same `.imx` model file and produce identical output. Third-party dependencies are bundled inside the SDK — your app's `Package.swift` / `build.gradle.kts` / `requirements.txt` only needs the bithuman dependency.
+All SDKs and the CLI read the same `.imx` model file and produce byte-equivalent frames. Third-party dependencies are bundled inside each distribution — your app's `Package.swift` / `build.gradle.kts` / `requirements.txt` only needs the bithuman dependency, never a transitive `onnxruntime` / `webp` / `livekit-server`.
 
-For the full install matrix and channel-by-channel snippets, see the [Quickstart](/getting-started/quickstart).
+For the full install matrix and channel-by-channel snippets, see the [Quickstart](/getting-started/quickstart). For the version-by-version SDK ↔ engine ABI mapping, see [Compatibility](/getting-started/compatibility).
 
 ## How the pieces fit together
 
@@ -48,6 +51,15 @@ For the full install matrix and channel-by-channel snippets, see the [Quickstart
 
 Most developers integrate at the SDK layer — you never need to know what's underneath. The engine is statically linked into each SDK distribution, so there are no extra system libraries to install. The CLI consumes the Rust SDK the same way any third-party app would.
 
+## Cross-layer contracts
+
+The three layers (engine, SDKs, apps) ship independently but agree on a small set of stable contracts. Everything else is internal and may change between releases.
+
+- **Engine ABI (versioned).** `libessence` exposes a C ABI tagged with an explicit version (`v6`, `v7`, …). Every language SDK declares the engine ABI it was built against; see the [Compatibility matrix](/getting-started/compatibility) for the current mapping. New ABI versions are additive — old SDK builds keep working with newer engines until a version is formally retired.
+- **SDK API (stable across patch + minor).** The public surface in each language — `from bithuman import AsyncBithuman` (Python), `import bitHumanKit` (Swift), `import ai.bithuman.sdk.*` (Kotlin) — is SemVer-stable. Patch releases never break source compatibility; minor releases add APIs without removing the old ones; major releases call out breaks explicitly in the [changelog](/changelog).
+- **App independence.** The CLI, Flutter plugin, and reference apps in `bithuman-apps` consume the SDKs as ordinary third-party packages — no privileged hooks, no internal-only flags. You could rebuild any of them against a vendored SDK pin.
+- **One `.imx`, every surface.** A model file packed for one SDK runs identically across all of them. Parity is enforced by an in-tree contract test suite (`parity/`) that streams the same audio through every SDK and asserts byte-equal frames.
+
 ## Models
 
 Two models, both supported across every SDK:
@@ -57,16 +69,16 @@ Two models, both supported across every SDK:
 
 The same SDK methods drive both — see [Models](/getting-started/models) for the full comparison.
 
-## What's open vs proprietary
+## Source layout — four repos
+
+The layers map to four GitHub repos. Two are public (this docs source + the Homebrew tap), two are private (engine + SDKs in one monorepo, apps in another).
 
 | Surface | Visibility |
 |---|---|
-| **Examples** ([bithuman-sdk-public/Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples)) | Public, MIT |
-| **Homebrew tap** ([homebrew-bithuman](https://github.com/bithuman-product/homebrew-bithuman)) | Public, Apache-2.0 |
-| **Docs site source** | Public |
-| **Engine source** (`libessence` in [`bithuman-sdk`](https://github.com/bithuman-product/bithuman-sdk)) | Private (proprietary) |
-| **SDK source** (Python / Swift / Kotlin / Rust, same repo) | Private (proprietary) |
-| **App source** (CLI, Flutter, Expression demos in [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps)) | Private (proprietary) |
+| **Examples + docs site** ([`bithuman-sdk-public`](https://github.com/bithuman-product/bithuman-sdk-public)) | Public, MIT |
+| **Homebrew tap + universal installer** ([`homebrew-bithuman`](https://github.com/bithuman-product/homebrew-bithuman)) | Public, Apache-2.0 |
+| **Engine + language SDKs + parity contract tests** ([`bithuman-sdk`](https://github.com/bithuman-product/bithuman-sdk)) | Private (proprietary) |
+| **CLI + Flutter plugin + Expression demos** ([`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps)) | Private (proprietary) |
 | **Cloud runtime** (`api.bithuman.ai`) | Private (proprietary) |
 | **Model weights** (`.imx` files) | Private, downloaded at runtime, gated by API key |
 
@@ -138,11 +150,11 @@ A few choices shaped this architecture:
   <Card title="Quickstart" icon="rocket" href="/getting-started/quickstart">
     Your first avatar in ~2 minutes
   </Card>
+  <Card title="Compatibility" icon="table" href="/getting-started/compatibility">
+    Which SDK + engine versions work together
+  </Card>
   <Card title="SDKs" icon="cube" href="/sdks/python">
     Python, Swift, Kotlin, Flutter, CLI
-  </Card>
-  <Card title="Models" icon="circle-info" href="/getting-started/models">
-    Essence vs Expression
   </Card>
   <Card title="Device matrix" icon="desktop" href="/getting-started/device-matrix">
     Per-platform details

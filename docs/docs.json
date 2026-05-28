@@ -114,6 +114,7 @@
             "group": "Concepts",
             "pages": [
               "getting-started/architecture",
+              "getting-started/compatibility",
               "getting-started/device-matrix"
             ]
           },

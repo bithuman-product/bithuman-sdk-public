@@ -10,19 +10,35 @@ Product-level changes only. Per-version notes: [Python SDK CHANGELOG](https://gi
 
 ## May 2026
 
-**Python SDK `bithuman` 2.3.0** (2026-05-28) — library / CLI split
-- `pip install bithuman` is now **library-only** (~5 MB). The CLI
-  ships as a sibling [`bithuman-cli`](https://pypi.org/project/bithuman-cli/)
-  wheel; Homebrew (`brew install bithuman-product/bithuman/bithuman`)
-  is unchanged.
-- CLI source moved into the new
+**2.3.0** (2026-05-28) — layered architecture + PyPI wheel split
+- **PyPI wheel split.** `pip install bithuman` is now the Python SDK
+  **library only** (~5 MB) — `from bithuman import AsyncBithuman`
+  still works. The CLI moved to the sibling
+  [`bithuman-cli`](https://pypi.org/project/bithuman-cli/) wheel;
+  Homebrew (`brew install bithuman-product/bithuman/bithuman`) and the
+  universal `curl … | sh` installer are unchanged.
+- **Layered architecture.** Engine, SDKs, and apps are now cleanly
+  separated across two private repos and two public ones:
+  [`bithuman-sdk`](https://github.com/bithuman-product/bithuman-sdk)
+  holds the `libessence` engine + Python / Swift / Kotlin / Rust SDKs +
+  the `parity/` contract tests;
   [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps)
-  repo (apps layer). Engine + language SDKs live in
-  [`bithuman-sdk`](https://github.com/bithuman-product/bithuman-sdk).
-  See [Architecture →](/getting-started/architecture).
-- Library API unchanged — `from bithuman import AsyncBithuman` works
-  the same. Migration is install-time only: `pip install bithuman-cli`
-  (or use Homebrew) to keep the `bithuman` console-script.
+  holds the CLI, the Flutter plugin, and the Expression reference apps;
+  [`bithuman-sdk-public`](https://github.com/bithuman-product/bithuman-sdk-public)
+  is this docs source + examples;
+  [`homebrew-bithuman`](https://github.com/bithuman-product/homebrew-bithuman)
+  is the tap + universal installer. See
+  [Architecture →](/getting-started/architecture).
+- **No external API breaks.** Python (`from bithuman import
+  AsyncBithuman`), Swift (`import bitHumanKit`), and Kotlin
+  (`ai.bithuman:sdk`) public APIs are unchanged from 2.2.x. Migration
+  for existing `pip install bithuman && bithuman run` users is
+  install-time only: `pip install bithuman-cli` (or use Homebrew) to
+  keep the `bithuman` console-script.
+- **Engine ABI** bumps to `v7` — adds
+  `be_set_default_audio_encoder` for fallback audio-encoder
+  registration. Additive on top of v6; old SDK builds keep working.
+  Full table at [Compatibility →](/getting-started/compatibility).
 
 **Python SDK `bithuman` 2.2.2** (2026-05-25) — Linux CLI tarballs restored
 - CI-only cleanup release; no API / runtime changes. Same Python wheel
