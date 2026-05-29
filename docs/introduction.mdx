@@ -257,7 +257,7 @@ and an avatar `.imx` from the
     ```bash
     docker run --gpus all -p 8089:8089 \
       -v bithuman-models:/data/models \
-      --tmpfs /tmp/bh-weights:size=12g,mode=0700 \
+      --tmpfs /tmp/bh-weights:size=9g,mode=0700 \
       --env-file ./bithuman.env \
       sgubithuman/expression-avatar:latest
     ```
