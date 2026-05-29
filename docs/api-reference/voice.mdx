@@ -1,6 +1,6 @@
 ---
 title: "Voice API"
-description: "Text-to-speech in 31 languages, 10 built-in voices, optional voice tuning. Native + OpenAI-compatible endpoints."
+description: "Text-to-speech in 31 languages, 10 built-in voices, optional voice tuning."
 icon: "waveform-lines"
 ---
 
@@ -8,44 +8,212 @@ bitHuman's in-house TTS engine. 10 built-in voices, 31 languages, streaming + no
 
 <CardGroup cols={2}>
   <Card title="Try it live" icon="play" href="https://www.bithuman.ai/voice">
-    Open the Voice Playground — pick a voice, type, hear it.
+    Open the Voice Playground.
   </Card>
   <Card title="LiveKit plugin" icon="webhook" href="https://github.com/bithuman-product/bithuman-tts">
-    Drop-in replacement for `cartesia.TTS()` / `openai.TTS()` in LiveKit voice-agent pipelines.
+    Drop-in for `cartesia.TTS()` / `openai.TTS()`.
   </Card>
 </CardGroup>
 
-## Quick start
+All endpoints live at `https://api.bithuman.ai` and require `api-secret` header.
 
-```bash
+---
+
+## <Tooltip tip="POST">▸</Tooltip> /v1/tts
+
+Synthesize speech from text. WAV by default; pass `stream: true` for sentence-chunked PCM frames.
+
+<ParamField body="text" type="string" required>
+  Text to synthesize. Any length, multi-sentence supported.
+</ParamField>
+<ParamField body="voice" type="string" default="M1">
+  Voice ID. Built-in: `M1`-`M5` (male), `F1`-`F5` (female).
+</ParamField>
+<ParamField body="language" type="string" default="en">
+  ISO-2 language code. 31 languages supported (see catalog below).
+</ParamField>
+<ParamField body="total_steps" type="integer" default="8">
+  Diffusion quality. `5`=fast/lower, `8`=balanced, `12`=highest. Range 1-100.
+</ParamField>
+<ParamField body="speed" type="number" default="1.05">
+  Playback rate. Range `0.7`-`2.0`.
+</ParamField>
+<ParamField body="format" type="string" default="wav">
+  Response format: `wav` or `pcm_s16le`.
+</ParamField>
+<ParamField body="stream" type="boolean" default="false">
+  If true, returns sentence-chunked length-prefixed PCM frames.
+</ParamField>
+
+<RequestExample>
+```bash curl
 curl -X POST https://api.bithuman.ai/v1/tts \
   -H "api-secret: $BITHUMAN_API_SECRET" \
   -H "Content-Type: application/json" \
-  -d '{"text": "Hello from bitHuman."}' \
+  -d '{"text": "Hello from bitHuman.", "voice": "F1"}' \
   --output hello.wav
 ```
 
-Returns 44.1 kHz, 16-bit mono WAV. Median first-byte ~120 ms.
+```python python
+import requests
+r = requests.post(
+    "https://api.bithuman.ai/v1/tts",
+    headers={"api-secret": "YOUR_API_SECRET"},
+    json={"text": "Hello from bitHuman.", "voice": "F1"},
+)
+open("hello.wav", "wb").write(r.content)
+```
 
-## Endpoints
+```javascript node
+const res = await fetch("https://api.bithuman.ai/v1/tts", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "api-secret": process.env.BITHUMAN_API_SECRET,
+  },
+  body: JSON.stringify({ text: "Hello from bitHuman.", voice: "F1" }),
+});
+require("fs").writeFileSync("hello.wav", Buffer.from(await res.arrayBuffer()));
+```
+</RequestExample>
 
-<CardGroup cols={2}>
-  <Card title="POST /v1/tts" icon="play" href="/api-reference/endpoint/synthesize-speech">
-    Synthesize speech (WAV or streaming PCM, all options)
-  </Card>
-  <Card title="GET /v1/voices" icon="list" href="/api-reference/endpoint/list-voices">
-    List available voices
-  </Card>
-  <Card title="POST /v1/audio/speech" icon="rotate" href="/api-reference/endpoint/openai-compat-speech">
-    OpenAI-compatible drop-in
-  </Card>
-  <Card title="GET /v1/studio/axes" icon="sliders" href="/api-reference/endpoint/list-voice-axes">
-    Discover voice-tuning axes
-  </Card>
-  <Card title="POST /v1/studio/preview" icon="wand-magic-sparkles" href="/api-reference/endpoint/preview-tuned-voice">
-    Preview a tuned voice
-  </Card>
-</CardGroup>
+<ResponseExample>
+```
+HTTP/1.1 200 OK
+Content-Type: audio/wav
+Content-Length: 145980
+
+<binary WAV bytes>
+```
+</ResponseExample>
+
+**Streaming framing** (`stream: true`): `[uint32 BE size][PCM int16 LE mono 44.1kHz]` per sentence, terminator `[uint32 BE = 0]`. `Content-Type: audio/pcm; rate=44100; framing=len32be`. First-byte ≈ 22 ms.
+
+---
+
+## <Tooltip tip="GET">▸</Tooltip> /v1/voices
+
+List available voices.
+
+<RequestExample>
+```bash curl
+curl https://api.bithuman.ai/v1/voices \
+  -H "api-secret: $BITHUMAN_API_SECRET"
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "voices": [
+    {"id": "F1", "kind": "builtin"},
+    {"id": "F2", "kind": "builtin"},
+    {"id": "M1", "kind": "builtin"},
+    "..."
+  ]
+}
+```
+</ResponseExample>
+
+---
+
+## <Tooltip tip="POST">▸</Tooltip> /v1/audio/speech
+
+Drop-in compatible with OpenAI's [`POST /v1/audio/speech`](https://platform.openai.com/docs/api-reference/audio/createSpeech). Same body schema; swap base URL and auth header.
+
+<ParamField body="model" type="string">
+  Ignored — bitHuman uses its own model. Pass `"tts-1"` for client compatibility.
+</ParamField>
+<ParamField body="input" type="string" required>
+  Text to synthesize.
+</ParamField>
+<ParamField body="voice" type="string" default="M1">
+  bitHuman voice ID (`M1`-`F5`).
+</ParamField>
+<ParamField body="response_format" type="string" default="wav" />
+<ParamField body="speed" type="number" default="1.05" />
+
+<RequestExample>
+```python openai-client
+from openai import OpenAI
+client = OpenAI(
+  base_url="https://api.bithuman.ai/v1",
+  api_key="not-used",
+  default_headers={"api-secret": "YOUR_API_SECRET"},
+)
+audio = client.audio.speech.create(
+  model="tts-1",
+  input="Hello, served as if it were OpenAI.",
+  voice="F1",
+)
+audio.stream_to_file("hello.wav")
+```
+</RequestExample>
+
+---
+
+## <Tooltip tip="GET">▸</Tooltip> /v1/studio/axes
+
+Discover the semantic axes (gender, pitch, rate, brightness) for voice tuning. Use with `POST /v1/studio/preview`.
+
+<RequestExample>
+```bash curl
+curl https://api.bithuman.ai/v1/studio/axes \
+  -H "api-secret: $BITHUMAN_API_SECRET"
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200
+{
+  "axes": [
+    {
+      "name": "pitch",
+      "description": "Pitch: − lower, + higher",
+      "suggested_min": -0.28,
+      "suggested_max": 0.28,
+      "anchor_projections": {"F1": 0.087, "M1": -0.092, "...": "..."}
+    },
+    "..."
+  ]
+}
+```
+</ResponseExample>
+
+---
+
+## <Tooltip tip="POST">▸</Tooltip> /v1/studio/preview
+
+Synth a one-off clip with an axis-edited voice. The edited voice is ephemeral (not persisted).
+
+<ParamField body="text" type="string" required />
+<ParamField body="base_voice" type="string" required>
+  Built-in voice ID (`M1`-`F5`) to edit.
+</ParamField>
+<ParamField body="axes" type="object" required>
+  Map of axis-name → float value, e.g. `{"pitch": 0.15, "brightness": -0.10}`.
+</ParamField>
+<ParamField body="language" type="string" default="en" />
+
+<RequestExample>
+```bash curl
+curl -X POST https://api.bithuman.ai/v1/studio/preview \
+  -H "api-secret: $BITHUMAN_API_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Tuned voice preview.",
+    "base_voice": "F1",
+    "axes": {"pitch": 0.15, "brightness": -0.10}
+  }' \
+  --output tuned.wav
+```
+</RequestExample>
+
+<Note>
+The **Tune** popover at [www.bithuman.ai/voice](https://www.bithuman.ai/voice) calls these two endpoints — drag the sliders for live previews.
+</Note>
+
+---
 
 ## Voices
 
@@ -59,19 +227,15 @@ Returns 44.1 kHz, 16-bit mono WAV. Median first-byte ~120 ms.
 
 ## Languages
 
-31 supported. Pass the ISO-2 code in the `language` field.
+31 supported. Pass the ISO-2 code in `language`:
 
 `en` `es` `fr` `de` `it` `pt` `nl` `pl` `sv` `da` `fi` `cs` `sk` `sl` `hu` `ro` `bg` `el` `tr` `uk` `ru` `lv` `lt` `et` `ar` `hi` `id` `vi` `ja` `ko` `zh`
 
-## Streaming response format
+## Errors
 
-When `stream: true` on `POST /v1/tts`, the body is a sequence of length-prefixed PCM frames:
-
-```
-[uint32 BE: frame bytes] [PCM int16 LE mono 44.1kHz]
-[uint32 BE: frame bytes] [PCM ...]
-...
-[uint32 BE: 0]   ← terminator
-```
-
-`Content-Type: audio/pcm; rate=44100; framing=len32be`. First-byte ≈ 22 ms server-side.
+| Status | Cause |
+|--------|-------|
+| `400` | Missing `text`, unsupported voice/language, out-of-range params |
+| `401` | Missing or invalid `api-secret` |
+| `429` | Rate limit exceeded |
+| `503` | Queue full; retry with backoff |
