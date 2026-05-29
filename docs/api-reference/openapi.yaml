@@ -682,6 +682,158 @@ paths:
                     type: string
                     description: Error message if regeneration_status is "failed".
 
+  /v1/tts:
+    post:
+      operationId: synthesizeSpeech
+      summary: Synthesize speech from text
+      description: |
+        Generates audio (WAV or PCM) from a text prompt using one of the
+        built-in voices. Supports 31 languages, per-request quality / speed
+        tuning, and optional sentence-by-sentence streaming.
+      tags: [Voice]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text:
+                  type: string
+                  description: Text to synthesize (any length; multi-sentence supported).
+                  example: "Hello from bitHuman."
+                voice:
+                  type: string
+                  description: Voice ID. Built-in voices are `M1`-`M5` (male) and `F1`-`F5` (female).
+                  default: "M1"
+                  example: "F1"
+                language:
+                  type: string
+                  description: ISO-2 language code. 31 languages supported.
+                  default: "en"
+                  example: "en"
+                total_steps:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  default: 8
+                  description: Denoise step count. `5`=fast/lower quality, `8`=balanced, `12`=highest.
+                speed:
+                  type: number
+                  minimum: 0.7
+                  maximum: 2.0
+                  default: 1.05
+                  description: Playback rate.
+                format:
+                  type: string
+                  enum: [wav, pcm_s16le]
+                  default: wav
+                  description: Response audio format.
+                stream:
+                  type: boolean
+                  default: false
+                  description: If true, returns sentence-chunked length-prefixed PCM frames.
+      responses:
+        "200":
+          description: Audio bytes (WAV or PCM, per request `format`).
+          content:
+            audio/wav:
+              schema:
+                type: string
+                format: binary
+            audio/pcm:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "503":
+          description: Queue full / service overloaded. Retry with backoff.
+
+  /v1/voices:
+    get:
+      operationId: listVoices
+      summary: List available voices
+      description: Returns the catalog of built-in and custom voices.
+      tags: [Voice]
+      responses:
+        "200":
+          description: Voice catalog
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  voices:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "F1"
+                        kind:
+                          type: string
+                          enum: [builtin, custom]
+                          example: "builtin"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /v1/audio/speech:
+    post:
+      operationId: openaiCompatSpeech
+      summary: OpenAI-compatible speech endpoint
+      description: |
+        Drop-in compatible with OpenAI's `POST /v1/audio/speech`. Useful for
+        migrating existing OpenAI clients to bitHuman without code changes —
+        swap the base URL to `https://api.bithuman.ai/v1` and the auth
+        header to `api-secret`.
+      tags: [Voice]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [input]
+              properties:
+                model:
+                  type: string
+                  description: Ignored — bitHuman uses its own TTS model. Pass `"tts-1"` for compatibility.
+                  example: "tts-1"
+                input:
+                  type: string
+                  description: Text to synthesize.
+                  example: "Hello from bitHuman."
+                voice:
+                  type: string
+                  description: bitHuman voice ID (`M1`-`F5`).
+                  default: "M1"
+                response_format:
+                  type: string
+                  enum: [wav]
+                  default: wav
+                speed:
+                  type: number
+                  minimum: 0.7
+                  maximum: 2.0
+                  default: 1.05
+      responses:
+        "200":
+          description: Audio bytes (WAV by default).
+          content:
+            audio/wav:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
 components:
   securitySchemes:
     apiSecret:
@@ -836,3 +988,5 @@ tags:
     description: Generate tokens for website avatar embeds
   - name: Dynamics
     description: Generate and manage gesture animations
+  - name: Voice
+    description: Text-to-speech synthesis in 31 languages (in-house TTS)

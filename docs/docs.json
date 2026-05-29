@@ -169,6 +169,12 @@
               "api-reference/file-upload",
               "api-reference/dynamics"
             ]
+          },
+          {
+            "group": "Voice",
+            "pages": [
+              "api-reference/voice"
+            ]
           }
         ]
       }
