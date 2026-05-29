@@ -834,6 +834,96 @@ paths:
         "401":
           $ref: "#/components/responses/Unauthorized"
 
+  /v1/studio/axes:
+    get:
+      operationId: listVoiceAxes
+      summary: List voice-tuning semantic axes
+      description: |
+        Returns the available semantic axes (gender, pitch, rate, brightness)
+        plus how each built-in voice projects onto them and the suggested
+        slider range. Powers the Tune popover in the Voice Playground.
+      tags: [Voice]
+      responses:
+        "200":
+          description: Axis catalog
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  axes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: "pitch"
+                        description:
+                          type: string
+                          example: "Pitch: − lower, + higher"
+                        suggested_min:
+                          type: number
+                          example: -0.28
+                        suggested_max:
+                          type: number
+                          example: 0.28
+                        anchor_projections:
+                          type: object
+                          additionalProperties:
+                            type: number
+                          description: Per-voice-ID projection onto this axis.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /v1/studio/preview:
+    post:
+      operationId: previewTunedVoice
+      summary: Preview an axis-edited voice
+      description: |
+        Synthesize a one-off audio clip using a built-in voice edited along
+        the semantic axes returned by `GET /v1/studio/axes`. The edited voice
+        is ephemeral — it is NOT persisted in the voice catalog.
+      tags: [Voice]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text, base_voice, axes]
+              properties:
+                text:
+                  type: string
+                  example: "Tuned voice preview."
+                base_voice:
+                  type: string
+                  description: Built-in voice ID (`M1`-`F5`) to edit.
+                  example: "F1"
+                axes:
+                  type: object
+                  description: Map of axis-name → float value.
+                  additionalProperties:
+                    type: number
+                  example:
+                    pitch: 0.15
+                    brightness: -0.10
+                language:
+                  type: string
+                  default: "en"
+      responses:
+        "200":
+          description: Audio bytes (WAV).
+          content:
+            audio/wav:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
 components:
   securitySchemes:
     apiSecret:

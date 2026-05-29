@@ -213,6 +213,81 @@ audio.stream_to_file("hello.wav")
 
 ---
 
+## Voice tuning
+
+Shape a base voice's character along semantic axes (gender, pitch, rate, brightness) without re-recording or re-cloning. Two endpoints:
+
+- **`GET /v1/studio/axes`** — discover the available axes + how each built-in voice projects onto them. Use this to power your own tuning UI.
+- **`POST /v1/studio/preview`** — synth a one-off audio clip with an axis-edited voice. The edited voice is ephemeral (not persisted in the catalog).
+
+Each axis is a float; the response from `GET /v1/studio/axes` includes `suggested_min` / `suggested_max` so you know the sensible slider range. The neutral value is always `0.0`.
+
+### Discover axes
+
+```
+GET /v1/studio/axes
+```
+
+**Response**
+
+```json
+{
+  "axes": [
+    {
+      "name": "gender",
+      "description": "Voice gender: − more male, + more female",
+      "anchor_projections": {"F1": 0.137, "F2": 0.133, "M1": -0.059, "M2": -0.084, "...": "..."},
+      "suggested_min": -0.31,
+      "suggested_max": 0.26
+    },
+    {
+      "name": "pitch",
+      "description": "Pitch: − lower, + higher",
+      "suggested_min": -0.28, "suggested_max": 0.28,
+      "anchor_projections": {"...": "..."}
+    },
+    { "name": "rate",       "description": "Speaking rate: − slower, + faster" },
+    { "name": "brightness", "description": "Brightness: − warmer, + brighter/airier" }
+  ]
+}
+```
+
+### Preview an axis-edited voice
+
+```
+POST /v1/studio/preview
+```
+
+**Request Body**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `text` | string | Yes | Text to synthesize |
+| `base_voice` | string | Yes | A built-in voice ID (`M1`–`F5`) to edit |
+| `axes` | object | Yes | Map of axis-name → float value, e.g. `{"pitch": 0.15, "brightness": -0.10}` |
+| `language` | string | No | ISO-2 language code. Defaults to `en` |
+
+**Example**
+
+```bash
+curl -X POST https://api.bithuman.ai/v1/studio/preview \
+  -H "api-secret: $BITHUMAN_API_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Tuned voice preview.",
+    "base_voice": "F1",
+    "language": "en",
+    "axes": {"pitch": 0.15, "brightness": -0.10}
+  }' \
+  --output tuned.wav
+```
+
+<Note>
+For an interactive feel, see the **Tune** popover at [www.bithuman.ai/voice](https://www.bithuman.ai/voice) — it calls these endpoints under the hood and live-previews each axis change.
+</Note>
+
+---
+
 ## Voices
 
 Each voice is identified by a short ID and has a friendly name on the [Voice Playground](https://www.bithuman.ai/voice). API calls use the ID.
