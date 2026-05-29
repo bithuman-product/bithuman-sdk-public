@@ -24,14 +24,26 @@ Production-deployed since Feb 2026. No install, no SDK call — flip one
 URL parameter on an existing agent landing page.
 
 ```
-# Browser-side rendering, agent brain still cloud:
+# Short flag (recommended): browser-side rendering with the
+# libessence-WASM compute kernel.
+https://bithuman.ai/<AGENT_CODE>?render=local
+
+# Legacy long flags (still supported as aliases):
 https://agent.viewer.bithuman.ai/<AGENT_CODE>?rendering_mode=browser
 
 # Pure client-side puppet (mic-driven, no LiveKit, no agent worker):
 https://agent.viewer.bithuman.ai/?rendering_mode=avatar&model_url=<IMX_URL>
 ```
 
-[Try it on a showcase agent →](https://agent.viewer.bithuman.ai/A74NWD9723?rendering_mode=browser)
+[Try it on a showcase agent →](https://bithuman.ai/A74NWD9723?render=local)
+
+<Note>
+As of 2026-05-29, browser rendering ships the libessence engine itself
+compiled to WebAssembly. mel + KNN now match native libessence
+byte-for-byte (341/341 cluster_idx match on the standard parity gate).
+The legacy TypeScript hand-port of mel/KNN has been retired. The audio
+encoder (`audio_encoder.onnx`) still runs through ONNX Runtime Web.
+</Note>
 
 ## When you'd reach for it
 

@@ -14,7 +14,7 @@ detailed items move to GitHub Issues when they're committed work.
 - Inline LiveKit bridge in `bithuman-cli` (works without upstream PR)
 - Cross-binding parity harness for Python + Rust SDKs
 - Layer 4 integration contract test (livekit-plugins-bithuman)
-- [Browser-side avatar rendering](/guides/browser-rendering) — ONNX Runtime Web (WASM) renders the avatar in the user's tab; agent worker keeps the brain. Activate with `?rendering_mode=browser` on any agent landing page. Also `?rendering_mode=avatar` for a pure client-side mic-driven puppet (no LiveKit, no agent worker).
+- [Browser-side avatar rendering](/guides/browser-rendering) — libessence compiled to WebAssembly drives mel + KNN in the user's tab, byte-exact to the native engine (341/341 parity); ONNX Runtime Web runs the audio encoder; the agent worker keeps the brain. Activate with the short `?render=local` flag (or legacy `?rendering_mode=browser` alias) on any agent landing page. Also `?rendering_mode=avatar` for a pure client-side mic-driven puppet (no LiveKit, no agent worker). The TypeScript hand-port retired 2026-05-29 — one canonical compute path across cloud, native SDKs, and browser.
 
 ## In flight
 
