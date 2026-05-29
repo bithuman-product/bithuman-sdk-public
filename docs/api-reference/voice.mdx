@@ -1,15 +1,10 @@
 ---
-title: "Voice API: Text-to-Speech"
-description: "POST /v1/tts — synthesize speech from text using built-in voices in 31 languages. Native and OpenAI-compatible endpoints."
+title: "Voice API"
+description: "Text-to-speech in 31 languages, 10 built-in voices, optional voice tuning. Native + OpenAI-compatible endpoints."
 icon: "waveform-lines"
 ---
 
-The Voice API generates speech audio from text using bitHuman's in-house TTS engine. Two endpoints are available:
-
-- **`POST /v1/tts`** — native bitHuman endpoint with WAV / streaming PCM output and speed / quality controls
-- **`POST /v1/audio/speech`** — drop-in compatible with the OpenAI [`audio.speech.create`](https://platform.openai.com/docs/api-reference/audio/createSpeech) request shape, useful for migrating existing clients
-
-10 built-in voices, 31 languages, no upfront audio data needed.
+bitHuman's in-house TTS engine. 10 built-in voices, 31 languages, streaming + non-streaming, plus a voice-tuning surface.
 
 <CardGroup cols={2}>
   <Card title="Try it live" icon="play" href="https://www.bithuman.ai/voice">
@@ -30,99 +25,47 @@ curl -X POST https://api.bithuman.ai/v1/tts \
   --output hello.wav
 ```
 
-You get a 44.1 kHz, 16-bit mono WAV back. Median first-byte ~120 ms under typical load.
+Returns 44.1 kHz, 16-bit mono WAV. Median first-byte ~120 ms.
 
----
+## Endpoints
 
-## Synthesize speech
+<CardGroup cols={2}>
+  <Card title="POST /v1/tts" icon="play" href="/api-reference/endpoint/synthesize-speech">
+    Synthesize speech (WAV or streaming PCM, all options)
+  </Card>
+  <Card title="GET /v1/voices" icon="list" href="/api-reference/endpoint/list-voices">
+    List available voices
+  </Card>
+  <Card title="POST /v1/audio/speech" icon="rotate" href="/api-reference/endpoint/openai-compat-speech">
+    OpenAI-compatible drop-in
+  </Card>
+  <Card title="GET /v1/studio/axes" icon="sliders" href="/api-reference/endpoint/list-voice-axes">
+    Discover voice-tuning axes
+  </Card>
+  <Card title="POST /v1/studio/preview" icon="wand-magic-sparkles" href="/api-reference/endpoint/preview-tuned-voice">
+    Preview a tuned voice
+  </Card>
+</CardGroup>
 
-```
-POST /v1/tts
-```
+## Voices
 
-Generates audio for a single utterance. Single-call by default; pass `stream: true` to receive sentence-by-sentence PCM frames as they finish.
+| ID | Name | Gender | | ID | Name | Gender |
+|----|------|--------|---|----|------|--------|
+| `F1` | Aria | feminine | | `M1` | Alex | masculine |
+| `F2` | Sophie | feminine | | `M2` | Leo | masculine |
+| `F3` | Maya | feminine | | `M3` | Theo | masculine |
+| `F4` | Luna | feminine | | `M4` | Kai | masculine |
+| `F5` | Zoe | feminine | | `M5` | Max | masculine |
 
-**Headers**
+## Languages
 
-| Header | Value |
-|--------|-------|
-| `Content-Type` | `application/json` |
-| `api-secret` | Your API secret |
+31 supported. Pass the ISO-2 code in the `language` field.
 
-**Request Body**
+`en` `es` `fr` `de` `it` `pt` `nl` `pl` `sv` `da` `fi` `cs` `sk` `sl` `hu` `ro` `bg` `el` `tr` `uk` `ru` `lv` `lt` `et` `ar` `hi` `id` `vi` `ja` `ko` `zh`
 
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `text` | string | Yes | — | Text to synthesize (any length; multi-sentence is supported) |
-| `voice` | string | No | `M1` | Voice ID. Built-in: `M1`–`M5` (male), `F1`–`F5` (female) |
-| `language` | string | No | `en` | ISO-2 language code. 31 languages supported (see below) |
-| `total_steps` | integer | No | `8` | Diffusion quality steps. `5`=fast/lower quality, `8`=balanced, `12`=highest |
-| `speed` | number | No | `1.05` | Playback rate. Range `0.7`–`2.0` |
-| `format` | string | No | `wav` | Response format: `wav` or `pcm_s16le` |
-| `stream` | boolean | No | `false` | If `true`, returns sentence-chunked PCM frames (see [streaming format](#streaming-response-format)) |
+## Streaming response format
 
-**Response (non-streaming)**
-
-- Body: raw audio bytes (WAV or PCM, per `format`)
-- `Content-Type: audio/wav` or `audio/pcm; rate=44100`
-
-**Example**
-
-<CodeGroup>
-```bash curl
-curl -X POST https://api.bithuman.ai/v1/tts \
-  -H "api-secret: $BITHUMAN_API_SECRET" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "text": "Welcome to bitHuman.",
-    "voice": "F1",
-    "language": "en",
-    "speed": 1.0
-  }' \
-  --output welcome.wav
-```
-
-```python python
-import requests
-
-r = requests.post(
-    "https://api.bithuman.ai/v1/tts",
-    headers={
-        "Content-Type": "application/json",
-        "api-secret": "YOUR_API_SECRET",
-    },
-    json={
-        "text": "Welcome to bitHuman.",
-        "voice": "F1",
-        "language": "en",
-    },
-)
-r.raise_for_status()
-with open("welcome.wav", "wb") as f:
-    f.write(r.content)
-```
-
-```javascript node
-const res = await fetch("https://api.bithuman.ai/v1/tts", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "api-secret": process.env.BITHUMAN_API_SECRET,
-  },
-  body: JSON.stringify({
-    text: "Welcome to bitHuman.",
-    voice: "F1",
-    language: "en",
-  }),
-});
-const buf = Buffer.from(await res.arrayBuffer());
-await require("fs").promises.writeFile("welcome.wav", buf);
-```
-</CodeGroup>
-
-### Streaming response format
-
-When `stream: true`, the response body is a sequence of length-prefixed PCM frames, one per sentence:
+When `stream: true` on `POST /v1/tts`, the body is a sequence of length-prefixed PCM frames:
 
 ```
 [uint32 BE: frame bytes] [PCM int16 LE mono 44.1kHz]
@@ -131,215 +74,4 @@ When `stream: true`, the response body is a sequence of length-prefixed PCM fram
 [uint32 BE: 0]   ← terminator
 ```
 
-First-byte latency is ~22 ms server-side (each sentence is synthesized and emitted as it finishes). `Content-Type: audio/pcm; rate=44100; framing=len32be`.
-
-<Note>
-Most callers don't need streaming — the non-streaming WAV path returns in ~200 ms for short inputs and pipes straight into any audio player. Streaming is mainly useful when you're feeding audio into a LiveKit room or other low-latency consumer.
-</Note>
-
----
-
-## List voices
-
-```
-GET /v1/voices
-```
-
-Returns the catalog of available voices.
-
-**Response**
-
-```json
-{
-  "voices": [
-    {"id": "F1", "kind": "builtin"},
-    {"id": "F2", "kind": "builtin"},
-    {"id": "F3", "kind": "builtin"},
-    {"id": "F4", "kind": "builtin"},
-    {"id": "F5", "kind": "builtin"},
-    {"id": "M1", "kind": "builtin"},
-    {"id": "M2", "kind": "builtin"},
-    {"id": "M3", "kind": "builtin"},
-    {"id": "M4", "kind": "builtin"},
-    {"id": "M5", "kind": "builtin"}
-  ]
-}
-```
-
-**Example**
-
-```bash
-curl https://api.bithuman.ai/v1/voices \
-  -H "api-secret: $BITHUMAN_API_SECRET"
-```
-
----
-
-## OpenAI-compatible endpoint
-
-```
-POST /v1/audio/speech
-```
-
-Drop-in replacement for OpenAI's [`POST /v1/audio/speech`](https://platform.openai.com/docs/api-reference/audio/createSpeech). Useful for migrating existing OpenAI clients without code changes — just swap the base URL and the API-secret header.
-
-**Request Body**
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `model` | string | No | Ignored (bitHuman uses its own model). Pass `"tts-1"` for compatibility |
-| `input` | string | Yes | Text to synthesize |
-| `voice` | string | No | bitHuman voice ID (`M1`–`F5`) |
-| `response_format` | string | No | `wav` (default) |
-| `speed` | number | No | `0.7`–`2.0` |
-
-**Example**
-
-```python
-from openai import OpenAI
-
-client = OpenAI(
-    base_url="https://api.bithuman.ai/v1",
-    api_key="not-used",            # OpenAI client requires it; ignored
-    default_headers={"api-secret": "YOUR_API_SECRET"},
-)
-audio = client.audio.speech.create(
-    model="tts-1",
-    input="Hello from bitHuman, served as if it were OpenAI.",
-    voice="F1",
-)
-audio.stream_to_file("hello.wav")
-```
-
----
-
-## Voice tuning
-
-Shape a base voice's character along semantic axes (gender, pitch, rate, brightness) without re-recording or re-cloning. Two endpoints:
-
-- **`GET /v1/studio/axes`** — discover the available axes + how each built-in voice projects onto them. Use this to power your own tuning UI.
-- **`POST /v1/studio/preview`** — synth a one-off audio clip with an axis-edited voice. The edited voice is ephemeral (not persisted in the catalog).
-
-Each axis is a float; the response from `GET /v1/studio/axes` includes `suggested_min` / `suggested_max` so you know the sensible slider range. The neutral value is always `0.0`.
-
-### Discover axes
-
-```
-GET /v1/studio/axes
-```
-
-**Response**
-
-```json
-{
-  "axes": [
-    {
-      "name": "gender",
-      "description": "Voice gender: − more male, + more female",
-      "anchor_projections": {"F1": 0.137, "F2": 0.133, "M1": -0.059, "M2": -0.084, "...": "..."},
-      "suggested_min": -0.31,
-      "suggested_max": 0.26
-    },
-    {
-      "name": "pitch",
-      "description": "Pitch: − lower, + higher",
-      "suggested_min": -0.28, "suggested_max": 0.28,
-      "anchor_projections": {"...": "..."}
-    },
-    { "name": "rate",       "description": "Speaking rate: − slower, + faster" },
-    { "name": "brightness", "description": "Brightness: − warmer, + brighter/airier" }
-  ]
-}
-```
-
-### Preview an axis-edited voice
-
-```
-POST /v1/studio/preview
-```
-
-**Request Body**
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `text` | string | Yes | Text to synthesize |
-| `base_voice` | string | Yes | A built-in voice ID (`M1`–`F5`) to edit |
-| `axes` | object | Yes | Map of axis-name → float value, e.g. `{"pitch": 0.15, "brightness": -0.10}` |
-| `language` | string | No | ISO-2 language code. Defaults to `en` |
-
-**Example**
-
-```bash
-curl -X POST https://api.bithuman.ai/v1/studio/preview \
-  -H "api-secret: $BITHUMAN_API_SECRET" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "text": "Tuned voice preview.",
-    "base_voice": "F1",
-    "language": "en",
-    "axes": {"pitch": 0.15, "brightness": -0.10}
-  }' \
-  --output tuned.wav
-```
-
-<Note>
-For an interactive feel, see the **Tune** popover at [www.bithuman.ai/voice](https://www.bithuman.ai/voice) — it calls these endpoints under the hood and live-previews each axis change.
-</Note>
-
----
-
-## Voices
-
-Each voice is identified by a short ID and has a friendly name on the [Voice Playground](https://www.bithuman.ai/voice). API calls use the ID.
-
-| ID | Name | Gender |
-|----|------|--------|
-| `F1` | Aria | feminine |
-| `F2` | Sophie | feminine |
-| `F3` | Maya | feminine |
-| `F4` | Luna | feminine |
-| `F5` | Zoe | feminine |
-| `M1` | Alex | masculine |
-| `M2` | Leo | masculine |
-| `M3` | Theo | masculine |
-| `M4` | Kai | masculine |
-| `M5` | Max | masculine |
-
----
-
-## Languages
-
-31 languages are supported. Pass the ISO-2 code in the `language` field.
-
-| Code | Language | Code | Language | Code | Language |
-|------|----------|------|----------|------|----------|
-| `en` | English  | `pl` | Polish   | `bg` | Bulgarian |
-| `es` | Spanish  | `sv` | Swedish  | `el` | Greek |
-| `fr` | French   | `da` | Danish   | `tr` | Turkish |
-| `de` | German   | `fi` | Finnish  | `uk` | Ukrainian |
-| `it` | Italian  | `cs` | Czech    | `ru` | Russian |
-| `pt` | Portuguese | `sk` | Slovak | `lv` | Latvian |
-| `nl` | Dutch    | `sl` | Slovenian | `lt` | Lithuanian |
-| `ja` | Japanese | `hu` | Hungarian | `et` | Estonian |
-| `ko` | Korean   | `ro` | Romanian  | `ar` | Arabic |
-| `zh` | Chinese  | `hi` | Hindi     | `id` | Indonesian |
-| `vi` | Vietnamese | | | | |
-
----
-
-## Errors
-
-| Status | Cause |
-|--------|-------|
-| `400` | Missing `text`, unsupported voice/language, or out-of-range `total_steps`/`speed` |
-| `401` | Missing or invalid `api-secret` |
-| `429` | Rate limit exceeded |
-| `503` | Service overloaded (queue full); retry with backoff |
-
-See the [Error Reference](/api-reference/errors) for the standard error envelope.
-
----
-
-## Try it live
-
-Skip the curl and just open the [Voice Playground](https://www.bithuman.ai/voice). Pick a voice, type some text, hit Generate. Same API behind the scenes.
+`Content-Type: audio/pcm; rate=44100; framing=len32be`. First-byte ≈ 22 ms server-side.

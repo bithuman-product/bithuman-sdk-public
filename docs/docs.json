@@ -173,7 +173,12 @@
           {
             "group": "Voice",
             "pages": [
-              "api-reference/voice"
+              "api-reference/voice",
+              "POST /v1/tts",
+              "GET /v1/voices",
+              "POST /v1/audio/speech",
+              "GET /v1/studio/axes",
+              "POST /v1/studio/preview"
             ]
           }
         ]
