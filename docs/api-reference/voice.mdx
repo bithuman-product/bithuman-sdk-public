@@ -17,11 +17,13 @@ bitHuman's in-house TTS engine. 10 built-in voices, 31 languages, streaming + no
 
 All endpoints live at `https://api.bithuman.ai` and require `api-secret` header.
 
----
+## Endpoints
 
-## <Tooltip tip="POST">▸</Tooltip> /v1/tts
+<AccordionGroup>
 
-Synthesize speech from text. WAV by default; pass `stream: true` for sentence-chunked PCM frames.
+<Accordion title="POST /v1/tts — Synthesize speech" icon="play">
+
+Generate audio (WAV or PCM) from a text prompt. Default is non-streaming WAV; pass `stream: true` for sentence-chunked PCM frames.
 
 <ParamField body="text" type="string" required>
   Text to synthesize. Any length, multi-sentence supported.
@@ -87,13 +89,13 @@ Content-Length: 145980
 ```
 </ResponseExample>
 
-**Streaming framing** (`stream: true`): `[uint32 BE size][PCM int16 LE mono 44.1kHz]` per sentence, terminator `[uint32 BE = 0]`. `Content-Type: audio/pcm; rate=44100; framing=len32be`. First-byte ≈ 22 ms.
+**Streaming framing** (`stream: true`): `[uint32 BE size][PCM int16 LE mono 44.1kHz]` per sentence, terminator `[uint32 BE = 0]`. `Content-Type: audio/pcm; rate=44100; framing=len32be`. First-byte ≈ 22 ms server-side.
 
----
+</Accordion>
 
-## <Tooltip tip="GET">▸</Tooltip> /v1/voices
+<Accordion title="GET /v1/voices — List available voices" icon="list">
 
-List available voices.
+Returns the voice catalog.
 
 <RequestExample>
 ```bash curl
@@ -115,11 +117,11 @@ curl https://api.bithuman.ai/v1/voices \
 ```
 </ResponseExample>
 
----
+</Accordion>
 
-## <Tooltip tip="POST">▸</Tooltip> /v1/audio/speech
+<Accordion title="POST /v1/audio/speech — OpenAI-compatible drop-in" icon="rotate">
 
-Drop-in compatible with OpenAI's [`POST /v1/audio/speech`](https://platform.openai.com/docs/api-reference/audio/createSpeech). Same body schema; swap base URL and auth header.
+Drop-in compatible with OpenAI's [`POST /v1/audio/speech`](https://platform.openai.com/docs/api-reference/audio/createSpeech). Swap the base URL to `https://api.bithuman.ai/v1` and the auth header to `api-secret`.
 
 <ParamField body="model" type="string">
   Ignored — bitHuman uses its own model. Pass `"tts-1"` for client compatibility.
@@ -150,11 +152,11 @@ audio.stream_to_file("hello.wav")
 ```
 </RequestExample>
 
----
+</Accordion>
 
-## <Tooltip tip="GET">▸</Tooltip> /v1/studio/axes
+<Accordion title="GET /v1/studio/axes — List voice-tuning axes" icon="sliders">
 
-Discover the semantic axes (gender, pitch, rate, brightness) for voice tuning. Use with `POST /v1/studio/preview`.
+Discover the semantic axes (gender, pitch, rate, brightness) used by `POST /v1/studio/preview`. Each axis has a suggested slider range and the per-voice projections.
 
 <RequestExample>
 ```bash curl
@@ -180,11 +182,11 @@ curl https://api.bithuman.ai/v1/studio/axes \
 ```
 </ResponseExample>
 
----
+</Accordion>
 
-## <Tooltip tip="POST">▸</Tooltip> /v1/studio/preview
+<Accordion title="POST /v1/studio/preview — Preview a tuned voice" icon="wand-magic-sparkles">
 
-Synth a one-off clip with an axis-edited voice. The edited voice is ephemeral (not persisted).
+Synth a one-off clip with an axis-edited voice. The edited voice is ephemeral (not persisted to the catalog).
 
 <ParamField body="text" type="string" required />
 <ParamField body="base_voice" type="string" required>
@@ -209,11 +211,25 @@ curl -X POST https://api.bithuman.ai/v1/studio/preview \
 ```
 </RequestExample>
 
-<Note>
+<Tip>
 The **Tune** popover at [www.bithuman.ai/voice](https://www.bithuman.ai/voice) calls these two endpoints — drag the sliders for live previews.
-</Note>
+</Tip>
 
----
+</Accordion>
+
+</AccordionGroup>
+
+## Quick start
+
+```bash
+curl -X POST https://api.bithuman.ai/v1/tts \
+  -H "api-secret: $BITHUMAN_API_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Hello from bitHuman."}' \
+  --output hello.wav
+```
+
+Returns 44.1 kHz, 16-bit mono WAV. Median first-byte ~120 ms.
 
 ## Voices
 
