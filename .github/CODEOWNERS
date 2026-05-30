@@ -1,0 +1,32 @@
+# CODEOWNERS — required reviewers for the public bithuman-sdk repo.
+#
+# GitHub uses the LAST matching pattern for a given path, so the more
+# specific rules below override the catch-all. Owners listed here are
+# auto-requested for review on any PR that touches the matching paths.
+#
+# NOTE: @bithuman-product/maintainers is the default owning team. Adjust
+# the team handles below to the actual GitHub teams once they exist; the
+# patterns are what matter for the public-surface gate.
+
+# ----------------------------------------------------------------------
+# Default: everything is owned by the maintainers team unless a more
+# specific rule below claims it.
+# ----------------------------------------------------------------------
+*                                       @bithuman-product/maintainers
+
+# ----------------------------------------------------------------------
+# Public SDK surface. The Swift package manifest and the Examples are the
+# contract end users build against; they must not silently drift from the
+# SDK surface, so the SDK team gates any change.
+# ----------------------------------------------------------------------
+/Package.swift                          @bithuman-product/sdk
+/Examples/                              @bithuman-product/sdk
+/docs/                                  @bithuman-product/sdk
+
+# ----------------------------------------------------------------------
+# Release + CI machinery and the repo guards. Changes to these gates need
+# maintainer sign-off so a guard can't be quietly weakened.
+# ----------------------------------------------------------------------
+/.github/                               @bithuman-product/maintainers
+/.github/workflows/                     @bithuman-product/maintainers
+/scripts/                               @bithuman-product/maintainers
