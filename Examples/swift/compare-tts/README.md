@@ -24,8 +24,8 @@ monorepo. Clone it as a **sibling** of this repo:
 ~/code/bithuman-sdk-public   # this repo
 ```
 
-The `Package.swift` path dep (`../../../../bithuman-sdk/voice`) resolves
-`voice/` via that layout.
+The `Package.swift` path dep (`../../../../bithuman-sdk/engine/voice`) resolves
+`engine/voice/` via that layout.
 
 External developers without private access should reach the TTS stack
 through the published `bitHumanKit` umbrella binary instead of this tool.
