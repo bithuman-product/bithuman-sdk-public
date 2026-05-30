@@ -223,7 +223,7 @@ The bitHuman platform spans three repos, each owning one layer of the stack:
 |------|-----------|-------|------------------|
 | **bithuman-sdk** | Private | Engine + SDKs | `libessence` engine + Python / Swift / Kotlin / Rust language bindings (source). Publishes the binary wheels / xcframework / AAR. |
 | **bithuman-apps** | Private | Apps | CLI (`bithuman-cli` on PyPI, Homebrew formula source), Flutter plugin, reference apps (Mac, iPad, iPhone). Each consumes the SDKs the same way any third-party would. |
-| **bithuman-sdk-public** | Public | Landing pages + docs + examples | SwiftPM facade for the binary release, `python/` PyPI landing, runnable `Examples/`, `docs.bithuman.ai` source. |
+| **bithuman-sdk-public** | Public | Landing pages + examples | SwiftPM facade for the binary release, `python/` PyPI landing, runnable `Examples/`. (The `docs.bithuman.ai` site source now lives in the `bithuman-product/public-docs` repo, not here.) |
 
 Reference apps and the CLI do **not** live inside `bithuman-sdk-public` or `bithuman-sdk`. They are in `bithuman-apps` and depend on the SDKs as normal downstream consumers.
 
@@ -273,17 +273,8 @@ bithuman-sdk-public/
 │       ├── java-websocket/   Java WebSocket client
 │       ├── gradio-web/       Gradio + FastRTC browser UI
 │       └── offline-mac/      100% offline macOS stack
-└── docs/                     docs.bithuman.ai source (Mintlify)
-    ├── docs.json             Mintlify config
-    ├── llms.txt              LLM-oriented index
-    ├── llms-full.txt         Full LLM-oriented docs
-    ├── api-reference/
-    │   └── openapi.yaml      OpenAPI 3.1 spec
-    ├── getting-started/
-    ├── deployment/
-    ├── swift-sdk/
-    ├── examples/
-    └── integrations/
+(docs/ tree removed — the docs.bithuman.ai source migrated to the
+ bithuman-product/public-docs repo and no longer lives in this repo)
 ```
 
 ## Key Links
