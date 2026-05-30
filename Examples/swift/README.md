@@ -15,6 +15,29 @@ bitHumanKit is distributed as a SwiftPM binary package with zero transitive Swif
 
 Each example is a standalone SPM project. Clone, open in Xcode (or `swift run` from the terminal), and go.
 
+## Developer tools
+
+These are lower-level harnesses (benchmarks, A/B comparisons, a server daemon) carried over from the SDK's own development. They show how to consume the individual engine products directly.
+
+| Example | Consumes | What it shows |
+|---------|----------|---------------|
+| [hello-voice-chat/](hello-voice-chat/) | `bitHumanKit` | The smallest possible SPM executable embedding the SDK: `VoiceChat` + `VoiceChatConfig`, no avatar, no billing. |
+| [compare-dit/](compare-dit/) | `Expression` | Render a WAV → lip-synced MP4 to A/B fp16 vs int4 DiT quality. Targets the Layer-1 Expression engine directly. |
+| [compare-llm/](compare-llm/) | upstream MLX OSS | Load each on-device LLM (iOS vs macOS split) on a fixed prompt set. No bitHuman binary — same OSS path as `LLMClient`. |
+| [compare-tts/](compare-tts/) | `Voice` (private source) | Load Kokoro + Qwen3-TTS and synthesize a fixed utterance. **Requires the private bithuman-sdk sibling checkout** (see its README). |
+| [bench-essence/](bench-essence/) | `bitHumanKit` | Essence runtime perf + correctness bench. Full correctness path needs an internal test seam (see its README). |
+| [essence-server/](essence-server/) | `bitHumanKit` + LiveKit + Hummingbird | Native Swift LiveKit avatar service: hosts N runtimes behind HTTP `/launch`, republishes video + audio. |
+
+## SwiftPM products
+
+The published package exposes three library products. Most apps want the umbrella; the two engine products are for when you need one layer without the rest.
+
+| Product | `import` | What it is |
+|---------|----------|------------|
+| `bitHumanKit` | `import bitHumanKit` | Umbrella SDK — STT + LLM + TTS + both avatar engines. |
+| `Expression` | `import Expression` | Layer-1 avatar engine only (Wav2Vec2 → DiT → VAE → ANE). Home of the `Bithuman` actor, `Bithuman.Quality`, `AvatarConfig`. |
+| `Bithuman` | `import Bithuman` | Layer-1 Essence engine only (libessence; audio → BGR frames from an `.imx`). CPU-only, any Apple Silicon. |
+
 ## Supported models
 
 - **Expression** -- AI-generated facial animation from any face image, powered by the on-device Swift daemon.

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>ai.bithuman.essence-server</string>
+
+    <key>CFBundleName</key>
+    <string>essence-server</string>
+
+    <key>CFBundleExecutable</key>
+    <string>essence-server</string>
+
+    <key>CFBundleShortVersionString</key>
+    <string>0.1.0</string>
+
+    <key>CFBundleVersion</key>
+    <string>1</string>
+
+    <!-- Why we need the microphone, surfaced in the macOS TCC prompt.
+         essence-server doesn't actually capture from the device mic; it
+         publishes audio frames received from the agent-worker brain via
+         LiveKit DataStream. But macOS still requires the entitlement
+         declaration before AVAudioEngine (which underlies LiveKit's
+         LocalAudioTrack) is allowed to initialize at all. -->
+    <key>NSMicrophoneUsageDescription</key>
+    <string>essence-server publishes the AI agent's lip-synced audio response into LiveKit rooms via the system audio engine.</string>
+
+    <!-- Headless agent: no Dock icon, no menubar. -->
+    <key>LSUIElement</key>
+    <true/>
+
+    <!-- Minimum supported macOS. -->
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+</dict>
+</plist>
