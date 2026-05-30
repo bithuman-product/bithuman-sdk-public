@@ -44,10 +44,16 @@
 #
 # What the job does:
 #   1. Resolves the libessence version from the dispatch payload or input.
-#   2. Scans docs/ and python/README.md, derives the OLD version from the
-#      highest currently-pinned semver across those paths.
-#   3. Replaces every OLD -> NEW occurrence in those paths.
+#   2. Scans python/README.md, derives the OLD version from the highest
+#      currently-pinned semver there.
+#   3. Replaces every OLD -> NEW occurrence in that file.
 #   4. Opens a PR (does NOT auto-merge — a human reviews the doc edits).
+#
+# NOTE (2026-05-29): the Mintlify docs/ tree was RETIRED from this repo;
+#   all documentation now lives in bithuman-product/public-docs (Astro,
+#   served at docs.bithuman.ai). Version pins inside those docs are the
+#   public-docs repo's responsibility — this workflow only bumps the
+#   python/README.md PyPI landing page that still lives here.
 #
 # Idempotent: if OLD == NEW the job exits before opening a PR. If a
 # bump-docs PR is already open against the same NEW version, the job
@@ -111,25 +117,30 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Derive OLD version from docs and rewrite
+      - name: Derive OLD version from python/README.md and rewrite
         run: |
           set -euo pipefail
-          # Scan docs/ + python/README.md for pinned semver of the form
-          # 2.x.y (and pre-release suffixes). Pick the highest as OLD —
-          # this tolerates a docs tree where most files already pin the
-          # current version and a few stragglers lag.
+          # Scan python/README.md for pinned semver of the form 2.x.y (and
+          # pre-release suffixes). Pick the highest as OLD — this tolerates
+          # a file where most pins are current and a few stragglers lag.
+          # (The Mintlify docs/ tree was retired from this repo; doc-version
+          # sync now lives in bithuman-product/public-docs.)
           TARGETS=()
-          [ -d docs ] && TARGETS+=("docs")
           [ -f python/README.md ] && TARGETS+=("python/README.md")
           if [ ${#TARGETS[@]} -eq 0 ]; then
-            echo "::error::no docs/ or python/README.md found in $DOCS_REPO"
+            echo "::error::no python/README.md found in $DOCS_REPO"
             exit 1
           fi
           OLD=$(grep -rhoE '\b2\.[0-9]+\.[0-9]+([a-z0-9]+)?\b' "${TARGETS[@]}" \
                   | sort -V | tail -n 1 || true)
           if [ -z "$OLD" ]; then
-            echo "::error::no 2.x.y pin found in ${TARGETS[*]} — nothing to bump"
-            exit 1
+            # No 2.x.y pin in python/README.md: nothing here tracks the
+            # libessence version anymore (the doc pins moved to the
+            # bithuman-product/public-docs repo). Treat as a clean no-op
+            # rather than a failure so release-triggered runs stay green.
+            echo "no 2.x.y pin in ${TARGETS[*]} — nothing to bump (doc-version sync lives in bithuman-product/public-docs)"
+            echo "SKIP=1" >> "$GITHUB_ENV"
+            exit 0
           fi
           echo "OLD=$OLD"
           echo "NEW=$VERSION"
@@ -177,7 +188,7 @@ jobs:
             cat > /tmp/pr_body.md <<EOF
           Automated docs version bump triggered by libessence-v${VERSION} publish in bithuman-sdk.
 
-          Replaced every occurrence of \`${OLD}\` with \`${VERSION}\` across \`docs/\` and \`python/README.md\`.
+          Replaced every occurrence of \`${OLD}\` with \`${VERSION}\` in \`python/README.md\`.
 
           Please review the diff before merging — sed is a blunt instrument and may catch unrelated \`${OLD}\` strings (e.g. in changelogs).
           EOF
