@@ -2,9 +2,9 @@
 
 ## Project Overview
 
-Public SDK repository for bitHuman, a real-time avatar animation platform. Audio in, lip-synced video out at 25 FPS. This repo contains the Swift SDK binary distribution (SwiftPM), Python SDK metadata, runnable examples for all platforms, and the docs.bithuman.ai source.
+Public SDK repository for bitHuman, a real-time avatar animation platform. Audio in, lip-synced video out at 25 FPS. This repo contains the Swift SDK binary distribution (SwiftPM), Python SDK metadata, and runnable examples for all platforms.
 
-The Swift SDK source and Python SDK compiled internals are in private repos. This repo is the public surface for integration, examples, and documentation.
+The Swift SDK source and Python SDK compiled internals are in private repos. The documentation site (docs.bithuman.ai) now lives in the `bithuman-product/public-docs` repo (Astro) — it was migrated out of this repo. This repo is the public surface for integration and examples.
 
 ## Key Files to Read First
 
@@ -13,8 +13,6 @@ The Swift SDK source and Python SDK compiled internals are in private repos. Thi
 | `AGENTS.md` | Full AI agent discovery guide (decision tree, API surface, patterns) |
 | `README.md` | Human-facing overview, install instructions, quick start |
 | `python/README.md` | Python SDK detailed docs (API surface, CLI, env vars, Expression) |
-| `docs/docs.json` | Mintlify nav tree, theme, SEO, redirects |
-| `docs/api-reference/openapi.yaml` | OpenAPI 3.1 spec for the REST API |
 | `Examples/AGENTS.md` | Examples-specific agent guide with decision tree |
 | `Package.swift` | Swift SDK binary target and hardware requirements |
 
@@ -30,18 +28,11 @@ Examples/               -- Runnable examples for every integration path
   rest-api/             -- curl and Python scripts for HTTP API
   integrations/         -- Next.js, Java, Gradio, offline Mac
   quickstart/           -- 2-minute try-it path
-docs/                   -- docs.bithuman.ai source (Mintlify MDX)
-  api-reference/        -- REST API docs + openapi.yaml
-  getting-started/      -- Quickstart, models, auth, pricing
-  guides/               -- Building avatars, deployment
-  sdks/                 -- Python, Swift, Kotlin SDK pages
-  examples/             -- Doc pages for each example category
-  integrations/         -- Flutter plugin
-  docs.json             -- Mintlify nav, theme, SEO, redirects
 ```
 
-`llms.txt` / `llms-full.txt` / `sitemap.xml` are Mintlify-generated at
-build time (served at docs.bithuman.ai, not committed source files).
+The documentation source (docs.bithuman.ai) is NOT in this repo — it was
+migrated to the `bithuman-product/public-docs` repo (Astro). Edit docs
+there, not here.
 
 ## How to Run Examples
 
@@ -76,12 +67,8 @@ export BITHUMAN_API_SECRET=your_secret
 bash validate.sh    # or any endpoint script
 ```
 
-### Docs (local preview)
-
-```bash
-cd docs && npx mintlify@latest dev
-# Requires Node 18+
-```
+> Docs (docs.bithuman.ai) are no longer in this repo — they live in the
+> `bithuman-product/public-docs` repo. Make documentation edits there.
 
 ## Code Conventions
 
@@ -97,7 +84,6 @@ cd docs && npx mintlify@latest dev
 
 - No automated test suite in this public repo (SDK source is private).
 - To validate examples: run them with a real API secret and a valid `.imx` model file.
-- To validate docs: `cd docs && npx mintlify@latest dev` and check for build errors.
 - To validate REST API calls: use the curl scripts in `Examples/rest-api/curl/` against `https://api.bithuman.ai`.
 - Use `bithuman info <path>` to inspect `.imx` model metadata.
 - Use `POST /v1/validate` to verify an API secret is valid.
