@@ -80,7 +80,7 @@ For quick testing without writing code, install the CLI via Homebrew:
 
 ```bash
 brew install bithuman-product/bithuman/bithuman-cli
-bithuman avatar
+bithuman run
 ```
 
 See [docs.bithuman.ai/getting-started/cli](https://docs.bithuman.ai/getting-started/cli) for usage.

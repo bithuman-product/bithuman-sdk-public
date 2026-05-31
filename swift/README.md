@@ -91,10 +91,9 @@ Sign in at [www.bithuman.ai](https://www.bithuman.ai) → Developer → API Keys
 ## CLI (no code)
 
 ```bash
-brew install bithuman-product/bithuman/bithuman
-bithuman avatar           # voice + lip-synced avatar in your browser
-bithuman-cli text         # type to chat
-bithuman-cli              # voice mode (default)
+brew install bithuman-product/bithuman/bithuman-cli
+bithuman init             # first-time setup (API key, brain, default avatar)
+bithuman run              # live, lip-synced avatar in your browser
 ```
 
 ## Examples
@@ -110,14 +109,10 @@ Working SwiftUI example projects live in [`Examples/swift/`](../Examples/swift/)
 
 ## Documentation
 
-- [Swift SDK overview](https://docs.bithuman.ai/swift-sdk/overview)
-- [10-min quickstart](https://docs.bithuman.ai/swift-sdk/quickstart)
-- [macOS deployment](https://docs.bithuman.ai/swift-sdk/macos)
-- [iOS / iPadOS deployment](https://docs.bithuman.ai/swift-sdk/ios)
-- [Essence on Swift](https://docs.bithuman.ai/swift-sdk/essence)
-- [bithuman-cli](https://docs.bithuman.ai/swift-sdk/cli)
-- [Troubleshooting](https://docs.bithuman.ai/swift-sdk/troubleshooting)
-- [Pricing & credits](https://docs.bithuman.ai/getting-started/pricing)
+- [Swift SDK guide](https://docs.bithuman.ai/sdk/swift) — overview, macOS/iOS deployment, and Essence on Swift
+- [iOS / iPadOS example](https://docs.bithuman.ai/examples/swift-ios-hello)
+- [CLI](https://docs.bithuman.ai/cli)
+- [Pricing & credits](https://docs.bithuman.ai/guides/pricing)
 
 ## Source code & support
 
