@@ -50,10 +50,7 @@ If you want to understand bitHuman deeply, follow these examples in order:
 
 ## How authentication works
 
-You need an API key to use bitHuman. It's free to sign up (99 credits/month, no credit card).
-
-1. Go to [www.bithuman.ai](https://www.bithuman.ai) and create an account
-2. Click **Developer** → **API Keys** and copy your secret
+You need a free API key to run any example. See [API-key setup in the root README](../README.md#before-you-start) for how to get one and which variable name each SDK uses.
 
 Then set it as an environment variable before running any example:
 
@@ -64,8 +61,6 @@ export BITHUMAN_API_SECRET="paste_your_key_here"
 # For Swift examples (different variable name, same key):
 export BITHUMAN_API_KEY="paste_your_key_here"
 ```
-
-> **Why two different variable names?** The Python SDK was built first and used `BITHUMAN_API_SECRET`. The Swift SDK came later and uses `BITHUMAN_API_KEY`. They're the same credential from the same dashboard — just different names for historical reasons. We know it's confusing. Use the right one for your SDK.
 
 ## Two avatar models
 
