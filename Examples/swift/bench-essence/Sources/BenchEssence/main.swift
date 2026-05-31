@@ -1088,7 +1088,7 @@ func runBench(args: CLIArgs) async throws {
 
     let meta = Meta(
         sdk: "swift",
-        sdk_version: bitHumanKitVersion(),
+        sdk_version: bithumanSDKVersion(),
         host: hostInfo(),
         fixture: MetaFixture(
             imx_path: fixture.path,
@@ -1135,13 +1135,14 @@ func runBench(args: CLIArgs) async throws {
 }
 
 /// SDK version string. There's no compile-time bake of the SemVer in
-/// `bitHumanKit`; Swift surfaces the resolved Package.resolved tag at
-/// build time only. The bench harness reports the value embedded in
-/// `Package.swift` minor pin notation, which is consistent across the
+/// the `Bithuman` product; Swift surfaces the resolved Package.resolved
+/// tag at build time only. The bench harness reports the value embedded
+/// in `Package.swift` minor pin notation, which is consistent across the
 /// matrix of binaries we ship from this repo.
-func bitHumanKitVersion() -> String {
-    // TODO when bitHumanKit exposes a static `version` constant, swap
-    // this. For now the value is hand-aligned to the latest tag.
+func bithumanSDKVersion() -> String {
+    // TODO when the `Bithuman` product exposes a static `version`
+    // constant, swap this. For now the value is hand-aligned to the
+    // latest tag.
     "0.10.0"
 }
 
