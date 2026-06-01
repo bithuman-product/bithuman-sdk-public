@@ -61,8 +61,8 @@ curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest
 # Or macOS Homebrew
 brew install bithuman-product/bithuman/bithuman-cli
 
-bithuman avatar      # browser-served avatar at http://127.0.0.1:8080
-bithuman voice       # spoken conversation in the terminal
+bithuman init        # first-time setup (API key, brain, default avatar)
+bithuman run         # live, lip-synced avatar in your browser
 ```
 
 ### REST API
@@ -137,15 +137,13 @@ All requests require `api-secret: YOUR_SECRET` header.
 
 | Command | Purpose |
 |---|---|
-| `bithuman doctor` | Verify host + API key |
-| `bithuman avatar` | Browser-served avatar at `http://127.0.0.1:8080` |
-| `bithuman voice` | Spoken conversation in the terminal |
-| `bithuman text` | Text chat, stdin → stdout |
-| `bithuman generate <model> --audio <file> -o out.mp4` | Render lip-synced MP4 |
-| `bithuman stream <model>` | Start local HTTP streaming server |
-| `bithuman speak <audio>` | Send audio to a running stream server |
+| `bithuman init` | First-time setup wizard (API key, brain, default avatar) |
+| `bithuman run [model]` | Run the live avatar — embedded LiveKit + brain + browser UI at `http://127.0.0.1:8088` |
+| `bithuman render <model> -a <audio> -o out.mp4` | Offline render a lip-synced MP4 |
+| `bithuman pull <slug>` | Download a showcase avatar into the local cache |
+| `bithuman list` | Browse showcase avatars + cache state |
 | `bithuman info <model>` | Show `.imx` model metadata |
-| `bithuman models list` | List downloadable showcase avatars |
+| `bithuman doctor` | Host capability check (versions, RAM, API key, brain) |
 
 ## Common Patterns
 

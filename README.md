@@ -95,14 +95,26 @@ bithuman run                                          # auto-downloads a demo av
 # → http://127.0.0.1:8088/<code> — open in browser, click mic, talk
 ```
 
-`bithuman run` is the full talk-to-your-avatar stack — embedded livekit-server + agent-worker brain + browser UI — from one command. For offline rendering and other modes, see [docs.bithuman.ai/getting-started/cli](https://docs.bithuman.ai/getting-started/cli).
+`bithuman run` is the full talk-to-your-avatar stack — embedded livekit-server + agent-worker brain + browser UI — from one command. For offline rendering and other modes, see [docs.bithuman.ai/cli](https://docs.bithuman.ai/cli).
 
 ## Quick start (Python)
 
 ```python
 import asyncio, os
+import numpy as np
+import soundfile as sf
 from bithuman import AsyncBithuman
-from bithuman.audio import load_audio, float32_to_int16
+
+# bithuman 2.3 is library-only — the old bithuman.audio helpers were
+# removed. Inline what we need (the SDK resamples to 16 kHz internally).
+def load_audio(path):
+    audio, sr = sf.read(path, dtype="float32", always_2d=False)
+    if audio.ndim > 1:
+        audio = audio.mean(axis=1)
+    return audio, sr
+
+def float32_to_int16(arr):
+    return (np.clip(arr, -1.0, 1.0) * 32767.0).astype(np.int16)
 
 async def main():
     # 1. Load the avatar model and connect to the billing API
@@ -116,7 +128,7 @@ async def main():
     pcm = float32_to_int16(pcm)
     chunk = sr // 25                                       # one chunk per frame
     for i in range(0, len(pcm), chunk):
-        await runtime.push_audio(pcm[i : i + chunk].tobytes(), sr)
+        await runtime.push_audio(pcm[i : i + chunk].tobytes(), sr, last_chunk=False)
     await runtime.flush()                                  # signal "audio is done"
 
     # 3. Pull video frames — each frame is a numpy image
