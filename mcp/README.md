@@ -36,15 +36,12 @@ It's a thin, fully-documented wrapper over the public REST API
 
 You need an API secret from the [Developer Dashboard](https://www.bithuman.ai/#developer).
 
-The package is self-contained. The easiest way to run it without installing is
-with [`uvx`](https://docs.astral.sh/uv/) (recommended for MCP clients), or you
-can `pip install` it.
+Published on PyPI as [`bithuman-mcp`](https://pypi.org/project/bithuman-mcp/).
+The easiest way to run it is with [`uvx`](https://docs.astral.sh/uv/)
+(recommended for MCP clients), or `pip install bithuman-mcp`.
 
 ```bash
-# one-off run from a checkout
-cd mcp
-pip install .
-BITHUMAN_API_SECRET=sk_... bithuman-mcp
+BITHUMAN_API_SECRET=sk_... uvx bithuman-mcp
 ```
 
 ## Use with Claude Desktop / Claude Code
@@ -54,7 +51,7 @@ Add it to your MCP client config. For **Claude Code**:
 ```bash
 claude mcp add bithuman \
   -e BITHUMAN_API_SECRET=sk_your_secret \
-  -- uvx --from /absolute/path/to/bithuman-sdk-public/mcp bithuman-mcp
+  -- uvx bithuman-mcp
 ```
 
 For **Claude Desktop** (`claude_desktop_config.json`) or any client that takes a
@@ -65,15 +62,12 @@ JSON server block:
   "mcpServers": {
     "bithuman": {
       "command": "uvx",
-      "args": ["--from", "/absolute/path/to/bithuman-sdk-public/mcp", "bithuman-mcp"],
+      "args": ["bithuman-mcp"],
       "env": { "BITHUMAN_API_SECRET": "sk_your_secret" }
     }
   }
 }
 ```
-
-Once published to PyPI you'll be able to drop the local path:
-`"args": ["bithuman-mcp"]` with `"command": "uvx"`.
 
 ## Configuration
 
