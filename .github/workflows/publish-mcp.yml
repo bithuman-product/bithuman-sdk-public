@@ -1,0 +1,62 @@
+# Publish the bithuman-mcp package to PyPI via Trusted Publishing (OIDC).
+#
+# No stored token: PyPI verifies a short-lived OIDC credential minted by GitHub
+# for this exact (repo, workflow, environment) tuple. Configure the matching
+# trusted publisher once at:
+#   https://pypi.org/manage/project/bithuman-mcp/settings/publishing/
+#     Owner:        bithuman-product
+#     Repository:   bithuman-sdk-public
+#     Workflow:     publish-mcp.yml
+#     Environment:  pypi
+#
+# Release flow:
+#   1. Bump `version` in mcp/pyproject.toml (and __init__.py) on main.
+#   2. Tag it: `git tag mcp-v0.3.0 && git push origin mcp-v0.3.0`.
+#      The tag's version MUST match pyproject (the guard step enforces it).
+name: Publish bithuman-mcp
+
+on:
+  push:
+    tags:
+      - 'mcp-v*'
+  workflow_dispatch: {}   # allow manual runs (still gated by the version guard)
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write      # required for PyPI Trusted Publishing (OIDC)
+    defaults:
+      run:
+        working-directory: mcp
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Verify tag matches package version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          PKG_VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          TAG_VERSION="${GITHUB_REF_NAME#mcp-v}"
+          echo "package=$PKG_VERSION tag=$TAG_VERSION"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match pyproject version $PKG_VERSION"
+            exit 1
+          fi
+
+      - name: Build sdist + wheel
+        run: |
+          python -m pip install --upgrade build
+          python -m build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: mcp/dist
