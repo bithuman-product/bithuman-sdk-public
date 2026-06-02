@@ -15,18 +15,22 @@ It's a thin, fully-documented wrapper over the public REST API
 |------|--------------|
 | `validate_api_secret` | Check the API secret is valid (free). |
 | `get_credit_balance` | Current credits, plan, and minutes estimate. |
+| `get_usage` | Usage/metering history (paginated, date-filterable). |
 | `list_voices` | Built-in (M1–M5 / F1–F5) and custom TTS voices. |
 | `text_to_speech` | Synthesize speech → a WAV file. |
 | `generate_agent` | Create an avatar agent from a prompt / image / video / audio. |
 | `get_agent_status` | Poll agent generation progress. |
 | `get_agent` | Fetch an existing agent's details. |
+| `list_agents` | List your agents, newest first (paginated). |
 | `update_agent_prompt` | Change an agent's system prompt. |
+| `delete_agent` | Permanently delete an agent you own. |
 | `agent_speak` | Make a live agent speak text in its active sessions. |
 | `add_agent_context` | Silently inject knowledge into a live agent. |
 | `get_dynamics` | List an agent's gesture animations. |
 | `generate_dynamics` | Generate new gestures (wave, nod, laugh, idle…). |
 | `create_embed_token` | Mint a 1-hour JWT to embed an agent on a website. |
 | `upload_file` | Upload an asset (URL or local file) → CDN URL. |
+| `create_webhook` / `list_webhooks` / `delete_webhook` / `test_webhook` | Manage signed event webhooks (agent.ready / agent.failed). |
 
 ## Setup
 

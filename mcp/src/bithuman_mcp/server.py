@@ -356,6 +356,105 @@ async def upload_file(
         return _json_or_text(await c.post("/v1/files/upload", json=payload))
 
 
+@mcp.tool()
+async def list_agents(limit: int = 20, offset: int = 0, status: str | None = None) -> dict:
+    """List the avatar agents owned by this account, newest first (paginated).
+
+    Args:
+        limit: Page size (1–100).
+        offset: Number of agents to skip.
+        status: Optional generation-state filter (e.g. ready, processing, failed).
+
+    Returns {data: [...], pagination: {limit, offset, total, has_more}}.
+    """
+    params: dict[str, Any] = {"limit": limit, "offset": offset}
+    if status:
+        params["status"] = status
+    async with _client() as c:
+        return _json_or_text(await c.get("/v1/agents", params=params))
+
+
+@mcp.tool()
+async def delete_agent(code: str) -> dict:
+    """Permanently delete an agent you own (by code). Usage history is retained."""
+    async with _client() as c:
+        return _json_or_text(await c.delete(f"/v1/agent/{code}"))
+
+
+@mcp.tool()
+async def get_usage(
+    limit: int = 50,
+    offset: int = 0,
+    start: str | None = None,
+    end: str | None = None,
+    agent_code: str | None = None,
+) -> dict:
+    """Return this account's usage/metering history, newest first (paginated).
+
+    Args:
+        limit: Page size (1–200).
+        offset: Rows to skip.
+        start: ISO-8601 timestamp — only events at/after this time.
+        end: ISO-8601 timestamp — only events at/before this time.
+        agent_code: Only events for this agent.
+
+    Each row has activity_type, pricing_code, agent_code, credits_change
+    (signed; usage is positive credits consumed), and created_at.
+    """
+    params: dict[str, Any] = {"limit": limit, "offset": offset}
+    for k, v in (("start", start), ("end", end), ("agent_code", agent_code)):
+        if v:
+            params[k] = v
+    async with _client() as c:
+        return _json_or_text(await c.get("/v1/usage", params=params))
+
+
+@mcp.tool()
+async def create_webhook(
+    url: str, events: list[str] | None = None, description: str | None = None
+) -> dict:
+    """Register a webhook to receive signed event notifications.
+
+    Args:
+        url: HTTPS endpoint to deliver events to.
+        events: Event types to subscribe to (agent.ready, agent.failed). Omit
+            for all.
+        description: Optional label.
+
+    The response includes a one-time `secret` (store it — it signs the
+    X-BitHuman-Signature header and is never returned again).
+    """
+    payload: dict[str, Any] = {"url": url, "events": events or []}
+    if description:
+        payload["description"] = description
+    async with _client() as c:
+        return _json_or_text(await c.post("/v1/webhooks", json=payload))
+
+
+@mcp.tool()
+async def list_webhooks() -> dict:
+    """List this account's registered webhooks (signing secrets redacted)."""
+    async with _client() as c:
+        return _json_or_text(await c.get("/v1/webhooks"))
+
+
+@mcp.tool()
+async def delete_webhook(webhook_id: str) -> dict:
+    """Delete a webhook by id."""
+    async with _client() as c:
+        return _json_or_text(await c.delete(f"/v1/webhooks/{webhook_id}"))
+
+
+@mcp.tool()
+async def test_webhook(webhook_id: str) -> dict:
+    """Send a one-off `ping` event to a webhook to confirm it's reachable.
+
+    Returns {delivered, status_code, attempts}.
+    """
+    async with _client() as c:
+        return _json_or_text(await c.post(f"/v1/webhooks/{webhook_id}/test"))
+
+
 def main() -> None:
     """Entry point. Serves over stdio (default) or streamable-http."""
     transport = os.environ.get("BITHUMAN_MCP_TRANSPORT", "stdio")
