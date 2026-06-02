@@ -11,6 +11,8 @@ It's a thin, fully-documented wrapper over the public REST API
 
 ## Tools
 
+The server exposes **21 tools**, each mapping to one documented REST endpoint:
+
 | Tool | What it does |
 |------|--------------|
 | `validate_api_secret` | Check the API secret is valid (free). |
