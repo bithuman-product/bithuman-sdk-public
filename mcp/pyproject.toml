@@ -1,13 +1,14 @@
 [project]
 name = "bithuman-mcp"
-version = "0.2.1"
-description = "Model Context Protocol server for the bitHuman AI avatar platform"
+version = "0.3.0"
+description = "DEPRECATED — use `bithuman mcp` in the bitHuman CLI. MCP server for the bitHuman AI avatar platform."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
 authors = [{ name = "bitHuman", email = "support@bithuman.ai" }]
 keywords = ["bithuman", "mcp", "model-context-protocol", "avatar", "ai", "tts", "agent"]
 classifiers = [
+    "Development Status :: 7 - Inactive",
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",

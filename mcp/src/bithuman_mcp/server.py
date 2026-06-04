@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import base64
 import os
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -457,6 +458,15 @@ async def test_webhook(webhook_id: str) -> dict:
 
 def main() -> None:
     """Entry point. Serves over stdio (default) or streamable-http."""
+    # Deprecation notice → stderr only (never stdout, which carries the
+    # stdio JSON-RPC stream). This package is superseded by the built-in
+    # `bithuman mcp` server in the bitHuman CLI.
+    print(
+        "bithuman-mcp is deprecated — the MCP server is now built into the "
+        "bitHuman CLI. Install it (`brew install bithuman` or the universal "
+        "installer) and run `bithuman mcp`. Same tools, one tool to install.",
+        file=sys.stderr,
+    )
     transport = os.environ.get("BITHUMAN_MCP_TRANSPORT", "stdio")
     mcp.run(transport=transport)  # type: ignore[arg-type]
 
