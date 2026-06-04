@@ -1,5 +1,20 @@
 # bitHuman MCP server
 
+> [!IMPORTANT]
+> **Deprecated — use the bitHuman CLI instead.** This server is now built into
+> the [`bithuman` CLI](https://github.com/bithuman-product/homebrew-bithuman):
+> run **`bithuman mcp`**. It exposes the same tools (identical names) plus local
+> ones (`version`, `doctor`, `inspect_model`, `list_showcase`), so you install
+> **one** tool. Migrate your MCP client config:
+>
+> ```json
+> { "mcpServers": { "bithuman": { "command": "bithuman", "args": ["mcp"] } } }
+> ```
+>
+> Install the CLI: `brew install bithuman` (macOS) or the universal installer
+> (macOS + Linux) — see the CLI README. This `bithuman-mcp` package will receive
+> no further updates.
+
 A [Model Context Protocol](https://modelcontextprotocol.io) server that exposes
 the [bitHuman](https://bithuman.ai) avatar platform as tools any MCP-capable AI
 agent can call — Claude Desktop, Claude Code, Cursor, and others.
