@@ -26,10 +26,12 @@ It's a thin, fully-documented wrapper over the public REST API
 
 ## Tools
 
-The server exposes **21 tools**, each mapping to one documented REST endpoint:
+The server exposes **22 tools**, each mapping to one documented REST endpoint
+(plus `get_platform_status`, which reads the public status feed):
 
 | Tool | What it does |
 |------|--------------|
+| `get_platform_status` | Live platform + API status (public, no key). |
 | `validate_api_secret` | Check the API secret is valid (free). |
 | `get_credit_balance` | Current credits, plan, and minutes estimate. |
 | `get_usage` | Usage/metering history (paginated, date-filterable). |

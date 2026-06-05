@@ -26,6 +26,8 @@ from mcp.server.fastmcp import FastMCP
 API_BASE = os.environ.get("BITHUMAN_API_BASE", "https://api.bithuman.ai").rstrip("/")
 API_SECRET = os.environ.get("BITHUMAN_API_SECRET", "")
 TIMEOUT = float(os.environ.get("BITHUMAN_MCP_TIMEOUT", "120"))
+# Public status feed (https://status.bithuman.ai) — no auth, no credits.
+STATUS_URL = os.environ.get("BITHUMAN_STATUS_URL", "https://status.bithuman.ai/status.json")
 
 mcp = FastMCP(
     "bitHuman",
@@ -76,6 +78,22 @@ def _json_or_text(resp: httpx.Response) -> Any:
 # ──────────────────────────────────────────────────────────────────────────
 # Authentication & account
 # ──────────────────────────────────────────────────────────────────────────
+
+@mcp.tool()
+async def get_platform_status() -> dict:
+    """Get the live operational status of the bitHuman platform and its public APIs.
+
+    PUBLIC — no API secret required and no credits consumed (reads the same feed as
+    https://status.bithuman.ai). Returns the overall status ("operational" |
+    "degraded" | "down"), a human-readable summary, the operational/total service
+    count, and a per-service `groups` breakdown — avatar rendering, voice/TTS, agent
+    generation, and each public API endpoint — each with its own status + recent
+    uptime. Call this to tell a platform-wide incident apart from a problem with your
+    own request before retrying or escalating.
+    """
+    async with httpx.AsyncClient(timeout=15.0) as c:
+        return _json_or_text(await c.get(STATUS_URL))
+
 
 @mcp.tool()
 async def validate_api_secret() -> dict:
