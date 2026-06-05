@@ -91,7 +91,11 @@ async def get_platform_status() -> dict:
     uptime. Call this to tell a platform-wide incident apart from a problem with your
     own request before retrying or escalating.
     """
-    async with httpx.AsyncClient(timeout=15.0) as c:
+    # Explicit User-Agent: status.bithuman.ai sits behind Cloudflare, which 403s some
+    # default library UAs (e.g. Python-urllib). An identifying UA keeps this robust —
+    # the status tool must not fail exactly when the platform is degraded.
+    headers = {"User-Agent": "bithuman-mcp (+https://bithuman.ai)", "Accept": "application/json"}
+    async with httpx.AsyncClient(timeout=15.0, headers=headers) as c:
         return _json_or_text(await c.get(STATUS_URL))
 
 
