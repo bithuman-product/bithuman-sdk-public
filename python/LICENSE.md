@@ -19,4 +19,4 @@ This repository contains only the documentation, changelog, and issue tracker fo
 
 ## Contact
 
-For commercial licensing, enterprise terms, or anything not covered above, contact **legal@bithuman.ai**.
+For commercial licensing, enterprise terms, or anything not covered above, contact **hello@bithuman.ai**.

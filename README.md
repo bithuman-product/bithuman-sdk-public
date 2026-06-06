@@ -201,7 +201,7 @@ Don't have an `.imx` file? Download one from [bithuman.ai → Explore](https://w
 
 - **Questions or bugs** → [GitHub Issues](https://github.com/bithuman-product/bithuman-sdk-public/issues)
 - **Community chat** → [Discord](https://discord.gg/ES953n7bPA)
-- **Security issues** → email [security@bithuman.ai](mailto:security@bithuman.ai) (see [SECURITY.md](SECURITY.md))
+- **Security issues** → email [hello@bithuman.ai](mailto:hello@bithuman.ai) (see [SECURITY.md](SECURITY.md))
 
 ## License
 

@@ -226,7 +226,6 @@ pip uninstall -y opencv-python && pip install opencv-python-headless
 - [Docs](https://docs.bithuman.ai) · [PyPI](https://pypi.org/project/bithuman/)
 - [Examples](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples) directory — end-to-end stacks (Docker Compose, LiveKit agents, web UIs)
 - [Browser rendering](https://docs.bithuman.ai/guides/browser-rendering) — render the avatar in the user's tab via ONNX Runtime Web; activate with `?rendering_mode=browser` on the hosted agent landing page
-- [bitHuman Halo](https://bithuman.ai/halo) — free macOS desktop app built on this SDK
 - [bithuman.ai](https://bithuman.ai) · [API Keys](https://www.bithuman.ai/#developer)
 
 ## License

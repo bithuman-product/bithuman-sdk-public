@@ -4,7 +4,7 @@
 
 If you think you've found a security issue in `bitHumanKit` or any of the artifacts published from this repo, **please don't file a public GitHub issue**. Public reports give attackers a head start before we can ship a fix.
 
-Email **security@bithuman.ai** with:
+Email **hello@bithuman.ai** with:
 
 - A description of the issue and what an attacker could do with it.
 - Steps to reproduce, ideally with a minimal sample project.
@@ -35,6 +35,6 @@ Out of scope (please report to **hello@bithuman.ai** instead):
 
 ## PGP / encrypted reports
 
-If you'd like to encrypt your report, email security@bithuman.ai first and we'll exchange a key. We don't publish a static PGP key on the repo because keys rotate.
+If you'd like to encrypt your report, email hello@bithuman.ai first and we'll exchange a key. We don't publish a static PGP key on the repo because keys rotate.
 
 Thanks for helping keep bitHuman users safe.
