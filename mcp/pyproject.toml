@@ -5,7 +5,7 @@ description = "DEPRECATED — use `bithuman mcp` in the bitHuman CLI. MCP server
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
-authors = [{ name = "bitHuman", email = "support@bithuman.ai" }]
+authors = [{ name = "bitHuman", email = "hello@bithuman.ai" }]
 keywords = ["bithuman", "mcp", "model-context-protocol", "avatar", "ai", "tts", "agent"]
 classifiers = [
     "Development Status :: 7 - Inactive",

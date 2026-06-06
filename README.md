@@ -79,7 +79,7 @@ Three install paths, same Rust binary:
 brew install bithuman-product/bithuman/bithuman-cli
 
 # Path B: universal installer (macOS + Linux, no Python needed).
-curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/bithuman-product/homebrew-bithuman/main/install.sh | sh
 
 # Path C: pip — sibling wheel for Python-only environments.
 pip install bithuman-cli

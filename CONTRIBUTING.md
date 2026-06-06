@@ -27,8 +27,8 @@ For these, please use [Bug report](.github/ISSUE_TEMPLATE/bug_report.md) and inc
 
 ### Don't file an issue here for…
 
-- **SDK runtime behavior** (lipsync drift, audio glitches, model loading, hardware gating, API design). The implementation is private. Please email **support@bithuman.ai** or post in our [Discord](https://discord.gg/ES953n7bPA) instead — your report still reaches the engineers, just through the right channel.
-- **API key, billing, or credit issues** — email **support@bithuman.ai**.
+- **SDK runtime behavior** (lipsync drift, audio glitches, model loading, hardware gating, API design). The implementation is private. Please email **hello@bithuman.ai** or post in our [Discord](https://discord.gg/ES953n7bPA) instead — your report still reaches the engineers, just through the right channel.
+- **API key, billing, or credit issues** — email **hello@bithuman.ai**.
 - **Security vulnerabilities** — see [SECURITY.md](SECURITY.md). Please don't open a public issue.
 
 ## PRs we welcome

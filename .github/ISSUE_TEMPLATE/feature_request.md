@@ -10,7 +10,7 @@ This template is for changes we can actually merge from a PR — improvements to
 Examples/, docs/, packaging, or repo metadata.
 
 For SDK API or runtime feature requests (new VoiceChat options, new TTS engines,
-hardware support, etc.), please email support@bithuman.ai or post in our
+hardware support, etc.), please email hello@bithuman.ai or post in our
 community forum. The SDK source is private, so feature work happens there.
 -->
 

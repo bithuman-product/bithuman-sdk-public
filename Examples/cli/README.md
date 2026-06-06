@@ -16,7 +16,7 @@ For the Python library (`from bithuman import AsyncBithuman`) see the
 brew install bithuman-product/bithuman/bithuman-cli
 
 # macOS / Linux — universal one-liner.
-curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/bithuman-product/homebrew-bithuman/main/install.sh | sh
 
 # Any platform with Python — PyPI sibling wheel, same Rust binary.
 pip install bithuman-cli

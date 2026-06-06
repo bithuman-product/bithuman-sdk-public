@@ -27,7 +27,7 @@ In scope:
 - Examples and snippets in this repo.
 - `docs.bithuman.ai` content served from `docs/`.
 
-Out of scope (please report to **support@bithuman.ai** instead):
+Out of scope (please report to **hello@bithuman.ai** instead):
 
 - Issues in third-party dependencies that are statically linked into the framework (we'll forward upstream where appropriate).
 - Social-engineering or physical-access attacks against bitHuman staff or infrastructure.

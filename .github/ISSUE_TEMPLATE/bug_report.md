@@ -11,7 +11,7 @@ with what's published in THIS repo: the binary release artifact, Package.swift,
 the Examples/, the docs/, or the Python wheel packaging.
 
 For runtime SDK bugs (lipsync, audio, model loading, API behavior), please
-email support@bithuman.ai — those engineers will reach the right team faster
+email hello@bithuman.ai — those engineers will reach the right team faster
 than a public issue here can.
 
 For security issues, see SECURITY.md — DO NOT file a public issue.

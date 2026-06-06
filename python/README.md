@@ -164,7 +164,7 @@ Source lives in the `bithuman-apps` repo *(private)*. Install one of:
 pip install bithuman-cli
 
 # macOS + Linux — universal installer
-curl -fsSL https://github.com/bithuman-product/homebrew-bithuman/releases/latest/download/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/bithuman-product/homebrew-bithuman/main/install.sh | sh
 # Or macOS Homebrew
 brew install bithuman-product/bithuman/bithuman-cli
 ```
