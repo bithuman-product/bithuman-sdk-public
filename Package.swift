@@ -39,19 +39,22 @@
 //   iPad:    iPad Pro M4+, 16 GB unified memory, iPadOS 26
 //   iPhone:  iPhone 16 Pro+ (A18 Pro), iOS 26
 //
-// RELEASE NOTE (binaryTarget checksums):
-//   The `bitHumanKit` slice ships today (v0.8.1). The `Expression` and
-//   `Bithuman` (Essence) slices are wired here against the SAME release
-//   tag but their checksums below are PLACEHOLDERS — they must be filled
-//   in by the release flow (scripts/build-binary-xcframework.sh emits the
-//   per-product zips; `swift package compute-checksum <zip>` yields the
-//   value). Until a release uploads those two zips + updates these
-//   checksums, only the `bitHumanKit` product resolves. See
+// RELEASE NOTE (Layer-1 engine products):
+//   Only the `bitHumanKit` umbrella slice ships today (v0.8.1) — and it
+//   re-exports both the Expression avatar engine and the Essence runtime,
+//   so apps get everything via `import bitHumanKit`. The standalone
+//   `Expression` and `Bithuman` (Essence) products are NOT yet published:
+//   their per-product XCFramework zips + checksums are produced by the
+//   release flow (scripts/build-binary-xcframework.sh emits the per-product
+//   zips; `swift package compute-checksum <zip>` yields the value). They are
+//   omitted from `products`/`targets` below until a release uploads those
+//   two zips, so this manifest always resolves cleanly. To re-add them, fill
+//   in real checksums and restore the two products/binaryTargets. See
 //   scripts/validate-release.sh and docs/RELEASE_MATRIX.md.
 import PackageDescription
 
-// Pin every binary slice to the same release tag so a `from:` bump moves
-// all three products in lockstep.
+// Pin the binary slice to a release tag. When the Layer-1 engine products are
+// published they should share this tag so a `from:` bump moves them in lockstep.
 let releaseTag = "v0.8.1"
 let releaseBase = "https://github.com/bithuman-product/bithuman-sdk-public/releases/download/\(releaseTag)"
 
@@ -63,30 +66,18 @@ let package = Package(
     ],
     products: [
         .library(name: "bitHumanKit", targets: ["bitHumanKit"]),
-        .library(name: "Expression", targets: ["Expression"]),
-        .library(name: "Bithuman", targets: ["Bithuman"]),
+        // NOTE: the standalone `Expression` and `Bithuman` (Essence) Layer-1
+        // engine products are not yet published — their per-product XCFramework
+        // zips + checksums are produced by the release flow. They are
+        // intentionally omitted here until a release uploads them, so the
+        // package resolves cleanly. Until then, use `bitHumanKit` (the umbrella
+        // product re-exports both engines). See the RELEASE NOTE above.
     ],
     targets: [
         .binaryTarget(
             name: "bitHumanKit",
             url: "\(releaseBase)/bitHumanKit.xcframework.zip",
             checksum: "5c536e37919b693591dff234db8627c01952ae24ae58651aeacbd875bd78e9db"
-        ),
-        // Layer-1 avatar engine (engine/expression). PLACEHOLDER checksum —
-        // filled in by the release flow once Expression.xcframework.zip is
-        // built + uploaded to the release tag above.
-        .binaryTarget(
-            name: "Expression",
-            url: "\(releaseBase)/Expression.xcframework.zip",
-            checksum: "0000000000000000000000000000000000000000000000000000000000000000"
-        ),
-        // Layer-1 Essence engine (sdks/swift, libessence). PLACEHOLDER
-        // checksum — filled in by the release flow once
-        // Bithuman.xcframework.zip is built + uploaded to the release tag.
-        .binaryTarget(
-            name: "Bithuman",
-            url: "\(releaseBase)/Bithuman.xcframework.zip",
-            checksum: "0000000000000000000000000000000000000000000000000000000000000000"
         ),
     ]
 )

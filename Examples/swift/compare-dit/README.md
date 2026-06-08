@@ -1,5 +1,11 @@
 # CompareDiT
 
+> ⚠️ **Preview / deferred.** This example depends on the standalone
+> `Expression` Layer-1 product, which is **not yet published** (only the
+> `bitHumanKit` umbrella ships today). It will not resolve against the current
+> release. It builds once the `Expression` XCFramework is published — until then
+> use [bench-essence](../bench-essence/) (Essence) via `bitHumanKit`.
+
 Render a WAV through the bitHuman avatar engine to a lip-synced MP4, to
 A/B fp16 vs int4 DiT quality side by side. Targets the Layer-1
 **Expression** avatar engine directly (the `Expression` product) — no
