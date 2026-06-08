@@ -11,7 +11,7 @@
 > { "mcpServers": { "bithuman": { "command": "bithuman", "args": ["mcp"] } } }
 > ```
 >
-> Install the CLI: `brew install bithuman` (macOS) or the universal installer
+> Install the CLI: `brew install bithuman-product/bithuman/bithuman-cli` (macOS) or the universal installer
 > (macOS + Linux) — see the CLI README. This `bithuman-mcp` package will receive
 > no further updates.
 
@@ -60,7 +60,7 @@ The easiest way to run it is with [`uvx`](https://docs.astral.sh/uv/)
 (recommended for MCP clients), or `pip install bithuman-mcp`.
 
 ```bash
-BITHUMAN_API_SECRET=sk_... uvx bithuman-mcp
+BITHUMAN_API_SECRET=bh-... uvx bithuman-mcp
 ```
 
 ## Use with Claude Desktop / Claude Code
@@ -69,7 +69,7 @@ Add it to your MCP client config. For **Claude Code**:
 
 ```bash
 claude mcp add bithuman \
-  -e BITHUMAN_API_SECRET=sk_your_secret \
+  -e BITHUMAN_API_SECRET=bh-your-secret \
   -- uvx bithuman-mcp
 ```
 
@@ -82,7 +82,7 @@ JSON server block:
     "bithuman": {
       "command": "uvx",
       "args": ["bithuman-mcp"],
-      "env": { "BITHUMAN_API_SECRET": "sk_your_secret" }
+      "env": { "BITHUMAN_API_SECRET": "bh-your-secret" }
     }
   }
 }

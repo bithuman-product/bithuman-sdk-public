@@ -32,14 +32,18 @@ All notable changes to the `bithuman` package are documented here.
   unchanged (`bithuman run / render / info / list / pull / doctor`).
 - **Using the library only (`from bithuman import AsyncBithuman`)?** No
   code change required. `pip install bithuman --upgrade` is enough.
-- **Vendored `livekit-plugins-bithuman`** continues to ship inside this
-  wheel under `livekit/plugins/bithuman/` — same import path as before.
+- **`livekit-plugins-bithuman` ships separately.** The slim wheel no longer
+  vendors it (`src/livekit` was removed). Install it alongside this library:
+  `pip install "livekit-plugins-bithuman>=1.4"` — that's what every example does.
 
 ### Compat
-- Library API (`AsyncBithuman`, `Bithuman`, `bithuman.engine.*`,
-  `bithuman.audio`, `bithuman.api`, `bithuman.runtime`, …) is
-  **unchanged**. Public symbols, error hierarchy, IPC formats all
-  preserved.
+- Core library API (`AsyncBithuman`, `Bithuman`, `bithuman.api`,
+  `bithuman.models`, `bithuman.config`, `bithuman.exceptions`) is
+  **unchanged**. Public symbols, error hierarchy, and IPC formats are preserved.
+- The slim wheel does **not** include the `bithuman.audio` / `bithuman.engine`
+  / `bithuman.runtime` helper submodules — those were CLI/app-side helpers and
+  now live with `bithuman-cli` and the examples. Pure-library code
+  (`from bithuman import AsyncBithuman`) is unaffected.
 - Python 3.10 minimum unchanged.
 
 ### Architecture

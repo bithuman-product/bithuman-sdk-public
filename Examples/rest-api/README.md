@@ -65,7 +65,7 @@ Minimal, self-contained bash scripts. Each one demonstrates a single endpoint.
 |--------|-------------|
 | [curl/validate.sh](curl/validate.sh) | Validate API credentials |
 | [curl/check-credits.sh](curl/check-credits.sh) | Check your credit balance |
-| [curl/list-agents.sh](curl/list-agents.sh) | Get agent details |
+| [curl/list-agents.sh](curl/list-agents.sh) | List your agents |
 | [curl/speak.sh](curl/speak.sh) | Make a live agent speak |
 | [curl/add-context.sh](curl/add-context.sh) | Inject background context |
 | [curl/generate-agent.sh](curl/generate-agent.sh) | Generate an agent and poll until ready |

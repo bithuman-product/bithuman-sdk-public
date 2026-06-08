@@ -10,7 +10,7 @@
 #   - on-device:        BITHUMAN_LOCAL=1           (whisper.cpp +
 #                                                   llama.cpp +
 #                                                   Supertonic)
-#                       Requires `pip install 'bithuman[local]'`.
+#                       Requires `pip install 'bithuman-cli[local]'`.
 #
 # Prerequisites:
 #   - macOS with Apple Silicon M3+ (or Linux x86_64 / aarch64)

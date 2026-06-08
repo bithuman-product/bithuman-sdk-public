@@ -18,10 +18,9 @@ Working code you can run. Each example is self-contained — pick one, follow it
 |---|---|---|
 | **Just see it work** | [quickstart/](quickstart/) | API key |
 | **Web app, fastest path** | [python/cloud-essence/](python/cloud-essence/) | API key + agent ID |
-| **Web app with any face as avatar** | [python/cloud-expression/](python/cloud-expression/) | API key + face image |
+| **Web app with any face as avatar (Expression)** | [Deployment guide ↗](https://docs.bithuman.ai/guides/deployment) | API key + face image |
 | **Run on my own server (CPU only)** | [python/local-essence/](python/local-essence/) | API key + `.imx` model file |
-| **Run on my own NVIDIA GPU** | [python/local-expression-gpu/](python/local-expression-gpu/) | API key + NVIDIA GPU (8 GB+ VRAM) |
-| **Run on Mac M3+ (Python)** | [python/local-expression-mac/](python/local-expression-mac/) | API key + Mac with M3 or newer |
+| **Self-host on NVIDIA GPU (Expression)** | [Self-hosted GPU guide ↗](https://docs.bithuman.ai/guides/deployment) | API key + NVIDIA GPU (8 GB+ VRAM) |
 | **Build a Mac app (Swift)** | [swift/macos-avatar/](swift/macos-avatar/) | API key + Xcode 26 + Mac M3+ |
 | **Build an iPhone/iPad app** | [swift/ios-avatar/](swift/ios-avatar/) | API key + Xcode 26 + iPhone 16 Pro or iPad Pro M4 |
 | **Use the command line (no code)** | [cli/](cli/) | API key |
@@ -32,7 +31,7 @@ Working code you can run. Each example is self-contained — pick one, follow it
 
 | SDK | Examples | Description |
 |-----|----------|-------------|
-| [python/](python/) | 6 examples | Cloud-hosted and self-hosted avatars using the Python SDK |
+| [python/](python/) | 2 examples | Cloud-hosted and self-hosted avatars using the Python SDK |
 | [swift/](swift/) | 4 examples | Native Mac, iPad, and iPhone apps using the Swift SDK |
 | [cli/](cli/) | 3 scripts | Shell scripts — render videos, stream, Mac desktop app |
 | [rest-api/](rest-api/) | 7 curl + 6 Python | HTTP API calls that work from any programming language |
@@ -103,11 +102,8 @@ Examples/
 │
 ├── python/                      Python SDK examples
 │   ├── cloud-essence/               bitHuman hosts the avatar (easiest)
-│   ├── cloud-expression/            bitHuman hosts it, any face image
-│   ├── local-essence/               You host, any CPU
-│   ├── local-expression-gpu/        You host, NVIDIA GPU required
-│   ├── local-expression-mac/        You host, Mac M3+ required
-│   └── local-expression-gpu-livekit-cloud/  You host GPU, LiveKit Cloud for WebRTC
+│   └── local-essence/               You host, any CPU
+│       (Expression / self-hosted GPU: see docs.bithuman.ai/guides/deployment)
 │
 ├── swift/                       Swift SDK for Apple devices
 │   ├── macos-voice/                 Voice-only agent on Mac (free, no API key)
@@ -126,7 +122,7 @@ Examples/
 │   │   ├── speak.sh                     Make an avatar speak text
 │   │   ├── generate-agent.sh            Create a new avatar from scratch
 │   │   ├── add-context.sh               Give the avatar background knowledge
-│   │   ├── list-agents.sh               Get info about an avatar
+│   │   ├── list-agents.sh               List agents on your account
 │   │   ├── upload-file.sh               Upload an image/video/audio
 │   │   └── check-credits.sh             Check your credit balance
 │   └── python/                      Same operations as Python scripts

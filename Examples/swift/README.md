@@ -91,7 +91,7 @@ Reference apps (Mac, iPad, iPhone) live in the private `bithuman-apps` repo (col
 
 ## Python SDK on Apple Silicon
 
-For developers who prefer Python, the `bithuman` PyPI package includes a macOS arm64 wheel with the bundled Swift daemon. See the [local-expression-mac](../python/local-expression-mac/) example for a minimal Python-based Expression demo on Mac -- no Xcode required.
+For developers who prefer Python, the `bithuman` PyPI package includes a macOS arm64 wheel with the bundled Swift daemon. See the [deployment guide](https://docs.bithuman.ai/guides/deployment) for running Expression on Mac from Python -- no Xcode required.
 
 ## Documentation
 

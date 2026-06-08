@@ -7,11 +7,10 @@ All Python examples use `pip install bithuman`. Pick the one that matches where 
 | I want to... | Example | What I need |
 |---|---|---|
 | Fastest cloud demo (no GPU) | [cloud-essence/](cloud-essence/) | API key + agent ID |
-| Cloud with custom face image | [cloud-expression/](cloud-expression/) | API key + face image |
+| Cloud with custom face image (Expression) | [Deployment guide ↗](https://docs.bithuman.ai/guides/deployment) | API key + face image |
 | Run on my own server (CPU) | [local-essence/](local-essence/) | API key + `.imx` file |
-| Run on NVIDIA GPU | [local-expression-gpu/](local-expression-gpu/) | NVIDIA GPU 8 GB+ |
-| Run on Mac M3+ (Python) | [local-expression-mac/](local-expression-mac/) | Apple Silicon M3+ |
-| GPU + LiveKit Cloud WebRTC | [local-expression-gpu-livekit-cloud/](local-expression-gpu-livekit-cloud/) | GPU + LiveKit Cloud project |
+| Self-hosted NVIDIA GPU (Expression) | [Self-hosted GPU guide ↗](https://docs.bithuman.ai/guides/deployment) | NVIDIA GPU 8 GB+ |
+| Run on Mac M3+ | [Swift SDK examples ↗](../swift/) | Apple Silicon M3+ |
 
 ## Learning path
 
@@ -20,7 +19,7 @@ If you're new to bitHuman, follow this order:
 1. **Start with** [cloud-essence/](cloud-essence/) — no model files, no GPU, just an API key. Gives you a working avatar in minutes.
 2. **Try local rendering** with [local-essence/](local-essence/) — download a `.imx` model and run it on your own machine (CPU only).
 3. **Add AI conversation** — the `conversation.py` script in local-essence/ wires OpenAI for voice chat.
-4. **Explore Expression** with [cloud-expression/](cloud-expression/) or [local-expression-gpu/](local-expression-gpu/) for dynamic faces from any image.
+4. **Explore Expression** — dynamic faces from any image — via the [deployment guide ↗](https://docs.bithuman.ai/guides/deployment).
 
 ## Install
 
@@ -28,10 +27,10 @@ If you're new to bitHuman, follow this order:
 pip install bithuman --upgrade
 
 # For LiveKit agent examples (cloud-* and docker stacks):
-pip install bithuman[agent]
+pip install "livekit-agents>=1.4" "livekit-plugins-bithuman>=1.4"
 ```
 
-Pre-built wheels for Python 3.9-3.14 on Linux x86_64 + ARM64, macOS Intel + Apple Silicon, Windows x86_64.
+Pre-built wheels for Python 3.10-3.14 on Linux x86_64 + ARM64, macOS Intel + Apple Silicon, Windows x86_64.
 
 ## Example structure
 

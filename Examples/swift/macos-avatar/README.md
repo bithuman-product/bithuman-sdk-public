@@ -1,7 +1,7 @@
 # macos-avatar -- macOS Voice Agent with Lip-Synced Avatar
 
 > ⚠️ **Preview / deferred.** This example targets a renderer/sink bridge
-> not yet published in SDK 0.8.2. `FramePump` expects an
+> not yet published in SDK 0.8.1. `FramePump` expects an
 > `AvatarFrameSink`, but `AvatarRendererView` does not conform to that
 > protocol in the published surface (only `AvatarWindow` does), and no
 > bridging property or factory method is exposed. Tracked for refresh

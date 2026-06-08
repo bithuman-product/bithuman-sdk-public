@@ -1,8 +1,8 @@
 # essence-playback -- Essence Avatar on macOS / iPad
 
 > ⚠️ **Preview / deferred.** This example targets an API surface not yet
-> published in the SDK. It does not build against SDK 0.8.2. See
-> [macos-avatar](../macos-avatar/) for a working Essence example.
+> published in the SDK. It does not build against SDK 0.8.1. See
+> [bench-essence](../bench-essence/) for a working Essence example.
 
 A SwiftUI app that loads an Essence `.imx` model file and renders the avatar with real-time, audio-driven lip sync. Demonstrates `Bithuman.createRuntime(modelPath:)`, `EssenceRuntime.pushAudio()`, and the `frames()` AsyncStream.
 

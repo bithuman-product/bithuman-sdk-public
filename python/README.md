@@ -26,10 +26,11 @@ pip install bithuman --upgrade
 
 Pre-built wheels for Python 3.10 – 3.14 on Linux x86_64 + aarch64 and macOS Apple Silicon. (macOS Intel + Windows ship via a separate per-tag CI run; Python 3.9 dropped in 2.0.)
 
-For LiveKit Agent integration (voice agents with faces over WebRTC):
+For LiveKit Agent integration (voice agents with faces over WebRTC), install
+LiveKit Agents plus the bitHuman plugin alongside this library:
 
 ```bash
-pip install bithuman[agent]
+pip install "livekit-agents>=1.4" "livekit-plugins-bithuman>=1.4"
 ```
 
 ## Library only — the CLI ships separately
@@ -197,17 +198,24 @@ Full reference: [docs.bithuman.ai/cli](https://docs.bithuman.ai/cli)
 Build full voice agents with faces:
 
 ```python
-from bithuman import AsyncBithuman
-from bithuman.utils.agent import LocalAvatarRunner, LocalVideoPlayer, LocalAudioIO
+import os
+from livekit.agents import Agent, AgentSession
+from livekit.plugins import bithuman, openai, silero
 
-runtime = await AsyncBithuman.create(model_path="avatar.imx", api_secret="…")
-avatar = LocalAvatarRunner(
-    bithuman_runtime=runtime,
-    audio_input=session.audio,
-    audio_output=LocalAudioIO(session, agent_output),
-    video_output=LocalVideoPlayer(window_size=(1280, 720)),
+# Inside your LiveKit worker entrypoint, after `await ctx.connect()`:
+avatar = bithuman.AvatarSession(
+    avatar_id=os.getenv("BITHUMAN_AGENT_ID"),
+    api_secret=os.getenv("BITHUMAN_API_SECRET"),
 )
-await avatar.start()
+session = AgentSession(
+    llm=openai.realtime.RealtimeModel(voice="coral"),
+    vad=silero.VAD.load(),
+)
+await avatar.start(session, room=ctx.room)
+await session.start(
+    agent=Agent(instructions="You are a helpful assistant."),
+    room=ctx.room,
+)
 ```
 
 For end-to-end Docker Compose stacks (LiveKit + OpenAI + bitHuman) see the [`Examples/`](https://github.com/bithuman-product/bithuman-sdk-public/tree/main/Examples) directory.

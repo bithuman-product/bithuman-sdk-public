@@ -2,7 +2,7 @@
 //
 // This example targets the dual-runtime API (Bithuman.createRuntime + EssenceRuntime)
 // scheduled for a future SDK release. It does NOT build against the currently
-// published SDK 0.8.2.
+// published SDK 0.8.1.
 //
 // For Essence playback against the current SDK, see Examples/swift/macos-avatar/
 // (which uses the shipping Bithuman.create() API).

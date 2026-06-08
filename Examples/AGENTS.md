@@ -13,11 +13,8 @@ quickstart/                           Try bitHuman in under 2 minutes
 
 python/                               Python SDK examples
   cloud-essence/                      Essence via bitHuman Cloud + LiveKit
-  cloud-expression/                   Expression via bitHuman Cloud + LiveKit
   local-essence/                      Essence on any machine (CPU)
-  local-expression-gpu/               Expression on NVIDIA GPU (Docker)
-  local-expression-mac/               Expression on macOS M3+ (Python)
-  local-expression-gpu-livekit-cloud/ GPU + LiveKit Cloud WebRTC
+  (Expression / self-hosted GPU: docs.bithuman.ai/guides/deployment)
 
 swift/                                Swift SDK for Apple platforms
   macos-voice/                        macOS voice agent (audio only)
@@ -52,9 +49,9 @@ If you are an AI agent wiring bitHuman into a user's codebase:
 | User says... | Recommend | Why |
 |---|---|---|
 | "Web app, fastest demo" | [python/cloud-essence/](python/cloud-essence/) | LiveKit plugin, no GPU, no model files |
-| "Web app, custom face" | [python/cloud-expression/](python/cloud-expression/) | Same plugin, any face image |
+| "Web app, custom face" | [python/cloud-essence/](python/cloud-essence/) (Expression agent) | Same plugin, any face image |
 | "Kiosk / 24/7 / edge box" | [python/local-essence/](python/local-essence/) | CPU only, no idle timeout |
-| "On-prem, NVIDIA GPU" | [python/local-expression-gpu/](python/local-expression-gpu/) | Docker, dynamic face |
+| "On-prem, NVIDIA GPU" | [docs: deployment](https://docs.bithuman.ai/guides/deployment) | Docker, dynamic face |
 | "Mac/iPad/iPhone app" | [swift/macos-avatar/](swift/macos-avatar/) or [swift/ios-avatar/](swift/ios-avatar/) | All on-device |
 | "Mac, no code" | `brew install bithuman-product/bithuman/bithuman-cli` → see [cli/](cli/) | 30 seconds |
 | "REST API, any language" | [rest-api/curl/](rest-api/curl/) | Just curl |

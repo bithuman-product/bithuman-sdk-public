@@ -85,14 +85,14 @@ generates speech). Pick one of two paths via env vars:
 | Brain | How to enable | Notes |
 |-------|---------------|-------|
 | Cloud (default) | `export OPENAI_API_KEY=sk-...` | OpenAI Realtime; instant, no downloads. |
-| On-device | `export BITHUMAN_LOCAL=1` | whisper.cpp + llama.cpp + Supertonic + Silero. Needs `pip install 'bithuman[local]'`. ~5 GB first-run download, then offline. |
+| On-device | `export BITHUMAN_LOCAL=1` | whisper.cpp + llama.cpp + Supertonic + Silero. Needs `pip install 'bithuman-cli[local]'`. ~5 GB first-run download, then offline. |
 
 ```bash
 export OPENAI_API_KEY=sk-...     # cloud (default)
 bithuman run model.imx
 
 # or, fully on-device:
-pip install 'bithuman[local]'
+pip install 'bithuman-cli[local]'
 BITHUMAN_LOCAL=1 bithuman run model.imx
 ```
 

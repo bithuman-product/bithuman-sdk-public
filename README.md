@@ -31,7 +31,7 @@ You get **99 free credits per month** (about 50 minutes of avatar time). No cred
 | **See it work immediately** | Python or CLI | 5 min | [Examples/quickstart/](Examples/quickstart/) |
 | **Build with Python** (web app, server, Raspberry Pi) | `pip install bithuman` | 10 min | [Examples/python/](Examples/python/) |
 | **Build a native Apple app** (Mac, iPad, iPhone) | Swift SDK | 15 min | [Examples/swift/](Examples/swift/) |
-| **Use the command line** (no code at all) | `brew install bithuman` (or `pip install bithuman-cli`) | 2 min | [Examples/cli/](Examples/cli/) |
+| **Use the command line** (no code at all) | `brew install bithuman-product/bithuman/bithuman-cli` (or `pip install bithuman-cli`) | 2 min | [Examples/cli/](Examples/cli/) |
 | **Call from any language** (Java, Go, JS, etc.) | REST API | 5 min | [Examples/rest-api/](Examples/rest-api/) |
 | **Talk to it with zero cloud** (no OpenAI key, no outbound network) | `pip install 'bithuman-cli[local]'` then `BITHUMAN_LOCAL=1 bithuman run` | 5 min after a ~860 MB one-time download | [Local mode →](https://docs.bithuman.ai/guides/local-mode) |
 
@@ -68,7 +68,7 @@ In Xcode: **File → Add Package Dependencies →** paste this URL:
 https://github.com/bithuman-product/bithuman-sdk-public.git
 ```
 
-Requires Apple Silicon M3 or newer. See [swift/README.md](swift/README.md) for details.
+Requires Apple Silicon M3 or newer on macOS 26 (Tahoe) — or iPhone 16 Pro / iPad Pro M4 on iOS / iPadOS 26. See [swift/README.md](swift/README.md) for the full hardware + OS floor.
 
 ### CLI — talk to an avatar in 2 minutes
 

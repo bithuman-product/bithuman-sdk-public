@@ -7,9 +7,9 @@ bitHuman is a real-time avatar animation platform. You push audio in, and get li
 | User goal | Recommended path | Package / tool | Example directory |
 |---|---|---|---|
 | Web app, fastest demo | Cloud Essence (LiveKit plugin) | `pip install livekit-plugins-bithuman` | `Examples/python/cloud-essence/` |
-| Web app, custom face image | Cloud Expression (LiveKit plugin) | `pip install livekit-plugins-bithuman` | `Examples/python/cloud-expression/` |
+| Web app, custom face image | Cloud Expression (LiveKit plugin) | `pip install livekit-plugins-bithuman` | `Examples/python/cloud-essence/` (same plugin; create an Expression agent) |
 | Kiosk / 24-7 / edge box | Self-hosted Essence (CPU) | `pip install bithuman` | `Examples/python/local-essence/` |
-| On-prem NVIDIA GPU | Self-hosted Expression (Docker) | `docker pull bithuman/expression-avatar:latest` | `Examples/python/local-expression-gpu/` |
+| On-prem NVIDIA GPU | Self-hosted Expression (Docker) | `docker pull bithuman/expression-avatar:latest` | [docs: deployment](https://docs.bithuman.ai/guides/deployment) |
 | macOS / iPad / iPhone app | Swift SDK (on-device) | SwiftPM `bithuman-sdk-public` >= 0.8.1 | `Examples/swift/` |
 | Mac, no code | CLI | `brew install bithuman-product/bithuman/bithuman-cli` (or `pip install bithuman-cli`) | `Examples/cli/` |
 | Any language, HTTP only | REST API | `curl https://api.bithuman.ai/v1/...` | `Examples/rest-api/` |
@@ -252,11 +252,8 @@ bithuman-sdk-public/
 │   ├── quickstart/           Try bitHuman in 2 minutes
 │   ├── python/
 │   │   ├── cloud-essence/        Cloud Essence via LiveKit
-│   │   ├── cloud-expression/     Cloud Expression via LiveKit
-│   │   ├── local-essence/        CPU-only local Essence
-│   │   ├── local-expression-gpu/ NVIDIA GPU Docker
-│   │   ├── local-expression-mac/ macOS M3+ Python
-│   │   └── local-expression-gpu-livekit-cloud/
+│   │   └── local-essence/        CPU-only local Essence
+│   │       (Expression / self-hosted GPU: docs.bithuman.ai/guides/deployment)
 │   ├── swift/
 │   │   ├── macos-voice/          macOS audio-only voice agent
 │   │   ├── macos-avatar/         macOS voice + avatar

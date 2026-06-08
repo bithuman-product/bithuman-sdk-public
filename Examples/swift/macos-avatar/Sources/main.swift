@@ -1,6 +1,6 @@
 // PREVIEW -- DEFERRED.
 //
-// Targets a renderer/sink bridge not yet published in SDK 0.8.2.
+// Targets a renderer/sink bridge not yet published in SDK 0.8.1.
 // `FramePump.init(..., window: any AvatarFrameSink, ...)` expects an
 // AvatarFrameSink, but `AvatarRendererView` does not conform to that
 // protocol in the published surface (only `AvatarWindow` does, via an
