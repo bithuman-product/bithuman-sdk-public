@@ -7,14 +7,14 @@
 **Real-time avatar engine for visual AI agents, digital humans, and creative characters.**
 
 [![PyPI version](https://badge.fury.io/py/bithuman.svg)](https://pypi.org/project/bithuman/)
-[![Python](https://img.shields.io/badge/python-3.9--3.14-blue.svg)](https://www.python.org/downloads/)
-[![Platforms](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)]()
+[![Python](https://img.shields.io/badge/python-3.10--3.14-blue.svg)](https://www.python.org/downloads/)
+[![Platforms](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-lightgrey.svg)]()
 
 Photorealistic avatars with audio-driven lip sync at 25 FPS. Runs on edge devices — typically 1–2 CPU cores, &lt;200 ms end-to-end latency. Use it for voice agents with faces, video chatbots, tutors, NPCs, digital humans.
 
 ## What the SDK ships
 
-The SDK exposes one API — `AsyncBithuman.create(model_path=…)` — driving the **Essence** model family. Essence runs on Linux / macOS / Windows on any modern CPU (1–2 cores, &lt;200 MB RAM) and is the supported avatar runtime.
+The SDK exposes one API — `AsyncBithuman.create(model_path=…)` — driving the **Essence** model family. Essence runs on Linux / macOS on any modern CPU (1–2 cores, &lt;200 MB RAM) and is the supported avatar runtime (Windows is planned).
 
 Architecture deep dive + production patterns at [docs.bithuman.ai](https://docs.bithuman.ai).
 
@@ -24,7 +24,7 @@ Architecture deep dive + production patterns at [docs.bithuman.ai](https://docs.
 pip install bithuman --upgrade
 ```
 
-Pre-built wheels for Python 3.10 – 3.14 on Linux x86_64 + aarch64 and macOS Apple Silicon. (macOS Intel + Windows ship via a separate per-tag CI run; Python 3.9 dropped in 2.0.)
+Pre-built wheels for Python 3.10 – 3.14 on Linux x86_64 + aarch64 and macOS Apple Silicon (macOS 26+). No Windows or macOS Intel wheels yet — both are planned. (Python 3.9 was dropped in 2.0.)
 
 For LiveKit Agent integration (voice agents with faces over WebRTC), install
 LiveKit Agents plus the bitHuman plugin alongside this library:

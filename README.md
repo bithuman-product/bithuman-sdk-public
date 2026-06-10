@@ -31,7 +31,7 @@ You get **99 free credits per month** (about 50 minutes of avatar time). No cred
 | **See it work immediately** | Python or CLI | 5 min | [Examples/quickstart/](Examples/quickstart/) |
 | **Build with Python** (web app, server, Raspberry Pi) | `pip install bithuman` | 10 min | [Examples/python/](Examples/python/) |
 | **Build a native Apple app** (Mac, iPad, iPhone) | Swift SDK | 15 min | [Examples/swift/](Examples/swift/) |
-| **Use the command line** (no code at all) | `brew install bithuman-product/bithuman/bithuman-cli` (or `pip install bithuman-cli`) | 2 min | [Examples/cli/](Examples/cli/) |
+| **Use the command line** (no code at all) | `brew install bithuman-product/bithuman/bithuman-cli` (or `pip install bithuman-cli` — macOS only) | 2 min | [Examples/cli/](Examples/cli/) |
 | **Call from any language** (Java, Go, JS, etc.) | REST API | 5 min | [Examples/rest-api/](Examples/rest-api/) |
 | **Talk to it with zero cloud** (no OpenAI key, no outbound network) | `pip install 'bithuman-cli[local]'` then `BITHUMAN_LOCAL=1 bithuman run` | 5 min after a ~860 MB one-time download | [Local mode →](https://docs.bithuman.ai/guides/local-mode) |
 
@@ -52,13 +52,13 @@ Full comparison: [docs.bithuman.ai/getting-started/models](https://docs.bithuman
 
 ## Install
 
-### Python (Linux, macOS, Windows)
+### Python (Linux, macOS)
 
 ```bash
 pip install bithuman --upgrade
 ```
 
-Works with Python 3.9 through 3.14. Pre-built wheels — no compile step.
+Works with Python 3.10 through 3.14 on Linux (x86_64 + aarch64) and macOS 26+ (Apple Silicon). Pre-built wheels — no compile step. Windows is planned.
 
 ### Swift (Mac, iPad, iPhone)
 
@@ -81,7 +81,8 @@ brew install bithuman-product/bithuman/bithuman-cli
 # Path B: universal installer (macOS + Linux, no Python needed).
 curl -fsSL https://raw.githubusercontent.com/bithuman-product/homebrew-bithuman/main/install.sh | sh
 
-# Path C: pip — sibling wheel for Python-only environments.
+# Path C: pip — sibling wheel for Python-only environments
+# (macOS Apple Silicon only — on Linux use Path B).
 pip install bithuman-cli
 ```
 

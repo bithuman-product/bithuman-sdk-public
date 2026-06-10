@@ -7,9 +7,9 @@ lip-synced video offline — no code.
 
 The `bithuman` command is a single self-contained binary published
 on a Homebrew tap and as the `bithuman-cli` PyPI wheel. Source lives
-in [`bithuman-apps`](https://github.com/bithuman-product/bithuman-apps).
-For the Python library (`from bithuman import AsyncBithuman`) see the
-[Python examples](../python/).
+in the private `bithuman-apps` repo; runnable examples are in this
+directory. For the Python library (`from bithuman import AsyncBithuman`)
+see the [Python examples](../python/).
 
 ```bash
 # macOS — Homebrew (recommended; pulls native deps).
@@ -18,7 +18,8 @@ brew install bithuman-product/bithuman/bithuman-cli
 # macOS / Linux — universal one-liner.
 curl -fsSL https://raw.githubusercontent.com/bithuman-product/homebrew-bithuman/main/install.sh | sh
 
-# Any platform with Python — PyPI sibling wheel, same Rust binary.
+# PyPI sibling wheel, same Rust binary (macOS Apple Silicon only —
+# on Linux use the one-liner above).
 pip install bithuman-cli
 ```
 

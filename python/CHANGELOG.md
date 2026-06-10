@@ -261,7 +261,7 @@ Previously the package shipped from an internal monorepo; it has been moved into
 
 ### Added
 - **Expression model support on macOS Apple Silicon (M3+, M3+ recommended)**:
-  - `bithuman.swift_expression.SwiftExpressionRuntime` binds to the native Swift SDK at [`bithuman-expression-swift`](https://github.com/bithuman-product/bithuman-expression-swift) via the new `bithuman-expression-daemon` binary. The macOS arm64 wheel ships the daemon pre-built (built against `bithuman-expression-swift` v0.4.0 by default — override via the `BITHUMAN_EXPRESSION_SWIFT_REF` repo variable).
+  - `bithuman.swift_expression.SwiftExpressionRuntime` binds to the native Swift SDK at `bithuman-expression-swift` (private) via the new `bithuman-expression-daemon` binary. The macOS arm64 wheel ships the daemon pre-built (built against `bithuman-expression-swift` v0.4.0 by default — override via the `BITHUMAN_EXPRESSION_SWIFT_REF` repo variable).
   - `AsyncBithuman.create()` auto-detects `.imx` files whose manifest stamps `model_type: "expression"` and dispatches transparently — same public API (`push_audio`, `flush`, `run`, `shutdown`) for both Essence and Expression models.
   - On Linux, Windows, and Intel macOS the new `ExpressionModelNotSupported` exception is raised at `create()` with install guidance.
 - **`bithuman pack` CLI subcommand**: writes an IMX v2 container that bundles the four Expression weight artifacts (DiT, Wav2Vec2, VAE encoder, ANE decoder) plus the baked reference latent plus a stamped manifest into a single `.imx` — the Swift SDK's public `Bithuman.create(modelPath:)` consumes it directly.
@@ -271,7 +271,7 @@ Previously the package shipped from an internal monorepo; it has been moved into
 - Python ↔ daemon IPC benches at **1512 FPS sustained throughput**, **0.66 ms amortized per 512×512 frame**, **0.04 ms per 1 s audio push** — under 2 % of the 40 ms real-time frame budget.
 
 ### Changed
-- Repository moved into a dedicated repo at [`bithuman-product/bithuman-python-sdk`](https://github.com/bithuman-product/bithuman-python-sdk). PyPI wheel name + install commands are unchanged.
+- Repository moved into a dedicated repo at `bithuman-product/bithuman-python-sdk` (now private). PyPI wheel name + install commands are unchanged.
 - Release tag pattern changed from `bithuman-v*` to `v*` (matching the new standalone-repo workflow at `.github/workflows/release.yml`).
 
 ### Tests

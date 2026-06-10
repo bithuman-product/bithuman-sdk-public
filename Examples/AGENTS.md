@@ -66,7 +66,7 @@ If you are an AI agent wiring bitHuman into a user's codebase:
 
 ### Machine-readable
 
-- [OpenAPI spec](https://docs.bithuman.ai/api-reference/openapi.yaml)
+- [OpenAPI spec](https://docs.bithuman.ai/api/openapi.yaml)
 - [llms.txt](https://docs.bithuman.ai/llms.txt) / [llms-full.txt](https://docs.bithuman.ai/llms-full.txt)
 
 ### What NOT to do

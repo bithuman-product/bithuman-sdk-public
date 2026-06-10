@@ -14,7 +14,7 @@ bitHuman is a real-time avatar animation platform. You push audio in, and get li
 | Mac, no code | CLI | `brew install bithuman-product/bithuman/bithuman-cli` (or `pip install bithuman-cli`) | `Examples/cli/` |
 | Any language, HTTP only | REST API | `curl https://api.bithuman.ai/v1/...` | `Examples/rest-api/` |
 | 100% offline Mac | Ollama + Apple Speech + bitHuman | -- | `Examples/integrations/offline-mac/` |
-| Browser embed (iframe) | Embed widget | `bithuman-chat-widget-v5.js` | See docs: [embed](https://docs.bithuman.ai/integrations/embed) |
+| Browser embed (iframe) | Embed widget | `bithuman-chat-widget-v5.js` | See docs: [embed](https://docs.bithuman.ai/api/embedding) |
 
 ## Quick Setup Per Path
 
@@ -93,8 +93,11 @@ curl -X POST https://api.bithuman.ai/v1/agent/A91XMB7113/speak \
 | `frame.audio_chunk` | Synchronized audio output |
 | `frame.has_image` | Whether this frame contains an image |
 | `frame.end_of_speech` | Whether this is the last frame of the segment |
-| `load_audio(path)` | Returns `(float32_pcm, sample_rate)` |
-| `float32_to_int16(pcm)` | Convert float32 PCM to int16 |
+
+> **Removed in 2.3:** the old `bithuman.audio` helpers (`load_audio`,
+> `float32_to_int16`) no longer exist — `from bithuman import load_audio`
+> raises `ImportError`. Inline them with `soundfile` + `numpy` instead
+> (see Pattern 1 below and the README quickstart).
 
 ### LiveKit Plugin (`pip install livekit-plugins-bithuman`)
 
@@ -133,7 +136,7 @@ All requests require `api-secret: YOUR_SECRET` header.
 | POST | `/v1/dynamics/generate` | Create gesture animations |
 | GET | `/v1/dynamics/{agent_id}` | List available gestures |
 
-### CLI (`bithuman` — install via Homebrew, `curl|sh`, or `pip install bithuman-cli`; the `bithuman` PyPI wheel is library-only as of 2.3)
+### CLI (`bithuman` — install via Homebrew, `curl|sh`, or `pip install bithuman-cli` (macOS Apple Silicon only — on Linux use the `curl|sh` installer); the `bithuman` PyPI wheel is library-only as of 2.3)
 
 | Command | Purpose |
 |---|---|
@@ -150,6 +153,20 @@ All requests require `api-secret: YOUR_SECRET` header.
 ### Pattern 1: Push audio, get frames (core loop)
 
 ```python
+import numpy as np
+import soundfile as sf
+
+# bithuman 2.3 is library-only — the old bithuman.audio helpers were
+# removed. Inline them (the SDK resamples to 16 kHz internally).
+def load_audio(path):
+    audio, sr = sf.read(path, dtype="float32", always_2d=False)
+    if audio.ndim > 1:
+        audio = audio.mean(axis=1)
+    return audio, sr
+
+def float32_to_int16(arr):
+    return (np.clip(arr, -1.0, 1.0) * 32767.0).astype(np.int16)
+
 pcm, sr = load_audio("speech.wav")
 pcm = float32_to_int16(pcm)
 chunk = sr // 25  # one chunk per video frame
@@ -278,7 +295,7 @@ bithuman-sdk-public/
 |---|---|
 | Documentation | https://docs.bithuman.ai |
 | API keys | https://www.bithuman.ai/#developer |
-| OpenAPI spec | https://docs.bithuman.ai/api-reference/openapi.yaml |
+| OpenAPI spec | https://docs.bithuman.ai/api/openapi.yaml |
 | LLM-optimized docs | https://docs.bithuman.ai/llms.txt |
 | Full LLM docs | https://docs.bithuman.ai/llms-full.txt |
 | Python SDK (PyPI) | https://pypi.org/project/bithuman/ |

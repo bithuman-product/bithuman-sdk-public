@@ -131,7 +131,7 @@ curl -s -X POST https://api.bithuman.ai/v1/files/upload \
 
 The full machine-readable API specification is available at:
 
-- [docs.bithuman.ai/api-reference/openapi.yaml](https://docs.bithuman.ai/api-reference/openapi.yaml)
+- [docs.bithuman.ai/api/openapi.yaml](https://docs.bithuman.ai/api/openapi.yaml)
 
 ## Documentation
 

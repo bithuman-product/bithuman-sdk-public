@@ -16,7 +16,7 @@ on a specific subsystem, see the source-file headers
 ```
 ┌──── browser (any Tailscale-connected Mac) ────────────────────────┐
 │                                                                   │
-│   https://moraga.tail90843e.ts.net/A17AJJ8153?rendering_mode=cloud│
+│   https://my-mac.my-tailnet.ts.net/AGENT_CODE?rendering_mode=cloud│
 │                                                                   │
 └────────────────────────┬──────────────────────────────────────────┘
                          │ HTTPS via Tailscale Serve (port 443)

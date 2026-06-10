@@ -137,7 +137,7 @@ Examples/
 ## Documentation
 
 - **Getting started**: [Python quickstart](https://docs.bithuman.ai/getting-started/quickstart) | [Swift quickstart](https://docs.bithuman.ai/sdks/swift)
-- **API reference**: [REST API](https://docs.bithuman.ai/api-reference/overview) | [OpenAPI spec](https://docs.bithuman.ai/api-reference/openapi.yaml)
+- **API reference**: [REST API](https://docs.bithuman.ai/api-reference/overview) | [OpenAPI spec](https://docs.bithuman.ai/api/openapi.yaml)
 - **Guides**: [Authentication](https://docs.bithuman.ai/getting-started/authentication) | [Pricing](https://docs.bithuman.ai/getting-started/pricing) | [Models](https://docs.bithuman.ai/getting-started/models)
 
 ## Get help
