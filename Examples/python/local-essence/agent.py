@@ -23,6 +23,13 @@ from livekit.agents import (
 )
 from livekit.plugins import bithuman, openai, silero
 
+# Tune the WebRTC video publish (single H264 layer, simulcast off, explicit
+# bitrate/fps) BEFORE the avatar starts. Without this the LiveKit default preset
+# caps the track at ~300 kbps / 20 fps with simulcast on, which makes a
+# self-hosted avatar laggy and freeze (black) under CPU pressure. See
+# tuned_publish.py. Tune via AVATAR_VIDEO_MAX_BITRATE / _MAX_FPS / _SIMULCAST.
+import tuned_publish  # noqa: E402,F401  (import applies the publish monkey-patch)
+
 logger = logging.getLogger("bithuman-agent")
 logger.setLevel(logging.INFO)
 
