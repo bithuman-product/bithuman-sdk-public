@@ -2,7 +2,7 @@
 // utterance, so the vendored MLXAudioTTS path can be sanity-
 // checked from a Mac without needing a mic / interactive shell.
 //
-// Sibling of CompareDiT (avatar) and CompareLLM (LLM).
+// Sibling of CompareQuality (avatar) and CompareLLM (LLM).
 import Foundation
 @preconcurrency import MLX
 @preconcurrency import MLXAudioTTS

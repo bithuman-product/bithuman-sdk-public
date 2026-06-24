@@ -21,8 +21,9 @@
 //                  Re-exports the Expression avatar engine + the Essence
 //                  (libessence) runtime + the on-device LLM/TTS stack.
 //                  Most apps want this one. `import bitHumanKit`.
-//   - Expression   Layer-1 avatar engine on its own: Wav2Vec2 → DiT →
-//                  VAE → ANE expressive talking head. Built from the
+//   - Expression   Layer-1 avatar engine on its own: speech encoder →
+//                  animator → face decoder → face renderer expressive
+//                  talking head. Built from the
 //                  bithuman-sdk engine/expression/ package. Pull this in
 //                  directly when you only need the avatar renderer (no
 //                  STT/LLM/TTS). Home of the `Bithuman` actor,

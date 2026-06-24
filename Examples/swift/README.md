@@ -22,7 +22,7 @@ These are lower-level harnesses (benchmarks, A/B comparisons, a server daemon) c
 | Example | Consumes | What it shows |
 |---------|----------|---------------|
 | [hello-voice-chat/](hello-voice-chat/) | `bitHumanKit` | The smallest possible SPM executable embedding the SDK: `VoiceChat` + `VoiceChatConfig`, no avatar, no billing. |
-| [compare-dit/](compare-dit/) | `Expression` | Render a WAV → lip-synced MP4 to A/B fp16 vs int4 DiT quality. Targets the Layer-1 Expression engine directly. |
+| [compare-quality/](compare-quality/) | `Expression` | Render a WAV → lip-synced MP4 to A/B fp16 vs int4 animator quality. Targets the Layer-1 Expression engine directly. |
 | [compare-llm/](compare-llm/) | upstream MLX OSS | Load each on-device LLM (iOS vs macOS split) on a fixed prompt set. No bitHuman binary — same OSS path as `LLMClient`. |
 | [compare-tts/](compare-tts/) | `Voice` (private source) | Load Kokoro + Qwen3-TTS and synthesize a fixed utterance. **Requires the private bithuman-sdk sibling checkout** (see its README). |
 | [bench-essence/](bench-essence/) | `bitHumanKit` | Essence runtime perf + correctness bench. Full correctness path needs an internal test seam (see its README). |
@@ -35,7 +35,7 @@ The published package exposes three library products. Most apps want the umbrell
 | Product | `import` | What it is |
 |---------|----------|------------|
 | `bitHumanKit` | `import bitHumanKit` | Umbrella SDK — STT + LLM + TTS + both avatar engines. |
-| `Expression` | `import Expression` | Layer-1 avatar engine only (Wav2Vec2 → DiT → VAE → ANE). Home of the `Bithuman` actor, `Bithuman.Quality`, `AvatarConfig`. |
+| `Expression` | `import Expression` | Layer-1 avatar engine only (speech encoder → animator → face decoder → face renderer). Home of the `Bithuman` actor, `Bithuman.Quality`, `AvatarConfig`. |
 | `Bithuman` | `import Bithuman` | Layer-1 Essence engine only (libessence; audio → BGR frames from an `.imx`). CPU-only, any Apple Silicon. |
 
 ## Supported models

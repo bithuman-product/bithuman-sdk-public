@@ -90,11 +90,11 @@ python management.py --agent-id A91XMB7113
 # List available gestures
 python dynamics.py --agent-id A91XMB7113
 
-# Generate new gestures (default: 5s, seedance model)
+# Generate new gestures (default: 5s, auto model)
 python dynamics.py --agent-id A91XMB7113 --generate
 
 # Custom duration and model
-python dynamics.py --agent-id A91XMB7113 --generate --duration 5 --model kling
+python dynamics.py --agent-id A91XMB7113 --generate --duration 5 --model auto
 ```
 
 ### Live session control

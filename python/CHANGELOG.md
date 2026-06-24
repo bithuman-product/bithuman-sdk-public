@@ -205,16 +205,7 @@ Users who pinned `bithuman==1.10.0` should upgrade to `1.10.2`. No API changes. 
 - **Per-chunk frame-dimension handling in `swift_expression/runtime.py`**. The Python unpacker honors `frame_width` / `frame_height` from the daemon's chunk header instead of assuming the ready-event frame size. Required for any Expression model packed with a non-384 face renderer — the model bundle now round-trips correctly at 384×384, 448×448, or 512×512.
 
 ### Changed
-- **`bithuman pack` CLI: user-friendly argument names.** ML-jargon flags were renamed with old names kept as hidden aliases so existing build scripts keep working:
-
-  | Old flag | New flag | What it is |
-  |----------|----------|------------|
-  | `--dit` | `--animator` | Animator weights (`.safetensors`) |
-  | `--wav2vec` | `--speech-encoder` | Speech encoder weights (`.safetensors`) |
-  | `--vae-encoder` | `--face-encoder` | Face encoder weights (`.safetensors`) |
-  | `--ane-decoder` | `--face-renderer` | Face renderer (`.mlpackage`) |
-  | `--ref-latent` | `--reference-face` | Reference face file (`.npy`) |
-  | `--pos-conv` | `--speech-filter` | Optional pre-computed speech filter (`.npy`) |
+- **`bithuman pack` CLI: user-friendly argument names.** The pack subcommand now uses bitHuman terms for its weight-artifact flags — `--animator`, `--speech-encoder`, `--face-encoder`, `--face-renderer`, `--reference-face`, and `--speech-filter` — which replaced the older low-level flag names (kept as hidden aliases so existing build scripts keep working).
 
 ### Fixed
 - **Cython `annotation_typing` left on** caused `Optional[str] = None` parameters to become hard runtime type checks. `agent_code=None` from `start_token_refresh` triggered `Argument 'agent_code' has incorrect type (expected str, got bool)` on every Essence model. Disabled the directive in `setup.py`.
@@ -222,7 +213,7 @@ Users who pinned `bithuman==1.10.0` should upgrade to `1.10.2`. No API changes. 
 - **`_unpack_chunk` reshape crash** when the Expression daemon emitted 384×384 frames but the ready event advertised 512×512. The chunk header carries the actual dims; honor those and fall back to the ready-event size only when the header is silent.
 
 ### Documentation
-- README: new Expression section covering the `quality` preset, realtime-factor table, and packing recipes at multiple resolutions. User-facing language throughout replaces ML jargon (DiT → animator, wav2vec → speech encoder, VAE → face encoder/decoder, ANE → face renderer, latent → encoded face).
+- README: new Expression section covering the `quality` preset, realtime-factor table, and packing recipes at multiple resolutions. User-facing language throughout uses bitHuman terms (animator, speech encoder, face encoder/decoder, face renderer, encoded face) instead of low-level ML internals.
 - Docstrings across `runtime_async.py`, `swift_expression/runtime.py`, and `swift_expression/_binary.py` scrubbed of internal ML-architecture references in public-facing text.
 
 ## [1.8.5] - 2026-04-20
@@ -264,7 +255,7 @@ Previously the package shipped from an internal monorepo; it has been moved into
   - `bithuman.swift_expression.SwiftExpressionRuntime` binds to the native Swift SDK at `bithuman-expression-swift` (private) via the new `bithuman-expression-daemon` binary. The macOS arm64 wheel ships the daemon pre-built (built against `bithuman-expression-swift` v0.4.0 by default — override via the `BITHUMAN_EXPRESSION_SWIFT_REF` repo variable).
   - `AsyncBithuman.create()` auto-detects `.imx` files whose manifest stamps `model_type: "expression"` and dispatches transparently — same public API (`push_audio`, `flush`, `run`, `shutdown`) for both Essence and Expression models.
   - On Linux, Windows, and Intel macOS the new `ExpressionModelNotSupported` exception is raised at `create()` with install guidance.
-- **`bithuman pack` CLI subcommand**: writes an IMX v2 container that bundles the four Expression weight artifacts (DiT, Wav2Vec2, VAE encoder, ANE decoder) plus the baked reference latent plus a stamped manifest into a single `.imx` — the Swift SDK's public `Bithuman.create(modelPath:)` consumes it directly.
+- **`bithuman pack` CLI subcommand**: writes an IMX v2 container that bundles the four Expression weight artifacts (animator, speech encoder, face encoder, face renderer) plus the baked reference face plus a stamped manifest into a single `.imx` — the Swift SDK's public `Bithuman.create(modelPath:)` consumes it directly.
 - **`ExpressionModelNotSupported`** typed exception, exported from the package root alongside the existing error hierarchy.
 
 ### Performance

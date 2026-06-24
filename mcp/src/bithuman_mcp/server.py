@@ -303,7 +303,7 @@ async def get_dynamics(agent_id: str) -> dict:
 
 @mcp.tool()
 async def generate_dynamics(
-    agent_id: str, image_url: str | None = None, duration: int = 5, model: str = "seedance"
+    agent_id: str, image_url: str | None = None, duration: int = 5, model: str = "auto"
 ) -> dict:
     """Generate gesture animations for an agent. Async — poll get_dynamics to track.
 
@@ -311,7 +311,7 @@ async def generate_dynamics(
         agent_id: Agent code.
         image_url: Source image; defaults to the agent's primary image if omitted.
         duration: Gesture length in seconds.
-        model: "seedance" (default), "quality", "speed", or "auto".
+        model: "auto" (default), "quality", or "speed".
     """
     payload: dict[str, Any] = {"agent_id": agent_id, "duration": duration, "model": model}
     if image_url:

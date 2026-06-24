@@ -1,10 +1,10 @@
-// CompareDiT — render a WAV through the avatar engine to a lip-synced MP4.
+// CompareQuality — render a WAV through the avatar engine to a lip-synced MP4.
 //
-// Used to A/B fp16 vs int4 DiT quality:
+// Used to A/B fp16 vs int4 animator quality:
 //
-//   swift build -c release --product compare-dit
-//   compare-dit --model expression.imx --audio ref.wav --output fp16.mp4
-//   FH_QUANTIZE_DIT=int4 compare-dit --model expression.imx --audio ref.wav --output int4.mp4
+//   swift build -c release --product compare-quality
+//   compare-quality --model expression.imx --audio ref.wav --output fp16.mp4
+//   FH_QUANTIZE_DIT=int4 compare-quality --model expression.imx --audio ref.wav --output int4.mp4
 //   ffmpeg -i fp16.mp4 -i int4.mp4 -filter_complex "[0:v][1:v]hstack" \
 //     -map 0:a side-by-side.mp4
 //
@@ -85,16 +85,16 @@ struct CLIArgs {
 
     static func printUsage() {
         print("""
-        compare-dit — render a WAV through the avatar engine to MP4
+        compare-quality — render a WAV through the avatar engine to MP4
 
         Usage:
-          compare-dit --model PATH --audio PATH [--output PATH] \\
+          compare-quality --model PATH --audio PATH [--output PATH] \\
                       [--identity PATH | --driver PATH] \\
                       [--quality medium|high] [--putback]
 
         Quality:
-          medium    2-step DiT (default, realtime-safe)
-          high      4-step DiT (offline video) — note: visibly halos
+          medium    2-step animator (default, realtime-safe)
+          high      4-step animator (offline video) — note: visibly halos
                     the face on the current .bhx; prefer medium
 
         --putback   Composite the animated head crop back onto the
@@ -111,7 +111,7 @@ struct CLIArgs {
                     dimensions.
 
         Env:
-          FH_QUANTIZE_DIT=int4 (or int8)  Quantize DiT before inference.
+          FH_QUANTIZE_DIT=int4 (or int8)  Quantize the animator before inference.
         """)
     }
 }
@@ -201,8 +201,8 @@ final class MP4Writer: @unchecked Sendable {
     private let width: Int
     private let height: Int
 
-    private let videoQueue = DispatchQueue(label: "compare-dit.mp4.video")
-    private let audioQueue = DispatchQueue(label: "compare-dit.mp4.audio")
+    private let videoQueue = DispatchQueue(label: "compare-quality.mp4.video")
+    private let audioQueue = DispatchQueue(label: "compare-quality.mp4.audio")
 
     private let lock = NSLock()
     private var pendingFrames: [(CGImage, CMTime)] = []
@@ -480,7 +480,7 @@ private extension NSLock {
 // MARK: - main
 
 @main
-struct CompareDiT {
+struct CompareQuality {
     static func main() async {
         do {
             try await run()
@@ -514,7 +514,7 @@ struct CompareDiT {
             }
             let ext = ident.pathExtension.lowercased()
             guard ext != "npy" else {
-                throw CompareError.cli("--putback needs an image portrait, not a pre-encoded latent")
+                throw CompareError.cli("--putback needs an image portrait, not a pre-encoded face")
             }
         }
         do { _ = try AVAudioFile(forReading: args.audio) } catch {
@@ -522,7 +522,7 @@ struct CompareDiT {
         }
 
         let dtypeLabel = ProcessInfo.processInfo.environment["FH_QUANTIZE_DIT"] ?? "fp16"
-        print("→ DiT mode: \(dtypeLabel)")
+        print("→ animator mode: \(dtypeLabel)")
         print("→ Quality: \(args.quality.rawValue) (\(args.quality.nSteps)-step)")
         print("→ Loading model: \(args.model.lastPathComponent)")
 
@@ -534,7 +534,7 @@ struct CompareDiT {
             print("→ Driver video: \(drv.lastPathComponent) — extracting first frame")
             let firstCG = try Putback.firstFrame(of: drv)
             let outURL = FileManager.default.temporaryDirectory
-                .appendingPathComponent("compare-dit-driver-id-\(ProcessInfo.processInfo.processIdentifier).jpg")
+                .appendingPathComponent("compare-quality-driver-id-\(ProcessInfo.processInfo.processIdentifier).jpg")
             guard let dest = CGImageDestinationCreateWithURL(
                 outURL as CFURL, "public.jpeg" as CFString, 1, nil
             ) else { throw CompareError.cli("could not write driver identity jpg") }

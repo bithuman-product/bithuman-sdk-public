@@ -2,12 +2,12 @@
 
 import PackageDescription
 
-// CompareDiT — render a WAV through the avatar engine to a lip-synced
-// MP4, to A/B fp16 vs int4 DiT quality. Targets the Layer-1 Expression
+// CompareQuality — render a WAV through the avatar engine to a lip-synced
+// MP4, to A/B fp16 vs int4 animator quality. Targets the Layer-1 Expression
 // avatar engine directly (the `Expression` product), so it pulls in the
 // renderer without the STT/LLM/TTS umbrella. See README.md.
 let package = Package(
-    name: "CompareDiT",
+    name: "CompareQuality",
     platforms: [
         .macOS("26.0")
     ],
@@ -18,11 +18,11 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
-            name: "CompareDiT",
+            name: "CompareQuality",
             dependencies: [
                 .product(name: "Expression", package: "bithuman")
             ],
-            path: "Sources/CompareDiT",
+            path: "Sources/CompareQuality",
             swiftSettings: [.swiftLanguageMode(.v5)]
         )
     ]

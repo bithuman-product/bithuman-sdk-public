@@ -17,7 +17,7 @@ bitHumanKit ships two avatar runtimes behind a single API:
 | **What renders** | Pre-rendered base movement + audio-driven lip patches | Diffusion-generated facial animation |
 | **Custom gestures** | Baked into the `.imx` | No |
 | **Runtime cost** | 1 cr/min on-device | 2 cr/min on-device |
-| **Memory footprint** | Lower -- no DiT in memory | Higher -- DiT weights resident |
+| **Memory footprint** | Lower -- no animator in memory | Higher -- animator weights resident |
 | **Best for** | Branded characters, kiosks, polished playback | Dynamic faces, drag-drop swap, micro-expression |
 
 Pick Essence when you have a branded character and want 720p+ fidelity at the lower credit rate. Pick Expression when you want drag-and-drop face swapping at 384x384.
@@ -63,7 +63,7 @@ Or open in Xcode and pass the `.imx` path as a launch argument (Product -> Schem
 3. Displays frames in a SwiftUI `Image` view.
 4. In a real integration, you would pipe 16 kHz mono PCM audio from your TTS or microphone into `essence.pushAudio(_:)` to drive real-time lip sync.
 
-The audio encoder runs on the Neural Engine (ANE) via Metal/MLX. The renderer composites lip patches over the decoded base movement on CPU.
+The speech encoder runs on the Apple Neural Engine via Metal/MLX. The renderer composites lip patches over the decoded base movement on CPU.
 
 ## Key API types
 
@@ -73,7 +73,7 @@ The audio encoder runs on the Neural Engine (ANE) via Metal/MLX. The renderer co
 | `EssenceRuntime` | Actor that drives the Essence pipeline |
 | `EssenceRuntime.pushAudio(_:)` | Feed 16 kHz mono PCM for lip sync |
 | `EssenceRuntime.frames()` | `AsyncStream<CGImage?>` of rendered frames |
-| `EssenceRuntime.stop()` | Releases ANE resources |
+| `EssenceRuntime.stop()` | Releases Neural Engine resources |
 | `EssenceRuntime.resolution` | Native pixel size of the loaded `.imx` |
 
 ## Hardware support

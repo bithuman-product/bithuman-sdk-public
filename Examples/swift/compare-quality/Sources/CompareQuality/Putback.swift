@@ -1226,6 +1226,6 @@ enum Putback {
     }
 }
 
-// MARK: - Aliases so CompareDiT still compiles
+// MARK: - Aliases so CompareQuality still compiles
 
 typealias PutbackPlan = Putback.PutbackPlan
