@@ -24,7 +24,7 @@ These are lower-level harnesses (benchmarks, A/B comparisons, a server daemon) c
 | [hello-voice-chat/](hello-voice-chat/) | `bitHumanKit` | The smallest possible SPM executable embedding the SDK: `VoiceChat` + `VoiceChatConfig`, no avatar, no billing. |
 | [compare-quality/](compare-quality/) | `Expression` | Render a WAV → lip-synced MP4 to A/B fp16 vs int4 animator quality. Targets the Layer-1 Expression engine directly. |
 | [compare-llm/](compare-llm/) | upstream MLX OSS | Load each on-device LLM (iOS vs macOS split) on a fixed prompt set. No bitHuman binary — same OSS path as `LLMClient`. |
-| [compare-tts/](compare-tts/) | `Voice` (private source) | Load Kokoro + Qwen3-TTS and synthesize a fixed utterance. **Requires the private bithuman-sdk sibling checkout** (see its README). |
+| [compare-tts/](compare-tts/) | `Voice` (private source) | Load Kokoro + Qwen3-TTS and synthesize a fixed utterance. **Requires the private bithuman-sdk-internal sibling checkout** (see its README). |
 | [bench-essence/](bench-essence/) | `bitHumanKit` | Essence runtime perf + correctness bench. Full correctness path needs an internal test seam (see its README). |
 | [essence-server/](essence-server/) | `bitHumanKit` + LiveKit + Hummingbird | Native Swift LiveKit avatar service: hosts N runtimes behind HTTP `/launch`, republishes video + audio. |
 
