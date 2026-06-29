@@ -13,18 +13,18 @@ Backends exercised:
 ## Private-source dependency
 
 This example imports `MLXAudioTTS`, re-exported by the `Voice` product of
-the bithuman-sdk `voice/` package (the vendored
+the bithuman-sdk-internal `voice/` package (the vendored
 [Blaizzy/mlx-audio-swift](https://github.com/Blaizzy/mlx-audio-swift) TTS
 stack, MIT). That stack is **not** part of the public binary
 distribution, so this dev harness can only build against the private
 monorepo. Clone it as a **sibling** of this repo:
 
 ```
-~/code/bithuman-sdk          # private (collaborator access)
+~/code/bithuman-sdk-internal          # private (collaborator access)
 ~/code/bithuman-sdk-public   # this repo
 ```
 
-The `Package.swift` path dep (`../../../../bithuman-sdk/engine/voice`) resolves
+The `Package.swift` path dep (`../../../../bithuman-sdk-internal/engine/voice`) resolves
 `engine/voice/` via that layout.
 
 External developers without private access should reach the TTS stack
@@ -44,4 +44,4 @@ load time, gen time, RTF, |mean| and peak amplitude per backend.
 ## Requires
 
 - macOS 26+ (Tahoe), Apple Silicon
-- The private bithuman-sdk sibling checkout (see above)
+- The private bithuman-sdk-internal sibling checkout (see above)

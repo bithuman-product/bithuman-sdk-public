@@ -7,14 +7,14 @@ import PackageDescription
 // a Mac without a mic.
 //
 // PRIVATE-SOURCE DEPENDENCY: this tool imports `MLXAudioTTS`, which is
-// re-exported by the `Voice` product of the bithuman-sdk `engine/voice/`
+// re-exported by the `Voice` product of the bithuman-sdk-internal `engine/voice/`
 // package (the vendored Blaizzy/mlx-audio-swift TTS stack). That stack
 // is NOT part of the public binary distribution, so this example cannot
 // build against the published SwiftPM package alone — it needs the
-// private monorepo `bithuman-product/bithuman-sdk` cloned as a SIBLING
+// private monorepo `bithuman-product/bithuman-sdk-internal` cloned as a SIBLING
 // of this repo:
 //
-//     ~/code/bithuman-sdk          (private; collaborator access)
+//     ~/code/bithuman-sdk-internal          (private; collaborator access)
 //     ~/code/bithuman-sdk-public   (this repo)
 //
 // The path dep below resolves engine/voice/ via that sibling layout. External
@@ -31,8 +31,8 @@ let package = Package(
         .package(url: "https://github.com/ml-explore/mlx-swift-lm", from: "3.31.3"),
         // Private-source path dep — see the header note. Resolves the
         // `engine/voice/` SwiftPM package (product "Voice") via the sibling
-        // bithuman-sdk checkout.
-        .package(name: "voice", path: "../../../../bithuman-sdk/engine/voice"),
+        // bithuman-sdk-internal checkout.
+        .package(name: "voice", path: "../../../../bithuman-sdk-internal/engine/voice"),
     ],
     targets: [
         .executableTarget(

@@ -2,12 +2,12 @@
 // bitHumanKit — public binary distribution.
 //
 // The source for these frameworks lives in the private monorepo
-// bithuman-product/bithuman-sdk (the swift/ tree for bitHumanKit; the
+// bithuman-product/bithuman-sdk-internal (the swift/ tree for bitHumanKit; the
 // engine/expression/ and sdks/swift/ trees for the two Layer-1 engine
 // products extracted on the refactor/engine-tiers branch). This package
 // consumes the pre-compiled XCFrameworks attached to THIS repo's GitHub
 // Releases via SwiftPM's binaryTarget — each `.xcframework.zip` is built
-// from bithuman-sdk and uploaded here per release; consumers depend only
+// from bithuman-sdk-internal and uploaded here per release; consumers depend only
 // on this package URL.
 //
 // All third-party deps (MLX, HuggingFace, Tokenizers, …) are
@@ -24,7 +24,7 @@
 //   - Expression   Layer-1 avatar engine on its own: speech encoder →
 //                  animator → face decoder → face renderer expressive
 //                  talking head. Built from the
-//                  bithuman-sdk engine/expression/ package. Pull this in
+//                  bithuman-sdk-internal engine/expression/ package. Pull this in
 //                  directly when you only need the avatar renderer (no
 //                  STT/LLM/TTS). Home of the `Bithuman` actor,
 //                  `Bithuman.Quality`, `AvatarConfig`, `ImxContainer`.
@@ -32,7 +32,7 @@
 //   - Bithuman     Layer-1 Essence engine on its own: the portable
 //                  libessence C++ avatar runtime (audio → composited BGR
 //                  frames from a pre-built `.imx`). Built from the
-//                  bithuman-sdk sdks/swift/ package. CPU-only, works on
+//                  bithuman-sdk-internal sdks/swift/ package. CPU-only, works on
 //                  any Apple Silicon. `import Bithuman`.
 //
 // Hardware floor (gated at runtime via HardwareCheck.evaluate()):
