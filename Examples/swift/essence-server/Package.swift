@@ -21,11 +21,11 @@ let package = Package(
         .package(name: "bithuman",
                  url: "https://github.com/bithuman-product/bithuman-sdk-public.git",
                  from: "0.8.1"),
-        // bitHuman fork of client-sdk-swift carrying a no-device
-        // app-audio patch (lets headless server avatars publish audio in
-        // manual-render mode without claiming the mic). Drop the fork
-        // once livekit/client-sdk-swift#985 merges + tags.
-        .package(url: "https://github.com/bithuman-product/bithuman-livekit-swift", branch: "main"),
+        // Upstream LiveKit Swift client. (Was a bitHuman fork carrying a no-device
+        // app-audio patch; upstream >=2.15.1 handles manual-render mode natively
+        // — engine.isInManualRenderingMode in MixerEngineObserver — so the fork
+        // was retired 2026-06-30.)
+        .package(url: "https://github.com/livekit/client-sdk-swift", from: "2.15.1"),
         .package(url: "https://github.com/vapor/jwt-kit", from: "5.0.0"),
         .package(url: "https://github.com/hummingbird-project/hummingbird", from: "2.0.0"),
     ],
@@ -34,7 +34,7 @@ let package = Package(
             name: "EssenceServer",
             dependencies: [
                 .product(name: "bitHumanKit", package: "bithuman"),
-                .product(name: "LiveKit", package: "bithuman-livekit-swift"),
+                .product(name: "LiveKit", package: "client-sdk-swift"),
                 .product(name: "JWTKit", package: "jwt-kit"),
                 .product(name: "Hummingbird", package: "hummingbird"),
             ],
